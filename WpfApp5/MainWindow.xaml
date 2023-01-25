@@ -55,7 +55,7 @@
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
                 <Label Content="Welcome to " Foreground="#FFFFFF" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50"/>
-                <Label Content="Flarial" Foreground="#fe4443" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50" Margin="-5,0,0,0"/>
+                <Label Content="Flarial" Foreground="#fe4443" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50" Margin="-15,0,0,0"/>
             </StackPanel>
             <Label Content="To continue, please login with your Discord account." Foreground="#FFFFFF" FontSize="18" FontFamily="Fonts/#Sofia Sans" HorizontalAlignment="Center" Height="30" Margin="0,35,0,0"/>
             <Label Content="Why do we need this?" Foreground="#525252" FontSize="12" FontFamily="Fonts/#Sofia Sans" HorizontalAlignment="Center" Height="30" Margin="0,90,0,0"/>
