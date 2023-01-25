@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>1058433624430612640.ico</ApplicationIcon>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\SofiaSans-VariableFont_wght.ttf" />
+    <None Remove="Fonts\Unbounded-VariableFont_wght.ttf" />
+    <None Remove="Images\background.png" />
+    <None Remove="Images\close.png" />
+    <None Remove="Images\discord-mark-white.png" />
+    <None Remove="Images\icon.ico" />
+    <None Remove="Images\icon.png" />
+    <None Remove="Images\news.png" />
+    <None Remove="Images\setting.png" />
+    <None Remove="Images\share.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="1058433624430612640.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
+    <PackageReference Include="Octokit" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\SofiaSans-VariableFont_wght.ttf" />
+    <Resource Include="Fonts\Unbounded-VariableFont_wght.ttf" />
+    <Resource Include="Images\background.png" />
+    <Resource Include="Images\close.png" />
+    <Resource Include="Images\discord-mark-white.png" />
+    <Resource Include="Images\icon.ico" />
+    <Resource Include="Images\icon.png" />
+    <Resource Include="Images\news.png" />
+    <Resource Include="Images\setting.png" />
+    <Resource Include="Images\share.png" />
+  </ItemGroup>
+
+</Project>
