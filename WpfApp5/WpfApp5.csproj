@@ -43,6 +43,8 @@
     <Resource Include="Images\news.png" />
     <Resource Include="Images\setting.png" />
     <Resource Include="Images\share.png" />
+    <None Remove="Images\user.png" />
+    <Resource Include="Images\user.png" />
   </ItemGroup>
 
 </Project>
