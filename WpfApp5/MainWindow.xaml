@@ -21,7 +21,7 @@
             <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
             <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseWindow" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
 
-            <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="https://cdn.discordapp.com/attachments/1066545129973878834/1068057467445071982/account_circle_FILL0_wght600_GRAD0_opsz48.png" x:Name="PFP" Stretch="Fill">
+            <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="Images/user.png" x:Name="PFP" Stretch="Fill">
                 <Image.Clip>
                     <RectangleGeometry Rect="0,0,35,35" RadiusX="20" RadiusY="20"/>
                 </Image.Clip>

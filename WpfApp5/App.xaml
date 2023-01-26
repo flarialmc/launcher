@@ -36,7 +36,7 @@
         </ControlTemplate>
         <ControlTemplate x:Key="CloseButton1" TargetType="Button">
             <Grid>
-                <Image Source="Images/close.png" Width="19" Height="19" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
+                <Image Source="Images/user.png" Width="19" Height="19" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
                 <Label Content="Guest" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,20,-25"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,120,50" RadiusX="12" RadiusY="12"/>

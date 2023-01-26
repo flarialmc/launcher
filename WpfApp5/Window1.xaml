@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="Flarial.Launcher.Window1"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="379" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+        Title="Flarial" Height="450" Width="379" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
     <DockPanel>
 
         <Wpf:WebView2 Name="web" Height="434" Width="380"/>
