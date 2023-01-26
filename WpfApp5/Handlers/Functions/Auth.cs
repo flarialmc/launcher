@@ -1,10 +1,8 @@
-﻿using System.IO;
-using System.Net;
-using System.Text;
+﻿using RestSharp;
 
 namespace Flarial.Launcher.Functions
 {
-    public class Auth
+    public static class Auth
     {
 
 
@@ -13,28 +11,45 @@ namespace Flarial.Launcher.Functions
         public static string redirect_url = "https://flarial.net";
 
         //https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read
-        public string CodeToToken(string code)
+        public static string postreq(string code)
         {
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("https://discordapp.com/api/oauth2/token%22");
-            webRequest.Method = "POST";
-            string parameters = "client_id=" + client_id + "&client_secret=" + client_sceret + "&grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirect_url + "";
-            byte[] byteArray = Encoding.UTF8.GetBytes(parameters);
-            webRequest.ContentType = "application/x-www-form-urlencoded";
-            webRequest.ContentLength = byteArray.Length;
-            Stream postStream = webRequest.GetRequestStream();
 
-            postStream.Write(byteArray, 0, byteArray.Length);
-            postStream.Close();
-            WebResponse response = webRequest.GetResponse();
-            postStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(postStream);
-            string responseFromServer = reader.ReadToEnd();
+            var client = new RestClient("https://discord.com");
+            var request = new RestRequest("api/oauth2/token");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("client_id", client_id);
+            request.AddParameter("client_secret", client_sceret);
+            request.AddParameter("grant_type", "authorization_code");
+            request.AddParameter("code", code);
+            request.AddParameter("redirect_uri", redirect_url);
+            request.AddParameter("scope", "identify guild.members.read guilds");
 
-            string tokenInfo = responseFromServer.Split(',')[0].Split(':')[1];
-            string access_token = tokenInfo.Trim().Substring(1, tokenInfo.Length - 3);
+            var response = client.Post(request);
+            var content = response.Content;
+            return content;
 
-            return access_token;
         }
+
+        public static string getrequser(string authcode)
+        {
+
+            var client = new RestClient("https://discord.com");
+            var request = new RestRequest("api/v10/users/@me");
+            request.AddHeader("Authorization", "Bearer " + authcode);
+            var response = client.Get(request);
+            return response.Content;
+        }
+
+        //private void putjoinuser(AccessTokenData authcode, string userid)
+        //{
+
+        //    var client = new RestClient("https://discord.com");
+        //    var request = new RestRequest("api/v10/guilds/1049946152092586054/members/" + userid);
+        //    request.AddHeader("Authorization", "Bot MTA1ODQyNjk2NjYwMjE3NDQ3NA.GAno-1.uYVeAJVBflLNpjKt0jCtxnXn7CJwyOdoQEK3NY");
+        //    request.AddHeader("Content-Type", "application/json");
+        //    request.AddBody(JsonConvert.SerializeObject(authcode));
+        //    client.Put(request);
+        //}
     }
 }
