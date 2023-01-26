@@ -21,13 +21,13 @@
             <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
             <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseWindow" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
 
-            <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="https://upload.wikimedia.org/wikipedia/en/0/03/Walter_White_S5B.png" Stretch="Fill">
+            <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="https://cdn.discordapp.com/attachments/1066545129973878834/1068057467445071982/account_circle_FILL0_wght600_GRAD0_opsz48.png" x:Name="PFP" Stretch="Fill">
                 <Image.Clip>
                     <RectangleGeometry Rect="0,0,35,35" RadiusX="20" RadiusY="20"/>
                 </Image.Clip>
             </Image>
             <Label Content="Logged in as" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,305,0,0"/>
-            <Label Content="Walter White#1337" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,340,0,0"/>
+            <Label Content="Guest" x:Name="Username" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,340,0,0"/>
             <Label Content="Launcher" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,30,0"/>
             <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
             <Label Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
