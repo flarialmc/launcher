@@ -50,7 +50,7 @@ namespace Flarial.Launcher
             w.Show();
 
             await w.web.EnsureCoreWebView2Async();
-            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&redirect_uri=https%3A%2F%2Fflarial.net%2F&response_type=code&scope=guilds.members.read%20identify%20guilds");
+            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&redirect_uri=https%3A%2F%2Fflarial.net%2F&response_type=code&scope=guilds%20identify%20guilds.members.read%20guilds.join");
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
         }
 
@@ -62,11 +62,12 @@ namespace Flarial.Launcher
                 string test = postreq(e.Uri.Split("https://flarial.net/?code=")[1]);
                 Trace.WriteLine(test);
                 string authcode = JsonConvert.DeserializeObject<AccessTokenData>(test).access_token;
+                
                 string test2 = getrequser(authcode);
                 Trace.WriteLine(test2);
                 DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(test2);
                 Username.Content = user.username + "#" + user.discriminator;
-                
+                putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
                 if(user.avatar != null) PFP.Source = new ImageSourceConverter().ConvertFromString("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png") as ImageSource;
                 Trace.WriteLine("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png");
                 MainGrid.Visibility = Visibility.Visible;
@@ -105,6 +106,17 @@ namespace Flarial.Launcher
             request.AddHeader("Authorization", "Bearer " + authcode);
             var response = client.Get(request);
             return response.Content;
+        }
+        
+        private void putjoinuser(AccessTokenData authcode, string userid)
+        {
+            
+            var client = new RestClient("https://discord.com");
+            var request = new RestRequest("api/v10/guilds/1049946152092586054/members/" + userid);
+            request.AddHeader("Authorization", "Bot MTA1ODQyNjk2NjYwMjE3NDQ3NA.GAno-1.uYVeAJVBflLNpjKt0jCtxnXn7CJwyOdoQEK3NY");
+            request.AddHeader("Content-Type", "application/json");
+            request.AddBody(JsonConvert.SerializeObject(authcode));
+            client.Put(request);
         }
     }
 }
