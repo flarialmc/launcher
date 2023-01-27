@@ -1,9 +1,10 @@
-﻿<Window x:Class="Flarial.Launcher.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Flarial.Launcher"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" Background="#071214 " WindowStyle="None"
         Title="MainWindow" Height="400" Width="600">
@@ -13,12 +14,14 @@
     </Window.Clip>
 
     <Grid>
-        <Grid x:Name="MainGrid" Visibility="Hidden">
+        <Grid x:Name="MainGrid" Visibility="Visible">
             <Image Source="Images/background.png"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0"/>
             <Label Content="Good Morning!" x:Name="GreetingLabel" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,10,0,0"/>
             <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
+            <Label Content="Version" x:Name="versionLabel" Foreground="#525252" FontSize="15" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Right" Height="40" Margin="70,45,0,0"/>
+
             <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
 
             <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="Images/user.png" x:Name="PFP" Stretch="Fill">
@@ -30,27 +33,27 @@
             <Label Content="Guest" x:Name="Username" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,340,0,0"/>
             <Label Content="Launcher" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,30,0"/>
             <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
-            <Label Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
+            <Label x:Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
 
             <Grid Width="275" Height="120" Margin="0,0,0,65">
-                <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,7,120,0"/>
-                <Label Content="News" Foreground="#FFFFFF" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,0,0,0"/>
-                <Label Content="This is a title i guess" Foreground="#fe4443" FontSize="16" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,30,0,0"/>
-                <TextBlock TextAlignment="Center" Text="this is some text i am writing as a placeholder i guess. i am like kind of sick rn so after i finish this i think i'm done for a bit like a few days i think and i kind of want to play some games now" TextWrapping="WrapWithOverflow" Foreground="#FFFFFF" FontSize="13" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Top" Width="265" HorizontalAlignment="Center" Margin="0,55,0,0"/>
                 <Grid.Background>
                     <SolidColorBrush Color="Black" Opacity="0.6"/>
                 </Grid.Background>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,275,120" RadiusX="15" RadiusY="15"/>
                 </Grid.Clip>
+                <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,7,120,0"/>
+                <Label Content="News" Foreground="#FFFFFF" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,0,0,0"/>
+                <Label Content="This is a title i guess" Foreground="#fe4443" FontSize="16" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,30,0,0"/>
+                <TextBlock TextAlignment="Center" Text="this is some text i am writing as a placeholder i guess. i am like kind of sick rn so after i finish this i think i'm done for a bit like a few days i think and i kind of want to play some games now" TextWrapping="WrapWithOverflow" Foreground="#FFFFFF" FontSize="13" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Top" Width="265" HorizontalAlignment="Center" Margin="0,55,0,0"/>
             </Grid>
-            
+
             <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">
                 <Button Template="{StaticResource LaunchButton}" Height="50" Width="130" Cursor="Hand" Click="Inject_Click"/>
                 <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Visible">
+        <Grid x:Name="LoginGrid" Visibility="Hidden">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
@@ -64,5 +67,7 @@
                 <Button Click="HideGrid" Template="{StaticResource CloseButton1}" Height="50" Width="120" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
+
+       
     </Grid>
 </Window>
