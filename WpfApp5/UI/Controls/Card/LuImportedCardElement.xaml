@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Flarial.Launcher.UI.Controls.LuImportedCardElement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             xmlns:wpfui1="http://schemas.lepo.co/wpfui/2022/xaml" xmlns:wpfui11="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Name="MainGrid">
+        <wpfui11:Card Name="VersionCard" Margin="0 0 0 8">
+
+
+            <StackPanel Name="InstallButtonsStackPanel" VerticalAlignment="Center">
+                <TextBlock Name="Header" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,5,0,0" FontSize="14"></TextBlock>
+                <wpfui11:Button x:Name="RemoveVersion" Content="Remove"
+                              Icon="Delete20"
+                              Foreground="Black"
+                              Click="RemoveVersion_Click"
+                               HorizontalAlignment="Center"
+                              Width="144"
+                             Margin="170,-25,0,0">
+
+
+
+
+
+                </wpfui11:Button>
+                <wpfui11:Button x:Name="InstallVersion" Content="Launch"
+                              Icon="ArrowImport24"
+                              Foreground="Black"
+                              Click="LoadButton_OnClick" 
+                              HorizontalAlignment="Right" Width="144"
+                        
+                              Margin="0,-31,0,0"
+                              >
+
+
+
+
+                </wpfui11:Button>
+
+
+
+
+                <Grid Width="4" />
+
+
+            </StackPanel>
+        </wpfui11:Card>
+    </Grid>
+</UserControl>
