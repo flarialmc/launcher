@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Managers;
 using Flarial.Launcher.Utils;
 using Newtonsoft.Json;
 using System;
@@ -29,6 +30,9 @@ namespace Flarial.Launcher
             if (Time >= 0 && Time < 12) { GreetingLabel.Content = "Good Morning!"; }
             else if (Time >= 12 && Time < 18) { GreetingLabel.Content = "Good Afternoon!"; }
             else if (Time >= 18 && Time <= 24) { GreetingLabel.Content = "Good Evening!"; }
+
+
+
 
         }
 
@@ -132,6 +136,8 @@ namespace Flarial.Launcher
 
         private async Task LoginAccount(string userResponse)
         {
+
+
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             Username.Content = user.username + "#" + user.discriminator;
             //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
@@ -147,6 +153,11 @@ namespace Flarial.Launcher
             MainGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Hidden;
             w.Close();
+
+            Minecraft.Init();
+            if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
+            //   BackupManager.createBackup("Safety");
+            //  BackupManager.loadBackup("Safety");
 
         }
 
