@@ -46,7 +46,7 @@
             </Grid>
             
             <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">
-                <Button Template="{StaticResource LaunchButton}" Height="50" Width="130" Cursor="Hand"/>
+                <Button Template="{StaticResource LaunchButton}" Height="50" Width="130" Cursor="Hand" Click="Inject_Click"/>
                 <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>

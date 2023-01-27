@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace Flarial.Launcher;
 
@@ -36,13 +38,36 @@ public static partial class Minecraft
     public static void InitManagers()
     {
         PackageManager = new Windows.Management.Deployment.PackageManager();
-        ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+
+        try
+        {
+            ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Trace.WriteLine(ex.Message);
+        }
+
     }
 
     public static void FindPackage()
     {
+
         if (PackageManager is null) throw new NullReferenceException();
-        Package = PackageManager.FindPackages(FamilyName).First();
+        var Packages = PackageManager.FindPackages(FamilyName);
+
+        if (Packages.Count() == 0)
+        {
+            MessageBox.Show("You don't have MC installed LOL");
+        }
+        else
+        {
+            Package = Packages.First();
+        }
+
+
+
+
     }
 
     public static Version GetVersion()
