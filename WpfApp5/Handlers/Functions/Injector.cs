@@ -88,7 +88,7 @@ namespace Flarial.Launcher.Functions
         {
             while (Minecraft.Process == null)
             {
-                await Task.Delay(1);
+                Thread.Sleep(4000);
             }
 
             await Task.Run(() =>
