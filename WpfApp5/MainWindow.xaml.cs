@@ -42,7 +42,7 @@ namespace Flarial.Launcher
             w.Show();
 
             await w.web.EnsureCoreWebView2Async();
-            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&redirect_uri=https%3A%2F%2Fflarial.net%2F&response_type=code&scope=guilds%20identify%20guilds.members.read%20guilds.join");
+            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read");
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
         }
 
