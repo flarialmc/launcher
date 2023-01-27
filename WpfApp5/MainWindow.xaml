@@ -19,7 +19,7 @@
             <Image Source="Images/icon.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0"/>
             <Label Content="Good Morning!" x:Name="GreetingLabel" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,10,0,0"/>
             <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
-            <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseWindow" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
+            <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
 
             <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="Images/user.png" x:Name="PFP" Stretch="Fill">
                 <Image.Clip>
@@ -30,7 +30,7 @@
             <Label Content="Guest" x:Name="Username" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,340,0,0"/>
             <Label Content="Launcher" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,30,0"/>
             <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
-            <Label Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
+            <Label Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
 
             <Grid Width="275" Height="120" Margin="0,0,0,65">
                 <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,7,120,0"/>

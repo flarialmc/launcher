@@ -1,17 +1,32 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Flarial.Launcher.Functions
 {
+    public class TokenStructure
+    {
+        public string access_token { get; set; }
+
+        public DateTime created { get; set; }
+        public DateTime expiry { get; set; }
+
+    }
     public static class Auth
     {
 
+        public static string Path = $"{Managers.VersionManagement.launcherPath}\\cachedToken.txt";
 
         public static string client_id = "1067854754518151168";
         public static string client_sceret = "rfNFSaCf1G5ju34qLaYMQKFrEa4X-a7K";
         public static string redirect_url = "https://flarial.net";
 
+
+
         //https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read
-        public static string postreq(string code)
+        public static string postReq(string code)
         {
 
 
@@ -31,14 +46,102 @@ namespace Flarial.Launcher.Functions
 
         }
 
-        public static string getrequser(string authcode)
+        public static string getReqUser(string authCode)
         {
 
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me");
-            request.AddHeader("Authorization", "Bearer " + authcode);
+            request.AddHeader("Authorization", "Bearer " + authCode);
             var response = client.Get(request);
             return response.Content;
+        }
+
+        public static async Task cacheToken(string Token, DateTime Created, DateTime Expiry)
+        {
+            if (!File.Exists(Path))
+            {
+                File.Create(Path);
+
+
+                await Task.Delay(1000);
+
+            }
+
+
+            var raw = File.ReadAllText(Path);
+
+            if (raw.Length == 0)
+            {
+                var ts = new TokenStructure()
+                {
+                    access_token = Token,
+                    created = Created,
+                    expiry = Expiry
+                };
+
+                var tss = JsonConvert.SerializeObject(ts);
+
+                File.WriteAllText(Path, tss);
+                return;
+
+            }
+            else
+            {
+                try
+                {
+                    var Decoded = JsonConvert.DeserializeObject<TokenStructure>(raw);
+                    if (Decoded == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        if (DateTime.Now >= Decoded.expiry)
+                        {
+                            File.Delete(Path);
+                            var ts = new TokenStructure()
+                            {
+                                access_token = Token,
+                                created = Created,
+                                expiry = Expiry
+                            };
+
+                            var tss = JsonConvert.SerializeObject(ts);
+
+                            File.WriteAllText(Path, tss);
+                            return;
+
+                        }
+                        else
+                        {
+                            return;
+
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+
+
+            }
+
+
+
+        }
+
+        public static async Task<TokenStructure> getCache()
+        {
+            if (!File.Exists(Path))
+            {
+                return null;
+            }
+            var s = File.ReadAllText(Path);
+
+
+            return JsonConvert.DeserializeObject<TokenStructure>(s);
+
         }
 
         //private void putjoinuser(AccessTokenData authcode, string userid)
