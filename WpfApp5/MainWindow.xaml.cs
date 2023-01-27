@@ -22,7 +22,7 @@ namespace Flarial.Launcher
         public Window1 w = new Window1();
         public MainWindow()
         {
-            Environment.CurrentDirectory = "C:/";
+            Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
             InitializeComponent();
             Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -135,8 +135,15 @@ namespace Flarial.Launcher
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             Username.Content = user.username + "#" + user.discriminator;
             //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
-            if (user.avatar != null) PFP.Source = new ImageSourceConverter().ConvertFromString("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png") as ImageSource;
+
+
+            if (user.avatar != null) PFP.Source = new ImageSourceConverter()
+                    .ConvertFromString("https://cdn.discordapp.com/avatars/"
+                    + user.id + "/" + user.avatar + ".png") as ImageSource;
+
             Trace.WriteLine("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png");
+
+
             MainGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Hidden;
             w.Close();
