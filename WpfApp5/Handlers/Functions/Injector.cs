@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using static Flarial.Launcher.Functions.Windows;
 
 namespace Flarial.Launcher.Functions
@@ -14,11 +15,11 @@ namespace Flarial.Launcher.Functions
     {
 
 
-        public static async Task Inject(string path)
+        public static async Task Inject(string path, Label Status)
         {
 
 
-
+            Utils.OpenGame();
             while (Utils.IsGameOpen() == false)
             {
                 await Task.Delay(1);
@@ -31,34 +32,34 @@ namespace Flarial.Launcher.Functions
 
 
 
+            Status.Content = "Waiting for Minecraft";
 
             //Wait For MC to load
             await WaitForModules();
 
 
-            await Task.Run(() =>
+
+            Status.Content = "Injection begun";
+            try
             {
-                Console.WriteLine("Injecting " + path);
-                try
-                {
-                    var targetProcess = Minecraft.Process;
-                    IntPtr procHandle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, false, targetProcess.Id);
+                var targetProcess = Minecraft.Process;
+                IntPtr procHandle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, false, targetProcess.Id);
 
-                    IntPtr loadLibraryAddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+                IntPtr loadLibraryAddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
 
-                    IntPtr allocMemAddress = VirtualAllocEx(procHandle, IntPtr.Zero, (uint)((path.Length + 1) * Marshal.SizeOf(typeof(char))), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+                IntPtr allocMemAddress = VirtualAllocEx(procHandle, IntPtr.Zero, (uint)((path.Length + 1) * Marshal.SizeOf(typeof(char))), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-                    UIntPtr bytesWritten;
-                    WriteProcessMemory(procHandle, allocMemAddress, Encoding.Default.GetBytes(path), (uint)((path.Length + 1) * Marshal.SizeOf(typeof(char))), out bytesWritten);
-                    CreateRemoteThread(procHandle, IntPtr.Zero, 0, loadLibraryAddr, allocMemAddress, 0, IntPtr.Zero);
+                UIntPtr bytesWritten;
+                WriteProcessMemory(procHandle, allocMemAddress, Encoding.Default.GetBytes(path), (uint)((path.Length + 1) * Marshal.SizeOf(typeof(char))), out bytesWritten);
+                CreateRemoteThread(procHandle, IntPtr.Zero, 0, loadLibraryAddr, allocMemAddress, 0, IntPtr.Zero);
 
-                    Console.WriteLine("Finished injecting");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Injection failed. Exception: " + e);
-                }
-            });
+                Status.Content = "Finished injecting";
+            }
+            catch (Exception e)
+            {
+                Status.Content = "Injection failed.";
+            }
+
         }
 
         private static async Task ApplyAppPackages(string path)
