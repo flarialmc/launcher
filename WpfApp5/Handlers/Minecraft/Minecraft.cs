@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -39,14 +38,9 @@ public static partial class Minecraft
     {
         PackageManager = new Windows.Management.Deployment.PackageManager();
 
-        try
-        {
-            ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
-        }
-        catch (FileNotFoundException ex)
-        {
-            Trace.WriteLine(ex.Message);
-        }
+
+        ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+
 
     }
 
