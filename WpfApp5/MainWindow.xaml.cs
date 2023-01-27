@@ -59,13 +59,13 @@ namespace Flarial.Launcher
             if (e.Uri.StartsWith("https://flarial.net"))
             {
 
-                await LoginWithoutCache(e);
+                await AttemptLoginWithoutCache(e);
 
 
             }
         }
 
-        private async Task<bool> LoginWithoutCache(Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
+        private async Task<bool> AttemptLoginWithoutCache(Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Flarial.Launcher
 
 
                 Trace.WriteLine(userResponse);
-                await ActuallyLogin(userResponse);
+                await LoginAccount(userResponse);
                 return true;
             }
             catch (Exception ex)
@@ -125,12 +125,12 @@ namespace Flarial.Launcher
 
 
             Trace.WriteLine(userResponse);
-            await ActuallyLogin(userResponse);
+            await LoginAccount(userResponse);
             return true;
 
         }
 
-        private async Task ActuallyLogin(string userResponse)
+        private async Task LoginAccount(string userResponse)
         {
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             Username.Content = user.username + "#" + user.discriminator;
