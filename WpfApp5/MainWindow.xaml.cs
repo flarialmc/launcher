@@ -157,7 +157,7 @@ namespace Flarial.Launcher
             Minecraft.Init();
             if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
             //   BackupManager.createBackup("Safety");
-            BackupManager.loadBackup("Safety");
+            //  BackupManager.loadBackup("Safety");
 
         }
 
