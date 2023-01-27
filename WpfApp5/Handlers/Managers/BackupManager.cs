@@ -138,7 +138,7 @@ namespace Flarial.Launcher.Managers
                         Directory.CreateDirectory(Path.Combine(
                         backupDirectory + backupName, "RoamingState"));
                         await DirectoryCopy(dir, Path.Combine(
-                        backupDirectory + backupName + "RoamingState", DirecInfo.Name), true);
+                        backupDirectory + backupName + "\\RoamingState", DirecInfo.Name), true);
                     }
                 }
                 else
@@ -147,7 +147,7 @@ namespace Flarial.Launcher.Managers
                 }
                 await Task.Delay(1000);
                 var text = await createConfig();
-                File.WriteAllText(Path.Combine(backupDirectory + "\\" + backupName, "BackupConfig.json"), text);
+                File.WriteAllText(Path.Combine(backupDirectory + "\\" + backupName, "\\BackupConfig.json"), text);
             }
             catch (Exception ex)
             {
