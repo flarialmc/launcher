@@ -20,6 +20,7 @@ namespace Flarial.Launcher
         public Window1 w = new Window1();
         public MainWindow()
         {
+            Environment.CurrentDirectory = "C://";
             InitializeComponent();
 
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -68,6 +69,10 @@ namespace Flarial.Launcher
                 LoginGrid.Visibility = Visibility.Hidden;
                 w.Close();
             }
+        }
+        private async void Inject_Click(object sender, RoutedEventArgs e)
+        {
+            await Injector.Inject("OnixClient.dll");
         }
 
 

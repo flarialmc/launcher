@@ -23,6 +23,7 @@ namespace Flarial.Launcher.Functions
             request.AddParameter("grant_type", "authorization_code");
             request.AddParameter("code", code);
             request.AddParameter("redirect_uri", redirect_url);
+            request.AddParameter("scope", "identify guild.members.read guilds");
 
             var response = client.Post(request);
             var content = response.Content;

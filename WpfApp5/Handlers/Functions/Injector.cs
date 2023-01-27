@@ -17,6 +17,17 @@ namespace Flarial.Launcher.Functions
 
         public static async Task Inject(string path)
         {
+            var process = new Process();
+            var startInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Normal,
+                FileName = "explorer.exe",
+                Arguments = "shell:appsFolder\\Microsoft.MinecraftUWP_8wekyb3d8bbwe!App",
+            };
+            process.StartInfo = startInfo;
+            process.Start();
+
+            Minecraft.Init();
             await ApplyAppPackages(path);
 
 
