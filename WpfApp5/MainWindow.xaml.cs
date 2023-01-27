@@ -23,9 +23,20 @@ namespace Flarial.Launcher
         public Window1 w = new Window1();
         public MainWindow()
         {
+
+            Minecraft.Init();
+
+            if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
+            if (!Directory.Exists(Managers.VersionManagement.launcherPath))
+            {
+                Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
+            }
             Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
+
             InitializeComponent();
-            Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
+
+
+            versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
             if (Time >= 0 && Time < 12) { GreetingLabel.Content = "Good Morning!"; }
             else if (Time >= 12 && Time < 18) { GreetingLabel.Content = "Good Afternoon!"; }
@@ -149,13 +160,17 @@ namespace Flarial.Launcher
 
             Trace.WriteLine("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png");
 
-
-            MainGrid.Visibility = Visibility.Visible;
-            LoginGrid.Visibility = Visibility.Hidden;
             w.Close();
 
-            Minecraft.Init();
-            if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
+            LoginGrid.Visibility = Visibility.Hidden;
+
+
+
+
+            MainGrid.Visibility = Visibility.Visible;
+
+
+
             //   BackupManager.createBackup("Safety");
             //  BackupManager.loadBackup("Safety");
 

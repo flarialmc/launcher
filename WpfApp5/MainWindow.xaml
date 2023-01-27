@@ -13,12 +13,14 @@
     </Window.Clip>
 
     <Grid>
-        <Grid x:Name="MainGrid" Visibility="Hidden">
+        <Grid x:Name="MainGrid" Visibility="Visible">
             <Image Source="Images/background.png"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0"/>
             <Label Content="Good Morning!" x:Name="GreetingLabel" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,10,0,0"/>
             <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
+            <Label Content="Version" Name="versionLabel" Foreground="#525252" FontSize="15" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Right" Height="40" Margin="70,45,0,0"/>
+
             <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
 
             <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Bottom" Margin="20,0,0,20" Source="Images/user.png" x:Name="PFP" Stretch="Fill">
@@ -50,7 +52,7 @@
                 <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Visible">
+        <Grid x:Name="LoginGrid" Visibility="Hidden">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
