@@ -43,6 +43,9 @@ namespace Flarial.Launcher
             else if (Time >= 18 && Time <= 24) { GreetingLabel.Content = "Good Evening!"; }
 
 
+            Task.Delay(1);
+
+
 
 
         }

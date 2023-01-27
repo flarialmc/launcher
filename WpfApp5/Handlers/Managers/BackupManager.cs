@@ -59,7 +59,9 @@ namespace Flarial.Launcher.Managers
         {
             Console.WriteLine(backupName);
             try
+
             {
+
                 var mcpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang");
                 if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "com.mojang")))
                 {
