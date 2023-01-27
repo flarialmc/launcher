@@ -35,7 +35,8 @@
             <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
             <Label x:Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
 
-            <Grid Width="275" Height="120" Margin="0,0,0,65">
+            <Grid Name="LOL" Width="275" Height="120" Margin="0,0,0,65">
+
                 <Grid.Background>
                     <SolidColorBrush Color="Black" Opacity="0.6"/>
                 </Grid.Background>
@@ -68,6 +69,6 @@
             </StackPanel>
         </Grid>
 
-       
+
     </Grid>
 </Window>
