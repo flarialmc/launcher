@@ -7,47 +7,35 @@ using System.Threading.Tasks;
 using System.Windows;
 namespace Flarial.Launcher.Managers
 {
+    //Configuration
+    public class BackupConfiguration
+    {
+        public DateTime BackupTime
+        {
+            get;
+            set;
+        }
+        public string MinecraftVersion
+        {
+            get;
+            set;
+        }
+        public Guid BackupId
+        {
+            get;
+            set;
+        }
+    }
+
+
+    //Actual Manager
     public static class BackupManager
     {
-        public static string backupDirectory = VersionManagement.launcherPath + "\\Backup\\";
+        public static string backupDirectory = VersionManagement.launcherPath + "\\Backups\\";
 
-        public class BackupConfiguration
-        {
-            public DateTime BackupTime
-            {
-                get;
-                set;
-            }
-            public string MinecraftVersion
-            {
-                get;
-                set;
-            }
-            public Guid BackupId
-            {
-                get;
-                set;
-            }
-        }
-        public static async Task DeleteBackup(string backupName)
-        {
-            await DeleteDirectory(backupDirectory + backupName);
-        }
-        public static async Task DeleteDirectory(string target_dir)
-        {
-            string[] files = Directory.GetFiles(target_dir);
-            string[] dirs = Directory.GetDirectories(target_dir);
-            foreach (string file in files)
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
-            foreach (string dir in dirs)
-            {
-                await DeleteDirectory(dir);
-            }
-            Directory.Delete(target_dir, false);
-        }
+
+
+
         public static async Task<List<string>> FilterByName(string filterName)
         {
             var UnFilteredBackups = await GetAllBackupsAsync();
@@ -64,7 +52,41 @@ namespace Flarial.Launcher.Managers
             }
             return list;
         }
-        public static async Task Backupdata(string backupName)
+
+
+
+        public static async Task loadBackup(string backupName)
+        {
+            Console.WriteLine(backupName);
+            try
+            {
+                var mcpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang");
+                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "com.mojang")))
+                {
+                    MessageBox.Show("You have no Minecraft backups available with the Id given.", "Failed to Load Backup");
+                    return;
+                }
+                else
+                {
+                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "com.mojang"), mcpath, true);
+                }
+                var FlarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
+                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "RoamingState")))
+                {
+                    MessageBox.Show("You have no client backups available with the Id given.", "Failed to Load Backup");
+                    return;
+                }
+                else
+                {
+                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "RoamingState"), FlarialPath, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        public static async Task createBackup(string backupName)
         {
             try
             {
@@ -113,10 +135,10 @@ namespace Flarial.Launcher.Managers
                             // Console.WriteLine("The {0} file is no longer read
                             // only.", mcpath);
                         }
-                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(
-                         (Environment.SpecialFolder.LocalApplicationData)) + "\\Flarial\\Launcher" + "\\Backup" + "\\" + backupName, "RoamingState"));
-                        await DirectoryCopy(dir, Path.Combine(Environment.GetFolderPath(
-                         (Environment.SpecialFolder.LocalApplicationData)) + "\\Flarial\\Launcher" + "\\Backup" + "\\" + backupName + "\\RoamingState", DirecInfo.Name), true);
+                        Directory.CreateDirectory(Path.Combine(
+                        backupDirectory + backupName, "RoamingState"));
+                        await DirectoryCopy(dir, Path.Combine(
+                        backupDirectory + backupName + "RoamingState", DirecInfo.Name), true);
                     }
                 }
                 else
@@ -124,7 +146,7 @@ namespace Flarial.Launcher.Managers
                     MessageBox.Show("Roaming State Data Path is invalid!", "Failed To Backup");
                 }
                 await Task.Delay(1000);
-                var text = await CreateBackupConfig();
+                var text = await createConfig();
                 File.WriteAllText(Path.Combine(backupDirectory + "\\" + backupName, "BackupConfig.json"), text);
             }
             catch (Exception ex)
@@ -132,7 +154,12 @@ namespace Flarial.Launcher.Managers
                 MessageBox.Show(ex.Message);
             }
         }
-        public static async Task<string> CreateBackupConfig()
+        public static async Task DeleteBackup(string backupName)
+        {
+            await DeleteDirectory(backupDirectory + backupName);
+        }
+
+        public static async Task<string> createConfig()
         {
             var version = Minecraft.GetVersion();
             await Task.Delay(1);
@@ -145,9 +172,9 @@ namespace Flarial.Launcher.Managers
             string jsonString = JsonSerializer.Serialize(backupConfig);
             return jsonString;
         }
-        public static async Task<BackupConfiguration> GetBackupConfig(string BackupId)
+        public static async Task<BackupConfiguration> getConfig(string BackupName)
         {
-            var Path = backupDirectory + BackupId + "\\BackupConfig.json";
+            var Path = backupDirectory + BackupName + "\\BackupConfig.json";
             // convert string to stream
             FileStream openStream = File.OpenRead(Path);
             var backupConfig = await JsonSerializer.DeserializeAsync<BackupConfiguration>(openStream);
@@ -160,37 +187,10 @@ namespace Flarial.Launcher.Managers
                 return backupConfig;
             }
         }
-        public static async Task LoadBackedupData(string backupName)
-        {
-            Console.WriteLine(backupName);
-            try
-            {
-                var mcpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang");
-                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "com.mojang")))
-                {
-                    MessageBox.Show("You have no Minecraft backups available with the Id given.", "Failed to Load Backup");
-                    return;
-                }
-                else
-                {
-                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "com.mojang"), mcpath, true);
-                }
-                var FlarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
-                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "RoamingState")))
-                {
-                    MessageBox.Show("You have no client backups available with the Id given.", "Failed to Load Backup");
-                    return;
-                }
-                else
-                {
-                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "RoamingState"), FlarialPath, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
+
+
+
+        //Utilities 
         private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)
         {
             return attributes & ~attributesToRemove;
@@ -224,6 +224,21 @@ namespace Flarial.Launcher.Managers
                     await DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
                 }
             }
+        }
+        public static async Task DeleteDirectory(string target_dir)
+        {
+            string[] files = Directory.GetFiles(target_dir);
+            string[] dirs = Directory.GetDirectories(target_dir);
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+            foreach (string dir in dirs)
+            {
+                await DeleteDirectory(dir);
+            }
+            Directory.Delete(target_dir, false);
         }
     }
 }

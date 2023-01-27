@@ -206,7 +206,7 @@ namespace Flarial.Launcher.Managers
             if (Minecraft.Package != null)
             {
                 //Backup Data
-                await BackupManager.Backupdata("MinecraftBeforeInstallation");
+                await BackupManager.createBackup("MinecraftBeforeInstallation");
 
                 Trace.WriteLine("Uninstalling Current Minecraft Version.");
                 //Now uninstall MC (If it exists)
@@ -234,7 +234,7 @@ namespace Flarial.Launcher.Managers
 
             Trace.WriteLine("Temporary backup found, now loading.");
             //Load Backed up Data
-            await BackupManager.LoadBackedupData("MinecraftBeforeInstallation");
+            await BackupManager.loadBackup("MinecraftBeforeInstallation");
 
             Trace.WriteLine("Temporary backup loaded, now deleting.");
             //Delete temporary backup

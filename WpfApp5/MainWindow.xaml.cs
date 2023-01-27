@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Managers;
 using Flarial.Launcher.Utils;
 using Newtonsoft.Json;
 using System;
@@ -29,6 +30,12 @@ namespace Flarial.Launcher
             if (Time >= 0 && Time < 12) { GreetingLabel.Content = "Good Morning!"; }
             else if (Time >= 12 && Time < 18) { GreetingLabel.Content = "Good Afternoon!"; }
             else if (Time >= 18 && Time <= 24) { GreetingLabel.Content = "Good Evening!"; }
+            Minecraft.Init();
+            if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
+            BackupManager.createBackup("Safety");
+
+
+            BackupManager.DeleteBackup("Safety");
 
         }
 
