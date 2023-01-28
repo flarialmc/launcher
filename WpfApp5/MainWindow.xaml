@@ -18,9 +18,9 @@
         <Grid x:Name="MainGrid" Visibility="Hidden">
             <Image Source="Images/background.png"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Source="Images/icon.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0"/>
-            <Label Content="Good Morning!" x:Name="GreetingLabel" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,10,0,0"/>
-            <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="70,45,0,0"/>
+            <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
+            <Label Content="Good Morning!" x:Name="GreetingLabel" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
+            <Label Content="Ready to play?" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
             <Label Content="Version" x:Name="versionLabel" Foreground="#525252" FontSize="15" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Right" Height="40" Margin="70,45,0,0"/>
 
             <Button Template="{StaticResource CloseButton}" Cursor="Hand" Click="CloseButton_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0"/>
@@ -44,10 +44,10 @@
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,275,120" RadiusX="15" RadiusY="15"/>
                 </Grid.Clip>
-                <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,7,120,0"/>
-                <Label Content="News" Foreground="#FFFFFF" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,0,0,0"/>
-                <Label Content="This is a title i guess" Foreground="#fe4443" FontSize="16" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,30,0,0"/>
-                <TextBlock TextAlignment="Center" Text="this is some text i am writing as a placeholder i guess. i am like kind of sick rn so after i finish this i think i'm done for a bit like a few days i think and i kind of want to play some games now" TextWrapping="WrapWithOverflow" Foreground="#FFFFFF" FontSize="13" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Top" Width="265" HorizontalAlignment="Center" Margin="0,55,0,0"/>
+                <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,13,80,0"/>
+                <Label Content="News" Foreground="#FFFFFF" FontSize="20" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="32" Margin="20,9,0,0"/>
+                <Label Content="This is a title i guess" Foreground="#fe4443" FontSize="12.5" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,39,0,0"/>
+                <TextBlock TextAlignment="Center" Text="this is some text i am writing as a placeholder i guess. i am like kind of sick rn so after i finish this i think i'm done for a bit like a few days i think and i kind of want to play some games now" TextWrapping="WrapWithOverflow" Foreground="#FFFFFF" FontSize="10" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Top" Width="265" HorizontalAlignment="Center" Margin="0,64,0,0"/>
             </Grid>
 
             <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">

@@ -68,7 +68,7 @@
         <ControlTemplate x:Key="OptionsButton" TargetType="Button">
             <Grid>
                 <Image Source="Images/setting.png" Width="17" Height="17" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
-                <Label Content="Options" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,15,-25"/>
+                <Label Content="Options" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,18.2,-27.2"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,130,50" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
@@ -99,7 +99,7 @@
         <ControlTemplate x:Key="LaunchButton" TargetType="Button">
             <Grid>
                 <Image Source="Images/share.png" Width="17" Height="17" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
-                <Label Content="Launch" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,15,-25"/>
+                <Label Content="Launch" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,19.5,-27.2"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,130,50" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
