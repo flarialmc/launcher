@@ -50,6 +50,7 @@ namespace Flarial.Launcher
             Task.Delay(1);
 
 
+            RPCManager.Initialize();
 
 
         }
