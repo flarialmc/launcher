@@ -131,7 +131,7 @@ namespace Flarial.Launcher.Functions
 
         }
 
-        public static async Task<TokenStructure> getCache()
+        public static async Task<TokenStructure>? getCache()
         {
             if (!File.Exists(Path))
             {

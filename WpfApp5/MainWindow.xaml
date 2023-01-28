@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Flarial.Launcher"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="Flarial.Launcher.MainWindow"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:controls="clr-namespace:Flarial.Launcher.UI.Controls"
+        x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" Background="#071214 " WindowStyle="None"
         Title="MainWindow" Height="400" Width="600">
@@ -14,7 +16,7 @@
     </Window.Clip>
 
     <Grid>
-        <Grid x:Name="MainGrid" Visibility="Visible">
+        <Grid x:Name="MainGrid" Visibility="Hidden">
             <Image Source="Images/background.png"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0"/>
@@ -51,10 +53,10 @@
 
             <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">
                 <Button Template="{StaticResource LaunchButton}" Height="50" Width="130" Cursor="Hand" Click="Inject_Click"/>
-                <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
+                <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Click="Options_Click" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Hidden">
+        <Grid x:Name="LoginGrid" Visibility="Visible">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
@@ -69,6 +71,10 @@
             </StackPanel>
         </Grid>
 
+        <Grid x:Name="OptionsGrid" Visibility="Hidden">
+            <controls:LuVersionCardElement></controls:LuVersionCardElement>
+            
+        </Grid>
 
     </Grid>
 </Window>

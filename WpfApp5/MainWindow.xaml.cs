@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Flarial.Launcher.UI.Controls;
 
 namespace Flarial.Launcher
 {
@@ -128,6 +129,7 @@ namespace Flarial.Launcher
 
             {
 
+                Trace.Write("Invalid cache");
                 return false;
 
 
@@ -185,6 +187,12 @@ namespace Flarial.Launcher
         {
 
             await Injector.Inject("OnixClient.dll", statusLabel);
+        }
+
+        private void Options_Click(object sender, RoutedEventArgs e)
+        {
+            OptionsGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
