@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using static Flarial.Launcher.Functions.Windows;
 
@@ -18,7 +19,13 @@ namespace Flarial.Launcher.Functions
         public static async Task Inject(string path, Label Status)
         {
 
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("The file does not exist in the provided path.");
 
+
+                return;
+            }
             Utils.OpenGame();
             while (Utils.IsGameOpen() == false)
             {
@@ -59,7 +66,8 @@ namespace Flarial.Launcher.Functions
             {
                 Status.Content = "Injection failed.";
             }
-
+            await Task.Delay(1000);
+            Status.Content = "Waiting for launch..";
         }
 
         private static async Task ApplyAppPackages(string path)
