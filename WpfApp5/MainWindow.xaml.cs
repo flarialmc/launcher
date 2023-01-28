@@ -35,6 +35,9 @@ namespace Flarial.Launcher
             {
                 Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
             }
+
+            if (!File.Exists($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt"))
+                File.Create($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt");
             Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
 
             InitializeComponent();
