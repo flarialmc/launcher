@@ -1,4 +1,4 @@
-﻿namespace Flarial.Launcher.Utils;
+﻿namespace Flarial.Launcher.Structures;
 
 public class DiscordUser
 {

@@ -1,6 +1,6 @@
 ﻿using Flarial.Launcher.Functions;
 using Flarial.Launcher.Managers;
-using Flarial.Launcher.Utils;
+using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -23,7 +23,11 @@ namespace Flarial.Launcher
         public Window1 w = new Window1();
         public MainWindow()
         {
-
+            if (!Functions.Utils.IsAdministrator)
+            {
+                MessageBox.Show("Run the application as an Administrator to continue.");
+                Process.GetCurrentProcess().Kill();
+            }
             Minecraft.Init();
 
             if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
@@ -153,20 +157,23 @@ namespace Flarial.Launcher
 
 
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
-            Username.Content = user.username + "#" + user.discriminator;
-            //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
+            if (user != null)
+            {
+                Username.Content = user.username + "#" + user.discriminator;
+                //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
 
 
-            if (user.avatar != null) PFP.Source = new ImageSourceConverter()
-                    .ConvertFromString("https://cdn.discordapp.com/avatars/"
-                    + user.id + "/" + user.avatar + ".png") as ImageSource;
+                if (user.avatar != null) PFP.Source = new ImageSourceConverter()
+                        .ConvertFromString("https://cdn.discordapp.com/avatars/"
+                        + user.id + "/" + user.avatar + ".png") as ImageSource;
 
-            Trace.WriteLine("https://cdn.discordapp.com/avatars/" + user.id + "/" + user.avatar + ".png");
+            }
+
 
             w.Close();
 
             LoginGrid.Visibility = Visibility.Hidden;
-
+            await Task.Delay(20);
 
 
 

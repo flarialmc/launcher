@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Principal;
 
 namespace Flarial.Launcher.Functions
 {
@@ -22,5 +23,9 @@ namespace Flarial.Launcher.Functions
             process.StartInfo = startInfo;
             process.Start();
         }
+
+        public static bool IsAdministrator =>
+   new WindowsPrincipal(WindowsIdentity.GetCurrent())
+       .IsInRole(WindowsBuiltInRole.Administrator);
     }
 }
