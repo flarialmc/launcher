@@ -71,7 +71,8 @@
         </Grid>
 
         <Grid x:Name="OptionsGrid" Visibility="Hidden">
-            
+            <ComboBox Name="versionBox" HorizontalAlignment="Left" Margin="150,85,0,0"  VerticalAlignment="Top" Width="120" Style="{DynamicResource ComboBoxFlatStyle}"/>
+
         </Grid>
 
     </Grid>

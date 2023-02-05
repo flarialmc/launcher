@@ -270,13 +270,14 @@ namespace Flarial.Launcher.Managers
                     var Url = await GetVersionLinkAsync(v);
 
                     //May fail sometimes.
-                    var Desc = new WebClient().DownloadString(new Uri($"https://cdn.flarial.net/VersionsStructure/{v}.txt"));
+                    var Desc = await new WebClient().DownloadStringTaskAsync(new Uri($"https://cdn.flarial.net/VersionsStructure/{v}.txt"));
+
 
 
                     versionStructs.Add(new VersionStruct()
                     {
                         DownloadURL = Url,
-                        Version = v,
+                        Version = v.Remove(v.LastIndexOf(".")),
                         Description = Desc
 
                     });

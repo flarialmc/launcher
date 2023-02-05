@@ -3,6 +3,7 @@ using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -199,10 +200,24 @@ namespace Flarial.Launcher
             await Injector.Inject("OnixClient.dll", statusLabel);
         }
 
-        private void Options_Click(object sender, RoutedEventArgs e)
+        private async void Options_Click(object sender, RoutedEventArgs e)
         {
+            var L = await
+                 VersionManagement.CacheVersionsList();
+
+            var lol = JsonConvert.DeserializeObject<List<VersionManagement.VersionStruct>>(L);
+
+            foreach (var version in lol)
+            {
+
+                if (version.Version.StartsWith("1.16.1") || version.Version.StartsWith("1.19.5"))
+                    versionBox.Items.Add(version.Version);
+            }
+
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
+
+
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
