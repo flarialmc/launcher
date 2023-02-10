@@ -211,7 +211,10 @@ namespace Flarial.Launcher
             {
 
                 if (version.Version.StartsWith("1.16.1") || version.Version.StartsWith("1.19.5"))
-                    versionBox.Items.Add(version.Version);
+                {
+
+                }
+                //    versionBox.Items.Add(version.Version);
             }
 
             OptionsGrid.Visibility = Visibility.Visible;
@@ -224,5 +227,12 @@ namespace Flarial.Launcher
         {
             Process.GetCurrentProcess().Kill();
         }
+
+        private void versionBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+
+        }
+
+
     }
 }

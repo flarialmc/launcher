@@ -55,7 +55,7 @@
                 <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Click="Options_Click" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Visible">
+        <Grid x:Name="LoginGrid" Visibility="Hidden">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
@@ -70,10 +70,24 @@
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="OptionsGrid" Visibility="Hidden">
-            <ComboBox Name="versionBox" HorizontalAlignment="Left" Margin="150,85,0,0"  VerticalAlignment="Top" Width="120" Style="{DynamicResource ComboBoxFlatStyle}"/>
+        <Grid x:Name="OptionsGrid" Visibility="Visible">
+            <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
+            <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
+            <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
+            <Grid x:Name="OptionsCatagories" Margin="0,0,440,0" >
+
+                <Button  HorizontalAlignment="Center" Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="0,105,0,255" Width="130">
+
+
+                </Button>
+
+                <Button  Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="15,160,15,200" Width="130"/>
+                <Button  Content="Version" HorizontalAlignment="Center" Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="0,215,0,145" Width="130"/>
+
+            </Grid>
 
         </Grid>
+
 
     </Grid>
 </Window>

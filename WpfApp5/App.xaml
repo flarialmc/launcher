@@ -117,6 +117,49 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <ControlTemplate x:Key="SettingsBtn" TargetType="Button">
+            <Grid>
+                <Image Source="Images/share.png" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+                <Label x:Name="Content" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Width="15" Height="15" ></Label>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,130,40" RadiusX="6" RadiusY="6"/>
+                </Grid.Clip>
+                <Grid.Background>
+                    <SolidColorBrush x:Name="SettingsBtnBrush" Color="#525252"/>
+                </Grid.Background>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="SettingsBtnBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="SettingsBtnBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="Button.IsPressed" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#d42932" Storyboard.TargetName="SettingsBtnBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <ControlTemplate x:Key="LoginButton" TargetType="Button">
             <Grid>
                 <Image Source="Images/discord-mark-white.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
