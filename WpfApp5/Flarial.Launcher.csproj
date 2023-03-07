@@ -13,14 +13,20 @@
   <ItemGroup>
     <None Remove="Fonts\SofiaSans-VariableFont_wght.ttf" />
     <None Remove="Fonts\Unbounded-VariableFont_wght.ttf" />
+    <None Remove="Images\account.png" />
+    <None Remove="Images\back.png" />
     <None Remove="Images\background.png" />
     <None Remove="Images\close.png" />
     <None Remove="Images\discord-mark-white.png" />
+    <None Remove="Images\general.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\icon.png" />
     <None Remove="Images\news.png" />
+    <None Remove="Images\Saul_Goodman.jpg" />
+    <None Remove="Images\Saul_Goodman2.jpg" />
     <None Remove="Images\setting.png" />
     <None Remove="Images\share.png" />
+    <None Remove="Images\versions.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,16 +58,24 @@
   <ItemGroup>
     <Resource Include="Fonts\SofiaSans-VariableFont_wght.ttf" />
     <Resource Include="Fonts\Unbounded-VariableFont_wght.ttf" />
+    <Resource Include="Images\account.png" />
+    <Resource Include="Images\back.png" />
     <Resource Include="Images\background.png" />
     <Resource Include="Images\close.png" />
     <Resource Include="Images\discord-mark-white.png" />
+    <Resource Include="Images\general.png" />
     <Resource Include="Images\icon.ico" />
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\news.png" />
+    <Resource Include="Images\Saul_Goodman.jpg" />
+    <Resource Include="Images\Saul_Goodman2.jpg" />
     <Resource Include="Images\setting.png" />
     <Resource Include="Images\share.png" />
     <None Remove="Images\user.png" />
     <Resource Include="Images\user.png" />
+    <Resource Include="Images\versions.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

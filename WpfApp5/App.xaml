@@ -118,7 +118,198 @@
             </Setter>
         </Style>
 
-        <ControlTemplate x:Key="SettingsBtn" TargetType="Button">
+        <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="ToggleButton" x:Key="ToggleButton">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Grid Background="{TemplateBinding Property=Background}">
+                                <Label Content="{TemplateBinding Property=Content}" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Height="50"/>
+                                <Grid.Clip>
+                                    <RectangleGeometry Rect="0,0,130,45" RadiusX="12" RadiusY="12"/>
+                                </Grid.Clip>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="Background" Value="#3b3a3a"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Foreground" Value="#ffffff"/>
+                <Setter Property="Height" Value="45"/>
+                <Setter Property="Width" Value="130"/>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="#d42932"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#8c2026"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
+           TargetType="{x:Type RadioButton}"
+           x:Key="OptionsButtonTheme">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Grid Background="{TemplateBinding Property=Background}">
+                                <Image Source="{TemplateBinding Property=Tag}" Width="22" Height="22" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                <Label Content="{TemplateBinding Property=Content}" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="50" Margin="32,0,0,0"/>
+                                <Grid.Clip>
+                                    <RectangleGeometry Rect="0,0,130,45" RadiusX="12" RadiusY="12"/>
+                                </Grid.Clip>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="Background" Value="#525252"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="#d42932"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#8c2026"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
+           TargetType="{x:Type RadioButton}"
+           x:Key="VersionRadioButton">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border CornerRadius="12" Width="195" Height="100" Margin="0,0,5,5">
+                                <Image x:Name="VersionImage" RenderTransformOrigin="0.5,0.5" Width="195" Stretch="UniformToFill" Height="100" Source="{Binding Tag[0], RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </Image.RenderTransform>
+                                </Image>
+                                <Border.Clip>
+                                    <RectangleGeometry Rect="0,0,195,100" RadiusX="12" RadiusY="12"/>
+                                </Border.Clip>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="VersionImage" Property="Image.Source" Value="{Binding Tag[1], RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                            Storyboard.TargetName="VersionImage"
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleX)"
+                                            To="1.10" Duration="0:0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation
+                                            Storyboard.TargetName="VersionImage"
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleY)"
+                                            To="1.10" Duration="0:0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                            Storyboard.TargetName="VersionImage"
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleX)"
+                                            To="1" Duration="0:0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation
+                                            Storyboard.TargetName="VersionImage"
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleY)"
+                                            To="1" Duration="0:0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="Background" Value="#525252"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style.Setters>
+        </Style>
+
+        <Style TargetType="Image" x:Key="ImageHover">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleX)"
+                                            To="1.10" Duration="0:0:0:0.2">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuadraticEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleY)"
+                                            To="1.10" Duration="0:0:0:0.2">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuadraticEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleX)"
+                                            To="1" Duration="0:0:0:0.2">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuadraticEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation
+                                            Storyboard.TargetProperty="(Image.RenderTransform).(ScaleTransform.ScaleY)"
+                                            To="1" Duration="0:0:0:0.2">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuadraticEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ControlTemplate x:Key="SettingsBtn" TargetType="RadioButton">
             <Grid>
                 <Image Source="Images/share.png" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                 <Grid.Clip>
@@ -129,7 +320,7 @@
                 </Grid.Background>
             </Grid>
             <ControlTemplate.Triggers>
-                <Trigger Property="Button.IsMouseOver" Value="True">
+                <Trigger Property="RadioButton.IsMouseOver" Value="True">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
@@ -145,7 +336,7 @@
                         </BeginStoryboard>
                     </Trigger.ExitActions>
                 </Trigger>
-                <Trigger Property="Button.IsPressed" Value="True">
+                <Trigger Property="RadioButton.IsChecked" Value="True">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
@@ -153,8 +344,6 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
-
-
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -257,6 +446,36 @@
                 <Label Content="Launch" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="55" Margin="0,0,19.5,-27.2"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,130,50" RadiusX="12" RadiusY="12"/>
+                </Grid.Clip>
+                <Grid.Background>
+                    <SolidColorBrush x:Name="LaunchButtonBrush" Color="#d42932"/>
+                </Grid.Background>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#d42932" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="LogoutButton" TargetType="Button">
+            <Grid>
+                <Label Content="Logout" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" Height="55" Margin="0,0,0,0"/>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,130,45" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
                 <Grid.Background>
                     <SolidColorBrush x:Name="LaunchButtonBrush" Color="#d42932"/>

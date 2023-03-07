@@ -6,11 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Flarial.Launcher
 {
@@ -21,7 +24,7 @@ namespace Flarial.Launcher
     {
 
         private static readonly HttpClient client = new HttpClient();
-        public Window1 w = new Window1();
+        public Window1 w = new();
         public MainWindow()
         {
             if (!Functions.Utils.IsAdministrator)
@@ -43,6 +46,27 @@ namespace Flarial.Launcher
 
             InitializeComponent();
 
+
+            //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
+            string[] TestVersions = { "1.12.1", "1.16.100", "1.16.201", "1.17.10", "1.19.60" };
+            string ChosenVersion;
+
+            foreach(string version in TestVersions)
+            {
+                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri("/Images/Saul_Goodman.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri("/Images/Saul_Goodman2.jpg", UriKind.RelativeOrAbsolute))};
+                Style style = this.FindResource("VersionRadioButton") as Style;
+                RadioButton radioButton = new RadioButton();
+                radioButton.Style = style;
+                radioButton.Tag = imagesources;
+                radioButton.Checked += RadioButton_Checked;
+                VerisonPanel.Children.Add(radioButton);
+
+                void RadioButton_Checked(object sender, RoutedEventArgs e)
+                {
+                    ChosenVersion = version;
+                    versionLabel.Content = ChosenVersion;
+                }
+            }
 
             versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -166,10 +190,15 @@ namespace Flarial.Launcher
             if (user != null)
             {
                 Username.Content = user.username + "#" + user.discriminator;
+                Username2.Content = user.username + "#" + user.discriminator;
                 //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
 
 
                 if (user.avatar != null) PFP.Source = new ImageSourceConverter()
+                        .ConvertFromString("https://cdn.discordapp.com/avatars/"
+                        + user.id + "/" + user.avatar + ".png") as ImageSource;
+
+                if (user.avatar != null) PFP2.Source = new ImageSourceConverter()
                         .ConvertFromString("https://cdn.discordapp.com/avatars/"
                         + user.id + "/" + user.avatar + ".png") as ImageSource;
 
@@ -219,8 +248,6 @@ namespace Flarial.Launcher
 
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
-
-
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -233,6 +260,51 @@ namespace Flarial.Launcher
 
         }
 
+        //could have avoided a shitty solution like this but i don't care enough to implement MVVM
+        private void OptionsBackClick(object sender, RoutedEventArgs e)
+        {
+            OptionsGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Visible;
+            RadioButton0.IsChecked = true;
+            RadioButton3.IsChecked = false;
+        }
 
+        private void OptionsGeneralClick(object sender, RoutedEventArgs e)
+        {
+            OptionsVerionGrid.Visibility = Visibility.Hidden;
+            OptionsGeneralGrid.Visibility = Visibility.Visible;
+            OptionsAccountGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void OptionsVersionClick(object sender, RoutedEventArgs e)
+        {
+            OptionsVerionGrid.Visibility = Visibility.Visible;
+            OptionsGeneralGrid.Visibility = Visibility.Hidden;
+            OptionsAccountGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void OptionsAccountClick(object sender, RoutedEventArgs e)
+        {
+            OptionsVerionGrid.Visibility = Visibility.Hidden;
+            OptionsGeneralGrid.Visibility = Visibility.Hidden;
+            OptionsAccountGrid.Visibility = Visibility.Visible;
+        }
+
+        //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        //same here
+        private void Logout(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -71,23 +71,87 @@
         </Grid>
 
         <Grid x:Name="OptionsGrid" Visibility="Hidden">
+            <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
             <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid x:Name="OptionsCatagories" Margin="0,0,440,0" >
-
-                <Button  Content="General"  HorizontalAlignment="Center" Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="0,105,0,255" Width="130">
-
-
-                </Button>
-
-                <Button Content="Account"  Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="15,160,15,200" Width="130"/>
-                <Button  Content="Version" HorizontalAlignment="Center" Template="{StaticResource SettingsBtn}" Cursor="Hand" Margin="0,215,0,145" Width="130"/>
-
+            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <WrapPanel Margin="15,15,10,10" x:Name="VerisonPanel"/>
+                </ScrollViewer>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
+                </Grid.Clip>
+            </Grid>
+            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
+                <ToggleButton Style="{StaticResource ToggleButton}" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
+                </Grid.Clip>
             </Grid>
 
+            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsAccountGrid" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="15,15,0,0" Height="45" >
+                    <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Center" Margin="0,0,0,0" Source="Images/user.png" x:Name="PFP2" Stretch="Fill">
+                        <Image.Clip>
+                            <RectangleGeometry Rect="0,0,35,35" RadiusX="20" RadiusY="20"/>
+                        </Image.Clip>
+                    </Image>
+                    <Label Content="Logged in as" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="0,0,0,0"/>
+                    <Label Content="Guest" x:Name="Username2" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,0"/>
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Template="{StaticResource LogoutButton}" Height="45" Width="130" Cursor="Hand" Click="Logout"/>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
+                </Grid.Clip>
+            </Grid>
+            <Grid x:Name="OptionsCatagories" Margin="0,0,440,0">
+                <StackPanel Width="150" Height="300" Margin="0,100,0,0">
+                    <RadioButton Content="General"
+                             Height="45"
+                             Foreground="White"
+                             Style="{StaticResource OptionsButtonTheme}"
+                             Margin="10,0,0,5"
+                             IsChecked="True"
+                             Checked="OptionsGeneralClick" 
+                             x:Name="RadioButton0">
+                        <RadioButton.Tag>
+                            <BitmapImage UriSource="Images/general.png"/>
+                        </RadioButton.Tag>
+                    </RadioButton>
+                    <RadioButton Content="Version"
+                             Height="45"
+                             Foreground="White"
+                             Margin="10,0,0,5"
+                             Checked="OptionsVersionClick" 
+                             Style="{StaticResource OptionsButtonTheme}">
+                        <RadioButton.Tag>
+                            <BitmapImage UriSource="Images/versions.png"/>
+                        </RadioButton.Tag>
+                    </RadioButton>
+                    <RadioButton Content="Account"
+                             Height="45"
+                             Foreground="White"
+                             Margin="10,0,0,5"
+                             Checked="OptionsAccountClick" 
+                             Style="{StaticResource OptionsButtonTheme}">
+                        <RadioButton.Tag>
+                            <BitmapImage UriSource="Images/account.png"/>
+                        </RadioButton.Tag>
+                    </RadioButton>
+                    <RadioButton Content="Back"
+                             Height="45"
+                             Foreground="White"
+                             Margin="10,0,0,5"
+                             Style="{StaticResource OptionsButtonTheme}"
+                             Checked="OptionsBackClick"
+                             x:Name="RadioButton3">
+                        <RadioButton.Tag>
+                            <BitmapImage UriSource="Images/back.png"/>
+                        </RadioButton.Tag>
+                    </RadioButton>
+                </StackPanel>
+            </Grid>
         </Grid>
-
-
     </Grid>
 </Window>
