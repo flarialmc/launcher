@@ -1,7 +1,0 @@
--target net6.0
--input 10.0.19041.0
--input 
--output "Generated Files"
-
--exclude Windows
--exclude Microsoft
