@@ -26,6 +26,7 @@ namespace Flarial.Launcher
 
         private static readonly HttpClient client = new HttpClient();
         public Window1 w = new();
+        public bool ifBeta = false;
         public MainWindow()
         {
             if (!Functions.Utils.IsAdministrator)
@@ -147,7 +148,7 @@ namespace Flarial.Launcher
 
 
                 Trace.WriteLine(userResponse);
-                await LoginAccount(userResponse);
+                await LoginAccount(userResponse, authToken);
                 return true;
             }
             catch (Exception ex)
@@ -188,12 +189,12 @@ namespace Flarial.Launcher
 
 
             Trace.WriteLine(userResponse);
-            await LoginAccount(userResponse);
+            await LoginAccount(userResponse, authToken);
             return true;
 
         }
 
-        private async Task LoginAccount(string userResponse)
+        private async Task LoginAccount(string userResponse, string authToken)
         {
 
 
@@ -215,6 +216,25 @@ namespace Flarial.Launcher
 
             }
 
+            string guildUserContent = Auth.getReqGuildUser(authToken);
+            Trace.WriteLine(guildUserContent);
+            
+            DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
+
+            foreach (var role in guildUser.roles)
+            {
+                if (role == "1059408198261551145")
+                {
+                    ifBeta = true;
+                    Trace.WriteLine("iz beta bro");
+                }
+                else
+                {
+                    Trace.WriteLine("No no no NOT BETA BRO!");
+                }
+            }
+            
+            
 
             w.Close();
 

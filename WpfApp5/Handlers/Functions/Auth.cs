@@ -55,6 +55,17 @@ namespace Flarial.Launcher.Functions
             var response = client.Get(request);
             return response.Content;
         }
+        
+        public static string getReqGuildUser(string authCode)
+        {
+
+            var client = new RestClient("https://discord.com");
+            var request = new RestRequest("api/v10/users/@me/guilds/1049946152092586054/member");
+            request.AddHeader("Authorization", "Bearer " + authCode);
+            var response = client.Get(request);
+            return response.Content;
+        }
+        
 
         public static async Task cacheToken(string Token, DateTime Created, DateTime Expiry)
         {
