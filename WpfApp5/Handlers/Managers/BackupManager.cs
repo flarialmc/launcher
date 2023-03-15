@@ -73,12 +73,7 @@ namespace Flarial.Launcher.Managers
                     await DirectoryCopy(Path.Combine(backupDirectory + backupName, "com.mojang"), mcpath, true);
                 }
                 var FlarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
-                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "RoamingState")))
-                {
-                    MessageBox.Show("You have no client backups available with the Id given.", "Failed to Load Backup");
-                    return;
-                }
-                else
+                if (Directory.Exists(Path.Combine(backupDirectory + backupName, "RoamingState")))
                 {
                     await DirectoryCopy(Path.Combine(backupDirectory + backupName, "RoamingState"), FlarialPath, true);
                 }

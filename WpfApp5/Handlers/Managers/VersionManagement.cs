@@ -214,7 +214,8 @@ namespace Flarial.Launcher.Managers
 
 
                 var packageManager = new PackageManager();
-                var result = packageManager.RemovePackageAsync(Minecraft.Package.InstalledLocation.Name, RemovalOptions.RemoveForAllUsers);
+                Trace.WriteLine(Minecraft.Package.Id.FullName);
+                var result = packageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.RemoveForAllUsers);
                 var completed = new AutoResetEvent(false);
                 result.Completed = (waitResult, status) => completed.Set();
                 completed.WaitOne();
