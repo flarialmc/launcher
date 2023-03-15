@@ -173,7 +173,12 @@ namespace Flarial.Launcher.Managers
                 }
                 WebClient webClient = new WebClient();
 
+                DownloadProgressChangedEventHandler among =
+                    new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                webClient.DownloadProgressChanged += among;
                 await webClient.DownloadFileTaskAsync(new Uri(url), path);
+
+
                 return;
             }
             Trace.WriteLine("Url was null, download failed.");
@@ -250,6 +255,14 @@ namespace Flarial.Launcher.Managers
             return;
         }
 
+        private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
+
+        {
+
+            // Displays the operation identifier, and the transfer progress.
+
+            Trace.WriteLine($" downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage} % complete...");
+        }
 
         public static async Task<string> CacheVersionsList()
         {
