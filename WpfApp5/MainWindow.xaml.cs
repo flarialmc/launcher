@@ -221,9 +221,8 @@ namespace Flarial.Launcher
             
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
 
-            foreach (var role in guildUser.roles)
-            {
-                if (role == "1059408198261551145")
+            
+                if (guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
                     Trace.WriteLine("iz beta bro");
@@ -232,7 +231,7 @@ namespace Flarial.Launcher
                 {
                     Trace.WriteLine("No no no NOT BETA BRO!");
                 }
-            }
+            
             
             
 
