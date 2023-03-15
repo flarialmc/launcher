@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Octokit;
 
 namespace Flarial.Launcher
 {
@@ -48,7 +49,7 @@ namespace Flarial.Launcher
 
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
-            string[] TestVersions = { "1.12.1", "1.16.100", "1.16.201", "1.17.10", "1.19.60" };
+            string[] TestVersions = { "1.16.100.4", "1.19.51.1" };
             string ChosenVersion;
 
             foreach(string version in TestVersions)
@@ -61,10 +62,20 @@ namespace Flarial.Launcher
                 radioButton.Checked += RadioButton_Checked;
                 VerisonPanel.Children.Add(radioButton);
 
-                void RadioButton_Checked(object sender, RoutedEventArgs e)
+                async void RadioButton_Checked(object sender, RoutedEventArgs e)
                 {
                     ChosenVersion = version;
                     versionLabel.Content = ChosenVersion;
+
+                    try
+                    {
+
+                       await VersionManagement.InstallMinecraft(ChosenVersion);
+                       
+                    } catch(RateLimitExceededException)
+                    {
+                        MessageBox.Show("Octokit Rate Limit was reached.");
+                    }
                 }
             }
 
