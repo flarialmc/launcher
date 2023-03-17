@@ -78,4 +78,10 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Lunar">
+      <HintPath>Injection\Lunar.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
