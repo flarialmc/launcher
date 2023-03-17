@@ -30,6 +30,8 @@ namespace Flarial.Launcher
         public string version = "0.0.1";
         public string minecraft_version = "amongus";
         public bool isLoggedIn = false;
+        // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
+        public bool shouldUseBetaDLL = false;
         private ImageSource guestImage;
         
         public MainWindow()
@@ -232,6 +234,7 @@ namespace Flarial.Launcher
                 if (guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
+                    BetaDLLButton.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
                 else
@@ -341,6 +344,16 @@ namespace Flarial.Launcher
         {
 
         }
+        
+        private void BetaButton_Checked(object sender, RoutedEventArgs e)
+        {
+            shouldUseBetaDLL = true;
+        }
+
+        private void BetaButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            shouldUseBetaDLL = false;
+        }
 
         //same here
         private void Logout(object sender, RoutedEventArgs e)
@@ -355,6 +368,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
+            BetaDLLButton.Visibility = Visibility.Hidden;
             isLoggedIn = false;
         }
 
