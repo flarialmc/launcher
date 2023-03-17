@@ -58,6 +58,8 @@ namespace Flarial.Launcher
             Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
 
             InitializeComponent();
+            
+            
 
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
