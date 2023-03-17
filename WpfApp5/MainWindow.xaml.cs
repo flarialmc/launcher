@@ -27,6 +27,11 @@ namespace Flarial.Launcher
         private static readonly HttpClient client = new HttpClient();
         public Window1 w = new();
         public bool ifBeta = false;
+        public string version = "0.0.1";
+        public string minecraft_version = "amongus";
+        public bool isLoggedIn = false;
+        private ImageSource guestImage;
+        
         public MainWindow()
         {
             if (!Functions.Utils.IsAdministrator)
@@ -61,6 +66,7 @@ namespace Flarial.Launcher
                 radioButton.Style = style;
                 radioButton.Tag = imagesources;
                 radioButton.Checked += RadioButton_Checked;
+                
                 VerisonPanel.Children.Add(radioButton);
 
                 async void RadioButton_Checked(object sender, RoutedEventArgs e)
@@ -205,6 +211,7 @@ namespace Flarial.Launcher
                 Username2.Content = user.username + "#" + user.discriminator;
                 //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
 
+                guestImage = PFP.Source;
 
                 if (user.avatar != null) PFP.Source = new ImageSourceConverter()
                         .ConvertFromString("https://cdn.discordapp.com/avatars/"
@@ -236,6 +243,10 @@ namespace Flarial.Launcher
             
 
             w.Close();
+
+            isLoggedIn = true;
+            LoginButton.Visibility = Visibility.Hidden;
+            LogoutButton.Visibility = Visibility.Visible;
 
             LoginGrid.Visibility = Visibility.Hidden;
             await Task.Delay(20);
@@ -334,7 +345,25 @@ namespace Flarial.Launcher
         //same here
         private void Logout(object sender, RoutedEventArgs e)
         {
-
+            ifBeta = false;
+            PFP.Source = guestImage;
+            PFP2.Source = guestImage;
+            Username.Content = "Guest";
+            Username2.Content = "Guest";
+            LoginButton.Visibility = Visibility.Visible;
+            LogoutButton.Visibility = Visibility.Hidden;
+            LoginGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
+            OptionsGrid.Visibility = Visibility.Hidden;
+            isLoggedIn = false;
         }
+
+        private void LoginAmongus(object sender, RoutedEventArgs e)
+        {
+            LoginGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
+            OptionsGrid.Visibility = Visibility.Hidden;
+        }
+        
     }
 }

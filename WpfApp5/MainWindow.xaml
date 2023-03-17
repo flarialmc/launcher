@@ -100,7 +100,8 @@
                     <Label Content="Logged in as" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="0,0,0,0"/>
                     <Label Content="Guest" x:Name="Username2" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,0"/>
                 </StackPanel>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Template="{StaticResource LogoutButton}" Height="45" Width="130" Cursor="Hand" Click="Logout"/>
+                <Button x:Name="LogoutButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Visibility="Hidden" Template="{StaticResource LogoutButton}" Height="45" Width="130" Cursor="Hand" Click="Logout"/>
+                <Button x:Name="LoginButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Visibility="Visible" Template="{StaticResource LoginAmongButton}" Height="45" Width="130" Cursor="Hand" Click="LoginAmongus"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>

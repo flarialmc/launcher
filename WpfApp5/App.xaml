@@ -500,6 +500,36 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        
+        <ControlTemplate x:Key="LoginAmongButton" TargetType="Button">
+            <Grid>
+                <Label Content="Login" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" Height="55" Margin="0,0,0,0"/>
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,130,45" RadiusX="12" RadiusY="12"/>
+                </Grid.Clip>
+                <Grid.Background>
+                    <SolidColorBrush x:Name="LaunchButtonBrush" Color="#d42932"/>
+                </Grid.Background>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Duration="0:0:0.1" To="#d42932" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
 
         <Color x:Key="CloseNormal">#FFFFFF</Color>
         <Color x:Key="CloseMouseOver">#9e9e9e</Color>
