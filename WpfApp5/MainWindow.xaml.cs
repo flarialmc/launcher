@@ -29,6 +29,7 @@ namespace Flarial.Launcher
         public bool ifBeta = false;
         public string version = "0.0.1";
         public string minecraft_version = "amongus";
+        public string custom_dll_path = "amongus";
         public bool isLoggedIn = false;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL = false;
@@ -51,6 +52,9 @@ namespace Flarial.Launcher
 
             if (!File.Exists($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt"))
                 File.Create($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt");
+
+
+
             Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
 
             InitializeComponent();
@@ -100,6 +104,7 @@ namespace Flarial.Launcher
 
             RPCManager.Initialize();
 
+            loadConfig();
 
         }
 
@@ -109,6 +114,30 @@ namespace Flarial.Launcher
         {
             MainGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void loadConfig()
+        {
+            ConfigData? config = Config.getConfig();
+
+            if (config == null)
+            {
+                return;
+            }
+            
+            minecraft_version = config.minecraft_version;
+            shouldUseBetaDLL = config.shouldUseBetaDll;
+            BetaDLLButton.IsChecked = config.shouldUseBetaDll;
+            custom_dll_path = config.custom_dll_path;
+
+            if (custom_dll_path == "amongus")
+            {
+                CustomDllButton.IsChecked = false;
+            }
+            else
+            {
+                CustomDllButton.IsChecked = true;
+            }
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -377,6 +406,13 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
+        }
+
+        private async void SaveConfig(object sender, RoutedEventArgs e)
+        {
+
+            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL);
+
         }
         
     }
