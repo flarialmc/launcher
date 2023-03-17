@@ -42,7 +42,7 @@ namespace Flarial.Launcher.Functions
 
             Status.Content = "Waiting for Minecraft";
 
-            Thread.Sleep(2000);
+            //Wait For MC to load
             await WaitForModules();
 
 
@@ -71,11 +71,11 @@ namespace Flarial.Launcher.Functions
 
                 mapper.MapLibrary();
 
-                Status.Content = "Finished injecting";
+                Status.Content = "Finished installing client.";
             }
             catch (Exception e)
             {
-                Status.Content = "Injection failed.";
+                Status.Content = "Client failed.";
             }
         }
 
@@ -104,9 +104,9 @@ namespace Flarial.Launcher.Functions
                 Console.WriteLine("Waiting for Minecraft to load");
                 while (true)
                 {
-                    
+
                     Minecraft.Process.Refresh();
-                    if (Minecraft.Process.Modules.Count > 150) break;
+                    if (Minecraft.Process.Modules.Count > 140) break;
                     else
                         Thread.Sleep(4000);
 
