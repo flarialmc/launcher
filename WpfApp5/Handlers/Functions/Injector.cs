@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
@@ -47,6 +48,7 @@ namespace Flarial.Launcher.Functions
 
 
             Status.Content = "Injection begun";
+            Trace.WriteLine($"Injection begun {path}");
             try
             {
                 var targetProcess = Minecraft.Process;
@@ -95,7 +97,7 @@ namespace Flarial.Launcher.Functions
                 {
 
                     Minecraft.Process.Refresh();
-                    if (Minecraft.Process.Modules.Count > 140) break;
+                    if (Minecraft.Process.Modules.Count > 150) break;
                     else
                         Thread.Sleep(4000);
 
