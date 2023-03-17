@@ -10,7 +10,7 @@ public static partial class Minecraft
 
     public static Process Process;
     public const string FamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-
+    
     public static Windows.Management.Deployment.PackageManager? PackageManager { get; private set; }
     public static Windows.ApplicationModel.Package? Package { get; private set; }
     public static Windows.ApplicationModel.PackageId PackageId => Package?.Id ?? throw new NullReferenceException();
@@ -37,10 +37,14 @@ public static partial class Minecraft
     public static void InitManagers()
     {
         PackageManager = new Windows.Management.Deployment.PackageManager();
-
-
-        ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
-
+        var Packages = PackageManager.FindPackages(FamilyName);
+        if (Packages.Count() == 0)
+        {
+            MessageBox.Show("You don't have MC installed LOL");
+        } else
+        {
+            ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+        }
 
     }
 
