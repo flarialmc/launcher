@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -302,22 +301,7 @@ namespace Flarial.Launcher
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
 
-            WebClient webClient = new WebClient();
-
-            DownloadProgressChangedEventHandler among =
-                new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-            webClient.DownloadProgressChanged += among;
-            await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), "Horion.dll");
-            await Injector.Inject("Horion.dll", statusLabel);
-        }
-        
-        private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
-
-        {
-
-            // Displays the operation identifier, and the transfer progress.
-
-            Trace.WriteLine($" downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage} % complete...");
+            await Injector.Inject("OnixClient.dll", statusLabel);
         }
 
         private async void Options_Click(object sender, RoutedEventArgs e)

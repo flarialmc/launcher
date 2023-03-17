@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Lunar;
 using static Flarial.Launcher.Functions.Windows;
 
 namespace Flarial.Launcher.Functions
@@ -22,7 +21,7 @@ namespace Flarial.Launcher.Functions
 
             if (!File.Exists(path))
             {
-                MessageBox.Show($"The file does not exist in the provided path. Path: {path}");
+                MessageBox.Show("The file does not exist in the provided path.");
 
 
                 return;
@@ -50,8 +49,6 @@ namespace Flarial.Launcher.Functions
             Status.Content = "Injection begun";
             try
             {
-                // Below is Kibou Injector
-                /*
                 var targetProcess = Minecraft.Process;
                 IntPtr procHandle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, false, targetProcess.Id);
 
@@ -61,15 +58,7 @@ namespace Flarial.Launcher.Functions
 
                 UIntPtr bytesWritten;
                 WriteProcessMemory(procHandle, allocMemAddress, Encoding.Default.GetBytes(path), (uint)((path.Length + 1) * Marshal.SizeOf(typeof(char))), out bytesWritten);
-                CreateRemoteThread(procHandle, IntPtr.Zero, 0, loadLibraryAddr, allocMemAddress, 0, IntPtr.Zero); */
-                
-                // This is Bari's Manual Map Injector!
-                var process = Minecraft.Process;
-                var dllFilePath = path;
-                var flags = MappingFlags.DiscardHeaders;
-                var mapper = new LibraryMapper(process, dllFilePath, flags);
-
-                mapper.MapLibrary();
+                CreateRemoteThread(procHandle, IntPtr.Zero, 0, loadLibraryAddr, allocMemAddress, 0, IntPtr.Zero);
 
                 Status.Content = "Finished installing client.";
             }
