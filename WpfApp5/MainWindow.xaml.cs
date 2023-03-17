@@ -12,10 +12,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
+using Label = System.Windows.Controls.Label;
 
 namespace Flarial.Launcher
 {
@@ -311,13 +313,13 @@ namespace Flarial.Launcher
             await Injector.Inject($"{Managers.VersionManagement.launcherPath}\\Among.dll", statusLabel);
         }
         
-        private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
+        public void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
 
         {
 
             // Displays the operation identifier, and the transfer progress.
 
-            Trace.WriteLine($" downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage} % complete...");
+            statusLabel.Content = $" Downloaded {e.ProgressPercentage}% of client";
         }
 
         private async void Options_Click(object sender, RoutedEventArgs e)
