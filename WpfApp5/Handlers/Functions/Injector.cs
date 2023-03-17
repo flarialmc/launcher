@@ -71,14 +71,12 @@ namespace Flarial.Launcher.Functions
 
                 mapper.MapLibrary();
 
-                Status.Content = "Finished injecting";
+                Status.Content = "Finished installing client.";
             }
             catch (Exception e)
             {
-                Status.Content = "Injection failed.";
+                Status.Content = "Client failed.";
             }
-            await Task.Delay(1000);
-            Status.Content = "Waiting for launch..";
         }
 
         private static async Task ApplyAppPackages(string path)
@@ -108,7 +106,7 @@ namespace Flarial.Launcher.Functions
                 {
 
                     Minecraft.Process.Refresh();
-                    if (Minecraft.Process.Modules.Count > 160) break;
+                    if (Minecraft.Process.Modules.Count > 140) break;
                     else
                         Thread.Sleep(4000);
 
