@@ -3,28 +3,19 @@ using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
-using H.NotifyIcon;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Windows.Controls;
-using System.Windows.Forms;
 using Hardcodet.Wpf.TaskbarNotification;
 using Application = System.Windows.Application;
-using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
 using NotifyIcon = WPFUI.Tray.NotifyIcon;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -91,13 +82,18 @@ namespace Flarial.Launcher
             
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
-            double among = Convert.ToDouble(webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt")));
+            string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
+            Trace.WriteLine(latestVer);
+            double among = Convert.ToDouble(latestVer);
             if (version != 0.666 && version <= among)
             {
                 startInfo.Arguments = "updater.ps1";
                 process.StartInfo = startInfo;
                 process.Start();
                 Environment.Exit(0);
+            } else if (version == 0.666)
+            {
+                Trace.WriteLine("It's development time.");
             }
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
@@ -106,7 +102,7 @@ namespace Flarial.Launcher
 
             foreach(string version in TestVersions)
             {
-                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri("/Images/Saul_Goodman.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri("/Images/Saul_Goodman2.jpg", UriKind.RelativeOrAbsolute))};
+                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri($"/Images/{version}.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri($"/Images/{version}_2.jpg", UriKind.RelativeOrAbsolute))};
                 Style style = this.FindResource("VersionRadioButton") as Style;
                 RadioButton radioButton = new RadioButton();
                 radioButton.Style = style;
@@ -166,7 +162,6 @@ namespace Flarial.Launcher
         {
             MainGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Hidden;
-            this.Hide();
         }
 
         private void loadConfig()
@@ -345,7 +340,6 @@ namespace Flarial.Launcher
             LogoutButton.Visibility = Visibility.Visible;
 
             LoginGrid.Visibility = Visibility.Hidden;
-            await Task.Delay(20);
 
 
 
@@ -540,9 +534,7 @@ public class ShowMessageCommand : ICommand
         {
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (Application.Current.MainWindow == null)
-                    Trace.WriteLine("AAAAAAAAAAAAAAAAA");
-                else Application.Current.MainWindow.Show();
+                Application.Current.MainWindow.Show();
             }
         }
     }

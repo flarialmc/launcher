@@ -22,7 +22,6 @@
     <None Remove="Images\icon.ico" />
     <None Remove="Images\icon.png" />
     <None Remove="Images\news.png" />
-    <None Remove="Images\Saul_Goodman.jpg" />
     <None Remove="Images\Saul_Goodman2.jpg" />
     <None Remove="Images\setting.png" />
     <None Remove="Images\share.png" />
@@ -69,8 +68,6 @@
     <Resource Include="Images\icon.ico" />
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\news.png" />
-    <Resource Include="Images\Saul_Goodman.jpg" />
-    <Resource Include="Images\Saul_Goodman2.jpg" />
     <Resource Include="Images\setting.png" />
     <Resource Include="Images\share.png" />
     <None Remove="Images\user.png" />
@@ -78,6 +75,14 @@
     <Resource Include="Images\versions.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <None Remove="Images\1.16.100.4.jpg" />
+    <Resource Include="Images\1.16.100.4.jpg" />
+    <None Remove="Images\1.16.100.4_2.jpg" />
+    <Resource Include="Images\1.16.100.4_2.jpg" />
+    <None Remove="Images\1.19.51.1.jpg" />
+    <Resource Include="Images\1.19.51.1.jpg" />
+    <None Remove="Images\1.19.51.1_2.jpg" />
+    <Resource Include="Images\1.19.51.1_2.jpg" />
   </ItemGroup>
 
 </Project>
