@@ -137,6 +137,8 @@ namespace Flarial.Launcher
 
             loadConfig();
 
+            Application.Current.MainWindow = this;
+
         }
 
         private void NotifyIconClick(NotifyIcon obj)
@@ -148,12 +150,14 @@ namespace Flarial.Launcher
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             if(closeToTray == false) Environment.Exit(0);
+            this.Hide();
         }
         
         private void HideGrid(object sender, RoutedEventArgs e)
         {
             MainGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Hidden;
+            this.Hide();
         }
 
         private void loadConfig()
@@ -403,6 +407,7 @@ namespace Flarial.Launcher
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             if(closeToTray == false) Environment.Exit(0);
+            else this.Hide();
         }
 
         private void versionBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -527,6 +532,7 @@ namespace Flarial.Launcher
         private void Window_OnClosing(object? sender, CancelEventArgs e)
         {
             if(closeToTray == false) Environment.Exit(0);
+            else this.Hide();
         }
 
     }
@@ -540,7 +546,9 @@ public class ShowMessageCommand : ICommand
         {
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                Application.Current.MainWindow.Hide();
+                if (Application.Current.MainWindow == null)
+                    Trace.WriteLine("AAAAAAAAAAAAAAAAA");
+                else Application.Current.MainWindow.Show();
             }
         }
     }
