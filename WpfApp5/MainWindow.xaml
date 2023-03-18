@@ -1,20 +1,36 @@
-﻿<Window
+﻿<Window Closing="Window_OnClosing"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:global="clr-namespace:"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" Background="#071214 " WindowStyle="None"
         Title="MainWindow" Height="400" Width="600">
 
+
+
     <Window.Clip>
         <RectangleGeometry Rect="0,0,600,400" RadiusX="25" RadiusY="25"/>
     </Window.Clip>
-
     <Grid>
+        
+        <Grid.Resources>
+            <global:ShowMessageCommand
+                x:Key="MessageCommand" />
+        </Grid.Resources>
+        
+        <tb:TaskbarIcon
+            IconSource="/Images/icon.ico"
+            ToolTipText="Flarial" 
+            LeftClickCommand="{StaticResource MessageCommand}"
+            LeftClickCommandParameter="Among"
+            />
+
         <Grid x:Name="MainGrid" Visibility="Hidden">
             <Image Source="Images/background.png"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
@@ -86,6 +102,9 @@
             <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
                 <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
                 <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+                
+                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                
                 <Button x:Name="SaveConfigButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>

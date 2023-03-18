@@ -4,6 +4,7 @@ using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,15 +12,23 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
+using H.NotifyIcon;
 using System.Net.Sockets;
-using Microsoft.Win32;
+using System.Reflection;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using Hardcodet.Wpf.TaskbarNotification;
+using Application = System.Windows.Application;
 using Label = System.Windows.Controls.Label;
+using MessageBox = System.Windows.MessageBox;
+using NotifyIcon = WPFUI.Tray.NotifyIcon;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using RadioButton = System.Windows.Controls.RadioButton;
 
 namespace Flarial.Launcher
 {
@@ -35,14 +44,16 @@ namespace Flarial.Launcher
         public string version = "0.0.1";
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
+        public bool closeToTray = false;
         public bool isLoggedIn = false;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL = false;
         private ImageSource guestImage;
-        
+
+        public TaskbarIcon notifyIcon;
         public MainWindow()
         {
-            
+
             if (!Functions.Utils.IsAdministrator)
             {
                 MessageBox.Show("Run the application as an Administrator to continue.");
@@ -128,8 +139,17 @@ namespace Flarial.Launcher
 
         }
 
+        private void NotifyIconClick(NotifyIcon obj)
+        {
+            obj.ContextMenu.Visibility = Visibility.Visible;
+        }
+
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
-        private void CloseWindow(object sender, RoutedEventArgs e) => this.Close();
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            if(closeToTray == false) Environment.Exit(0);
+        }
+        
         private void HideGrid(object sender, RoutedEventArgs e)
         {
             MainGrid.Visibility = Visibility.Visible;
@@ -149,6 +169,7 @@ namespace Flarial.Launcher
             shouldUseBetaDLL = config.shouldUseBetaDll;
             BetaDLLButton.IsChecked = config.shouldUseBetaDll;
             custom_dll_path = config.custom_dll_path;
+            closeToTray = config.closeToTray;
 
             if (custom_dll_path == "amongus")
             {
@@ -157,6 +178,16 @@ namespace Flarial.Launcher
             else
             {
                 CustomDllButton.IsChecked = true;
+            }
+
+            if (closeToTray == true)
+            {
+                TrayButton.IsChecked = true;
+            }
+            else
+            {
+                TrayButton.IsChecked = false;
+
             }
         }
 
@@ -332,7 +363,7 @@ namespace Flarial.Launcher
             }
             else
             {
-                if (File.Exists(custom_dll_path) && fi.Extension == "dll")
+                if (File.Exists(custom_dll_path) && fi.Extension == ".dll")
                 {
                     await Injector.Inject(custom_dll_path, statusLabel);
                 }
@@ -371,7 +402,7 @@ namespace Flarial.Launcher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.GetCurrentProcess().Kill();
+            if(closeToTray == false) Environment.Exit(0);
         }
 
         private void versionBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -452,6 +483,16 @@ namespace Flarial.Launcher
             shouldUseBetaDLL = false;
         }
 
+        private void TrayButton_Checked(object sender, RoutedEventArgs e)
+        {
+            closeToTray = true;
+        }
+
+        private void TrayButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            closeToTray = false;
+        }
+
         //same here
         private void Logout(object sender, RoutedEventArgs e)
         {
@@ -479,9 +520,35 @@ namespace Flarial.Launcher
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
 
-            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL);
+            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL, closeToTray);
 
         }
-        
+
+        private void Window_OnClosing(object? sender, CancelEventArgs e)
+        {
+            if(closeToTray == false) Environment.Exit(0);
+        }
+
     }
 }
+
+public class ShowMessageCommand : ICommand
+{
+    public void Execute(object parameter)
+    {
+        if (parameter.ToString() == "Among")
+        {
+            if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                Application.Current.MainWindow.Hide();
+            }
+        }
+    }
+
+    public bool CanExecute(object parameter)
+    {
+        return true;
+    }
+
+    public event EventHandler CanExecuteChanged;
+} 

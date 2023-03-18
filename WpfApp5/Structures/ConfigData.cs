@@ -5,4 +5,5 @@ public class ConfigData
     public string minecraft_version;
     public string custom_dll_path;
     public bool shouldUseBetaDll;
+    public bool closeToTray;
 }
