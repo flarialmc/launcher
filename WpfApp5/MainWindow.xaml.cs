@@ -30,6 +30,7 @@ using NotifyIcon = WPFUI.Tray.NotifyIcon;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
 
+
 namespace Flarial.Launcher
 {
     /// <summary>
@@ -41,7 +42,7 @@ namespace Flarial.Launcher
         private static readonly HttpClient client = new HttpClient();
         public Window1 w = new();
         public bool ifBeta = false;
-        public string version = "0.0.1";
+        public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
         public bool closeToTray = false;
@@ -53,6 +54,8 @@ namespace Flarial.Launcher
         public TaskbarIcon notifyIcon;
         public MainWindow()
         {
+            
+            
 
             if (!Functions.Utils.IsAdministrator)
             {
@@ -88,8 +91,14 @@ namespace Flarial.Launcher
             
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
-
-            
+            double among = Convert.ToDouble(webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt")));
+            if (version != 0.666 && version <= among)
+            {
+                startInfo.Arguments = "updater.ps1";
+                process.StartInfo = startInfo;
+                process.Start();
+                Environment.Exit(0);
+            }
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
             string[] TestVersions = { "1.16.100.4", "1.19.51.1" };
@@ -383,23 +392,8 @@ namespace Flarial.Launcher
             statusLabel.Content = $" Downloaded {e.ProgressPercentage}% of client";
         }
 
-        private async void Options_Click(object sender, RoutedEventArgs e)
+        private void Options_Click(object sender, RoutedEventArgs e)
         {
-            var L = await
-                 VersionManagement.CacheVersionsList();
-
-            var lol = JsonConvert.DeserializeObject<List<VersionManagement.VersionStruct>>(L);
-
-            foreach (var version in lol)
-            {
-
-                if (version.Version.StartsWith("1.16.1") || version.Version.StartsWith("1.19.5"))
-                {
-
-                }
-                //    versionBox.Items.Add(version.Version);
-            }
-
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
         }
