@@ -17,6 +17,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
+using System.Net.Sockets;
+using Microsoft.Win32;
 using Label = System.Windows.Controls.Label;
 
 namespace Flarial.Launcher
@@ -40,6 +42,7 @@ namespace Flarial.Launcher
         
         public MainWindow()
         {
+            
             if (!Functions.Utils.IsAdministrator)
             {
                 MessageBox.Show("Run the application as an Administrator to continue.");
@@ -62,8 +65,20 @@ namespace Flarial.Launcher
 
             InitializeComponent();
             
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "powershell.exe";
+            startInfo.Arguments = "set-executionpolicy unrestricted";
+            startInfo.UseShellExecute = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.CreateNoWindow = true;
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
             
+            WebClient webClient = new WebClient();
+            webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
 
+            
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
             string[] TestVersions = { "1.16.100.4", "1.19.51.1" };
@@ -303,14 +318,25 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            FileInfo fi = new FileInfo(custom_dll_path);
 
-            WebClient webClient = new WebClient();
+            if(custom_dll_path == "amongus")
+            {
+                WebClient webClient = new WebClient();
 
-            DownloadProgressChangedEventHandler among =
-                new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-            webClient.DownloadProgressChanged += among;
-            await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), "Among.dll");
-            await Injector.Inject($"{Managers.VersionManagement.launcherPath}\\Among.dll", statusLabel);
+                DownloadProgressChangedEventHandler among =
+                    new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                webClient.DownloadProgressChanged += among;
+                await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), "Among.dll");
+                await Injector.Inject($"{Managers.VersionManagement.launcherPath}\\Among.dll", statusLabel);
+            }
+            else
+            {
+                if (File.Exists(custom_dll_path) && fi.Extension == "dll")
+                {
+                    await Injector.Inject(custom_dll_path, statusLabel);
+                }
+            }
         }
         
         public void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
@@ -386,12 +412,34 @@ namespace Flarial.Launcher
         //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = @"C:\";
+            dialog.DefaultExt = "dll";
+            dialog.Filter = "DLL Files|*.dll;";
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
+            dialog.Multiselect = false;
+            dialog.Title = "Select Custom DLL";
+            
+            if (dialog.ShowDialog() == true)  
+            {  
+                
+                custom_dll_path = dialog.FileName;  
+                Trace.WriteLine(custom_dll_path);
+                
+            }  else
+            {
+                dialog.ShowDialog();
+                custom_dll_path = dialog.FileName;  
+                Trace.WriteLine(custom_dll_path);
+            }
+            
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
-
+            custom_dll_path = "amongus";
+            Trace.WriteLine(custom_dll_path);
         }
         
         private void BetaButton_Checked(object sender, RoutedEventArgs e)
