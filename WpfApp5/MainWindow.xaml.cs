@@ -106,7 +106,7 @@ namespace Flarial.Launcher
                 radioButton.Style = style;
                 radioButton.Tag = imagesources;
                 radioButton.Checked += RadioButton_Checked;
-                if (Minecraft.GetVersion().ToString().StartsWith(version)) radioButton.IsChecked = true;
+                if (Minecraft.GetVersion().ToString().StartsWith(version.Remove(5))) radioButton.IsChecked = true;
 
                 VerisonPanel.Children.Add(radioButton);
 
