@@ -17,7 +17,6 @@ using Octokit;
 using Hardcodet.Wpf.TaskbarNotification;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
-using NotifyIcon = WPFUI.Tray.NotifyIcon;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
 
@@ -42,7 +41,6 @@ namespace Flarial.Launcher
         public bool shouldUseBetaDLL = false;
         private ImageSource guestImage;
 
-        public TaskbarIcon notifyIcon;
         public MainWindow()
         {
             
@@ -108,7 +106,8 @@ namespace Flarial.Launcher
                 radioButton.Style = style;
                 radioButton.Tag = imagesources;
                 radioButton.Checked += RadioButton_Checked;
-                
+                if (Minecraft.GetVersion().ToString().StartsWith(version)) radioButton.IsChecked = true;
+
                 VerisonPanel.Children.Add(radioButton);
 
                 async void RadioButton_Checked(object sender, RoutedEventArgs e)
@@ -146,10 +145,6 @@ namespace Flarial.Launcher
 
         }
 
-        private void NotifyIconClick(NotifyIcon obj)
-        {
-            obj.ContextMenu.Visibility = Visibility.Visible;
-        }
 
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)
@@ -519,8 +514,7 @@ namespace Flarial.Launcher
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
         {
-            if(closeToTray == false) Environment.Exit(0);
-            else this.Hide();
+            Environment.Exit(0);
         }
 
     }
