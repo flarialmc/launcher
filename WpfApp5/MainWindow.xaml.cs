@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -45,6 +46,7 @@ namespace Flarial.Launcher
         {
             
             
+            loadConfig();
 
             if (!Functions.Utils.IsAdministrator)
             {
@@ -105,8 +107,8 @@ namespace Flarial.Launcher
                 RadioButton radioButton = new RadioButton();
                 radioButton.Style = style;
                 radioButton.Tag = imagesources;
-                radioButton.Checked += RadioButton_Checked;
                 if (Minecraft.GetVersion().ToString().StartsWith(version.Remove(5))) radioButton.IsChecked = true;
+                radioButton.Checked += RadioButton_Checked;
 
                 VerisonPanel.Children.Add(radioButton);
 
@@ -114,7 +116,7 @@ namespace Flarial.Launcher
                 {
                     ChosenVersion = version;
                     versionLabel.Content = ChosenVersion;
-
+                    
                     try
                     {
 
@@ -125,7 +127,10 @@ namespace Flarial.Launcher
                         MessageBox.Show("Octokit Rate Limit was reached.");
                     }
                 }
+                
+                
             }
+            
 
             versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -139,7 +144,6 @@ namespace Flarial.Launcher
 
             RPCManager.Initialize();
 
-            loadConfig();
 
             Application.Current.MainWindow = this;
 
@@ -170,28 +174,11 @@ namespace Flarial.Launcher
             
             minecraft_version = config.minecraft_version;
             shouldUseBetaDLL = config.shouldUseBetaDll;
-            BetaDLLButton.IsChecked = config.shouldUseBetaDll;
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
 
-            if (custom_dll_path == "amongus")
-            {
-                CustomDllButton.IsChecked = false;
-            }
-            else
-            {
-                CustomDllButton.IsChecked = true;
-            }
 
-            if (closeToTray == true)
-            {
-                TrayButton.IsChecked = true;
-            }
-            else
-            {
-                TrayButton.IsChecked = false;
 
-            }
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -239,7 +226,7 @@ namespace Flarial.Launcher
 
 
                 Trace.WriteLine(userResponse);
-                await LoginAccount(userResponse, authToken);
+                Dispatcher.InvokeAsync(() => LoginAccount(userResponse, authToken));
                 return true;
             }
             catch (Exception ex)
@@ -280,12 +267,12 @@ namespace Flarial.Launcher
 
 
             Trace.WriteLine(userResponse);
-            await LoginAccount(userResponse, authToken);
+            Dispatcher.InvokeAsync(() => LoginAccount(userResponse, authToken));
             return true;
 
         }
 
-        private async Task LoginAccount(string userResponse, string authToken)
+        private void LoginAccount(string userResponse, string authToken)
         {
 
 
@@ -383,6 +370,28 @@ namespace Flarial.Launcher
 
         private void Options_Click(object sender, RoutedEventArgs e)
         {
+            
+            
+            
+            BetaDLLButton.IsChecked = shouldUseBetaDLL;
+            if (custom_dll_path != "amongus")
+            {
+                CustomDllButton.IsChecked = true;
+            }
+            else
+            {
+                CustomDllButton.IsChecked = false;
+
+            }
+            if (closeToTray == true)
+            {
+                TrayButton.IsChecked = true;
+            }
+            else
+            {
+                TrayButton.IsChecked = false;
+
+            }
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
         }
@@ -431,28 +440,31 @@ namespace Flarial.Launcher
         //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.InitialDirectory = @"C:\";
-            dialog.DefaultExt = "dll";
-            dialog.Filter = "DLL Files|*.dll;";
-            dialog.CheckFileExists = true;
-            dialog.CheckPathExists = true;
-            dialog.Multiselect = false;
-            dialog.Title = "Select Custom DLL";
-            
-            if (dialog.ShowDialog() == true)  
-            {  
-                
-                custom_dll_path = dialog.FileName;  
-                Trace.WriteLine(custom_dll_path);
-                
-            }  else
+            if(custom_dll_path == "amongus")
             {
-                dialog.ShowDialog();
-                custom_dll_path = dialog.FileName;  
-                Trace.WriteLine(custom_dll_path);
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.InitialDirectory = @"C:\";
+                dialog.DefaultExt = "dll";
+                dialog.Filter = "DLL Files|*.dll;";
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Multiselect = false;
+                dialog.Title = "Select Custom DLL";
+
+                if (dialog.ShowDialog() == true)
+                {
+
+                    custom_dll_path = dialog.FileName;
+                    Trace.WriteLine(custom_dll_path);
+
+                }
+                else
+                {
+                    dialog.ShowDialog();
+                    custom_dll_path = dialog.FileName;
+                    Trace.WriteLine(custom_dll_path);
+                }
             }
-            
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
