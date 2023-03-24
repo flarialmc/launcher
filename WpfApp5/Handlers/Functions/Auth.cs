@@ -40,9 +40,8 @@ namespace Flarial.Launcher.Functions
             request.AddParameter("redirect_uri", redirect_url);
             request.AddParameter("scope", "identify guild.members.read guilds");
 
-            var response = client.Post(request);
-            var content = response.Content;
-            return content;
+            var response = client.PostAsync(request);
+            return response.Result.Content;
 
         }
 

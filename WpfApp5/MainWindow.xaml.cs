@@ -211,17 +211,18 @@ namespace Flarial.Launcher
             try
             {
                 string authToken;
-                string rawToken = Auth.postReq(e.Uri.Split("https://flarial.net/?code=")[1]);
+                string sheesh = e.Uri.Split("https://flarial.net/?code=")[1];
+                string rawToken = await Task.Run(() => Auth.postReq(sheesh));
 
 
                 var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
 
 
                 authToken = atd.access_token;
-                await Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in));
+                await Task.Run(() =>Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in)));
 
 
-                string userResponse = Auth.getReqUser(authToken);
+                string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
 
 
 
