@@ -120,7 +120,7 @@ namespace Flarial.Launcher
                     try
                     {
 
-                       await VersionManagement.InstallMinecraft(ChosenVersion);
+                       await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
                        
                     } catch(RateLimitExceededException)
                     {
