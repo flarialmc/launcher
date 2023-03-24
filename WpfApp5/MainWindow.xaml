@@ -101,9 +101,9 @@
             </Grid>
             <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
                 <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
                 
-                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
                 
                 <Button x:Name="SaveConfigButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
                 <Grid.Clip>

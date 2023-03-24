@@ -226,7 +226,7 @@ namespace Flarial.Launcher
 
 
                 Trace.WriteLine(userResponse);
-                Dispatcher.InvokeAsync(() => LoginAccount(userResponse, authToken));
+                LoginAccount(userResponse, authToken);
                 return true;
             }
             catch (Exception ex)
@@ -262,22 +262,23 @@ namespace Flarial.Launcher
 
 
 
-            string userResponse = Auth.getReqUser(authToken);
+            string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
 
 
 
             Trace.WriteLine(userResponse);
-            Dispatcher.InvokeAsync(() => LoginAccount(userResponse, authToken));
+            LoginAccount(userResponse, authToken);
             return true;
 
         }
 
-        private void LoginAccount(string userResponse, string authToken)
+        private async void LoginAccount(string userResponse, string authToken)
         {
 
 
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
-            if (user != null)
+            
+            if (user == null)
             {
                 Username.Content = user.username + "#" + user.discriminator;
                 Username2.Content = user.username + "#" + user.discriminator;
@@ -295,7 +296,7 @@ namespace Flarial.Launcher
 
             }
 
-            string guildUserContent = Auth.getReqGuildUser(authToken);
+            string guildUserContent = await Task.Run(() => Auth.getReqGuildUser(authToken));
             Trace.WriteLine(guildUserContent);
             
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);

@@ -52,8 +52,8 @@ namespace Flarial.Launcher.Functions
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me");
             request.AddHeader("Authorization", "Bearer " + authCode);
-            var response = client.Get(request);
-            return response.Content;
+            var response = client.GetAsync(request);
+            return response.Result.Content;
         }
         
         public static string getReqGuildUser(string authCode)
@@ -62,8 +62,8 @@ namespace Flarial.Launcher.Functions
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me/guilds/1049946152092586054/member");
             request.AddHeader("Authorization", "Bearer " + authCode);
-            var response = client.Get(request);
-            return response.Content;
+            var response = client.GetAsync(request);
+            return response.Result.Content;
         }
         
 
@@ -148,7 +148,7 @@ namespace Flarial.Launcher.Functions
             {
                 return null;
             }
-            var s = File.ReadAllText(Path);
+            var s = await Task.Run(() => File.ReadAllText(Path));
 
 
             return JsonConvert.DeserializeObject<TokenStructure>(s);
