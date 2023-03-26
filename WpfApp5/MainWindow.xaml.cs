@@ -142,7 +142,7 @@ namespace Flarial.Launcher
             Task.Delay(1);
 
 
-            RPCManager.Initialize();
+            Dispatcher.BeginInvoke(() => RPCManager.Initialize());
 
 
             Application.Current.MainWindow = this;
