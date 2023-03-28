@@ -7,15 +7,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
-using Hardcodet.Wpf.TaskbarNotification;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -27,19 +24,18 @@ namespace Flarial.Launcher
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
 
-        private static readonly HttpClient client = new HttpClient();
         public Window1 w = new();
-        public bool ifBeta = false;
+        public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
-        public bool closeToTray = false;
-        public bool isLoggedIn = false;
+        public bool closeToTray;
+        public bool isLoggedIn;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
-        public bool shouldUseBetaDLL = false;
+        public bool shouldUseBetaDLL;
         private ImageSource guestImage;
 
         public MainWindow()
@@ -48,7 +44,7 @@ namespace Flarial.Launcher
             
             loadConfig();
 
-            if (!Functions.Utils.IsAdministrator)
+            if (!Utils.IsAdministrator)
             {
                 MessageBox.Show("Run the application as an Administrator to continue.");
                 Process.GetCurrentProcess().Kill();
@@ -56,17 +52,18 @@ namespace Flarial.Launcher
             Minecraft.Init();
 
             if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
-            if (!Directory.Exists(Managers.VersionManagement.launcherPath))
+            if (!Directory.Exists(VersionManagement.launcherPath + "Versions\\")) { Directory.CreateDirectory(VersionManagement.launcherPath + "Versions\\"); }
+            if (!Directory.Exists(VersionManagement.launcherPath))
             {
-                Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
+                Directory.CreateDirectory(VersionManagement.launcherPath);
             }
 
-            if (!File.Exists($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt"))
-                File.Create($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt");
+            if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
+                File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
 
 
 
-            Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
+            Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
             
@@ -230,7 +227,7 @@ namespace Flarial.Launcher
                 LoginAccount(userResponse, authToken);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -403,11 +400,7 @@ namespace Flarial.Launcher
             if(closeToTray == false) Environment.Exit(0);
             else this.Hide();
         }
-
-        private void versionBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
-        }
+        
 
         //could have avoided a shitty solution like this but i don't care enough to implement MVVM
         private void OptionsBackClick(object sender, RoutedEventArgs e)
