@@ -276,7 +276,7 @@ namespace Flarial.Launcher
 
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             
-            if (user == null)
+            if (user != null)
             {
                 Username.Content = user.username + "#" + user.discriminator;
                 Username2.Content = user.username + "#" + user.discriminator;
