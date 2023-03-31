@@ -6,11 +6,10 @@
         xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:global="clr-namespace:"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" Background="#071214 " WindowStyle="None"
-        Title="MainWindow" Height="400" Width="600">
+        Title="Flarial Launcher" Height="400" Width="600" ResizeMode="NoResize">
 
 
 
@@ -19,7 +18,7 @@
     </Window.Clip>
     <Grid>
         
-        <Grid.Resources>
+        <!--Grid.Resources>
             <global:ShowMessageCommand
                 x:Key="MessageCommand" />
         </Grid.Resources>
@@ -29,7 +28,7 @@
             ToolTipText="Flarial" 
             LeftClickCommand="{StaticResource MessageCommand}"
             LeftClickCommandParameter="Among"
-            />
+            /-->
 
         <Grid x:Name="MainGrid" Visibility="Hidden">
             <Image Source="Images/background.png"/>
@@ -47,7 +46,15 @@
                 </Image.Clip>
             </Image>
             <Label Content="Logged in as" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,305,0,0"/>
-            <Label Content="Guest" x:Name="Username" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left" Height="30" Margin="55,340,0,0"/>
+            <StackPanel Orientation="Horizontal" Height="30" Margin="55,345,0,0">
+                <Label Width="Auto" Content="Guest" x:Name="Username" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Left"/>
+                <Border Visibility="Hidden" x:Name="BetaTag" Width="40" Height="20" BorderBrush="#fe4443" BorderThickness="1" CornerRadius="10">
+                    <Border.Background>
+                        <SolidColorBrush Color="#fe4443" Opacity="0.4"/>
+                    </Border.Background>
+                    <Label Margin="0,-2,0,0" FontSize="10" FontFamily="Fonts/#Sofia Sans" Content="Beta" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                </Border>
+            </StackPanel>
             <Label Content="Launcher" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,30,0"/>
             <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
             <Label x:Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
@@ -68,10 +75,10 @@
 
             <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">
                 <Button Template="{StaticResource LaunchButton}" Height="50" Width="130" Cursor="Hand" Click="Inject_Click"/>
-                <Button Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Click="Options_Click" Margin="15,0,0,0"/>
+                <Button x:Name="OptionsButton" Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Visible">
+        <Grid x:Name="LoginGrid" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="600" Height="400" Background="#071214">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
@@ -79,14 +86,14 @@
                 <Label Content="Flarial" Foreground="#fe4443" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50" Margin="-15,0,0,0"/>
             </StackPanel>
             <Label Content="To continue, please login with your Discord account." Foreground="#FFFFFF" FontSize="18" FontFamily="Fonts/#Sofia Sans" HorizontalAlignment="Center" Height="30" Margin="0,35,0,0"/>
-            <Label Content="Why do we need this?" Foreground="#525252" FontSize="12" FontFamily="Fonts/#Sofia Sans" HorizontalAlignment="Center" Height="30" Margin="0,90,0,0"/>
-            <StackPanel Orientation="Horizontal" Width="400" Height="60" VerticalAlignment="Bottom" Margin="0,0,0,50">
+            <Button Cursor="Hand" Click="Button_Click_1" Content="Why do we need this?" Template="{StaticResource TextButtonHover}" HorizontalAlignment="Center" Height="25" Margin="0,82,0,0" Width="135"/>
+            <StackPanel Orientation="Horizontal" Width="355" Height="60" VerticalAlignment="Bottom" Margin="0,0,0,50">
                 <Button Template="{StaticResource LoginButton}" Height="50" Width="220" Cursor="Hand" Click="Login_Click"/>
-                <Button Click="HideGrid" Template="{StaticResource CloseButton1}" Height="50" Width="120" Cursor="Hand" Margin="15,0,0,0"/>
+                <Button Template="{StaticResource CloseButton1}" Height="50" Width="120" Cursor="Hand" Margin="15,0,0,0" x:Name="LoginGuest"/>
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="OptionsGrid" Visibility="Hidden">
+        <Grid x:Name="OptionsGrid" Visibility="Hidden" Background="#071214">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
@@ -166,7 +173,6 @@
                              Foreground="White"
                              Margin="10,0,0,5"
                              Style="{StaticResource OptionsButtonTheme}"
-                             Checked="OptionsBackClick"
                              x:Name="RadioButton3">
                         <RadioButton.Tag>
                             <BitmapImage UriSource="Images/back.png"/>

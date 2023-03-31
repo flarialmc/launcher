@@ -1,0 +1,24 @@
+﻿<Window x:Class="Flarial.Launcher.CustomDialogBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Flarial.Launcher"
+        mc:Ignorable="d"
+        Title="CustomDialogBox" Height="150" Width="250" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Grid Background="#10191b" Height="150" Width="250">
+        <Grid Background="#000e10" Height="40" VerticalAlignment="Top">
+            <Image Source="Images/icon.png" HorizontalAlignment="Left" Margin="7,7,0,6"/>
+            <Label Content="Title" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" x:Name="MessageBoxTitle"/>
+            <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent"/>
+            <Button IsCancel="True" x:Name="MessageBoxClose" Template="{StaticResource CloseButton}" Cursor="Hand" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Height="20" Width="20"/>
+        </Grid>
+        <TextBlock Text="ertihgnetrio rnegvner wrgehnoe rgewij erjgoijerg egrnoergn oergnoiojnergoiner" TextWrapping="WrapWithOverflow" FontFamily="Fonts/#Unbounded" Foreground="White" Margin="10,50,10,40" x:Name="MessageBoxText"/>
+        <Button IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxYes" Template="{StaticResource YesButton}" Height="30" Width="90" Cursor="Hand" Margin="100,0,0,10" VerticalAlignment="Bottom"/>
+        <Button IsCancel="True" x:Name="MessageBoxNo" Template="{StaticResource NoButton}" Height="30" Width="90" Cursor="Hand" Margin="-100,0,0,10" VerticalAlignment="Bottom"/>
+        <Button Visibility="Hidden" IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxOk" Template="{StaticResource OkButton}" Height="30" Width="90" Cursor="Hand" Margin="0,0,0,10" VerticalAlignment="Bottom"/>
+        <Grid.Clip>
+            <RectangleGeometry Rect="0,0,250,150" RadiusX="15" RadiusY="15"/>
+        </Grid.Clip>
+    </Grid>
+</Window>

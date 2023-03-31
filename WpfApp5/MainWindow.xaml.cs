@@ -29,6 +29,9 @@ using MessageBox = System.Windows.MessageBox;
 using NotifyIcon = WPFUI.Tray.NotifyIcon;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
+using Button = System.Windows.Controls.Button;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 
 
 namespace Flarial.Launcher
@@ -78,7 +81,132 @@ namespace Flarial.Launcher
             Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
 
             InitializeComponent();
-            
+
+            int Duration = 300;
+
+            DoubleAnimation myDoubleAnimation1 = new DoubleAnimation();
+            myDoubleAnimation1.From = 130;
+            myDoubleAnimation1.To = 600;
+            myDoubleAnimation1.EasingFunction = new QuadraticEase();
+            myDoubleAnimation1.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation2 = new DoubleAnimation();
+            myDoubleAnimation2.From = 600;
+            myDoubleAnimation2.To = 130;
+            myDoubleAnimation2.EasingFunction = new QuadraticEase();
+            myDoubleAnimation2.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation7 = new DoubleAnimation();
+            myDoubleAnimation7.From = 600;
+            myDoubleAnimation7.To = 130;
+            myDoubleAnimation7.EasingFunction = new QuadraticEase();
+            myDoubleAnimation7.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation3 = new DoubleAnimation();
+            myDoubleAnimation3.From = 50;
+            myDoubleAnimation3.To = 400;
+            myDoubleAnimation3.EasingFunction = new QuadraticEase();
+            myDoubleAnimation3.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation4 = new DoubleAnimation();
+            myDoubleAnimation4.From = 400;
+            myDoubleAnimation4.To = 50;
+            myDoubleAnimation4.EasingFunction = new QuadraticEase();
+            myDoubleAnimation4.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation8 = new DoubleAnimation();
+            myDoubleAnimation8.From = 400;
+            myDoubleAnimation8.To = 50;
+            myDoubleAnimation8.EasingFunction = new QuadraticEase();
+            myDoubleAnimation8.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation5 = new DoubleAnimation();
+            myDoubleAnimation5.From = 0;
+            myDoubleAnimation5.To = 1;
+            myDoubleAnimation5.EasingFunction = new QuadraticEase();
+            myDoubleAnimation5.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation6 = new DoubleAnimation();
+            myDoubleAnimation6.From = 1;
+            myDoubleAnimation6.To = 0;
+            myDoubleAnimation6.EasingFunction = new QuadraticEase();
+            myDoubleAnimation6.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            DoubleAnimation myDoubleAnimation9 = new DoubleAnimation();
+            myDoubleAnimation9.From = 1;
+            myDoubleAnimation9.To = 0;
+            myDoubleAnimation9.EasingFunction = new QuadraticEase();
+            myDoubleAnimation9.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            ThicknessAnimation myPointAnimation1 = new ThicknessAnimation();
+            myPointAnimation1.From = new Thickness(145, 140, 0, 0);
+            myPointAnimation1.To = new Thickness(0, 0, 0, 0);
+            myPointAnimation1.EasingFunction = new QuadraticEase();
+            myPointAnimation1.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            ThicknessAnimation myPointAnimation2 = new ThicknessAnimation();
+            myPointAnimation2.From = new Thickness(0, 0, 0, 0);
+            myPointAnimation2.EasingFunction = new QuadraticEase();
+            myPointAnimation2.To = new Thickness(145, 140, 0, 0);
+            myPointAnimation2.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            ThicknessAnimation myPointAnimation3 = new ThicknessAnimation();
+            myPointAnimation3.From = new Thickness(0, 0, 0, 0);
+            myPointAnimation3.EasingFunction = new QuadraticEase();
+            myPointAnimation3.To = new Thickness(15, 0, 0, 15);
+            myPointAnimation3.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
+            Storyboard.SetTargetName(myDoubleAnimation1, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation2, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation3, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation4, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation5, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation6, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation7, LoginGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation8, LoginGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation9, LoginGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation1, OptionsGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation2, OptionsGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation3, LoginGrid.Name);
+            Storyboard.SetTargetProperty(myDoubleAnimation1, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation2, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation7, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation3, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation4, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation8, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation5, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation6, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation9, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myPointAnimation1, new PropertyPath(Grid.MarginProperty));
+            Storyboard.SetTargetProperty(myPointAnimation2, new PropertyPath(Grid.MarginProperty));
+            Storyboard.SetTargetProperty(myPointAnimation3, new PropertyPath(Grid.MarginProperty));
+            Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
+            Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
+            Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation1);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation2);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation3);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation4);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation5);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation6);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation7);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation8);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation9);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myPointAnimation1);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myPointAnimation2);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myPointAnimation3);
+
+            OptionsButton.Click += async delegate (object sender, RoutedEventArgs args)
+            {
+                RadioButton0.IsChecked = true;
+                OptionsGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
+                await Task.Delay(Duration);
+                MainGrid.Visibility = Visibility.Hidden;
+            };
+            RadioButton3.Checked += async delegate (object sender, RoutedEventArgs args)
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
+                await Task.Delay(Duration);
+                OptionsGrid.Visibility = Visibility.Hidden;
+            };
+            LoginGuest.Click += async delegate (object sender, RoutedEventArgs args)
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
+                await Task.Delay(Duration);
+                LoginGrid.Visibility = Visibility.Hidden;
+            };
+
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "powershell.exe";
             startInfo.Arguments = "set-executionpolicy unrestricted";
@@ -159,14 +287,7 @@ namespace Flarial.Launcher
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             if(closeToTray == false) Environment.Exit(0);
-            this.Hide();
-        }
-        
-        private void HideGrid(object sender, RoutedEventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Visible;
-            LoginGrid.Visibility = Visibility.Hidden;
-            this.Hide();
+            //this.Hide();
         }
 
         private void loadConfig()
@@ -328,6 +449,7 @@ namespace Flarial.Launcher
                 {
                     ifBeta = true;
                     BetaDLLButton.Visibility = Visibility.Visible;
+                    BetaTag.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
                 else
@@ -392,11 +514,11 @@ namespace Flarial.Launcher
             statusLabel.Content = $" Downloaded {e.ProgressPercentage}% of client";
         }
 
-        private void Options_Click(object sender, RoutedEventArgs e)
+        /*private void Options_Click(object sender, RoutedEventArgs e)
         {
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
-        }
+        }*/
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -529,6 +651,11 @@ namespace Flarial.Launcher
             else this.Hide();
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "Because why tf not, stop being a fucking pussy and give us your discord token.", "MessageBox");
+            MessageBox.ShowDialog();
+        }
     }
 }
 
