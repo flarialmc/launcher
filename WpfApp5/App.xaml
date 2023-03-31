@@ -146,7 +146,7 @@
                     <Setter Property="Background" Value="#d42932"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#8c2026"/>
+                    <Setter Property="Background" Value="#ab0009"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -179,7 +179,7 @@
                     <Setter Property="Background" Value="#d42932"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#8c2026"/>
+                    <Setter Property="Background" Value="#ab0009"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -324,7 +324,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="SettingsBtnBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="SettingsBtnBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -364,7 +364,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LoginButtonBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="LoginButtonBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -456,7 +456,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -576,7 +576,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -640,7 +640,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -670,7 +670,7 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" To="#8c2026" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
+                                <ColorAnimation Duration="0:0:0.5" To="#ab0009" Storyboard.TargetName="LaunchButtonBrush" Storyboard.TargetProperty="Color"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -716,16 +716,16 @@
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" Storyboard.TargetName="CloseBrush1" Storyboard.TargetProperty="Color" To="{StaticResource CloseMouseOver}"/>
-                                <ColorAnimation Duration="0:0:0.1" Storyboard.TargetName="CloseBrush2" Storyboard.TargetProperty="Color" To="{StaticResource CloseMouseOver}"/>
+                                <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="CloseBrush1" Storyboard.TargetProperty="Color" To="{StaticResource CloseMouseOver}"/>
+                                <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="CloseBrush2" Storyboard.TargetProperty="Color" To="{StaticResource CloseMouseOver}"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
                     <Trigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Duration="0:0:0.1" Storyboard.TargetName="CloseBrush1" Storyboard.TargetProperty="Color" To="{StaticResource CloseNormal}"/>
-                                <ColorAnimation Duration="0:0:0.1" Storyboard.TargetName="CloseBrush2" Storyboard.TargetProperty="Color" To="{StaticResource CloseNormal}"/>
+                                <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="CloseBrush1" Storyboard.TargetProperty="Color" To="{StaticResource CloseNormal}"/>
+                                <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="CloseBrush2" Storyboard.TargetProperty="Color" To="{StaticResource CloseNormal}"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>

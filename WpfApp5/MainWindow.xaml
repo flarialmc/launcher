@@ -98,7 +98,7 @@
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
             <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <WrapPanel Margin="15,15,10,10" x:Name="VerisonPanel"/>
                 </ScrollViewer>
@@ -106,11 +106,11 @@
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
             </Grid>
-            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
                 <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
                 
-                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
                 
                 <Button x:Name="SaveConfigButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
                 <Grid.Clip>
@@ -118,7 +118,7 @@
                 </Grid.Clip>
             </Grid>
 
-            <Grid Background="#525252" Margin="160,100,15,15" x:Name="OptionsAccountGrid" Visibility="Hidden">
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsAccountGrid" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="15,15,0,0" Height="45" >
                     <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Center" Margin="0,0,0,0" Source="Images/user.png" x:Name="PFP2" Stretch="Fill">
                         <Image.Clip>

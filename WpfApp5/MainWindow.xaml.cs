@@ -3,30 +3,18 @@ using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Octokit;
-using H.NotifyIcon;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using Hardcodet.Wpf.TaskbarNotification;
 using Application = System.Windows.Application;
-using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
-using NotifyIcon = WPFUI.Tray.NotifyIcon;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Button = System.Windows.Controls.Button;
@@ -39,28 +27,27 @@ namespace Flarial.Launcher
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
 
-        private static readonly HttpClient client = new HttpClient();
         public Window1 w = new();
-        public bool ifBeta = false;
+        public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
-        public bool closeToTray = false;
-        public bool isLoggedIn = false;
+        public bool closeToTray;
+        public bool isLoggedIn;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
-        public bool shouldUseBetaDLL = false;
+        public bool shouldUseBetaDLL;
         private ImageSource guestImage;
 
-        public TaskbarIcon notifyIcon;
         public MainWindow()
         {
             
             
+            loadConfig();
 
-            if (!Functions.Utils.IsAdministrator)
+            if (!Utils.IsAdministrator)
             {
                 MessageBox.Show("Run the application as an Administrator to continue.");
                 Process.GetCurrentProcess().Kill();
@@ -68,17 +55,18 @@ namespace Flarial.Launcher
             Minecraft.Init();
 
             if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
-            if (!Directory.Exists(Managers.VersionManagement.launcherPath))
+            if (!Directory.Exists(VersionManagement.launcherPath + "Versions\\")) { Directory.CreateDirectory(VersionManagement.launcherPath + "Versions\\"); }
+            if (!Directory.Exists(VersionManagement.launcherPath))
             {
-                Directory.CreateDirectory(Managers.VersionManagement.launcherPath);
+                Directory.CreateDirectory(VersionManagement.launcherPath);
             }
 
-            if (!File.Exists($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt"))
-                File.Create($"{Managers.VersionManagement.launcherPath}\\cachedToken.txt");
+            if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
+                File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
 
 
 
-            Environment.CurrentDirectory = Managers.VersionManagement.launcherPath;
+            Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
 
@@ -219,13 +207,18 @@ namespace Flarial.Launcher
             
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
-            double among = Convert.ToDouble(webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt")));
+            string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
+            Trace.WriteLine(latestVer);
+            double among = Convert.ToDouble(latestVer);
             if (version != 0.666 && version <= among)
             {
                 startInfo.Arguments = "updater.ps1";
                 process.StartInfo = startInfo;
                 process.Start();
                 Environment.Exit(0);
+            } else if (version == 0.666)
+            {
+                Trace.WriteLine("It's development time.");
             }
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
@@ -234,31 +227,35 @@ namespace Flarial.Launcher
 
             foreach(string version in TestVersions)
             {
-                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri("/Images/Saul_Goodman.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri("/Images/Saul_Goodman2.jpg", UriKind.RelativeOrAbsolute))};
+                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri($"/Images/{version}.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri($"/Images/{version}_2.jpg", UriKind.RelativeOrAbsolute))};
                 Style style = this.FindResource("VersionRadioButton") as Style;
                 RadioButton radioButton = new RadioButton();
                 radioButton.Style = style;
                 radioButton.Tag = imagesources;
+                if (Minecraft.GetVersion().ToString().StartsWith(version.Remove(5))) radioButton.IsChecked = true;
                 radioButton.Checked += RadioButton_Checked;
-                
+
                 VerisonPanel.Children.Add(radioButton);
 
                 async void RadioButton_Checked(object sender, RoutedEventArgs e)
                 {
                     ChosenVersion = version;
                     versionLabel.Content = ChosenVersion;
-
+                    
                     try
                     {
 
-                       await VersionManagement.InstallMinecraft(ChosenVersion);
+                       await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
                        
                     } catch(RateLimitExceededException)
                     {
                         MessageBox.Show("Octokit Rate Limit was reached.");
                     }
                 }
+                
+                
             }
+            
 
             versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -270,24 +267,26 @@ namespace Flarial.Launcher
             Task.Delay(1);
 
 
-            RPCManager.Initialize();
+            Dispatcher.BeginInvoke(() => RPCManager.Initialize());
 
-            loadConfig();
 
             Application.Current.MainWindow = this;
 
         }
 
-        private void NotifyIconClick(NotifyIcon obj)
-        {
-            obj.ContextMenu.Visibility = Visibility.Visible;
-        }
 
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             if(closeToTray == false) Environment.Exit(0);
-            //this.Hide();
+            this.Hide();
+        }
+        
+        private void HideGrid(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Visible;
+            LoginGrid.Visibility = Visibility.Hidden;
+            this.Hide();
         }
 
         private void loadConfig()
@@ -301,28 +300,11 @@ namespace Flarial.Launcher
             
             minecraft_version = config.minecraft_version;
             shouldUseBetaDLL = config.shouldUseBetaDll;
-            BetaDLLButton.IsChecked = config.shouldUseBetaDll;
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
 
-            if (custom_dll_path == "amongus")
-            {
-                CustomDllButton.IsChecked = false;
-            }
-            else
-            {
-                CustomDllButton.IsChecked = true;
-            }
 
-            if (closeToTray == true)
-            {
-                TrayButton.IsChecked = true;
-            }
-            else
-            {
-                TrayButton.IsChecked = false;
 
-            }
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -355,25 +337,26 @@ namespace Flarial.Launcher
             try
             {
                 string authToken;
-                string rawToken = Auth.postReq(e.Uri.Split("https://flarial.net/?code=")[1]);
+                string sheesh = e.Uri.Split("https://flarial.net/?code=")[1];
+                string rawToken = await Task.Run(() => Auth.postReq(sheesh));
 
 
                 var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
 
 
                 authToken = atd.access_token;
-                await Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in));
+                await Task.Run(() =>Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in)));
 
 
-                string userResponse = Auth.getReqUser(authToken);
+                string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
 
 
 
                 Trace.WriteLine(userResponse);
-                await LoginAccount(userResponse, authToken);
+                LoginAccount(userResponse, authToken);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -406,21 +389,22 @@ namespace Flarial.Launcher
 
 
 
-            string userResponse = Auth.getReqUser(authToken);
+            string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
 
 
 
             Trace.WriteLine(userResponse);
-            await LoginAccount(userResponse, authToken);
+            LoginAccount(userResponse, authToken);
             return true;
 
         }
 
-        private async Task LoginAccount(string userResponse, string authToken)
+        private async void LoginAccount(string userResponse, string authToken)
         {
 
 
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
+            
             if (user != null)
             {
                 Username.Content = user.username + "#" + user.discriminator;
@@ -439,7 +423,7 @@ namespace Flarial.Launcher
 
             }
 
-            string guildUserContent = Auth.getReqGuildUser(authToken);
+            string guildUserContent = await Task.Run(() => Auth.getReqGuildUser(authToken));
             Trace.WriteLine(guildUserContent);
             
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
@@ -467,7 +451,6 @@ namespace Flarial.Launcher
             LogoutButton.Visibility = Visibility.Visible;
 
             LoginGrid.Visibility = Visibility.Hidden;
-            await Task.Delay(20);
 
 
 
@@ -516,6 +499,28 @@ namespace Flarial.Launcher
 
         /*private void Options_Click(object sender, RoutedEventArgs e)
         {
+            
+            
+            
+            BetaDLLButton.IsChecked = shouldUseBetaDLL;
+            if (custom_dll_path != "amongus")
+            {
+                CustomDllButton.IsChecked = true;
+            }
+            else
+            {
+                CustomDllButton.IsChecked = false;
+
+            }
+            if (closeToTray == true)
+            {
+                TrayButton.IsChecked = true;
+            }
+            else
+            {
+                TrayButton.IsChecked = false;
+
+            }
             OptionsGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
         }*/
@@ -525,11 +530,7 @@ namespace Flarial.Launcher
             if(closeToTray == false) Environment.Exit(0);
             else this.Hide();
         }
-
-        private void versionBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
-        }
+        
 
         //could have avoided a shitty solution like this but i don't care enough to implement MVVM
         private void OptionsBackClick(object sender, RoutedEventArgs e)
@@ -564,28 +565,31 @@ namespace Flarial.Launcher
         //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.InitialDirectory = @"C:\";
-            dialog.DefaultExt = "dll";
-            dialog.Filter = "DLL Files|*.dll;";
-            dialog.CheckFileExists = true;
-            dialog.CheckPathExists = true;
-            dialog.Multiselect = false;
-            dialog.Title = "Select Custom DLL";
-            
-            if (dialog.ShowDialog() == true)  
-            {  
-                
-                custom_dll_path = dialog.FileName;  
-                Trace.WriteLine(custom_dll_path);
-                
-            }  else
+            if(custom_dll_path == "amongus")
             {
-                dialog.ShowDialog();
-                custom_dll_path = dialog.FileName;  
-                Trace.WriteLine(custom_dll_path);
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.InitialDirectory = @"C:\";
+                dialog.DefaultExt = "dll";
+                dialog.Filter = "DLL Files|*.dll;";
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Multiselect = false;
+                dialog.Title = "Select Custom DLL";
+
+                if (dialog.ShowDialog() == true)
+                {
+
+                    custom_dll_path = dialog.FileName;
+                    Trace.WriteLine(custom_dll_path);
+
+                }
+                else
+                {
+                    dialog.ShowDialog();
+                    custom_dll_path = dialog.FileName;
+                    Trace.WriteLine(custom_dll_path);
+                }
             }
-            
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
@@ -647,8 +651,7 @@ namespace Flarial.Launcher
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
         {
-            if(closeToTray == false) Environment.Exit(0);
-            else this.Hide();
+            Environment.Exit(0);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -667,9 +670,7 @@ public class ShowMessageCommand : ICommand
         {
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (Application.Current.MainWindow == null)
-                    Trace.WriteLine("AAAAAAAAAAAAAAAAA");
-                else Application.Current.MainWindow.Show();
+                Application.Current.MainWindow.Show();
             }
         }
     }
