@@ -20,7 +20,7 @@ using RadioButton = System.Windows.Controls.RadioButton;
 using Button = System.Windows.Controls.Button;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-
+using System.Windows.Controls;
 
 namespace Flarial.Launcher
 {
