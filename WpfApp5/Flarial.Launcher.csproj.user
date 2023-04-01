@@ -21,6 +21,18 @@
     <Page Update="CustomDialogBox.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Themes\DialogBoxThemes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\LoginPageThemes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\MainPageThemes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\OptionsPageThemes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Window1.xaml">
       <SubType>Designer</SubType>
     </Page>
