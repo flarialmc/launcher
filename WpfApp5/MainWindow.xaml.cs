@@ -69,6 +69,13 @@ namespace Flarial.Launcher
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
+            
+            if (custom_dll_path != "amongus")
+                CustomDllButton.IsChecked = true;
+
+            TrayButton.IsChecked = closeToTray;
+
+            BetaDLLButton.IsChecked = shouldUseBetaDLL;
 
             int Duration = 300;
 
