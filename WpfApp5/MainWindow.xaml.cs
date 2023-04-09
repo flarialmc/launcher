@@ -2,6 +2,7 @@
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
+using Octokit;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,18 +10,15 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
-using Button = System.Windows.Controls.Button;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Windows.Controls;
 
 namespace Flarial.Launcher
 {
@@ -43,8 +41,8 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
-            
-            
+
+
             loadConfig();
 
             if (!Utils.IsAdministrator)
@@ -69,7 +67,7 @@ namespace Flarial.Launcher
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
-            
+
             if (custom_dll_path != "amongus")
                 CustomDllButton.IsChecked = true;
 
@@ -211,7 +209,7 @@ namespace Flarial.Launcher
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
-            
+
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
             string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
@@ -223,7 +221,8 @@ namespace Flarial.Launcher
                 process.StartInfo = startInfo;
                 process.Start();
                 Environment.Exit(0);
-            } else if (version == 0.666)
+            }
+            else if (version == 0.666)
             {
                 Trace.WriteLine("It's development time.");
             }
@@ -232,9 +231,9 @@ namespace Flarial.Launcher
             string[] TestVersions = { "1.16.100.4", "1.19.51.1" };
             string ChosenVersion;
 
-            foreach(string version in TestVersions)
+            foreach (string version in TestVersions)
             {
-                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri($"/Images/{version}.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri($"/Images/{version}_2.jpg", UriKind.RelativeOrAbsolute))};
+                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri($"/Images/{version}.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri($"/Images/{version}_2.jpg", UriKind.RelativeOrAbsolute)) };
                 Style style = this.FindResource("VersionRadioButton") as Style;
                 RadioButton radioButton = new RadioButton();
                 radioButton.Style = style;
@@ -248,21 +247,22 @@ namespace Flarial.Launcher
                 {
                     ChosenVersion = version;
                     versionLabel.Content = ChosenVersion;
-                    
+
                     try
                     {
 
-                       await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-                       
-                    } catch(RateLimitExceededException)
+                        await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
+
+                    }
+                    catch (RateLimitExceededException)
                     {
                         MessageBox.Show("Octokit Rate Limit was reached.");
                     }
                 }
-                
-                
+
+
             }
-            
+
 
             versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -285,10 +285,10 @@ namespace Flarial.Launcher
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            if(closeToTray == false) Environment.Exit(0);
+            if (closeToTray == false) Environment.Exit(0);
             this.Hide();
         }
-        
+
         private void HideGrid(object sender, RoutedEventArgs e)
         {
             MainGrid.Visibility = Visibility.Visible;
@@ -304,7 +304,7 @@ namespace Flarial.Launcher
             {
                 return;
             }
-            
+
             minecraft_version = config.minecraft_version;
             shouldUseBetaDLL = config.shouldUseBetaDll;
             custom_dll_path = config.custom_dll_path;
@@ -352,7 +352,7 @@ namespace Flarial.Launcher
 
 
                 authToken = atd.access_token;
-                await Task.Run(() =>Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in)));
+                await Task.Run(() => Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in)));
 
 
                 string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
@@ -411,7 +411,7 @@ namespace Flarial.Launcher
 
 
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
-            
+
             if (user != null)
             {
                 Username.Content = user.username + "#" + user.discriminator;
@@ -432,10 +432,11 @@ namespace Flarial.Launcher
 
             string guildUserContent = await Task.Run(() => Auth.getReqGuildUser(authToken));
             Trace.WriteLine(guildUserContent);
-            
+
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
 
-            
+            if (guildUser.roles != null)
+            {
                 if (guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
@@ -447,9 +448,9 @@ namespace Flarial.Launcher
                 {
                     Trace.WriteLine("No no no NOT BETA BRO!");
                 }
-            
-            
-            
+
+            }
+
 
             w.Close();
 
@@ -476,7 +477,7 @@ namespace Flarial.Launcher
         {
             FileInfo fi = new FileInfo(custom_dll_path);
 
-            if(custom_dll_path == "amongus")
+            if (custom_dll_path == "amongus")
             {
                 WebClient webClient = new WebClient();
 
@@ -494,7 +495,7 @@ namespace Flarial.Launcher
                 }
             }
         }
-        
+
         public void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
 
         {
@@ -534,10 +535,10 @@ namespace Flarial.Launcher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            if(closeToTray == false) Environment.Exit(0);
+            if (closeToTray == false) Environment.Exit(0);
             else this.Hide();
         }
-        
+
 
         //could have avoided a shitty solution like this but i don't care enough to implement MVVM
         private void OptionsBackClick(object sender, RoutedEventArgs e)
@@ -572,7 +573,7 @@ namespace Flarial.Launcher
         //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            if(custom_dll_path == "amongus")
+            if (custom_dll_path == "amongus")
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.InitialDirectory = @"C:\";
@@ -604,7 +605,7 @@ namespace Flarial.Launcher
             custom_dll_path = "amongus";
             Trace.WriteLine(custom_dll_path);
         }
-        
+
         private void BetaButton_Checked(object sender, RoutedEventArgs e)
         {
             shouldUseBetaDLL = true;
@@ -688,4 +689,4 @@ public class ShowMessageCommand : ICommand
     }
 
     public event EventHandler CanExecuteChanged;
-} 
+}
