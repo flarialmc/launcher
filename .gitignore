@@ -5,3 +5,4 @@ WpfApp5/bin
 .vs
 .sln
 WpfApp5/Flarial.Launcher.csproj
+*.rsp
