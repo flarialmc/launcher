@@ -21,6 +21,12 @@ using Button = System.Windows.Controls.Button;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Windows.Data;
+using System.Windows.Threading;
+using System.Threading;
+using WPFUI.Taskbar;
+using Windows.Management.Deployment.Preview;
 
 namespace Flarial.Launcher
 {
@@ -40,11 +46,10 @@ namespace Flarial.Launcher
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL;
         private ImageSource guestImage;
+        
 
         public MainWindow()
-        {
-            
-            
+        {           
             loadConfig();
 
             if (!Utils.IsAdministrator)
@@ -222,27 +227,67 @@ namespace Flarial.Launcher
             }
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
-            string[] TestVersions = { "1.16.100.4", "1.19.51.1" };
+            Dictionary<string, string> TestVersions = new Dictionary<string, string>();
+            TestVersions.Add("1.16.100.4", "Not Installed");
+            TestVersions.Add("1.19.51.1", "Selected");
+            TestVersions.Add("1.19.70", "Installed");
             string ChosenVersion;
 
-            foreach(string version in TestVersions)
+            foreach(string version in TestVersions.Keys)
             {
-                ImageSource[] imagesources = new ImageSource[2] { new BitmapImage(new Uri($"/Images/{version}.jpg", UriKind.RelativeOrAbsolute)), new BitmapImage(new Uri($"/Images/{version}_2.jpg", UriKind.RelativeOrAbsolute))};
-                Style style = this.FindResource("VersionRadioButton") as Style;
                 RadioButton radioButton = new RadioButton();
-                radioButton.Style = style;
-                radioButton.Tag = imagesources;
-                if (Minecraft.GetVersion().ToString().StartsWith(version.Remove(5))) radioButton.IsChecked = true;
+                Style? style1 = new Style();
+                string[] tags = {"/Images/Gus1.png", version, "temp"};
+                if (TestVersions[version] == "Installed") style1 = this.FindResource("test1") as Style;
+                else if (TestVersions[version] == "Selected") { style1 = this.FindResource("test1") as Style; radioButton.IsChecked = true; }
+                else if (TestVersions[version] == "Not Installed") style1 = this.FindResource("test2") as Style;
+
+                
+
+                radioButton.Style = style1;
+                radioButton.Tag = tags;
                 radioButton.Checked += RadioButton_Checked;
 
-                VerisonPanel.Children.Add(radioButton);
+                VersionsPanel.Children.Add(radioButton);
 
                 async void RadioButton_Checked(object sender, RoutedEventArgs e)
                 {
+                    if (TestVersions[version] == "Not Installed") 
+                    { 
+                        radioButton.Style = FindResource("test3") as Style; 
+                        foreach(RadioButton rb in VersionsPanel.Children)
+                        {
+                            rb.IsEnabled = true;
+                        }
+
+                        double progress = 0;
+
+                        DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+
+                        timer.Tick += Timer_Tick;
+                        timer.Start();
+                        void Timer_Tick(object sender, EventArgs e)
+                        {
+                            progress++;
+                            string[] tags2 = { "/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
+                            radioButton.Content = 415-(progress/100*415);
+                            radioButton.Tag = tags2;
+                            if (progress >= 100)
+                            {
+                                timer.Stop();
+                                radioButton.Style = FindResource("test1") as Style;
+                                radioButton.IsChecked = true;
+                                TestVersions[version] = "Installed";
+                            }
+                        }
+                    }
+                    
                     ChosenVersion = version;
                     versionLabel.Content = ChosenVersion;
-                    
-                    try
+
+
+
+                    /*try
                     {
 
                        await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
@@ -250,12 +295,11 @@ namespace Flarial.Launcher
                     } catch(RateLimitExceededException)
                     {
                         MessageBox.Show("Octokit Rate Limit was reached.");
-                    }
+                    }*/
                 }
                 
                 
-            }
-            
+            }            
 
             versionLabel.Content = Minecraft.GetVersion();
             int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
@@ -274,6 +318,19 @@ namespace Flarial.Launcher
 
         }
 
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scrollViewer = (ScrollViewer)sender;
+            if (e.Delta < 0)
+            {
+                scrollViewer.LineRight();
+            }
+            else
+            {
+                scrollViewer.LineLeft();
+            }
+            e.Handled = true;
+        }
 
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)

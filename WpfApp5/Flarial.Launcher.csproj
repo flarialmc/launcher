@@ -19,6 +19,8 @@
     <None Remove="Images\close.png" />
     <None Remove="Images\discord-mark-white.png" />
     <None Remove="Images\general.png" />
+    <None Remove="Images\Gus1.png" />
+    <None Remove="Images\Gus2.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\icon.png" />
     <None Remove="Images\news.png" />
@@ -65,6 +67,8 @@
     <Resource Include="Images\close.png" />
     <Resource Include="Images\discord-mark-white.png" />
     <Resource Include="Images\general.png" />
+    <Resource Include="Images\Gus1.png" />
+    <Resource Include="Images\Gus2.png" />
     <Resource Include="Images\icon.ico" />
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\news.png" />

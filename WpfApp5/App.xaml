@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Themes/LoginPageThemes.xaml"/>
                 <ResourceDictionary Source="Themes/MainPageThemes.xaml"/>
                 <ResourceDictionary Source="Themes/OptionsPageThemes.xaml"/>
+                <ResourceDictionary Source="Themes/VersionRadioButtonThemes.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

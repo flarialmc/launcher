@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
@@ -78,7 +79,7 @@
                 <Button x:Name="OptionsButton" Template="{StaticResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="600" Height="400" Background="#071214">
+        <Grid x:Name="LoginGrid" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="600" Height="400" Background="#071214">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
             <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
@@ -93,24 +94,72 @@
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="OptionsGrid" Visibility="Hidden" Background="#071214">
+        <Grid x:Name="OptionsGrid" Visibility="Visible" Background="#071214">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
             <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
-                <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                    <WrapPanel Margin="15,15,10,10" x:Name="VerisonPanel"/>
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Visible">
+                <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="5">
+                    <StackPanel Orientation="Horizontal" x:Name="VersionsPanel">
+                        <!--RadioButton Style="{StaticResource VersionRadioButton2}">
+                            <RadioButton.Tag>
+                                <x:Array Type="{x:Type s:String}">
+                                    <s:String>/Images/Gus1.png</s:String>
+                                    <s:String>1.16.100</s:String>
+                                    <s:String>521MB of 920MB - 57%</s:String>
+                                    <s:String>0</s:String>
+                                    <s:String>207.5</s:String>
+                                </x:Array>
+                            </RadioButton.Tag>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource VersionRadioButton2}">
+                            <RadioButton.Tag>
+                                <x:Array Type="{x:Type s:String}">
+                                    <s:String>/Images/Gus1.png</s:String>
+                                    <s:String>1.16.100</s:String>
+                                    <s:String>521MB of 920MB - 57%</s:String>
+                                    <s:String>1</s:String>
+                                    <s:String>207.5</s:String>
+                                </x:Array>
+                            </RadioButton.Tag>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource VersionRadioButton2}" IsChecked="True">
+                            <RadioButton.Tag>
+                                <x:Array Type="{x:Type s:String}">
+                                    <s:String>/Images/Gus1.png</s:String>
+                                    <s:String>1.16.100</s:String>
+                                    <s:String>521MB of 920MB - 57%</s:String>
+                                    <s:String>1</s:String>
+                                    <s:String>207.5</s:String>
+                                </x:Array>
+                            </RadioButton.Tag>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource VersionRadioButton2}">
+                            <RadioButton.Tag>
+                                <x:Array Type="{x:Type s:String}">
+                                    <s:String>/Images/Gus1.png</s:String>
+                                    <s:String>1.16.100</s:String>
+                                    <s:String>521MB of 920MB - 57%</s:String>
+                                    <s:String>3</s:String>
+                                    <s:String>178.45</s:String>
+                                </x:Array>
+                            </RadioButton.Tag>
+                        </RadioButton-->
+                    </StackPanel>
+                    <ScrollViewer.Clip>
+                        <RectangleGeometry Rect="0,0,415,275" RadiusX="10" RadiusY="10"/>
+                    </ScrollViewer.Clip>
                 </ScrollViewer>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
             </Grid>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
-                <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Hidden">
+                <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
+                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
 
-                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
 
                 <Button x:Name="SaveConfigButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
                 <Grid.Clip>

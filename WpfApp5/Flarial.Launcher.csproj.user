@@ -33,6 +33,9 @@
     <Page Update="Themes\OptionsPageThemes.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Themes\VersionRadioButtonThemes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Window1.xaml">
       <SubType>Designer</SubType>
     </Page>
