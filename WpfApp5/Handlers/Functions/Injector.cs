@@ -97,7 +97,7 @@ namespace Flarial.Launcher.Functions
                 {
 
                     Minecraft.Process.Refresh();
-                    if (Minecraft.Process.Modules.Count > 150) break;
+                    if (Minecraft.Process.Modules.Count > 155) break;
                     else
                         Thread.Sleep(4000);
 

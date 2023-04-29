@@ -141,47 +141,34 @@ namespace Flarial.Launcher.Managers
 
 
 
-        public static async Task DownloadApplication(string Version)
+        public static async Task DownloadApplication(string version)
         {
-            bool archived = false;
+            // Define path and url.
+            string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
+            string url = await GetVersionLinkAsync(version);
 
-            string path = "None yet.";
-
-            //Select path between archive or normal.
-
-            path =
-               launcherPath + "Versions\\"
-                + $"Minecraft{Version}.Appx";
-
-
-            Trace.WriteLine(
-                "The path to which the bundle will be installed is as follows: " + path
-            );
-
-            var url = "Not sure";
-
-
-            url = await GetVersionLinkAsync(Version);
-
-
-            if (url != "Not sure" && url != null)
+            // Check if file already exists.
+            if (File.Exists(path))
             {
-                Trace.WriteLine("Got downloadable url for the specified Minecraft version: " + url);
-                if (File.Exists(path))
-                {
-                    return;
-                }
-                WebClient webClient = new WebClient();
-
-                DownloadProgressChangedEventHandler among =
-                    new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                webClient.DownloadProgressChanged += among;
-                await webClient.DownloadFileTaskAsync(new Uri(url), path);
-
-
+                Trace.WriteLine("File already exists, download skipped.");
                 return;
             }
-            Trace.WriteLine("Url was null, download failed.");
+
+            // Download the file.
+            if (!string.IsNullOrEmpty(url))
+            {
+                Trace.WriteLine("Got downloadable url for Minecraft version " + version + ": " + url);
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.DownloadProgressChanged += DownloadProgressCallback;
+                    await webClient.DownloadFileTaskAsync(new Uri(url), path);
+                    Trace.WriteLine("Download succeeded!");
+                }
+            }
+            else
+            {
+                Trace.WriteLine("Url was null, download failed.");
+            }
         }
 
 
@@ -211,7 +198,7 @@ namespace Flarial.Launcher.Managers
             if (Minecraft.Package != null)
             {
                 //Backup Data
-                await BackupManager.createBackup("MinecraftBeforeInstallation");
+                await BackupManager.CreateBackup("MinecraftBeforeInstallation");
 
                 Trace.WriteLine("Uninstalling Current Minecraft Version.");
                 //Now uninstall MC (If it exists)
@@ -240,7 +227,7 @@ namespace Flarial.Launcher.Managers
 
             Trace.WriteLine("Temporary backup found, now loading.");
             //Load Backed up Data
-            await BackupManager.loadBackup("MinecraftBeforeInstallation");
+            await BackupManager.LoadBackup("MinecraftBeforeInstallation");
 
             Trace.WriteLine("Temporary backup loaded, now deleting.");
             //Delete temporary backup
@@ -266,97 +253,68 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<string> CacheVersionsList()
         {
-            var p =
-               launcherPath + "\\List.json";
+            var jsonPath = Path.Combine(launcherPath, "List.json");
 
-
-            if (File.Exists(p))
+            if (File.Exists(jsonPath))
             {
-                return File.ReadAllText(p);
+                return File.ReadAllText(jsonPath);
             }
-            else
-            {
-                List<VersionStruct> versionStructs = new List<VersionStruct>();
-                var AllVersions = await GetVersionsAsync();
 
-                foreach (var v in AllVersions)
+            var versionStructs = new List<VersionStruct>();
+            var allVersions = await GetVersionsAsync();
+
+            using (var client = new WebClient())
+            {
+                foreach (var version in allVersions)
                 {
-                    var Url = await GetVersionLinkAsync(v);
+                    var url = await GetVersionLinkAsync(version);
+                    var descUri = new Uri($"https://cdn.flarial.net/VersionsStructure/{version}.txt");
 
-                    //May fail sometimes.
-                    var Desc = await new WebClient().DownloadStringTaskAsync(new Uri($"https://cdn.flarial.net/VersionsStructure/{v}.txt"));
-
-
-
-                    versionStructs.Add(new VersionStruct()
+                    try
                     {
-                        DownloadURL = Url,
-                        Version = v.Remove(v.LastIndexOf(".")),
-                        Description = Desc
-
-                    });
-
-
+                        var desc = await client.DownloadStringTaskAsync(descUri);
+                        versionStructs.Add(new VersionStruct
+                        {
+                            DownloadURL = url,
+                            Version = version.Remove(version.LastIndexOf(".")),
+                            Description = desc
+                        });
+                    }
+                    catch (WebException ex)
+                    {
+                        Trace.WriteLine($"Failed to download description for version {version}: {ex.Message}");
+                    }
                 }
-
-
-                var json = JsonSerializer.Serialize(versionStructs);
-
-                File.WriteAllText(p, json);
-                return json;
-
-
             }
 
+            var json = JsonSerializer.Serialize(versionStructs);
+            File.WriteAllText(jsonPath, json);
 
+            return json;
         }
         public static async Task<bool> InstallAppBundle(string appBundleUri)
         {
-
-
-
-
-
-            bool returnValue = true;
             try
             {
-                Uri packageUri = new Uri(appBundleUri);
-                Windows.Management.Deployment.PackageManager packageManager = new Windows.Management.Deployment.PackageManager();
-                Windows.Foundation.IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> deploymentOperation = packageManager.AddPackageAsync(packageUri, null, Windows.Management.Deployment.DeploymentOptions.None);
-                ManualResetEvent opCompletedEvent = new ManualResetEvent(false); // this event will be signaled when the deployment operation has completed.
-                deploymentOperation.Completed = (depProgress, status) => { opCompletedEvent.Set(); };
-                Trace.WriteLine(string.Format("Installing package {0}", appBundleUri));
-                Trace.WriteLine("Waiting for installation to complete...");
-                opCompletedEvent.WaitOne();
-                if (deploymentOperation.Status == Windows.Foundation.AsyncStatus.Error)
-                {
-                    Windows.Management.Deployment.DeploymentResult deploymentResult = deploymentOperation.GetResults();
-                    Trace.WriteLine(string.Format("Installation Error: {0}", deploymentOperation.ErrorCode));
-                    Trace.WriteLine(string.Format("Detailed Error Text: {0}", deploymentResult.ErrorText));
-                    returnValue = false;
-                }
-                else if (deploymentOperation.Status == Windows.Foundation.AsyncStatus.Canceled)
-                {
-                    Trace.WriteLine("Installation Canceled");
-                    returnValue = false;
-                }
-                else if (deploymentOperation.Status == Windows.Foundation.AsyncStatus.Completed)
+                var packageUri = new Uri(appBundleUri);
+                var packageManager = new Windows.Management.Deployment.PackageManager();
+                var deploymentResult = await packageManager.AddPackageAsync(packageUri, null, Windows.Management.Deployment.DeploymentOptions.None);
+                if (deploymentResult.IsRegistered)
                 {
                     Trace.WriteLine("Installation succeeded!");
+                    return true;
                 }
                 else
                 {
-                    returnValue = false;
-                    Trace.WriteLine("Installation status unknown");
+                    Trace.WriteLine($"Installation Error: {deploymentResult.ErrorText}");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(string.Format("AddPackageSample failed, error message: {0}", ex.Message));
-                Trace.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                Trace.WriteLine($"AddPackageSample failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}");
                 return false;
             }
-            return returnValue;
         }
 
     }

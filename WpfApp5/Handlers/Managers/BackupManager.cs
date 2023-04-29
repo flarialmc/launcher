@@ -38,44 +38,40 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<List<string>> FilterByName(string filterName)
         {
-            var UnFilteredBackups = await GetAllBackupsAsync();
-            var filteredBackups = UnFilteredBackups.Where(backup => backup.StartsWith(filterName)).ToList();
-            return filteredBackups;
+            var unfilteredBackups = await GetAllBackupsAsync();
+            return unfilteredBackups.Where(backup => backup.StartsWith(filterName)).ToList();
         }
         public static async Task<List<string>> GetAllBackupsAsync()
         {
-            List<string> list = new List<string>();
-            foreach (var backup in Directory.GetDirectories(backupDirectory))
+            return await Task.Run(() =>
             {
-                list.Add(new DirectoryInfo(backup).Name);
-                await Task.Delay(1);
-            }
-            return list;
+                return Directory.GetDirectories(backupDirectory)
+                                .Select(dir => new DirectoryInfo(dir).Name)
+                                .ToList();
+            });
         }
 
 
-
-        public static async Task loadBackup(string backupName)
+        public static async Task LoadBackup(string backupName)
         {
-            Console.WriteLine(backupName);
             try
-
             {
+                var mcPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang");
+                var backupMojangPath = Path.Combine(backupDirectory, backupName, "com.mojang");
+                var backupRoamingPath = Path.Combine(backupDirectory, backupName, "RoamingState");
 
-                var mcpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang");
-                if (!Directory.Exists(Path.Combine(backupDirectory + backupName, "com.mojang")))
+                if (!Directory.Exists(backupMojangPath))
                 {
-                    MessageBox.Show("You have no Minecraft backups available with the Id given.", "Failed to Load Backup");
+                    MessageBox.Show("No Minecraft backups available with the given ID.", "Failed to Load Backup");
                     return;
                 }
-                else
+
+                await DirectoryCopy(backupMojangPath, mcPath, true);
+
+                if (Directory.Exists(backupRoamingPath))
                 {
-                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "com.mojang"), mcpath, true);
-                }
-                var FlarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
-                if (Directory.Exists(Path.Combine(backupDirectory + backupName, "RoamingState")))
-                {
-                    await DirectoryCopy(Path.Combine(backupDirectory + backupName, "RoamingState"), FlarialPath, true);
+                    var flarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
+                    await DirectoryCopy(backupRoamingPath, flarialPath, true);
                 }
             }
             catch (Exception ex)
@@ -83,68 +79,74 @@ namespace Flarial.Launcher.Managers
                 MessageBox.Show(ex.Message);
             }
         }
-        public static async Task createBackup(string backupName)
+        public static async Task CreateBackup(string backupName)
         {
             try
             {
-                if (Directory.Exists(backupDirectory + backupName))
+                var backupDirectoryPath = Path.Combine(backupDirectory, backupName);
+                if (Directory.Exists(backupDirectoryPath))
                 {
                     return;
                 }
-                #region Paths
-                var mcpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games");
-                var FlarialPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState");
-                #endregion
-                var dirm = Directory.CreateDirectory(backupDirectory);
-                #region Com.mojang
-                if (Directory.Exists(mcpath))
+
+                var mcPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Packages",
+                    "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+                    "LocalState",
+                    "games"
+                );
+                var flarialPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Packages",
+                    "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+                    "RoamingState"
+                );
+
+                var backupConfigPath = Path.Combine(backupDirectoryPath, "BackupConfig.json");
+
+                Directory.CreateDirectory(backupDirectoryPath);
+                Directory.CreateDirectory(Path.Combine(backupDirectoryPath, "com.mojang"));
+                Directory.CreateDirectory(Path.Combine(backupDirectoryPath, "RoamingState"));
+
+                if (Directory.Exists(mcPath))
                 {
-                    // string Name;
-                    foreach (var dir in Directory.GetDirectories(mcpath))
+                    await Task.WhenAll(Directory.EnumerateDirectories(mcPath).Select(async dir =>
                     {
-                        FileAttributes attributes = File.GetAttributes(dir);
+                        var attributes = File.GetAttributes(dir);
                         if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                         {
-                            // Make the file modifiable.
-                            attributes = RemoveAttribute(attributes, FileAttributes.ReadOnly);
+                            attributes &= ~FileAttributes.ReadOnly;
                             File.SetAttributes(dir, attributes);
-                            Console.WriteLine("The {0} file is no longer read only.", dir);
                         }
-                        await DirectoryCopy(dir, Path.Combine(backupDirectory + "\\" + backupName + "\\com.mojang"), true);
-                    }
+                        await DirectoryCopy(dir, Path.Combine(backupDirectoryPath, "com.mojang", new DirectoryInfo(dir).Name), true);
+                    }));
                 }
                 else
                 {
                     MessageBox.Show("Minecraft Data Path is invalid!", "Failed To Backup");
                 }
-                #endregion
-                if (Directory.Exists(FlarialPath))
+
+                if (Directory.Exists(flarialPath))
                 {
-                    foreach (var dir in Directory.GetDirectories(FlarialPath))
+                    await Task.WhenAll(Directory.EnumerateDirectories(flarialPath).Select(async dir =>
                     {
-                        var DirecInfo = new DirectoryInfo(dir);
-                        FileAttributes attributes = File.GetAttributes(dir);
+                        var attributes = File.GetAttributes(dir);
                         if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                         {
-                            // Make the file modifiable.
-                            attributes = RemoveAttribute(attributes, FileAttributes.ReadOnly);
+                            attributes &= ~FileAttributes.ReadOnly;
                             File.SetAttributes(dir, attributes);
-                            // Console.WriteLine("The {0} file is no longer read
-                            // only.", mcpath);
                         }
-                        Directory.CreateDirectory(Path.Combine(
-                        backupDirectory + backupName, "RoamingState"));
-                        await DirectoryCopy(dir, Path.Combine(
-                        backupDirectory + backupName + "\\RoamingState", DirecInfo.Name), true);
-                    }
+                        await DirectoryCopy(dir, Path.Combine(backupDirectoryPath, "RoamingState", new DirectoryInfo(dir).Name), true);
+                    }));
                 }
                 else
                 {
                     MessageBox.Show("Roaming State Data Path is invalid!", "Failed To Backup");
                 }
-                await Task.Delay(1000);
-                var text = await createConfig();
-                File.WriteAllText(Path.Combine(backupDirectory + "\\" + backupName, "\\BackupConfig.json"), text);
+
+                var text = await CreateConfig();
+                File.WriteAllText(backupConfigPath, text);
             }
             catch (Exception ex)
             {
@@ -156,32 +158,32 @@ namespace Flarial.Launcher.Managers
             await DeleteDirectory(backupDirectory + backupName);
         }
 
-        public static async Task<string> createConfig()
+        public static async Task<string> CreateConfig()
         {
             var version = Minecraft.GetVersion();
             await Task.Delay(1);
+
             var backupConfig = new BackupConfiguration
             {
                 BackupTime = DateTime.Now,
                 MinecraftVersion = version.ToString(),
                 BackupId = Guid.NewGuid(),
             };
-            string jsonString = JsonSerializer.Serialize(backupConfig);
-            return jsonString;
+
+            return JsonSerializer.Serialize(backupConfig);
         }
-        public static async Task<BackupConfiguration> getConfig(string BackupName)
+        public static async Task<BackupConfiguration> getConfig(string backupName)
         {
-            var Path = backupDirectory + BackupName + "\\BackupConfig.json";
-            // convert string to stream
-            FileStream openStream = File.OpenRead(Path);
-            var backupConfig = await JsonSerializer.DeserializeAsync<BackupConfiguration>(openStream);
-            if (backupConfig == null)
+            var path = Path.Combine(backupDirectory, backupName, "BackupConfig.json");
+
+            if (!File.Exists(path))
             {
                 return null;
             }
-            else
+
+            using (FileStream openStream = File.OpenRead(path))
             {
-                return backupConfig;
+                return await JsonSerializer.DeserializeAsync<BackupConfiguration>(openStream);
             }
         }
 
