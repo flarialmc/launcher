@@ -34,9 +34,6 @@ using Microsoft.Win32;
 
 namespace Flarial.Launcher
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow
     {
 
