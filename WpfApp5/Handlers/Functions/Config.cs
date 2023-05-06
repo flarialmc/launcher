@@ -10,7 +10,7 @@ public class Config
     
     public static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
     
-    public static async Task saveConfig(string version, string customdllpath, bool shouldUseBetaDLLreal, bool closeToTray)
+    public static async Task saveConfig(string version, bool shouldUseCustomDLLreal, string customdllpath, bool shouldUseBetaDLLreal, bool closeToTray)
     {
         if (!File.Exists(Path))
         {
@@ -24,7 +24,9 @@ public class Config
         var ts = new ConfigData()
         {
             minecraft_version = version,
-            
+
+            shouldUseCustomDLL = shouldUseCustomDLLreal,
+
             custom_dll_path = customdllpath,
             
             shouldUseBetaDll = shouldUseBetaDLLreal,

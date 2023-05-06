@@ -29,6 +29,8 @@ using System.Windows.Threading;
 using System.Threading;
 using WPFUI.Taskbar;
 using Windows.Management.Deployment.Preview;
+using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace Flarial.Launcher
 {
@@ -44,6 +46,7 @@ namespace Flarial.Launcher
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
         public bool closeToTray;
+        public bool shouldUseCustomDLL;
         public bool isLoggedIn;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL;
@@ -77,10 +80,11 @@ namespace Flarial.Launcher
 
             InitializeComponent();
 
-            if (custom_dll_path != "amongus")
-                CustomDllButton.IsChecked = true;
+            CustomDllButton.IsChecked = shouldUseCustomDLL;
 
-            TrayButton.IsChecked = closeToTray;
+            CustomDLLTextBox.Text = custom_dll_path;
+
+            CloseToTrayButton.IsChecked = closeToTray;
 
             BetaDLLButton.IsChecked = shouldUseBetaDLL;
 
@@ -368,6 +372,7 @@ namespace Flarial.Launcher
 
             minecraft_version = config.minecraft_version;
             shouldUseBetaDLL = config.shouldUseBetaDll;
+            shouldUseCustomDLL = config.shouldUseCustomDLL;
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
 
@@ -501,7 +506,7 @@ namespace Flarial.Launcher
                 if (guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
-                    BetaDLLButton.Visibility = Visibility.Visible;
+                    BetaDLLGrid.Visibility = Visibility.Collapsed;
                     BetaTag.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
@@ -631,62 +636,6 @@ namespace Flarial.Launcher
             OptionsAccountGrid.Visibility = Visibility.Visible;
         }
 
-        //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
-        {
-            if (custom_dll_path == "amongus")
-            {
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.InitialDirectory = @"C:\";
-                dialog.DefaultExt = "dll";
-                dialog.Filter = "DLL Files|*.dll;";
-                dialog.CheckFileExists = true;
-                dialog.CheckPathExists = true;
-                dialog.Multiselect = false;
-                dialog.Title = "Select Custom DLL";
-
-                if (dialog.ShowDialog() == true)
-                {
-
-                    custom_dll_path = dialog.FileName;
-                    Trace.WriteLine(custom_dll_path);
-
-                }
-                else
-                {
-                    dialog.ShowDialog();
-                    custom_dll_path = dialog.FileName;
-                    Trace.WriteLine(custom_dll_path);
-                }
-            }
-        }
-
-        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            custom_dll_path = "amongus";
-            Trace.WriteLine(custom_dll_path);
-        }
-
-        private void BetaButton_Checked(object sender, RoutedEventArgs e)
-        {
-            shouldUseBetaDLL = true;
-        }
-
-        private void BetaButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            shouldUseBetaDLL = false;
-        }
-
-        private void TrayButton_Checked(object sender, RoutedEventArgs e)
-        {
-            closeToTray = true;
-        }
-
-        private void TrayButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            closeToTray = false;
-        }
-
         //same here
         private void Logout(object sender, RoutedEventArgs e)
         {
@@ -700,7 +649,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
-            BetaDLLButton.Visibility = Visibility.Hidden;
+            BetaDLLGrid.Visibility = Visibility.Collapsed;
             isLoggedIn = false;
         }
 
@@ -714,8 +663,10 @@ namespace Flarial.Launcher
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
 
-            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL, closeToTray);
+            await Config.saveConfig(minecraft_version, shouldUseCustomDLL = (bool)CustomDllButton.IsChecked, custom_dll_path = CustomDLLTextBox.Text, shouldUseBetaDLL, closeToTray = (bool)CloseToTrayButton.IsChecked);
 
+            CustomDialogBox MessageBox = new CustomDialogBox("Success", "The changes were successfully applied!", "MessageBox");
+            MessageBox.ShowDialog();
         }
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
@@ -727,6 +678,35 @@ namespace Flarial.Launcher
         {
             CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "Because why tf not, stop being a fucking pussy and give us your discord token.", "MessageBox");
             MessageBox.ShowDialog();
+        }
+
+        private void ToggleButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+            CustomDLLSelect.Visibility = Visibility.Visible;
+        }
+
+        private void ToggleButton_Unchecked_1(object sender, RoutedEventArgs e)
+        {
+            CustomDLLSelect.Visibility = Visibility.Collapsed;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.Filter = "DLL Files (*.dll)|*.dll|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Title = "Select Custom DLL";
+            openFileDialog.ShowDialog();
+  
+            if (openFileDialog.FileName != string.Empty) CustomDLLTextBox.Text = openFileDialog.FileName;
+            if (!CustomDLLTextBox.Text.EndsWith(".dll"))
+            {
+                CustomDialogBox MessageBox = new CustomDialogBox("Warning", "You did not select a dll, good luck injecting that I guess.", "MessageBox");
+                MessageBox.ShowDialog();
+            }
+            
         }
     }
 }

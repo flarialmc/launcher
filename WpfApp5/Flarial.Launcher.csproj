@@ -20,13 +20,13 @@
     <None Remove="Images\discord-mark-white.png" />
     <None Remove="Images\general.png" />
     <None Remove="Images\Gus1.png" />
-    <None Remove="Images\Gus2.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\icon.png" />
     <None Remove="Images\news.png" />
     <None Remove="Images\Saul_Goodman2.jpg" />
     <None Remove="Images\setting.png" />
     <None Remove="Images\share.png" />
+    <None Remove="Images\user2.png" />
     <None Remove="Images\versions.png" />
   </ItemGroup>
 
@@ -68,7 +68,6 @@
     <Resource Include="Images\discord-mark-white.png" />
     <Resource Include="Images\general.png" />
     <Resource Include="Images\Gus1.png" />
-    <Resource Include="Images\Gus2.png" />
     <Resource Include="Images\icon.ico" />
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\news.png" />

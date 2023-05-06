@@ -98,55 +98,10 @@
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
-            <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Visible">
+            <Label Content="idk what to put here" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
                 <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="5">
-                    <StackPanel Orientation="Horizontal" x:Name="VersionsPanel">
-                        <!--RadioButton Style="{StaticResource VersionRadioButton2}">
-                            <RadioButton.Tag>
-                                <x:Array Type="{x:Type s:String}">
-                                    <s:String>/Images/Gus1.png</s:String>
-                                    <s:String>1.16.100</s:String>
-                                    <s:String>521MB of 920MB - 57%</s:String>
-                                    <s:String>0</s:String>
-                                    <s:String>207.5</s:String>
-                                </x:Array>
-                            </RadioButton.Tag>
-                        </RadioButton>
-                        <RadioButton Style="{StaticResource VersionRadioButton2}">
-                            <RadioButton.Tag>
-                                <x:Array Type="{x:Type s:String}">
-                                    <s:String>/Images/Gus1.png</s:String>
-                                    <s:String>1.16.100</s:String>
-                                    <s:String>521MB of 920MB - 57%</s:String>
-                                    <s:String>1</s:String>
-                                    <s:String>207.5</s:String>
-                                </x:Array>
-                            </RadioButton.Tag>
-                        </RadioButton>
-                        <RadioButton Style="{StaticResource VersionRadioButton2}" IsChecked="True">
-                            <RadioButton.Tag>
-                                <x:Array Type="{x:Type s:String}">
-                                    <s:String>/Images/Gus1.png</s:String>
-                                    <s:String>1.16.100</s:String>
-                                    <s:String>521MB of 920MB - 57%</s:String>
-                                    <s:String>1</s:String>
-                                    <s:String>207.5</s:String>
-                                </x:Array>
-                            </RadioButton.Tag>
-                        </RadioButton>
-                        <RadioButton Style="{StaticResource VersionRadioButton2}">
-                            <RadioButton.Tag>
-                                <x:Array Type="{x:Type s:String}">
-                                    <s:String>/Images/Gus1.png</s:String>
-                                    <s:String>1.16.100</s:String>
-                                    <s:String>521MB of 920MB - 57%</s:String>
-                                    <s:String>3</s:String>
-                                    <s:String>178.45</s:String>
-                                </x:Array>
-                            </RadioButton.Tag>
-                        </RadioButton-->
-                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" x:Name="VersionsPanel"/>
                     <ScrollViewer.Clip>
                         <RectangleGeometry Rect="0,0,415,275" RadiusX="10" RadiusY="10"/>
                     </ScrollViewer.Clip>
@@ -155,13 +110,82 @@
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>
             </Grid>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Hidden">
-                <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
+                <StackPanel Margin="0,10,10,0">
+                    <Grid>
+                        <Label Content="Close to tray" Foreground="#FFFFFF" VerticalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <ToggleButton x:Name="CloseToTrayButton" Style="{StaticResource ToggleButton2}" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid x:Name="BetaDLLGrid" Visibility="Collapsed">
+                        <Label Content="Beta DLL" Foreground="#FFFFFF" VerticalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <ToggleButton x:Name="BetaDLLButton" Style="{StaticResource ToggleButton2}" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid>
+                        <Label Content="Custom DLL" Foreground="#FFFFFF" VerticalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <ToggleButton x:Name="CustomDllButton" Style="{StaticResource ToggleButton2}" HorizontalAlignment="Right" Checked="ToggleButton_Checked_1" Unchecked="ToggleButton_Unchecked_1"/>
+                        <StackPanel Margin="15,30,0,-25" Orientation="Horizontal" Name="CustomDLLSelect" Visibility="Collapsed">
+                            <Border CornerRadius="7.5,0,0,7.5" HorizontalAlignment="Left" Width="370">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#525252" x:Name="CustomDLLTextBoxBackground"/>
+                                </Border.Background>
+                                <TextBox Name="CustomDLLTextBox" CaretBrush="#ffffff" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" Text="Placeholder" Background="Transparent" Foreground="#ffffff" FontFamily="/Fonts/#Sofia Sans" BorderThickness="0"/>
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="Border.MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="CustomDLLTextBoxBackground" Storyboard.TargetProperty="Color"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="CustomDLLTextBoxBackground" Storyboard.TargetProperty="Color"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                            </Border>
+                            <Button Cursor="Hand" Click="Button_Click">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border Width="30" Margin="-1,0,0,0" CornerRadius="0,7.5,7.5,0">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="#525252" x:Name="CustomDLLButtonBackground"/>
+                                            </Border.Background>
+                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Ellipse Fill="#ffffff" Width="5" Height="5" Margin="1"/>
+                                                <Ellipse Fill="#ffffff" Width="5" Height="5" Margin="1"/>
+                                                <Ellipse Fill="#ffffff" Width="5" Height="5" Margin="1"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="CustomDLLButtonBackground" Storyboard.TargetProperty="Color"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="CustomDLLButtonBackground" Storyboard.TargetProperty="Color"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
 
-                <ToggleButton x:Name="TrayButton" Style="{StaticResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
-
-                <Button x:Name="SaveConfigButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                
+                <Button x:Name="SaveConfigButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Visibility="Visible" Template="{StaticResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
                 <Grid.Clip>
                     <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
                 </Grid.Clip>

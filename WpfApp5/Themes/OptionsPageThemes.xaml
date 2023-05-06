@@ -66,6 +66,66 @@
         </Style.Triggers>
     </Style>
 
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="ToggleButton" x:Key="ToggleButton2">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="45"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.Clip>
+                            <RectangleGeometry Rect="0,0,45,20" RadiusX="10" RadiusY="10"/>
+                        </Grid.Clip>
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                <GradientStop Color="#525252" Offset="0" x:Name="ToggleButtonGradientStop"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid Background="Black" Opacity="0.0" Name="OpacityGrid"/>
+                        <Border x:Name="ToggleButtonCircle" Margin="4,0,0,0" HorizontalAlignment="Left" CornerRadius="6.25" Background="#ffffff" Width="12.5" Height="12.5"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ToggleButton.IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.1" To="0.2" Storyboard.TargetName="OpacityGrid" Storyboard.TargetProperty="Opacity"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="OpacityGrid" Storyboard.TargetProperty="Opacity"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation Duration="0:0:0.2" To="28,0,0,0" Storyboard.TargetName="ToggleButtonCircle" Storyboard.TargetProperty="Margin"/>
+                                        <ColorAnimation Duration="0:0:0.2" To="#d42932" Storyboard.TargetName="ToggleButtonGradientStop" Storyboard.TargetProperty="Color"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Duration="0:0:0.2" To="#525252" Storyboard.TargetName="ToggleButtonGradientStop" Storyboard.TargetProperty="Color"/>
+                                        <ThicknessAnimation Duration="0:0:0.2" To="4,0,0,0" Storyboard.TargetName="ToggleButtonCircle" Storyboard.TargetProperty="Margin"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
            TargetType="{x:Type RadioButton}"
            x:Key="OptionsButtonTheme">
