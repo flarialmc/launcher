@@ -97,8 +97,8 @@
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
             <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
-            <Label Content="Hot, hot Hotter settings!" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Visible">
+            <Label Content="idk what to put here" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
+            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
                 <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="5">
                     <StackPanel Orientation="Horizontal" x:Name="VersionsPanel"/>
                     <ScrollViewer.Clip>
