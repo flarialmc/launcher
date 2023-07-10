@@ -11,7 +11,7 @@
             <Image Source="Images/icon.png" HorizontalAlignment="Left" Margin="7,7,0,6"/>
             <Label Content="Title" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" x:Name="MessageBoxTitle"/>
             <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent"/>
-            <Button IsCancel="True" x:Name="MessageBoxClose" Template="{StaticResource CloseButton}" Cursor="Hand" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Height="20" Width="20"/>
+            <Button IsCancel="True" x:Name="MessageBoxClose" Style="{StaticResource CloseButton}" Margin="0,10,10,0"/>
         </Grid>
         <TextBlock Text="ertihgnetrio rnegvner wrgehnoe rgewij erjgoijerg egrnoergn oergnoiojnergoiner" TextWrapping="WrapWithOverflow" FontFamily="Fonts/#Unbounded" Foreground="White" Margin="10,50,10,40" x:Name="MessageBoxText"/>
         <Button IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxYes" Template="{StaticResource YesButton}" Height="30" Width="90" Cursor="Hand" Margin="100,0,0,10" VerticalAlignment="Bottom"/>

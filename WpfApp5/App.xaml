@@ -6,11 +6,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/DialogBoxThemes.xaml"/>
-                <ResourceDictionary Source="Themes/LoginPageThemes.xaml"/>
-                <ResourceDictionary Source="Themes/MainPageThemes.xaml"/>
-                <ResourceDictionary Source="Themes/OptionsPageThemes.xaml"/>
-                <ResourceDictionary Source="Themes/VersionRadioButtonThemes.xaml"/>
+                <ResourceDictionary x:Name="TestDictionary1">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="/Themes/DefaultTheme.xaml"/>
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

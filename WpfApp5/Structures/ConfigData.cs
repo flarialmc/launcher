@@ -6,4 +6,5 @@ public class ConfigData
     public string custom_dll_path;
     public bool shouldUseBetaDll;
     public bool closeToTray;
+    public string custom_theme_path;
 }

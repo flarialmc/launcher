@@ -2,7 +2,6 @@
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
-using Octokit;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,21 +13,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
-using Button = System.Windows.Controls.Button;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Windows.Controls;
 using System.Collections.Generic;
-using System.Windows.Data;
 using System.Windows.Threading;
-using System.Threading;
-using WPFUI.Taskbar;
-using Windows.Management.Deployment.Preview;
 
 namespace Flarial.Launcher
 {
@@ -43,6 +33,7 @@ namespace Flarial.Launcher
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
+        public string custom_theme_path = "main_default";
         public bool closeToTray;
         public bool isLoggedIn;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
@@ -81,6 +72,12 @@ namespace Flarial.Launcher
                 CustomDllButton.IsChecked = true;
 
             TrayButton.IsChecked = closeToTray;
+
+            if (!(custom_theme_path == "main_default"))
+            {
+                var app = (App)Application.Current;
+                app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+            }
 
             BetaDLLButton.IsChecked = shouldUseBetaDLL;
 
@@ -237,10 +234,12 @@ namespace Flarial.Launcher
             }
 
             //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
-            Dictionary<string, string> TestVersions = new Dictionary<string, string>();
-            TestVersions.Add("1.16.100.4", "Not Installed");
-            TestVersions.Add("1.19.51.1", "Selected");
-            TestVersions.Add("1.19.70", "Installed");
+            Dictionary<string, string> TestVersions = new Dictionary<string, string>
+            {
+                { "1.16.100.4", "Not Installed" },
+                { "1.19.51.1", "Selected" },
+                { "1.19.70", "Installed" }
+            };
             string ChosenVersion;
 
             foreach(string version in TestVersions.Keys)
@@ -370,9 +369,7 @@ namespace Flarial.Launcher
             shouldUseBetaDLL = config.shouldUseBetaDll;
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
-
-
-
+            custom_theme_path = config.custom_theme_path;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -475,8 +472,8 @@ namespace Flarial.Launcher
 
             if (user != null)
             {
-                Username.Content = user.username + "#" + user.discriminator;
-                Username2.Content = user.username + "#" + user.discriminator;
+                Username.Content = user.username;
+                Username2.Content = user.username;
                 //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
 
                 guestImage = PFP.Source;
@@ -498,7 +495,38 @@ namespace Flarial.Launcher
 
             if (guildUser.roles != null)
             {
-                if (guildUser.roles.Contains("1059408198261551145"))
+                if (guildUser.roles.Contains("1050447423635460197"))
+                {
+                    ifBeta = true;
+                    BetaDLLButton.Visibility = Visibility.Visible;
+                    ExecTag.Visibility = Visibility.Visible;
+                    Trace.WriteLine("iz beta bro");
+                }
+                else if (guildUser.roles.Contains("1058465209443958816"))
+                {
+                    ifBeta = true;
+                    BetaDLLButton.Visibility = Visibility.Visible;
+                    DevTag.Visibility = Visibility.Visible;
+                    Trace.WriteLine("iz beta bro");
+                }
+                else if (guildUser.roles.Contains("1059109828267606066"))
+                {
+                    ifBeta = true;
+                    BetaDLLButton.Visibility = Visibility.Visible;
+                    StaffTag.Visibility = Visibility.Visible;
+                    Trace.WriteLine("iz beta bro");
+                }
+                else if (guildUser.roles.Contains("1059332938774364160"))
+                {
+                    StaffTag.Visibility = Visibility.Visible;
+                    if (guildUser.roles.Contains("1059408198261551145"))
+                    {
+                        ifBeta = true;
+                        BetaDLLButton.Visibility = Visibility.Visible;
+                        Trace.WriteLine("iz beta bro");
+                    }
+                }
+                else if (guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
                     BetaDLLButton.Visibility = Visibility.Visible;
@@ -511,7 +539,6 @@ namespace Flarial.Launcher
                 }
 
             }
-
 
             w.Close();
 
@@ -713,9 +740,9 @@ namespace Flarial.Launcher
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
-
-            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL, closeToTray);
-
+            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL, closeToTray, custom_theme_path);
+            var app = (App)Application.Current;
+            app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
         }
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
@@ -727,6 +754,28 @@ namespace Flarial.Launcher
         {
             CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "Because why tf not, stop being a fucking pussy and give us your discord token.", "MessageBox");
             MessageBox.ShowDialog();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = @"C:\";
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
+            dialog.Multiselect = false;
+            dialog.Title = "Select Custom DLL";
+
+            if (dialog.ShowDialog() == true)
+            {
+
+                custom_theme_path = dialog.FileName;
+                Trace.WriteLine(custom_dll_path);
+
+            }
+            else
+            {
+                custom_theme_path = "main_default";
+            }
         }
     }
 }

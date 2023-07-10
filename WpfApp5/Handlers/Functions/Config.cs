@@ -10,7 +10,7 @@ public class Config
     
     public static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
     
-    public static async Task saveConfig(string version, string customdllpath, bool shouldUseBetaDLLreal, bool closeToTray)
+    public static async Task saveConfig(string version, string customdllpath, bool shouldUseBetaDLLreal, bool closeToTray, string customthemepath)
     {
         if (!File.Exists(Path))
         {
@@ -29,7 +29,9 @@ public class Config
             
             shouldUseBetaDll = shouldUseBetaDLLreal,
             
-            closeToTray = closeToTray
+            closeToTray = closeToTray,
+
+            custom_theme_path = customthemepath
         };
 
         var tss = JsonConvert.SerializeObject(ts);
