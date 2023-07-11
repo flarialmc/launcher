@@ -3,9 +3,11 @@ using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,12 +15,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
-using System.Collections.Generic;
-using System.Windows.Threading;
 
 namespace Flarial.Launcher
 {
@@ -27,7 +29,11 @@ namespace Flarial.Launcher
     /// </summary>
     public partial class MainWindow
     {
+        public int duration = 300;
 
+        Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
+        Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
+        Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new();
         public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
@@ -36,13 +42,15 @@ namespace Flarial.Launcher
         public string custom_theme_path = "main_default";
         public bool closeToTray;
         public bool isLoggedIn;
+        private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
+        private string ChosenVersion;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL;
         private ImageSource guestImage;
-        
+
 
         public MainWindow()
-        {           
+        {
             loadConfig();
 
             if (!Utils.IsAdministrator)
@@ -50,19 +58,9 @@ namespace Flarial.Launcher
                 MessageBox.Show("Run the application as an Administrator to continue.");
                 Process.GetCurrentProcess().Kill();
             }
+
             Minecraft.Init();
-
-            if (!Directory.Exists(BackupManager.backupDirectory)) { Directory.CreateDirectory(BackupManager.backupDirectory); }
-            if (!Directory.Exists(VersionManagement.launcherPath + "Versions\\")) { Directory.CreateDirectory(VersionManagement.launcherPath + "Versions\\"); }
-            if (!Directory.Exists(VersionManagement.launcherPath))
-            {
-                Directory.CreateDirectory(VersionManagement.launcherPath);
-            }
-
-            if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
-                File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
-
-
+            CreateDirectoriesAndFiles();
 
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
@@ -75,136 +73,20 @@ namespace Flarial.Launcher
 
             if (!(custom_theme_path == "main_default"))
             {
-                var app = (App)Application.Current;
-                app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+                if (!string.IsNullOrEmpty(custom_theme_path))
+                {
+                    var app = (App)Application.Current;
+                    app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+                }
             }
 
             BetaDLLButton.IsChecked = shouldUseBetaDLL;
 
-            int Duration = 300;
+            InitializeAnimations();
 
-            DoubleAnimation myDoubleAnimation1 = new DoubleAnimation();
-            myDoubleAnimation1.From = 130;
-            myDoubleAnimation1.To = 600;
-            myDoubleAnimation1.EasingFunction = new QuadraticEase();
-            myDoubleAnimation1.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation2 = new DoubleAnimation();
-            myDoubleAnimation2.From = 600;
-            myDoubleAnimation2.To = 130;
-            myDoubleAnimation2.EasingFunction = new QuadraticEase();
-            myDoubleAnimation2.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation7 = new DoubleAnimation();
-            myDoubleAnimation7.From = 600;
-            myDoubleAnimation7.To = 130;
-            myDoubleAnimation7.EasingFunction = new QuadraticEase();
-            myDoubleAnimation7.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation3 = new DoubleAnimation();
-            myDoubleAnimation3.From = 50;
-            myDoubleAnimation3.To = 400;
-            myDoubleAnimation3.EasingFunction = new QuadraticEase();
-            myDoubleAnimation3.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation4 = new DoubleAnimation();
-            myDoubleAnimation4.From = 400;
-            myDoubleAnimation4.To = 50;
-            myDoubleAnimation4.EasingFunction = new QuadraticEase();
-            myDoubleAnimation4.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation8 = new DoubleAnimation();
-            myDoubleAnimation8.From = 400;
-            myDoubleAnimation8.To = 50;
-            myDoubleAnimation8.EasingFunction = new QuadraticEase();
-            myDoubleAnimation8.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation5 = new DoubleAnimation();
-            myDoubleAnimation5.From = 0;
-            myDoubleAnimation5.To = 1;
-            myDoubleAnimation5.EasingFunction = new QuadraticEase();
-            myDoubleAnimation5.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation6 = new DoubleAnimation();
-            myDoubleAnimation6.From = 1;
-            myDoubleAnimation6.To = 0;
-            myDoubleAnimation6.EasingFunction = new QuadraticEase();
-            myDoubleAnimation6.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            DoubleAnimation myDoubleAnimation9 = new DoubleAnimation();
-            myDoubleAnimation9.From = 1;
-            myDoubleAnimation9.To = 0;
-            myDoubleAnimation9.EasingFunction = new QuadraticEase();
-            myDoubleAnimation9.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            ThicknessAnimation myPointAnimation1 = new ThicknessAnimation();
-            myPointAnimation1.From = new Thickness(145, 140, 0, 0);
-            myPointAnimation1.To = new Thickness(0, 0, 0, 0);
-            myPointAnimation1.EasingFunction = new QuadraticEase();
-            myPointAnimation1.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            ThicknessAnimation myPointAnimation2 = new ThicknessAnimation();
-            myPointAnimation2.From = new Thickness(0, 0, 0, 0);
-            myPointAnimation2.EasingFunction = new QuadraticEase();
-            myPointAnimation2.To = new Thickness(145, 140, 0, 0);
-            myPointAnimation2.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            ThicknessAnimation myPointAnimation3 = new ThicknessAnimation();
-            myPointAnimation3.From = new Thickness(0, 0, 0, 0);
-            myPointAnimation3.EasingFunction = new QuadraticEase();
-            myPointAnimation3.To = new Thickness(15, 0, 0, 15);
-            myPointAnimation3.Duration = new Duration(TimeSpan.FromMilliseconds(Duration));
-            Storyboard.SetTargetName(myDoubleAnimation1, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation2, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation3, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation4, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation5, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation6, OptionsGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation7, LoginGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation8, LoginGrid.Name);
-            Storyboard.SetTargetName(myDoubleAnimation9, LoginGrid.Name);
-            Storyboard.SetTargetName(myPointAnimation1, OptionsGrid.Name);
-            Storyboard.SetTargetName(myPointAnimation2, OptionsGrid.Name);
-            Storyboard.SetTargetName(myPointAnimation3, LoginGrid.Name);
-            Storyboard.SetTargetProperty(myDoubleAnimation1, new PropertyPath(Grid.WidthProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation2, new PropertyPath(Grid.WidthProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation7, new PropertyPath(Grid.WidthProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation3, new PropertyPath(Grid.HeightProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation4, new PropertyPath(Grid.HeightProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation8, new PropertyPath(Grid.HeightProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation5, new PropertyPath(Grid.OpacityProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation6, new PropertyPath(Grid.OpacityProperty));
-            Storyboard.SetTargetProperty(myDoubleAnimation9, new PropertyPath(Grid.OpacityProperty));
-            Storyboard.SetTargetProperty(myPointAnimation1, new PropertyPath(Grid.MarginProperty));
-            Storyboard.SetTargetProperty(myPointAnimation2, new PropertyPath(Grid.MarginProperty));
-            Storyboard.SetTargetProperty(myPointAnimation3, new PropertyPath(Grid.MarginProperty));
-            Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
-            Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
-            Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
-            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation1);
-            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation2);
-            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation3);
-            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation4);
-            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation5);
-            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation6);
-            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation7);
-            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation8);
-            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation9);
-            myWidthAnimatedButtonStoryboard1.Children.Add(myPointAnimation1);
-            myWidthAnimatedButtonStoryboard2.Children.Add(myPointAnimation2);
-            myWidthAnimatedButtonStoryboard3.Children.Add(myPointAnimation3);
-
-            OptionsButton.Click += async delegate (object sender, RoutedEventArgs args)
-            {
-                RadioButton0.IsChecked = true;
-                OptionsGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
-                await Task.Delay(Duration);
-                MainGrid.Visibility = Visibility.Hidden;
-            };
-            RadioButton3.Checked += async delegate (object sender, RoutedEventArgs args)
-            {
-                MainGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
-                await Task.Delay(Duration);
-                OptionsGrid.Visibility = Visibility.Hidden;
-            };
-            LoginGuest.Click += async delegate (object sender, RoutedEventArgs args)
-            {
-                MainGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
-                await Task.Delay(Duration);
-                LoginGrid.Visibility = Visibility.Hidden;
-            };
+            OptionsButton.Click += OptionsButton_Click;
+            RadioButton3.Checked += RadioButton3_Checked;
+            LoginGuest.Click += LoginGuest_Click;
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "powershell.exe";
@@ -233,99 +115,254 @@ namespace Flarial.Launcher
                 Trace.WriteLine("It's development time.");
             }
 
-            //this is just for testing and a placeholder so feel free to change it to best fit your needs, you'll probably figure it out
-            Dictionary<string, string> TestVersions = new Dictionary<string, string>
+            TestVersions = new Dictionary<string, string>
+    {
+        { "1.16.100.4", "Not Installed" },
+        { "1.19.51.1", "Selected" },
+        { "1.19.70", "Installed" }
+    };
+
+            foreach (string version in TestVersions.Keys)
             {
-                { "1.16.100.4", "Not Installed" },
-                { "1.19.51.1", "Selected" },
-                { "1.19.70", "Installed" }
-            };
-            string ChosenVersion;
-
-            foreach(string version in TestVersions.Keys)
-            {
-                RadioButton radioButton = new RadioButton();
-                Style? style1 = new Style();
-                string[] tags = {"/Images/Gus1.png", version, "temp"};
-                if (TestVersions[version] == "Installed") style1 = this.FindResource("test1") as Style;
-                else if (TestVersions[version] == "Selected") { style1 = this.FindResource("test1") as Style; radioButton.IsChecked = true; }
-                else if (TestVersions[version] == "Not Installed") style1 = this.FindResource("test2") as Style;
-
-                
-
-                radioButton.Style = style1;
-                radioButton.Tag = tags;
-                radioButton.Checked += RadioButton_Checked;
-
-                VersionsPanel.Children.Add(radioButton);
-
-                async void RadioButton_Checked(object sender, RoutedEventArgs e)
-                {
-                    if (TestVersions[version] == "Not Installed") 
-                    { 
-                        radioButton.Style = FindResource("test3") as Style; 
-                        foreach(RadioButton rb in VersionsPanel.Children)
-                        {
-                            rb.IsEnabled = true;
-                        }
-
-                        double progress = 0;
-
-                        DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-
-                        timer.Tick += Timer_Tick;
-                        timer.Start();
-                        void Timer_Tick(object sender, EventArgs e)
-                        {
-                            progress++;
-                            string[] tags2 = { "/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
-                            radioButton.Content = 415-(progress/100*415);
-                            radioButton.Tag = tags2;
-                            if (progress >= 100)
-                            {
-                                timer.Stop();
-                                radioButton.Style = FindResource("test1") as Style;
-                                radioButton.IsChecked = true;
-                                TestVersions[version] = "Installed";
-                            }
-                        }
-                    }
-                    
-                    ChosenVersion = version;
-                    versionLabel.Content = ChosenVersion;
-
-
-
-                    /*try
-                    {
-
-                        await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-
-                    }
-                    catch (RateLimitExceededException)
-                    {
-                        MessageBox.Show("Octokit Rate Limit was reached.");
-                    }*/
-                }
-                
-                
-            }            
+                AddRadioButton(version, TestVersions[version]);
+            }
 
             versionLabel.Content = Minecraft.GetVersion();
-            int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
-            if (Time >= 0 && Time < 12) { GreetingLabel.Content = "Good Morning!"; }
-            else if (Time >= 12 && Time < 18) { GreetingLabel.Content = "Good Afternoon!"; }
-            else if (Time >= 18 && Time <= 24) { GreetingLabel.Content = "Good Evening!"; }
-
+            SetGreetingLabel();
 
             Task.Delay(1);
 
-
             Dispatcher.BeginInvoke(() => RPCManager.Initialize());
 
-
             Application.Current.MainWindow = this;
+        }
 
+        private void CreateDirectoriesAndFiles()
+        {
+            if (!Directory.Exists(BackupManager.backupDirectory))
+                Directory.CreateDirectory(BackupManager.backupDirectory);
+
+            if (!Directory.Exists(VersionManagement.launcherPath + "Versions\\"))
+                Directory.CreateDirectory(VersionManagement.launcherPath + "Versions\\");
+
+            if (!Directory.Exists(VersionManagement.launcherPath))
+                Directory.CreateDirectory(VersionManagement.launcherPath);
+
+            if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
+                File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
+        }
+
+        private void InitializeAnimations()
+        {
+
+            DoubleAnimation myDoubleAnimation1 = CreateDoubleAnimation(130, 600, duration);
+            DoubleAnimation myDoubleAnimation2 = CreateDoubleAnimation(600, 130, duration);
+            DoubleAnimation myDoubleAnimation3 = CreateDoubleAnimation(50, 400, duration);
+            DoubleAnimation myDoubleAnimation4 = CreateDoubleAnimation(400, 50, duration);
+            DoubleAnimation myDoubleAnimation5 = CreateDoubleAnimation(0, 1, duration);
+            DoubleAnimation myDoubleAnimation6 = CreateDoubleAnimation(1, 0, duration);
+            DoubleAnimation myDoubleAnimation7 = CreateDoubleAnimation(600, 130, duration);
+            DoubleAnimation myDoubleAnimation8 = CreateDoubleAnimation(400, 50, duration);
+            DoubleAnimation myDoubleAnimation9 = CreateDoubleAnimation(1, 0, duration);
+            ThicknessAnimation myPointAnimation1 = CreateThicknessAnimation(new Thickness(145, 140, 0, 0), new Thickness(0, 0, 0, 0), duration);
+            ThicknessAnimation myPointAnimation2 = CreateThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(145, 140, 0, 0), duration);
+            ThicknessAnimation myPointAnimation3 = CreateThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(15, 0, 0, 15), duration);
+
+            Storyboard.SetTargetName(myDoubleAnimation1, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation2, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation3, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation4, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation5, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation6, OptionsGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation7, LoginGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation8, LoginGrid.Name);
+            Storyboard.SetTargetName(myDoubleAnimation9, LoginGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation1, OptionsGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation2, OptionsGrid.Name);
+            Storyboard.SetTargetName(myPointAnimation3, LoginGrid.Name);
+            Storyboard.SetTargetProperty(myDoubleAnimation1, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation2, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation7, new PropertyPath(Grid.WidthProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation3, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation4, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation8, new PropertyPath(Grid.HeightProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation5, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation6, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myDoubleAnimation9, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTargetProperty(myPointAnimation1, new PropertyPath(Grid.MarginProperty));
+            Storyboard.SetTargetProperty(myPointAnimation2, new PropertyPath(Grid.MarginProperty));
+            Storyboard.SetTargetProperty(myPointAnimation3, new PropertyPath(Grid.MarginProperty));
+
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation1);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation2);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation3);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation4);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myDoubleAnimation5);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myDoubleAnimation6);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation7);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation8);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myDoubleAnimation9);
+            myWidthAnimatedButtonStoryboard1.Children.Add(myPointAnimation1);
+            myWidthAnimatedButtonStoryboard2.Children.Add(myPointAnimation2);
+            myWidthAnimatedButtonStoryboard3.Children.Add(myPointAnimation3);
+
+            OptionsButton.Click += async delegate (object sender, RoutedEventArgs args)
+            {
+                RadioButton0.IsChecked = true;
+                OptionsGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
+                await Task.Delay(duration);
+                MainGrid.Visibility = Visibility.Hidden;
+            };
+
+            RadioButton3.Checked += async delegate (object sender, RoutedEventArgs args)
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
+                await Task.Delay(duration);
+                OptionsGrid.Visibility = Visibility.Hidden;
+            };
+
+            LoginGuest.Click += async delegate (object sender, RoutedEventArgs args)
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
+                await Task.Delay(duration);
+                LoginGrid.Visibility = Visibility.Hidden;
+            };
+        }
+
+        private DoubleAnimation CreateDoubleAnimation(double from, double to, int duration)
+        {
+            return new DoubleAnimation
+            {
+                From = from,
+                To = to,
+                EasingFunction = new QuadraticEase(),
+                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+            };
+        }
+
+        private ThicknessAnimation CreateThicknessAnimation(Thickness from, Thickness to, int duration)
+        {
+            return new ThicknessAnimation
+            {
+                From = from,
+                To = to,
+                EasingFunction = new QuadraticEase(),
+                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+            };
+        }
+
+        private async void OptionsButton_Click(object sender, RoutedEventArgs args)
+        {
+            RadioButton0.IsChecked = true;
+            OptionsGrid.Visibility = Visibility.Visible;
+            myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
+            await Task.Delay(duration);
+            MainGrid.Visibility = Visibility.Hidden;
+        }
+
+        private async void RadioButton3_Checked(object sender, RoutedEventArgs args)
+        {
+            MainGrid.Visibility = Visibility.Visible;
+            myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
+            await Task.Delay(duration);
+            OptionsGrid.Visibility = Visibility.Hidden;
+        }
+
+        private async void LoginGuest_Click(object sender, RoutedEventArgs args)
+        {
+            MainGrid.Visibility = Visibility.Visible;
+            myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
+            await Task.Delay(duration);
+            LoginGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void AddRadioButton(string version, string status)
+        {
+            RadioButton radioButton = new RadioButton();
+            Style? style1 = null;
+            string[] tags = { "/Images/Gus1.png", version, "temp" };
+
+            if (status == "Installed")
+                style1 = this.FindResource("test1") as Style;
+            else if (status == "Selected")
+            {
+                style1 = this.FindResource("test1") as Style;
+                radioButton.IsChecked = true;
+            }
+            else if (status == "Not Installed")
+                style1 = this.FindResource("test2") as Style;
+
+            radioButton.Style = style1;
+            radioButton.Tag = tags;
+            radioButton.Checked += RadioButton_Checked;
+
+            VersionsPanel.Children.Add(radioButton);
+        }
+
+        private async void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            RadioButton radioButton = (RadioButton)sender;
+            object[] tags = (object[])radioButton.Tag;
+            string version = tags[1].ToString();
+
+            if (TestVersions[version] == "Not Installed")
+            {
+                radioButton.Style = FindResource("test3") as Style;
+
+                foreach (RadioButton rb in VersionsPanel.Children)
+                {
+                    rb.IsEnabled = true;
+                }
+
+                double progress = 0;
+
+                DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+                timer.Tick += Timer_Tick;
+                timer.Start();
+
+                void Timer_Tick(object sender, EventArgs e)
+                {
+                    progress++;
+                    string[] tags2 = { "/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
+                    radioButton.Content = 415 - (progress / 100 * 415);
+                    radioButton.Tag = tags2;
+
+                    if (progress >= 100)
+                    {
+                        timer.Stop();
+                        radioButton.Style = FindResource("test1") as Style;
+                        radioButton.IsChecked = true;
+                        TestVersions[version] = "Installed";
+                    }
+                }
+            }
+
+            ChosenVersion = version;
+            versionLabel.Content = ChosenVersion;
+
+            /*try
+            {
+                await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
+            }
+            catch (RateLimitExceededException)
+            {
+                MessageBox.Show("Octokit Rate Limit was reached.");
+            }*/
+        }
+
+        private void SetGreetingLabel()
+        {
+            int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
+
+            if (Time >= 0 && Time < 12)
+                GreetingLabel.Content = "Good Morning!";
+            else if (Time >= 12 && Time < 18)
+                GreetingLabel.Content = "Good Afternoon!";
+            else if (Time >= 18 && Time <= 24)
+                GreetingLabel.Content = "Good Evening!";
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -382,18 +419,13 @@ namespace Flarial.Launcher
             await w.web.EnsureCoreWebView2Async();
             w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read");
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
-
-
         }
 
         private async void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             if (e.Uri.StartsWith("https://flarial.net"))
             {
-
                 await AttemptLoginWithoutCache(e);
-
-
             }
         }
 
@@ -401,188 +433,116 @@ namespace Flarial.Launcher
         {
             try
             {
-                string authToken;
-                string sheesh = e.Uri.Split("https://flarial.net/?code=")[1];
-                string rawToken = await Task.Run(() => Auth.postReq(sheesh));
-
-
-                var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
-
-
-                authToken = atd.access_token;
-                await Task.Run(() => Auth.cacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in)));
-
-
-                string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
-
-
-
-                Trace.WriteLine(userResponse);
-                LoginAccount(userResponse, authToken);
-                return true;
+                if (Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri? uri) && uri != null)
+                {
+                    string code = uri.Query.TrimStart('?').Split('&').FirstOrDefault(p => p.StartsWith("code="))?.Substring(5);
+                    if (!string.IsNullOrEmpty(code))
+                    {
+                        string rawToken = Auth.postReq(code);
+                        var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
+                        await Auth.CacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in));
+                        string userResponse = Auth.getReqUser(atd.access_token);
+                        LoginAccount(userResponse, atd.access_token);
+                        return true;
+                    }
+                }
             }
             catch (Exception)
             {
                 return false;
             }
-
+            return false;
         }
+
         private async Task<bool> AttemptLogin()
         {
-            string authToken;
-
-
-            var Cached = await Auth.getCache();
-
-            if (Cached != null && Cached.expiry > DateTime.Now)
+            var cached = await Auth.GetCache();
+            if (cached != null && cached.expiry > DateTime.Now)
             {
-                authToken = Cached.access_token;
-                Trace.WriteLine("Cached one is valid.");
+                string userResponse = Auth.getReqUser(cached.access_token);
+                LoginAccount(userResponse, cached.access_token);
+                return true;
             }
-            else
-
-            {
-
-                Trace.Write("Invalid cache");
-                return false;
-
-
-            }
-
-
-
-
-
-
-            string userResponse = await Task.Run(() => Auth.getReqUser(authToken));
-
-
-
-            Trace.WriteLine(userResponse);
-            LoginAccount(userResponse, authToken);
-            return true;
-
+            return false;
         }
 
         private async void LoginAccount(string userResponse, string authToken)
         {
-
-
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
-
             if (user != null)
             {
                 Username.Content = user.username;
                 Username2.Content = user.username;
-                //Auth.putjoinuser(JsonConvert.DeserializeObject<AccessTokenData>(test), user.id);
-
                 guestImage = PFP.Source;
 
-                if (user.avatar != null) PFP.Source = new ImageSourceConverter()
-                        .ConvertFromString("https://cdn.discordapp.com/avatars/"
-                        + user.id + "/" + user.avatar + ".png") as ImageSource;
-
-                if (user.avatar != null) PFP2.Source = new ImageSourceConverter()
-                        .ConvertFromString("https://cdn.discordapp.com/avatars/"
-                        + user.id + "/" + user.avatar + ".png") as ImageSource;
-
+                if (user.avatar != null)
+                {
+                    var imageSource = new BitmapImage(new Uri($"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png"));
+                    PFP.Source = imageSource;
+                    PFP2.Source = imageSource;
+                }
             }
 
-            string guildUserContent = await Task.Run(() => Auth.getReqGuildUser(authToken));
-            Trace.WriteLine(guildUserContent);
-
+            string guildUserContent = Auth.getReqGuildUser(authToken);
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
-
             if (guildUser.roles != null)
             {
-                if (guildUser.roles.Contains("1050447423635460197"))
+                if (guildUser.roles.Contains("1050447423635460197") ||
+                    guildUser.roles.Contains("1058465209443958816") ||
+                    guildUser.roles.Contains("1059109828267606066") ||
+                    guildUser.roles.Contains("1059332938774364160") ||
+                    guildUser.roles.Contains("1059408198261551145"))
                 {
                     ifBeta = true;
                     BetaDLLButton.Visibility = Visibility.Visible;
-                    ExecTag.Visibility = Visibility.Visible;
-                    Trace.WriteLine("iz beta bro");
-                }
-                else if (guildUser.roles.Contains("1058465209443958816"))
-                {
-                    ifBeta = true;
-                    BetaDLLButton.Visibility = Visibility.Visible;
-                    DevTag.Visibility = Visibility.Visible;
-                    Trace.WriteLine("iz beta bro");
-                }
-                else if (guildUser.roles.Contains("1059109828267606066"))
-                {
-                    ifBeta = true;
-                    BetaDLLButton.Visibility = Visibility.Visible;
-                    StaffTag.Visibility = Visibility.Visible;
-                    Trace.WriteLine("iz beta bro");
-                }
-                else if (guildUser.roles.Contains("1059332938774364160"))
-                {
-                    StaffTag.Visibility = Visibility.Visible;
-                    if (guildUser.roles.Contains("1059408198261551145"))
-                    {
-                        ifBeta = true;
+                    if (guildUser.roles.Contains("1058465209443958816"))
+                        DevTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1059109828267606066"))
+                        StaffTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1059332938774364160") && guildUser.roles.Contains("1059408198261551145"))
                         BetaDLLButton.Visibility = Visibility.Visible;
-                        Trace.WriteLine("iz beta bro");
-                    }
-                }
-                else if (guildUser.roles.Contains("1059408198261551145"))
-                {
-                    ifBeta = true;
-                    BetaDLLButton.Visibility = Visibility.Visible;
-                    BetaTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1059332938774364160"))
+                        StaffTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1059408198261551145"))
+                        BetaTag.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
                 else
                 {
                     Trace.WriteLine("No no no NOT BETA BRO!");
                 }
-
             }
 
             w.Close();
-
             isLoggedIn = true;
             LoginButton.Visibility = Visibility.Hidden;
             LogoutButton.Visibility = Visibility.Visible;
-
             LoginGrid.Visibility = Visibility.Hidden;
-
-
-
             MainGrid.Visibility = Visibility.Visible;
-
-
-
-            //   BackupManager.createBackup("Safety");
-            //  BackupManager.loadBackup("Safety");
-
         }
+
 
 
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            FileInfo fi = new FileInfo(custom_dll_path);
-
-            if (custom_dll_path == "amongus")
+            if (string.IsNullOrEmpty(custom_dll_path))
             {
                 WebClient webClient = new WebClient();
-
-                DownloadProgressChangedEventHandler among =
-                    new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                DownloadProgressChangedEventHandler among = new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                 webClient.DownloadProgressChanged += among;
                 await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), "Among.dll");
                 await Injector.Inject($"{Managers.VersionManagement.launcherPath}\\Among.dll", statusLabel);
             }
             else
             {
-                if (File.Exists(custom_dll_path) && fi.Extension == ".dll")
+                if (File.Exists(custom_dll_path) && Path.GetExtension(custom_dll_path) == ".dll")
                 {
                     await Injector.Inject(custom_dll_path, statusLabel);
                 }
             }
         }
+
 
         public void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
 
@@ -740,7 +700,7 @@ namespace Flarial.Launcher
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
-            await Config.saveConfig(minecraft_version, custom_dll_path, shouldUseBetaDLL, closeToTray, custom_theme_path);
+            await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray);
             var app = (App)Application.Current;
             app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
         }

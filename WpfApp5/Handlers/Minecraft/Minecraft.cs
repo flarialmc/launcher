@@ -20,8 +20,10 @@ public static partial class Minecraft
 
     public static void Init()
     {
+
         InitManagers();
         FindPackage();
+
 
 
         var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
@@ -30,6 +32,7 @@ public static partial class Minecraft
             Process = mcIndex[0];
 
         }
+
 
 
     }
@@ -41,12 +44,13 @@ public static partial class Minecraft
         if (Packages.Count() == 0)
         {
             MessageBox.Show("You don't have MC installed LOL");
-        } else
+        }
+        else
         {
             ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
         }
 
-        ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+        //  ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
 
 
     }
