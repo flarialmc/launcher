@@ -16,20 +16,13 @@ namespace Flarial.Launcher.Functions
     }
     public static class Auth
     {
-
         public static string Path = $"{Managers.VersionManagement.launcherPath}\\cachedToken.txt";
-
         public static string client_id = "1067854754518151168";
         public static string client_sceret = "rfNFSaCf1G5ju34qLaYMQKFrEa4X-a7K";
         public static string redirect_url = "https://flarial.net";
 
-
-
-        //https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read
         public static string postReq(string code)
         {
-
-
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/oauth2/token");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -42,45 +35,36 @@ namespace Flarial.Launcher.Functions
 
             var response = client.PostAsync(request);
             return response.Result.Content;
-
         }
 
         public static string getReqUser(string authCode)
         {
-
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me");
             request.AddHeader("Authorization", "Bearer " + authCode);
             var response = client.GetAsync(request);
             return response.Result.Content;
         }
-        
+
         public static string getReqGuildUser(string authCode)
         {
-
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me/guilds/1049946152092586054/member");
             request.AddHeader("Authorization", "Bearer " + authCode);
             var response = client.GetAsync(request);
             return response.Result.Content;
         }
-        
 
-        public static async Task cacheToken(string Token, DateTime Created, DateTime Expiry)
+        public static async Task CacheToken(string Token, DateTime Created, DateTime Expiry)
         {
             if (!File.Exists(Path))
             {
-                File.Create(Path);
-
-
-                await Task.Delay(1000);
-
+                await File.WriteAllTextAsync(Path, string.Empty);
             }
 
+            var raw = await File.ReadAllTextAsync(Path);
 
-            var raw = File.ReadAllText(Path);
-
-            if (raw.Length == 0)
+            if (string.IsNullOrEmpty(raw))
             {
                 var ts = new TokenStructure()
                 {
@@ -91,42 +75,16 @@ namespace Flarial.Launcher.Functions
 
                 var tss = JsonConvert.SerializeObject(ts);
 
-                File.WriteAllText(Path, tss);
-                return;
-
+                await File.WriteAllTextAsync(Path, tss);
             }
             else
             {
                 try
                 {
-                    var Decoded = JsonConvert.DeserializeObject<TokenStructure>(raw);
-                    if (Decoded == null)
+                    var decoded = JsonConvert.DeserializeObject<TokenStructure>(raw);
+                    if (decoded != null && DateTime.Now < decoded.expiry)
                     {
                         return;
-                    }
-                    else
-                    {
-                        if (DateTime.Now >= Decoded.expiry)
-                        {
-                            File.Delete(Path);
-                            var ts = new TokenStructure()
-                            {
-                                access_token = Token,
-                                created = Created,
-                                expiry = Expiry
-                            };
-
-                            var tss = JsonConvert.SerializeObject(ts);
-
-                            File.WriteAllText(Path, tss);
-                            return;
-
-                        }
-                        else
-                        {
-                            return;
-
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -134,35 +92,30 @@ namespace Flarial.Launcher.Functions
                     return;
                 }
 
+                File.Delete(Path);
 
+                var ts = new TokenStructure()
+                {
+                    access_token = Token,
+                    created = Created,
+                    expiry = Expiry
+                };
+
+                var tss = JsonConvert.SerializeObject(ts);
+
+                await File.WriteAllTextAsync(Path, tss);
             }
-
-
-
         }
 
-        public static async Task<TokenStructure>? getCache()
+        public static async Task<TokenStructure?> GetCache()
         {
             if (!File.Exists(Path))
             {
                 return null;
             }
-            var s = await Task.Run(() => File.ReadAllText(Path));
 
-
+            var s = await File.ReadAllTextAsync(Path);
             return JsonConvert.DeserializeObject<TokenStructure>(s);
-
         }
-
-        //private void putjoinuser(AccessTokenData authcode, string userid)
-        //{
-
-        //    var client = new RestClient("https://discord.com");
-        //    var request = new RestRequest("api/v10/guilds/1049946152092586054/members/" + userid);
-        //    request.AddHeader("Authorization", "Bot MTA1ODQyNjk2NjYwMjE3NDQ3NA.GAno-1.uYVeAJVBflLNpjKt0jCtxnXn7CJwyOdoQEK3NY");
-        //    request.AddHeader("Content-Type", "application/json");
-        //    request.AddBody(JsonConvert.SerializeObject(authcode));
-        //    client.Put(request);
-        //}
     }
 }

@@ -19,36 +19,30 @@ namespace Flarial.Launcher.Functions
 
         public static async Task Inject(string path, Label Status)
         {
-
-            if (!File.Exists(path))
+            if (!await Task.Run(() => File.Exists(path)))
             {
                 MessageBox.Show("The file does not exist in the provided path.");
-
-
                 return;
             }
+
             Utils.OpenGame();
-            while (Utils.IsGameOpen() == false)
+            while (!Utils.IsGameOpen())
             {
                 await Task.Delay(1);
             }
 
             Minecraft.Init();
 
-
             await ApplyAppPackages(path);
-
-
 
             Status.Content = "Waiting for Minecraft";
 
-            //Wait For MC to load
+            // Wait For MC to load
             await WaitForModules();
-
-
 
             Status.Content = "Injection begun";
             Trace.WriteLine($"Injection begun {path}");
+
             try
             {
                 var targetProcess = Minecraft.Process;
@@ -72,13 +66,10 @@ namespace Flarial.Launcher.Functions
 
         private static async Task ApplyAppPackages(string path)
         {
-            await Task.Run(() =>
-            {
-                FileInfo InfoFile = new FileInfo(path);
-                FileSecurity fSecurity = InfoFile.GetAccessControl();
-                fSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, InheritanceFlags.None, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
-                InfoFile.SetAccessControl(fSecurity);
-            });
+            FileInfo InfoFile = new FileInfo(path);
+            FileSecurity fSecurity = InfoFile.GetAccessControl();
+            fSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, InheritanceFlags.None, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
+            InfoFile.SetAccessControl(fSecurity);
 
             Console.WriteLine("Applied ALL_APPLICATION_PACKAGES permission to " + path);
         }
@@ -87,23 +78,20 @@ namespace Flarial.Launcher.Functions
         {
             while (Minecraft.Process == null)
             {
-                Thread.Sleep(4000);
+                await Task.Delay(4000);
             }
 
-            await Task.Run(() =>
+            Console.WriteLine("Waiting for Minecraft to load");
+            while (true)
             {
-                Console.WriteLine("Waiting for Minecraft to load");
-                while (true)
-                {
-
-                    Minecraft.Process.Refresh();
-                    if (Minecraft.Process.Modules.Count > 155) break;
-                    else
-                        Thread.Sleep(4000);
-
-                }
-            });
+                Minecraft.Process.Refresh();
+                if (Minecraft.Process.Modules.Count > 155)
+                    break;
+                else
+                    await Task.Delay(4000);
+            }
             Console.WriteLine("Minecraft finished loading");
         }
+
     }
 }
