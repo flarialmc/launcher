@@ -1,97 +1,191 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Flarial.Launcher.Managers
 {
     public static class RPCManager
     {
-        public static DiscordRpcClient client;
+        private static DiscordRpcClient client;
         private static string _discordTime = "";
+        private static string previousContent = "";
+        private static Timer _timer;
 
         public static async Task Initialize()
         {
-            dynamic dateTimestampEnd = null;
-            
-            await Task.Run( () =>
-            {
-
-                if (_discordTime != "" && int.TryParse(_discordTime, out int timestampEnd))
-                    dateTimestampEnd = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampEnd);
-                /*
-                Create a Discord client
-                NOTE: 	If you are using Unity3D, you must use the full constructor and define
-                         the pipe connection.
-                */
-                client = new DiscordRpcClient("1067854754518151168");
-
-                //Set the logger
-                client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
-
-                //Subscribe to events
-                client.OnReady += (sender, e) =>
-                {
-                    Console.WriteLine("Received Ready from user {0}", e.User.Username);
-                };
-
-                client.OnPresenceUpdate += (sender, e) => { Console.WriteLine("Received Update! {0}", e.Presence); };
-
-                //Connect to the RPC
-                client.Initialize();
-
-                //Set the rich presence
-                //Call this as many times as you want and anywhere in your code.
-                client.SetPresence(new RichPresence()
-                {
-                    Details = "In Launcher",
-                    //        State = "csharp example",
-                    Assets = new Assets()
-                    {
-                        LargeImageKey = "flarialbig",
-                        LargeImageText = "Flarial Launcher",
-                        //       SmallImageKey = "image_small"
-                    },
-                    Timestamps = new Timestamps
-                    {
-                        Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
-                            ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                                .AddSeconds(timestampStart)
-                            : DateTime.UtcNow,
-                        End = dateTimestampEnd
-                    }
-                });
-
-            });
-        }
-        public static async Task ResetPresence()
-        {
-            dynamic dateTimestampEnd = null;
-
             await Task.Run(() =>
             {
-                if (_discordTime != "" && int.TryParse(_discordTime, out int timestampEnd))
-                    dateTimestampEnd = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampEnd);
-
-                client.SetPresence(new DiscordRPC.RichPresence
-                {
-                    Details = "Ready to play",
-
-                    Assets = new Assets
-                    {
-                        LargeImageKey = "flarialbig",
-                        LargeImageText = "Flarial Launcher"
-                    },
-                    Timestamps = new Timestamps
-                    {
-                        Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
-                            ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                                .AddSeconds(timestampStart)
-                            : DateTime.UtcNow,
-                        End = dateTimestampEnd
-                    }
-                });
+                InitializeDiscordClient();
             });
+
+            _discordTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+
+            _timer = new Timer(100); // 100 milliseconds
+            _timer.Elapsed += TimerElapsed;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+
+            InLauncher();
+        }
+
+        private static void TimerElapsed(object? sender, ElapsedEventArgs e)
+        {
+            if (Process.GetProcessesByName("minecraft.windows").Length > 0)
+            {
+                var ip = readIp();
+                if (ip == previousContent)
+                {
+                    return;
+                }
+                else
+                {
+                    var a = GetServerInfo(ip);
+                    previousContent = ip; // Add this line to update previousContent
+                    if (a.largeImageKey == "flarialbig")
+                    {
+                        a.largeImageKey = "mcicon";
+                    }
+                    SetPresence(a.Detail, "flarialbig", a.largeImageKey, a.ipAddress);
+
+                }
+            }
+            else
+            {
+                InLauncher();
+                _timer.Stop();
+            }
+        }
+
+
+        public static string readIp()
+        {
+            var flarialPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Packages",
+                "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+                "RoamingState",
+                "Flarial",
+                "serverip.txt"
+            );
+
+            return File.ReadAllText(flarialPath);
+        }
+
+        public static void InLauncher()
+        {
+            SetPresence("In Launcher", "None", "flarialbig", "Flarial Launcher");
+        }
+
+        private static void InitializeDiscordClient()
+        {
+            client = new DiscordRpcClient("1067854754518151168");
+            client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+            client.OnReady += (sender, e) => Console.WriteLine("Received Ready from user {0}", e.User.Username);
+            client.OnPresenceUpdate += (sender, e) => Console.WriteLine("Received Update! {0}", e.Presence);
+            client.Initialize();
+        }
+
+        private static void SetPresence(string details, string smallKey, string bigKey, string bigimgText)
+        {
+            DateTime? dateTimestampEnd = null;
+            if (!string.IsNullOrEmpty(_discordTime) && int.TryParse(_discordTime, out int timestampEnd))
+            {
+                dateTimestampEnd = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampEnd);
+            }
+
+            var assets = new Assets
+            {
+                LargeImageKey = bigKey,
+                LargeImageText = bigimgText,
+                SmallImageKey = smallKey != "None" ? smallKey : null
+            };
+
+            client.SetPresence(new RichPresence
+            {
+                Details = details,
+                Assets = assets,
+                Timestamps = new Timestamps
+                {
+                    Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
+                        ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampStart)
+                        : DateTime.UtcNow,
+                    End = dateTimestampEnd
+                }
+            });
+        }
+
+        private static serverInformation GetServerInfo(string ip)
+        {
+            switch (ip)
+            {
+                case string _ when ip.Contains("hive"):
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "hivemc",
+                        Detail = "Hive Network"
+                    };
+                case string _ when ip.Contains("nethergames"):
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "ngmc",
+                        Detail = "Nethergames Network"
+                    };
+                case string _ when ip.Contains("hyperland"):
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "hlmc",
+                        Detail = "Hyperlands Network"
+                    };
+                case string _ when ip.Contains("cubecraft"):
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "ccmc",
+                        Detail = "Cubecraft Network"
+                    };
+                case string _ when ip.Contains("zeqa"):
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "zeqamc",
+                        Detail = "Zeqa Network"
+                    };
+                case "":
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "flarialbig",
+                        Detail = "Ready to play"
+                    };
+                case "world":
+                    return new serverInformation()
+                    {
+                        ipAddress = "In a world",
+                        largeImageKey = "flarialbig",
+                        Detail = "Playing Singleplayer"
+                    };
+                default:
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        Detail = "Playing Multiplayer",
+                        largeImageKey = "flarialbig"
+                    };
+            }
+        }
+
+        public class serverInformation
+        {
+            public string ipAddress { get; set; }
+            public string largeImageKey { get; set; }
+            public string Detail { get; set; }
         }
     }
 }
