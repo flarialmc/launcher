@@ -206,11 +206,11 @@ namespace Flarial.Launcher
             myWidthAnimatedButtonStoryboard2.Children.Add(myPointAnimation2);
             myWidthAnimatedButtonStoryboard3.Children.Add(myPointAnimation3);
 
-            OptionsButton.Click += async delegate (object sender, RoutedEventArgs args)
+            /*OptionsButton.Click += async delegate (object sender, RoutedEventArgs args)
             {
                 RadioButton0.IsChecked = true;
                 OptionsGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
+                //myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
                 await Task.Delay(duration);
                 MainGrid.Visibility = Visibility.Hidden;
             };
@@ -218,7 +218,7 @@ namespace Flarial.Launcher
             RadioButton3.Checked += async delegate (object sender, RoutedEventArgs args)
             {
                 MainGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
+                //myWidthAnimatedButtonStoryboard2.Begin(OptionsGrid);
                 await Task.Delay(duration);
                 OptionsGrid.Visibility = Visibility.Hidden;
             };
@@ -226,10 +226,10 @@ namespace Flarial.Launcher
             LoginGuest.Click += async delegate (object sender, RoutedEventArgs args)
             {
                 MainGrid.Visibility = Visibility.Visible;
-                myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
+                //myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
                 await Task.Delay(duration);
                 LoginGrid.Visibility = Visibility.Hidden;
-            };
+            };*/
         }
 
         private DoubleAnimation CreateDoubleAnimation(double from, double to, int duration)
@@ -274,8 +274,8 @@ namespace Flarial.Launcher
         private async void LoginGuest_Click(object sender, RoutedEventArgs args)
         {
             MainGrid.Visibility = Visibility.Visible;
-            myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
-            await Task.Delay(duration);
+            //myWidthAnimatedButtonStoryboard3.Begin(LoginGrid);
+            //await Task.Delay(duration);
             LoginGrid.Visibility = Visibility.Hidden;
         }
 
@@ -688,6 +688,12 @@ namespace Flarial.Launcher
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
             BetaDLLButton.Visibility = Visibility.Collapsed;
+            DevTag.Visibility = Visibility.Collapsed;
+            ExecTag.Visibility = Visibility.Collapsed;
+            StaffTag.Visibility = Visibility.Collapsed;
+            ModTag.Visibility = Visibility.Collapsed;
+            BetaTag.Visibility = Visibility.Collapsed;
+            MediaTag.Visibility = Visibility.Collapsed;
             isLoggedIn = false;
         }
 
@@ -696,6 +702,10 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
+            LoginGrid.Margin = new Thickness(0,0,0,0);
+            LoginGrid.Width = 600;
+            LoginGrid.Height = 400;
+            LoginGrid.Opacity = 1;
         }
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
