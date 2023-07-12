@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Style="{DynamicResource WindowStyle}">
     <Grid>
-        
+
         <!--Grid.Resources>
             <global:ShowMessageCommand
                 x:Key="MessageCommand" />
@@ -55,133 +55,86 @@
                     <Label Style="{DynamicResource ExecTagLabelStyle}"/>
                 </Border>
             </StackPanel>
-            <Label Content="Launcher" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,30,0"/>
-            <Label x:Name="VersionLabel" Content="v1" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,305,15,0"/>
-            <Label x:Name="statusLabel" Content="Waiting to launch..." Foreground="#525252" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalContentAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,335,15,0"/>
-
-            <Grid Name="LOL" Width="275" Height="120" Margin="0,0,0,65">
-
-                <Grid.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.6"/>
-                </Grid.Background>
-                <Grid.Clip>
-                    <RectangleGeometry Rect="0,0,275,120" RadiusX="15" RadiusY="15"/>
-                </Grid.Clip>
-                <Image Source="Images/news.png" Width="26" Height="26" VerticalAlignment="Top" Margin="0,13,80,0"/>
-                <Label Content="News" Foreground="#FFFFFF" FontSize="20" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="32" Margin="20,9,0,0"/>
-                <Label Content="This is a title i guess" Foreground="#fe4443" FontSize="12.5" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Center" Height="35" Margin="0,39,0,0"/>
-                <TextBlock TextAlignment="Center" Text="this is some text i am writing as a placeholder i guess. i am like kind of sick rn so after i finish this i think i'm done for a bit like a few days i think and i kind of want to play some games now" TextWrapping="WrapWithOverflow" Foreground="#FFFFFF" FontSize="10" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Top" Width="265" HorizontalAlignment="Center" Margin="0,64,0,0"/>
+            <Label Style="{DynamicResource LauncherLabel}"/>
+            <Label x:Name="VersionLabel" Content="v1" Style="{DynamicResource LauncherVersionLabel}"/>
+            <Label x:Name="statusLabel" Style="{DynamicResource StatusLabelStyle}"/>
+            <Grid Name="LOL" Style="{DynamicResource NewsGrid}">
+                <Image Style="{DynamicResource NewsIcon}"/>
+                <Label Style="{DynamicResource NewsHeader}"/>
+                <Label Style="{DynamicResource NewsTitle}"/>
+                <TextBlock Style="{DynamicResource NewsBody}"/>
             </Grid>
 
-            <StackPanel Width="275" Height="50" Orientation="Horizontal" Margin="0,140,0,0">
-                <Button Template="{DynamicResource LaunchButton}" Height="50" Width="130" Cursor="Hand" Click="Inject_Click"/>
-                <Button x:Name="OptionsButton" Template="{DynamicResource OptionsButton}" Height="50" Width="130" Cursor="Hand" Margin="15,0,0,0"/>
+            <StackPanel Style="{DynamicResource MainButtonStackPanel}">
+                <Button Style="{DynamicResource LaunchButton}" Click="Inject_Click"/>
+                <Button x:Name="OptionsButton" Style="{DynamicResource OptionsButton}"/>
             </StackPanel>
         </Grid>
         <Grid x:Name="LoginGrid" Style="{DynamicResource LoginPageStyle}">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Source="Images/icon.png" Width="70" Height="70" VerticalAlignment="Top" Margin="0,40,0,0"/>
-            <StackPanel Orientation="Horizontal" Height="50" Width="430" Margin="0,-120,0,0">
-                <Label Content="Welcome to " Foreground="#FFFFFF" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50"/>
-                <Label Content="Flarial" Foreground="#fe4443" FontSize="38" FontFamily="Fonts/#Unbounded" HorizontalAlignment="Center" Height="50" Margin="-15,0,0,0"/>
+            <Image Style="{DynamicResource LoginIcon}"/>
+            <StackPanel Style="{DynamicResource LoginGreetingStackPanel}">
+                <Label Style="{DynamicResource LoginGreetingLabel1}"/>
+                <Label Style="{DynamicResource LoginGreetingLabel2}"/>
             </StackPanel>
-            <Label Content="To continue, please login with your Discord account." Foreground="#FFFFFF" FontSize="18" FontFamily="Fonts/#Sofia Sans" HorizontalAlignment="Center" Height="30" Margin="0,35,0,0"/>
-            <Button Cursor="Hand" Click="Button_Click_1" Content="Why do we need this?" Template="{DynamicResource TextButtonHover}" HorizontalAlignment="Center" Height="25" Margin="0,82,0,0" Width="135"/>
-            <StackPanel Orientation="Horizontal" Width="355" Height="60" VerticalAlignment="Bottom" Margin="0,0,0,50">
-                <Button Template="{DynamicResource LoginButton}" Height="50" Width="220" Cursor="Hand" Click="Login_Click"/>
-                <Button Template="{DynamicResource CloseButton1}" Height="50" Width="120" Cursor="Hand" Margin="15,0,0,0" x:Name="LoginGuest"/>
+            <Label Style="{DynamicResource LoginInfoLabel}"/>
+            <Button Style="{DynamicResource LoginTextButton}" Click="Button_Click_1"/>
+            <StackPanel Style="{DynamicResource LoginButtonsStackPanel}">
+                <Button Style="{DynamicResource LoginButton}" Click="Login_Click"/>
+                <Button Style="{DynamicResource LoginGuestButton}" x:Name="LoginGuest"/>
             </StackPanel>
         </Grid>
 
         <Grid x:Name="OptionsGrid" Style="{DynamicResource OptionsPageStyle}">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Source="Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
-            <Label Content="Settings" x:Name="Title" Foreground="#FFFFFF" FontSize="30" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
-            <Label Content="idk what to put here" x:Name="Subtitle" Foreground="#525252" FontSize="24" FontFamily="Fonts/#Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,49,0,0"/>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsVerionGrid" Visibility="Hidden">
-                <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="5">
-                    <StackPanel Orientation="Horizontal" x:Name="VersionsPanel"/>
-                    <ScrollViewer.Clip>
-                        <RectangleGeometry Rect="0,0,415,275" RadiusX="10" RadiusY="10"/>
-                    </ScrollViewer.Clip>
+            <Image Style="{DynamicResource SettingsIcon}"/>
+            <Label Style="{DynamicResource SettingsTitle}"/>
+            <Label Style="{DynamicResource SettingsSubtitle}" x:Name="Subtitle"/>
+            <Grid Style="{DynamicResource OptionsVersionGridStyle}" x:Name="OptionsVerionGrid">
+                <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Style="{DynamicResource OptionsVersionScrollViewerStyle}">
+                    <StackPanel Style="{DynamicResource OptionsVersionStackPanelStyle}" x:Name="VersionsPanel"/>
                 </ScrollViewer>
-                <Grid.Clip>
-                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
-                </Grid.Clip>
             </Grid>
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsGeneralGrid" Visibility="Visible">
-                <ToggleButton FontFamily="/Fonts/#Unbounded" x:Name="CustomDllButton" Style="{DynamicResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,15,0,0" Content="Custom DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                <ToggleButton FontFamily="/Fonts/#Unbounded" x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="15,70,0,0" Visibility="Hidden" Content="Beta DLL" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
-                <ToggleButton FontFamily="/Fonts/#Unbounded" x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Cursor="Hand" Width="130" Height="45" Foreground="White" Margin="160,15,0,0" Content="Close To Tray" HorizontalAlignment="Left" VerticalAlignment="Top" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
-                <Button Margin="311,18,19,228" Click="Button_Click">
-                    
+            <Grid Style="{DynamicResource OptionsGeneralGridStyle}" x:Name="OptionsGeneralGrid">
+                <StackPanel Style="{DynamicResource OptionsGeneralStackPanel}">
+                    <ToggleButton x:Name="CustomDllButton" Style="{DynamicResource ToggleButton}" Content="Custom DLL" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
+                    <ToggleButton x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Visibility="Collapsed" Content="Beta DLL" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+                    <ToggleButton x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Content="Close To Tray" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                    <ToggleButton x:Name="CustomThemeButton" Style="{DynamicResource ToggleButton}" Content="Custom Theme" x:Uid="CustomThemeButton" Checked="CustomThemeButton_Checked" Unchecked="CustomThemeButton_Unchecked"/>
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="100" Click="Button_Click">
+
                 </Button>
-                <Button x:Name="SaveConfigButton" FontFamily="/Fonts/#Unbounded" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,200,0,0" Visibility="Visible" Template="{DynamicResource SaveConfigButton}" Height="45" Width="130" Cursor="Hand" Click="SaveConfig"/>
-                <Grid.Clip>
-                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
-                </Grid.Clip>
+                <Button x:Name="SaveConfigButton" Style="{DynamicResource SaveConfigButtonStyle}" Click="SaveConfig"/>
             </Grid>
 
-            <Grid Background="#313131" Margin="160,100,15,15" x:Name="OptionsAccountGrid" Visibility="Hidden">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="15,15,0,0" Height="45" >
-                    <Image HorizontalAlignment="Left" Width="35" Height="35" VerticalAlignment="Center" Margin="0,0,0,0" Source="Images/user.png" x:Name="PFP2" Stretch="Fill">
-                        <Image.Clip>
-                            <RectangleGeometry Rect="0,0,35,35" RadiusX="20" RadiusY="20"/>
-                        </Image.Clip>
-                    </Image>
-                    <Label Content="Logged in as" Foreground="#FFFFFF" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="0,0,0,0"/>
-                    <Label Content="Guest" x:Name="Username2" Foreground="#fe4443" FontSize="14" FontFamily="Fonts/#Sofia Sans" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,0"/>
+            <Grid Style="{DynamicResource OptionsAccountGridStyle}" x:Name="OptionsAccountGrid">
+                <StackPanel Style="{DynamicResource OptionsAccountStackPanelStyle}">
+                    <Image Style="{DynamicResource OptionsAccountPFPStyle}" x:Name="PFP2"/>
+                    <Label Style="{DynamicResource OptionsAccountLabel}"/>
+                    <Label Style="{DynamicResource OptionsAccountUsernameStyle}" x:Name="Username2"/>
                 </StackPanel>
-                <Button x:Name="LogoutButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Visibility="Hidden" Template="{DynamicResource LogoutButton}" Height="45" Width="130" Cursor="Hand" Click="Logout"/>
-                <Button x:Name="LoginButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0" Visibility="Visible" Template="{DynamicResource LoginAmongButton}" Height="45" Width="130" Cursor="Hand" Click="LoginAmongus"/>
-                <Grid.Clip>
-                    <RectangleGeometry Rect="0,0,425,285" RadiusX="12" RadiusY="12"/>
-                </Grid.Clip>
+                <Button x:Name="LogoutButton" Style="{DynamicResource LogoutButtonStyle}" Click="Logout"/>
+                <Button x:Name="LoginButton" Style="{DynamicResource LoginButtonStyle}" Click="LoginAmongus"/>
             </Grid>
-            <Grid x:Name="OptionsCatagories" Margin="0,0,440,0">
-                <StackPanel Width="150" Height="300" Margin="0,100,0,0">
-                    <RadioButton Content="General"
-                             Height="45"
-                             Foreground="White"
-                             Style="{DynamicResource OptionsButtonTheme}"
-                             Margin="10,0,0,5"
-                             IsChecked="True"
-                                 FontFamily="/Fonts/#Unbounded"
-                             Checked="OptionsGeneralClick" 
-                             x:Name="RadioButton0">
+            <Grid x:Name="OptionsCatagories" Style="{DynamicResource OptionsCatagoriesStyle}">
+                <StackPanel Style="{DynamicResource OptionsCatagoriesStackPanelStyle}">
+                    <RadioButton Content="General" Style="{DynamicResource OptionsButtonTheme}" IsChecked="True" Checked="OptionsGeneralClick" x:Name="RadioButton0">
                         <RadioButton.Tag>
                             <BitmapImage UriSource="Images/general.png"/>
                         </RadioButton.Tag>
                     </RadioButton>
-                    <RadioButton Content="Version"
-                             Height="45"
-                             Foreground="White"
-                                 FontFamily="/Fonts/#Unbounded"
-                             Margin="10,0,0,5"
-                             Checked="OptionsVersionClick" 
-                             Style="{DynamicResource OptionsButtonTheme}">
+                    <RadioButton Content="Version" Checked="OptionsVersionClick" Style="{DynamicResource OptionsButtonTheme}">
                         <RadioButton.Tag>
                             <BitmapImage UriSource="Images/versions.png"/>
                         </RadioButton.Tag>
                     </RadioButton>
-                    <RadioButton Content="Account"
-                             Height="45"
-                             Foreground="White"
-                                 FontFamily="/Fonts/#Unbounded"
-                             Margin="10,0,0,5"
-                             Checked="OptionsAccountClick" 
-                             Style="{DynamicResource OptionsButtonTheme}">
+                    <RadioButton Content="Account" Checked="OptionsAccountClick" Style="{DynamicResource OptionsButtonTheme}">
                         <RadioButton.Tag>
                             <BitmapImage UriSource="Images/account.png"/>
                         </RadioButton.Tag>
                     </RadioButton>
-                    <RadioButton Content="Back"
-                             Height="45"
-                             Foreground="White"
-                             Margin="10,0,0,5"
-                             FontFamily="/Fonts/#Unbounded"
-                             Style="{DynamicResource OptionsButtonTheme}"
-                             x:Name="RadioButton3">
+                    <RadioButton Content="Back" Style="{DynamicResource OptionsButtonTheme}" x:Name="RadioButton3">
                         <RadioButton.Tag>
                             <BitmapImage UriSource="Images/back.png"/>
                         </RadioButton.Tag>

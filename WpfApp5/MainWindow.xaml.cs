@@ -727,7 +727,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
-            BetaDLLButton.Visibility = Visibility.Hidden;
+            BetaDLLButton.Visibility = Visibility.Collapsed;
             isLoggedIn = false;
         }
 
@@ -776,6 +776,16 @@ namespace Flarial.Launcher
             {
                 custom_theme_path = "main_default";
             }
+        }
+
+        private void CustomThemeButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            custom_theme_path = "main_default";
+        }
+
+        private void CustomThemeButton_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
