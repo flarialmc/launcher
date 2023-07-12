@@ -722,7 +722,7 @@ namespace Flarial.Launcher
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "Because why tf not, stop being a fucking pussy and give us your discord token.", "MessageBox");
+            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "We need this to verify if you have Flarial Beta, the discord login page is in a webview so none of your login info is shared with us.", "MessageBox");
             MessageBox.ShowDialog();
         }
 

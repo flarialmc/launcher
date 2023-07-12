@@ -5,20 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Flarial.Launcher"
         mc:Ignorable="d"
-        Title="CustomDialogBox" Height="150" Width="250" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
-    <Grid Background="#10191b" Height="150" Width="250">
-        <Grid Background="#000e10" Height="40" VerticalAlignment="Top">
-            <Image Source="Images/icon.png" HorizontalAlignment="Left" Margin="7,7,0,6"/>
-            <Label Content="Title" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" x:Name="MessageBoxTitle"/>
-            <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent"/>
-            <Button IsCancel="True" x:Name="MessageBoxClose" Style="{StaticResource CloseButton}" Margin="0,10,10,0"/>
+        Title="CustomDialogBox" SizeToContent="WidthAndHeight" WindowStyle="None" AllowsTransparency="True" MinWidth="250" Background="Transparent">
+    <Border Background="#10191b" Height="Auto" Width="Auto" CornerRadius="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" x:Name="b2"/>
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <Border CornerRadius="10,10,0,0" Background="#000e10" Height="40" VerticalAlignment="Top" >
+                    <Grid Width="Auto" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="250" Width="Auto" x:Name="topborder"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="Images/icon.png" HorizontalAlignment="Left" Margin="7,7,0,6"/>
+                        <Label Margin="45,0,45,0" Content="Title" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontFamily="Fonts/#Unbounded" x:Name="MessageBoxTitle"/>
+                        <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent" Height="40"/>
+                        <Button IsCancel="True" x:Name="MessageBoxClose" Style="{StaticResource CloseButton}" Margin="0,10,10,0" HorizontalAlignment="Right"/>
+                    </Grid>
+                </Border>
+                <Grid MinWidth="250" Width="{Binding ElementName=topborder, Path=ActualWidth}">
+                    <TextBlock Text="ertihgnetrio rnegvner wrgehnoe rgewij erjgoijerg egrnoergn oergnoiojnergoiner" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" FontFamily="Fonts/#Unbounded" Foreground="White" Margin="5,5,5,10" x:Name="MessageBoxText"/>
+                </Grid>
+                <Grid Height="40">
+                    <Button IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxYes" Template="{StaticResource YesButton}" Height="30" Width="90" Cursor="Hand" Margin="100,0,0,10" VerticalAlignment="Bottom"/>
+                    <Button IsCancel="True" x:Name="MessageBoxNo" Template="{StaticResource NoButton}" Height="30" Width="90" Cursor="Hand" Margin="-100,0,0,10" VerticalAlignment="Bottom"/>
+                    <Button Visibility="Hidden" IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxOk" Template="{StaticResource OkButton}" Height="30" Width="90" Cursor="Hand" Margin="0,0,0,10" VerticalAlignment="Bottom"/>
+                </Grid>
+            </StackPanel>
         </Grid>
-        <TextBlock Text="ertihgnetrio rnegvner wrgehnoe rgewij erjgoijerg egrnoergn oergnoiojnergoiner" TextWrapping="WrapWithOverflow" FontFamily="Fonts/#Unbounded" Foreground="White" Margin="10,50,10,40" x:Name="MessageBoxText"/>
-        <Button IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxYes" Template="{StaticResource YesButton}" Height="30" Width="90" Cursor="Hand" Margin="100,0,0,10" VerticalAlignment="Bottom"/>
-        <Button IsCancel="True" x:Name="MessageBoxNo" Template="{StaticResource NoButton}" Height="30" Width="90" Cursor="Hand" Margin="-100,0,0,10" VerticalAlignment="Bottom"/>
-        <Button Visibility="Hidden" IsDefault="True" Click="MessageBoxYes_Click" x:Name="MessageBoxOk" Template="{StaticResource OkButton}" Height="30" Width="90" Cursor="Hand" Margin="0,0,0,10" VerticalAlignment="Bottom"/>
-        <Grid.Clip>
-            <RectangleGeometry Rect="0,0,250,150" RadiusX="15" RadiusY="15"/>
-        </Grid.Clip>
-    </Grid>
+    </Border>
 </Window>
