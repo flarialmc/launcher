@@ -146,8 +146,16 @@ namespace Flarial.Launcher
             string first = "Not Installed";
             string second = "Not Installed";
 
-            if (Minecraft.GetVersion().ToString() == "1.20.1001.0") second = "Selected";
-            else if (Minecraft.GetVersion().ToString() == "1.20.1.0") first = "Selected";
+            if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
+            {
+                versionLabel.Content = "1.20.10";
+                second = "Selected";
+            }
+            else if (Minecraft.GetVersion().ToString() == "1.20.1.0")
+            {
+                versionLabel.Content = "1.20.0";
+                first = "Selected";
+            }
             
             TestVersions = new Dictionary<string, string>
     {
@@ -568,19 +576,14 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(custom_dll_path))
+            if (!CustomDllButton.IsChecked.Value)
             {
                 WebClient webClient = new WebClient();
                 DownloadProgressChangedEventHandler among = new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                 webClient.DownloadProgressChanged += among;
-                await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), Path.Combine(VersionManagement.launcherPath, "Versions", version.ToString(), "MFPlat.dll"));
-            }
-            else
-            {
-                if (File.Exists(custom_dll_path) && Path.GetExtension(custom_dll_path) == ".dll")
-                {
-                    await Injector.Inject(custom_dll_path, statusLabel);
-                }
+                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"), Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
+                if(!Utils.IsGameOpen())
+                Utils.OpenGame();
             }
         }
 
@@ -626,7 +629,7 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", version.ToString(), "MFPlat.dll"));
+                File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
             else this.Hide();
@@ -756,7 +759,7 @@ namespace Flarial.Launcher
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
             await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray, autoLogin, custom_theme_path);
-            if (custom_theme_path != "main_default")
+            if (custom_theme_path != "main_default" && custom_theme_path != null)
             {
                 var app = (App)Application.Current;
                 app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
