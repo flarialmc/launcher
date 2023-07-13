@@ -142,11 +142,14 @@ namespace Flarial.Launcher.Managers
         private static void ReportProgress(DeploymentProgress progress)
         {
             // Report the progress of the deployment
-            Trace.WriteLine($"Deployment Progress: {progress.percentage}%");
+            MainWindow.progressPercentage = (int)progress.percentage;
         }
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
+            MainWindow.progressPercentage = e.ProgressPercentage;
+            MainWindow.progressBytesReceived = e.BytesReceived;
+            MainWindow.progressBytesTotal = e.TotalBytesToReceive;
             Trace.WriteLine($"Downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage}% complete...");
         }
 
@@ -227,11 +230,12 @@ namespace Flarial.Launcher.Managers
 
         public static async Task InstallMinecraft(string version)
         {
+            MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
             await DownloadApplication(version);
             Trace.WriteLine("Finished downloading the specified version's application bundle.");
-
+            
             Minecraft.Init();
 
             if (Minecraft.Package != null)
@@ -240,7 +244,6 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine("Uninstalling current Minecraft version.");
 
                 var packageManager = new PackageManager();
-                //    Trace.WriteLine(Minecraft.Package.Id.FullName);
 
                 RemoveMinecraftPackage();
 

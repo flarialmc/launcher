@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -47,7 +48,9 @@ namespace Flarial.Launcher
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL;
         private ImageSource guestImage;
-
+        public static int progressPercentage;
+        public static long progressBytesReceived;
+        public static long progressBytesTotal;
 
         public MainWindow()
         {
@@ -307,6 +310,7 @@ namespace Flarial.Launcher
             RadioButton radioButton = (RadioButton)sender;
             object[] tags = (object[])radioButton.Tag;
             string version = tags[1].ToString();
+            
 
             if (TestVersions[version] == "Not Installed")
             {
@@ -317,40 +321,41 @@ namespace Flarial.Launcher
                     rb.IsEnabled = true;
                 }
 
-                double progress = 0;
-
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += Timer_Tick;
                 timer.Start();
 
                 void Timer_Tick(object sender, EventArgs e)
                 {
-                    progress++;
-                    string[] tags2 = { "/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
-                    radioButton.Content = 415 - (progress / 100 * 415);
-                    radioButton.Tag = tags2;
+                        string[] tags2 =
+                        {
+                            "/Images/Gus1.png", version,
+                            $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
+                        };
+                        radioButton.Content = 415 - (progressPercentage / 100 * 415);
+                        radioButton.Tag = tags2;
 
-                    if (progress >= 100)
-                    {
-                        timer.Stop();
-                        radioButton.Style = FindResource("test1") as Style;
-                        radioButton.IsChecked = true;
-                        TestVersions[version] = "Installed";
-                    }
+                        if (progressPercentage == 100)
+                        {
+                            timer.Stop();
+                            radioButton.Style = FindResource("test1") as Style;
+                            radioButton.IsChecked = true;
+                            TestVersions[version] = "Installed";
+                        }
                 }
             }
 
             ChosenVersion = version;
             versionLabel.Content = ChosenVersion;
 
-            /*try
+            try
             {
                 await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
             }
             catch (RateLimitExceededException)
             {
                 MessageBox.Show("Octokit Rate Limit was reached.");
-            }*/
+            }
         }
 
         private void SetGreetingLabel()
