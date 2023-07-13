@@ -5,7 +5,7 @@
         <ResourceDictionary>
             <Style x:Key="WindowStyle" TargetType="Window">
                 <Setter Property="AllowsTransparency" Value="True"/>
-                <Setter Property="Background" Value="#071214"/>
+                <Setter Property="Background" Value="#120e0f"/>
                 <Setter Property="WindowStyle" Value="None"/>
                 <Setter Property="Title" Value="Flarial Launcher"/>
                 <Setter Property="Height" Value="400"/>
@@ -26,11 +26,11 @@
                 <Setter Property="VerticalAlignment" Value="Bottom"/>
                 <Setter Property="Width" Value="600"/>
                 <Setter Property="Height" Value="400"/>
-                <Setter Property="Background" Value="#071214"/>
+                <Setter Property="Background" Value="#120e0f"/>
             </Style>
             <Style x:Key="OptionsPageStyle" TargetType="Grid">
                 <Setter Property="Visibility" Value="Hidden"/>
-                <Setter Property="Background" Value="#071214"/>
+                <Setter Property="Background" Value="#120e0f"/>
             </Style>
         </ResourceDictionary>
         <!--Version Page Styles-->
@@ -342,7 +342,7 @@
 
             <Style x:Key="SettingsSubtitle" TargetType="Label">
                 <Setter Property="Content" Value="Super Customizable!"/>
-                <Setter Property="Foreground" Value="#525252"/>
+                <Setter Property="Foreground" Value="#704c52"/>
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontFamily" Value="/Fonts/#Unbounded"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
@@ -352,7 +352,7 @@
             </Style>
 
             <Style x:Key="OptionsVersionGridStyle" TargetType="Grid">
-                <Setter Property="Background" Value="#313131"/>
+                <Setter Property="Background" Value="#402a2e"/>
                 <Setter Property="Margin" Value="160,100,15,15"/>
                 <Setter Property="Visibility" Value="Hidden"/>
                 <Setter Property="Clip">
@@ -378,7 +378,7 @@
             </Style>
 
             <Style x:Key="OptionsGeneralGridStyle" TargetType="Grid">
-                <Setter Property="Background" Value="#313131"/>
+                <Setter Property="Background" Value="#402a2e"/>
                 <Setter Property="Margin" Value="160,100,15,15"/>
                 <Setter Property="Visibility" Value="Visible"/>
                 <Setter Property="Clip">
@@ -393,7 +393,7 @@
             </Style>
 
             <Style x:Key="OptionsAccountGridStyle" TargetType="Grid">
-                <Setter Property="Background" Value="#313131"/>
+                <Setter Property="Background" Value="#402a2e"/>
                 <Setter Property="Margin" Value="160,100,15,15"/>
                 <Setter Property="Visibility" Value="Hidden"/>
                 <Setter Property="Clip">
@@ -468,7 +468,7 @@
                                     <Label FontFamily="/Fonts/#Unbounded" Content="{TemplateBinding Content}" Foreground="White" FontSize="16"/>
                                     <Border x:Name="border" Cursor="Hand" CornerRadius="12.5" HorizontalAlignment="Right" Width="50" Height="25">
                                         <Border.Background>
-                                            <SolidColorBrush Color="#525252" x:Name="backgroundbrush"/>
+                                            <SolidColorBrush Color="#704c52" x:Name="backgroundbrush"/>
                                         </Border.Background>
                                         <Border CornerRadius="12.5">
                                             <Border.Background>
@@ -507,7 +507,7 @@
                                         <Trigger.ExitActions>
                                             <BeginStoryboard>
                                                 <Storyboard>
-                                                    <ColorAnimation To="#525252" Duration="0:0:0.2" Storyboard.TargetName="backgroundbrush" Storyboard.TargetProperty="Color"/>
+                                                    <ColorAnimation To="#704c52" Duration="0:0:0.2" Storyboard.TargetName="backgroundbrush" Storyboard.TargetProperty="Color"/>
                                                     <ThicknessAnimation To="-25,0,0,0" Duration="0:0:0.2" Storyboard.TargetName="ellipse" Storyboard.TargetProperty="Margin"/>
                                                 </Storyboard>
                                             </BeginStoryboard>
@@ -529,7 +529,7 @@
                             <ControlTemplate TargetType="RadioButton">
                                 <Grid>
                                     <Grid.Background>
-                                        <SolidColorBrush x:Name="bg" Color="#525252"/>
+                                        <SolidColorBrush x:Name="bg" Color="#704c52"/>
                                     </Grid.Background>
                                     <Border>
                                         <Border.Background>
@@ -554,7 +554,7 @@
                                         <Trigger.ExitActions>
                                             <BeginStoryboard>
                                                 <Storyboard>
-                                                    <ColorAnimation To="#525252" Duration="0:0:0.1" Storyboard.TargetName="bg" Storyboard.TargetProperty="Color"/>
+                                                    <ColorAnimation To="#704c52" Duration="0:0:0.1" Storyboard.TargetName="bg" Storyboard.TargetProperty="Color"/>
                                                 </Storyboard>
                                             </BeginStoryboard>
                                         </Trigger.ExitActions>
@@ -580,7 +580,7 @@
                         </Setter.Value>
                     </Setter>
 
-                    <Setter Property="Background" Value="#525252"/>
+                    <Setter Property="Background" Value="#704c52"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Cursor" Value="Hand"/>
                     <Setter Property="Height" Value="45"/>
@@ -603,7 +603,7 @@
                             <Condition Property="IsChecked" Value="False"/>
                         </MultiTrigger.Conditions>
                         <MultiTrigger.Setters>
-                            <Setter Property="Background" Value="#3b3a3a"/>
+                            <Setter Property="Background" Value="#5a3d42"/>
                         </MultiTrigger.Setters>
                     </MultiTrigger>
                     <MultiTrigger>
@@ -621,7 +621,7 @@
                             <Condition Property="IsChecked" Value="False"/>
                         </MultiTrigger.Conditions>
                         <MultiTrigger.Setters>
-                            <Setter Property="Background" Value="#525252"/>
+                            <Setter Property="Background" Value="#704c52"/>
                         </MultiTrigger.Setters>
                     </MultiTrigger>
                 </Style.Triggers>
@@ -766,7 +766,7 @@
                         <RectangleGeometry Rect="0,0,90,30" RadiusX="10" RadiusY="10"/>
                     </Grid.Clip>
                     <Grid.Background>
-                        <SolidColorBrush x:Name="OptionsButtonBrush" Color="#525252"/>
+                        <SolidColorBrush x:Name="OptionsButtonBrush" Color="#704c52"/>
                     </Grid.Background>
                 </Grid>
                 <ControlTemplate.Triggers>
@@ -774,14 +774,14 @@
                         <Trigger.EnterActions>
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                    <ColorAnimation Duration="0:0:0.1" To="#5a3d42" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.EnterActions>
                         <Trigger.ExitActions>
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                    <ColorAnimation Duration="0:0:0.1" To="#704c52" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.ExitActions>
@@ -796,7 +796,7 @@
                         <RectangleGeometry Rect="0,0,90,30" RadiusX="10" RadiusY="10"/>
                     </Grid.Clip>
                     <Grid.Background>
-                        <SolidColorBrush x:Name="OptionsButtonBrush" Color="#525252"/>
+                        <SolidColorBrush x:Name="OptionsButtonBrush" Color="#704c52"/>
                     </Grid.Background>
                 </Grid>
                 <ControlTemplate.Triggers>
@@ -804,14 +804,14 @@
                         <Trigger.EnterActions>
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                    <ColorAnimation Duration="0:0:0.1" To="#5a3d42" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.EnterActions>
                         <Trigger.ExitActions>
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                    <ColorAnimation Duration="0:0:0.1" To="#704c52" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.ExitActions>
@@ -902,10 +902,10 @@
                         <ControlTemplate>
                             <Label Content="Why do we need this?" FontSize="12" FontFamily="/Fonts/#Sofia Sans" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
                                 <Label.Background>
-                                    <SolidColorBrush Color="#525252" Opacity="0.0" x:Name="TextHoverBrush"/>
+                                    <SolidColorBrush Color="#704c52" Opacity="0.0" x:Name="TextHoverBrush"/>
                                 </Label.Background>
                                 <Label.Foreground>
-                                    <SolidColorBrush Color="#525252" x:Name="TextHoverForeground"/>
+                                    <SolidColorBrush Color="#704c52" x:Name="TextHoverForeground"/>
                                 </Label.Foreground>
                                 <Label.Clip>
                                     <RectangleGeometry Rect="0,0,135,25" RadiusX="12.5" RadiusY="12.5"/>
@@ -924,7 +924,7 @@
                                     <Trigger.ExitActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="TextHoverForeground" Storyboard.TargetProperty="Color"/>
+                                                <ColorAnimation Duration="0:0:0.1" To="#704c52" Storyboard.TargetName="TextHoverForeground" Storyboard.TargetProperty="Color"/>
                                                 <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="TextHoverBrush" Storyboard.TargetProperty="Opacity"/>
                                             </Storyboard>
                                         </BeginStoryboard>
@@ -999,7 +999,7 @@
                                     <RectangleGeometry Rect="0,0,120,50" RadiusX="12" RadiusY="12"/>
                                 </Grid.Clip>
                                 <Grid.Background>
-                                    <SolidColorBrush x:Name="CloseButton1Brush" Color="#525252"/>
+                                    <SolidColorBrush x:Name="CloseButton1Brush" Color="#704c52"/>
                                 </Grid.Background>
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -1007,14 +1007,14 @@
                                     <Trigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="CloseButton1Brush" Storyboard.TargetProperty="Color"/>
+                                                <ColorAnimation Duration="0:0:0.1" To="#5a3d42" Storyboard.TargetName="CloseButton1Brush" Storyboard.TargetProperty="Color"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
                                     <Trigger.ExitActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="CloseButton1Brush" Storyboard.TargetProperty="Color"/>
+                                                <ColorAnimation Duration="0:0:0.1" To="#704c52" Storyboard.TargetName="CloseButton1Brush" Storyboard.TargetProperty="Color"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>
@@ -1220,7 +1220,7 @@
             
             <Style x:Key="GreetingLabelStyle2" TargetType="Label">
                 <Setter Property="Content" Value="Ready to play?"/>
-                <Setter Property="Foreground" Value="#525252"/>
+                <Setter Property="Foreground" Value="#704c52"/>
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontFamily" Value="/Fonts/#Unbounded"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
@@ -1230,7 +1230,7 @@
             </Style>
             
             <Style x:Key="VersionLabel" TargetType="Label">
-                <Setter Property="Foreground" Value="#525252"/>
+                <Setter Property="Foreground" Value="#704c52"/>
                 <Setter Property="FontSize" Value="15"/>
                 <Setter Property="FontFamily" Value="/Fonts/#Unbounded"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
@@ -1304,7 +1304,7 @@
 
             <Style x:Key="StatusLabelStyle" TargetType="Label">
                 <Setter Property="Content" Value="Waiting to launch..."/>
-                <Setter Property="Foreground" Value="#525252"/>
+                <Setter Property="Foreground" Value="#704c52"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontFamily" Value="/Fonts/#Sofia Sans"/>
                 <Setter Property="VerticalContentAlignment" Value="Bottom"/>
@@ -1390,7 +1390,7 @@
                                     <RectangleGeometry Rect="0,0,130,50" RadiusX="12" RadiusY="12"/>
                                 </Grid.Clip>
                                 <Grid.Background>
-                                    <SolidColorBrush x:Name="OptionsButtonBrush" Color="#525252"/>
+                                    <SolidColorBrush x:Name="OptionsButtonBrush" Color="#704c52"/>
                                 </Grid.Background>
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -1398,14 +1398,14 @@
                                     <Trigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ColorAnimation Duration="0:0:0.1" To="#3b3a3a" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                                <ColorAnimation Duration="0:0:0.1" To="#5a3d42" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
                                     <Trigger.ExitActions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ColorAnimation Duration="0:0:0.1" To="#525252" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
+                                                <ColorAnimation Duration="0:0:0.1" To="#704c52" Storyboard.TargetName="OptionsButtonBrush" Storyboard.TargetProperty="Color"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>

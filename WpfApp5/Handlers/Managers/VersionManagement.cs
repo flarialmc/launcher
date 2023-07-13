@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
@@ -104,15 +105,21 @@ namespace Flarial.Launcher.Managers
 
             return true;
         }
-        public static async Task<bool> InstallAppBundle(string appBundleUri)
+        public static async Task<bool> InstallAppBundle(string dir)
         {
+            
+            Trace.WriteLine("called installappbundle");
+            Trace.WriteLine(dir);
             try
             {
-                var packageUri = new Uri(appBundleUri);
+                var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
+                Trace.WriteLine(packageUri.ToString());
+                
+                
+                File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
                 var packageManager = new PackageManager();
-
-                var progress = new Progress<DeploymentProgress>(ReportProgress);
-                var addPackageOperation = packageManager.AddPackageAsync(packageUri, null, DeploymentOptions.ForceUpdateFromAnyVersion);
+                
+                var addPackageOperation = packageManager.RegisterPackageAsync(packageUri, null, DeploymentOptions.ForceUpdateFromAnyVersion | DeploymentOptions.DevelopmentMode);
                 addPackageOperation.Progress += (sender, args) => ReportProgress(args);
 
                 var addPackageTask = addPackageOperation.AsTask();
@@ -139,7 +146,7 @@ namespace Flarial.Launcher.Managers
                 }
                 else
                 {
-                    Trace.WriteLine("Package deployment timed out.");
+                    Trace.WriteLine("Installation timed out.");
                     return false;
                 }
             }
@@ -238,6 +245,36 @@ namespace Flarial.Launcher.Managers
                 return false;
             }
         }
+        
+        public static async Task ExtractAppxAsync(string appxFilePath, string outputFolderPath)
+        {
+            int totalEntries = 0;
+            int currentEntry = 0;
+
+            using (ZipArchive archive = ZipFile.OpenRead(appxFilePath))
+            {
+                totalEntries = archive.Entries.Count;
+
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    string entryOutputPath = Path.Combine(outputFolderPath, entry.FullName);
+                    string entryDirectory = Path.GetDirectoryName(entryOutputPath);
+
+                    if (!string.IsNullOrEmpty(entryDirectory))
+                    {
+                        Directory.CreateDirectory(entryDirectory);
+                    }
+
+                    if (!entry.FullName.EndsWith("/"))
+                    {
+                        await Task.Run(() => entry.ExtractToFile(entryOutputPath, true));
+                    }
+
+                    currentEntry++;
+                    MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
+                }
+            }
+        }
 
 
         public static async Task<bool> InstallMinecraft(string version)
@@ -265,7 +302,9 @@ namespace Flarial.Launcher.Managers
                 }
 
                 Trace.WriteLine("Deploying Minecraft's Application Bundle.");
-                if (await InstallAppBundle(path) == false)
+
+                await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version));
+                if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
                     Trace.WriteLine("Failed to deploy.");
                     return false;

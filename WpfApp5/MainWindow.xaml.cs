@@ -350,7 +350,7 @@ namespace Flarial.Launcher
 
                         time += 50;
 
-                        if (progressPercentage == 100 || Minecraft.isInstalled() && time > 3000)
+                        if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
                         {
                             timer.Stop();
                             radioButton.Style = FindResource("test1") as Style;
