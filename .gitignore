@@ -6,3 +6,7 @@ WpfApp5/bin
 .sln
 WpfApp5/Flarial.Launcher.csproj
 *.rsp
+/Flarial.Installer/obj/Debug
+/Flarial.Minimal/bin/Debug
+/Flarial.Minimal/obj/Debug
+/Flarial.Installer/bin/Debug
