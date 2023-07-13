@@ -59,8 +59,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Fonts\SofiaSans-VariableFont_wght.ttf" />
-    <Resource Include="Fonts\Unbounded-VariableFont_wght.ttf" />
+    <Resource Include="Fonts\SofiaSans-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\Unbounded-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\account.png" />
     <Resource Include="Images\back.png" />
     <Resource Include="Images\background.png" />
@@ -74,6 +78,15 @@
     <Resource Include="Images\setting.png" />
     <Resource Include="Images\share.png" />
     <None Remove="Images\user.png" />
+    <COMReference Include="Shell32">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>50a7e9b0-70ef-11d1-b75a-00a0c90564fe</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
     <Resource Include="Images\user.png" />
     <Resource Include="Images\versions.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

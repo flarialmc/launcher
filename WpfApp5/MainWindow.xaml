@@ -9,6 +9,7 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
+        AllowsTransparency="True" WindowStyle="None"
         Style="{DynamicResource WindowStyle}">
     <Grid>
 
@@ -101,6 +102,7 @@
                     <ToggleButton x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Visibility="Collapsed" Content="Beta DLL" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
                     <ToggleButton x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Content="Close To Tray" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
                     <ToggleButton x:Name="CustomThemeButton" Style="{DynamicResource ToggleButton}" Content="Custom Theme" x:Uid="CustomThemeButton" Checked="CustomThemeButton_Checked" Unchecked="CustomThemeButton_Unchecked"/>
+                    <ToggleButton x:Name="AutoLoginButton" Style="{DynamicResource ToggleButton}" Content="Auto Login" x:Uid="AutoLoginButton" Checked="AutoLoginButton_Checked" Unchecked="AutoLoginButton_Unchecked"/>
                 </StackPanel>
                 <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="100" Click="Button_Click">
 

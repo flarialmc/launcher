@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Handlers.Functions;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
@@ -34,6 +35,8 @@ namespace Flarial.Launcher
     {
         public int duration = 300;
 
+        private static readonly WebClient? Client = new WebClient();
+
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
@@ -44,6 +47,7 @@ namespace Flarial.Launcher
         public string custom_dll_path = "amongus";
         public string custom_theme_path = "main_default";
         public bool closeToTray;
+        public bool autoLogin;
         public bool isLoggedIn;
         private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
         private string ChosenVersion;
@@ -57,6 +61,22 @@ namespace Flarial.Launcher
         public MainWindow()
         {
             loadConfig();
+
+            if (!FontManager.IsFontInstalled("Unbounded"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
+                FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
+                File.Delete($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
+            }
+
+            if (!FontManager.IsFontInstalled("Sofia Sans"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf", "SofiaSans-VariableFont_wght.ttf");
+                FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
+                File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
+            }
+
+            //Trace.WriteLine(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
 
             if (!Utils.IsAdministrator)
             {
@@ -296,7 +316,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style? style1 = null;
-            string[] tags = {$"/Images/{version}.png", version, "temp" };
+            string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -342,7 +362,7 @@ namespace Flarial.Launcher
                 {
                         string[] tags2 =
                         {
-                            $"/Images/{version}.png", version,
+                            $"pack://application:,,,/Images/{version}.png", version,
                             $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
                         };
                         radioButton.Content = 415 - (progressPercentage / 100 * 415);
@@ -428,6 +448,7 @@ namespace Flarial.Launcher
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
             custom_theme_path = config.custom_theme_path;
+            autoLogin = config.autoLogin;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -552,8 +573,7 @@ namespace Flarial.Launcher
                 WebClient webClient = new WebClient();
                 DownloadProgressChangedEventHandler among = new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                 webClient.DownloadProgressChanged += among;
-                await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), "Among.dll");
-                await Injector.Inject($"{Managers.VersionManagement.launcherPath}\\Among.dll", statusLabel);
+                await webClient.DownloadFileTaskAsync(new Uri("https://horion.download/dll"), Path.Combine(VersionManagement.launcherPath, "Versions", version.ToString(), "MFPlat.dll"));
             }
             else
             {
@@ -604,7 +624,11 @@ namespace Flarial.Launcher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (closeToTray == false) Environment.Exit(0);
+            if (closeToTray == false)
+            {
+                File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", version.ToString(), "MFPlat.dll"));
+                Environment.Exit(0);
+            }
             else this.Hide();
         }
 
@@ -731,9 +755,15 @@ namespace Flarial.Launcher
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
-            await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray);
-            var app = (App)Application.Current;
-            app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+            await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray, autoLogin, custom_theme_path);
+            if (custom_theme_path != "main_default")
+            {
+                var app = (App)Application.Current;
+                app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+            }
+
+            CustomDialogBox MessageBox = new CustomDialogBox("Config", "Successfully saved your config.", "MessageBox");
+            MessageBox.ShowDialog();
         }
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
@@ -743,7 +773,7 @@ namespace Flarial.Launcher
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "We need this to verify if you have Flarial Beta, the discord login page is in a webview so none of your login info is shared with us.", "MessageBox");
+            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "We need this to verify if you have Flarial Beta, the window is just a webview of the actual discord login page, so none of your login info is shared with us.", "MessageBox");
             MessageBox.ShowDialog();
         }
 
@@ -777,6 +807,16 @@ namespace Flarial.Launcher
         private void CustomThemeButton_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void AutoLoginButton_Checked(object sender, RoutedEventArgs e)
+        {
+            autoLogin = true;
+        }
+
+        private void AutoLoginButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            autoLogin = false;
         }
     }
 }
