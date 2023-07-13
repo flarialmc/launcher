@@ -112,6 +112,9 @@ namespace Flarial.Launcher
 
             InitializeComponent();
 
+            if (autoLogin)
+                AttemptLogin();
+
             if (custom_dll_path != "amongus")
                 CustomDllButton.IsChecked = true;
 
@@ -713,7 +716,7 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                if (!Utils.IsGameOpen())
+                if (!Utils.IsGameOpen() && File.Exists(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll")))
                     File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
