@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,13 +18,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Microsoft.Web.WebView2.Core;
-using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
-using Timer = System.Timers.Timer;
 
 namespace Flarial.Launcher
 {
@@ -61,7 +57,9 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
+
             loadConfig();
+
 
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -130,7 +128,7 @@ namespace Flarial.Launcher
             string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
             Trace.WriteLine(latestVer);
             double among = Convert.ToDouble(latestVer);
-            
+
             if (version != 0.666 && version <= among)
             {
                 startInfo.Arguments = "updater.ps1";
@@ -158,7 +156,7 @@ namespace Flarial.Launcher
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
             }
-            
+
             TestVersions = new Dictionary<string, string>
     {
         { "1.20.0", first },
@@ -170,7 +168,7 @@ namespace Flarial.Launcher
                 AddRadioButton(version, TestVersions[version]);
             }
 
-            
+
             SetGreetingLabel();
 
             Task.Delay(1);
@@ -326,7 +324,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style style1 = null;
-            string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
+            string[] tags = { $"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -350,7 +348,7 @@ namespace Flarial.Launcher
             RadioButton radioButton = (RadioButton)sender;
             object[] tags = (object[])radioButton.Tag;
             string version = tags[1].ToString();
-            
+
 
             if (TestVersions[version] == "Not Installed")
             {
@@ -361,7 +359,7 @@ namespace Flarial.Launcher
                 }
                 long time = 0;
 
-                
+
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += (object s, EventArgs _e) =>
                 {
@@ -386,13 +384,13 @@ namespace Flarial.Launcher
                         versionLabel.Content = ChosenVersion;
                     }
                 };
-                
+
                 timer.Start();
-                
+
                 radioButton.Style = FindResource("test3") as Style;
 
                 bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version));
-                if(!succeeded)
+                if (!succeeded)
                 {
                     radioButton.Style = FindResource("test2") as Style;
                     radioButton.IsChecked = false;
@@ -652,9 +650,8 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                if(!Utils.IsGameOpen())
-                    if (File.Exists(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll")))
-                File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
+                if (!Utils.IsGameOpen())
+                    File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
             else this.Hide();
@@ -775,7 +772,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
-            LoginGrid.Margin = new Thickness(0,0,0,0);
+            LoginGrid.Margin = new Thickness(0, 0, 0, 0);
             LoginGrid.Width = 600;
             LoginGrid.Height = 400;
             LoginGrid.Opacity = 1;
@@ -807,6 +804,8 @@ namespace Flarial.Launcher
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
+
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.InitialDirectory = @"C:\";
             dialog.CheckFileExists = true;
@@ -857,6 +856,10 @@ public class ShowMessageCommand : ICommand
         {
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+
+                NvidiaPanelAndInternetOptimizer.OptimizeNvidiaPanelAndInternetForMinecraft();
+                MinecraftOptimizer.OptimizeMinecraft();
+                WindowsOptimizer.OptimizeIntelProcessor();
                 Application.Current.MainWindow.Show();
             }
         }
