@@ -37,22 +37,22 @@ namespace Flarial.Launcher.Functions
             return response.Result.Content;
         }
 
-        public static string getReqUser(string authCode)
+        public static async Task<string> getReqUser(string authCode)
         {
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me");
             request.AddHeader("Authorization", "Bearer " + authCode);
-            var response = client.GetAsync(request);
-            return response.Result.Content;
+            var response = await client.GetAsync(request);
+            return response.Content;
         }
 
-        public static string getReqGuildUser(string authCode)
+        public static async Task<string> getReqGuildUser(string authCode)
         {
             var client = new RestClient("https://discord.com");
             var request = new RestRequest("api/v10/users/@me/guilds/1049946152092586054/member");
             request.AddHeader("Authorization", "Bearer " + authCode);
-            var response = client.GetAsync(request);
-            return response.Result.Content;
+            var response = await client.GetAsync(request);
+            return response.Content;
         }
 
         public static async Task CacheToken(string Token, DateTime Created, DateTime Expiry)

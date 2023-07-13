@@ -490,7 +490,7 @@ namespace Flarial.Launcher
                         string rawToken = Auth.postReq(code);
                         var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
                         await Auth.CacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in));
-                        string userResponse = Auth.getReqUser(atd.access_token);
+                        string userResponse = await Auth.getReqUser(atd.access_token);
                         LoginAccount(userResponse, atd.access_token);
                         return true;
                     }
@@ -508,14 +508,14 @@ namespace Flarial.Launcher
             var cached = await Auth.GetCache();
             if (cached != null && cached.expiry > DateTime.Now)
             {
-                string userResponse = Auth.getReqUser(cached.access_token);
-                LoginAccount(userResponse, cached.access_token);
+                string userResponse = await Auth.getReqUser(cached.access_token);
+                await LoginAccount(userResponse, cached.access_token);
                 return true;
             }
             return false;
         }
 
-        private async void LoginAccount(string userResponse, string authToken)
+        private async Task LoginAccount(string userResponse, string authToken)
         {
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             if (user != null)
@@ -532,7 +532,7 @@ namespace Flarial.Launcher
                 }
             }
 
-            string guildUserContent = Auth.getReqGuildUser(authToken);
+            string guildUserContent = await Auth.getReqGuildUser(authToken);
             DiscordGuildUser guildUser = JsonConvert.DeserializeObject<DiscordGuildUser>(guildUserContent);
             if (guildUser.roles != null)
             {
@@ -577,27 +577,30 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if(Minecraft.Package.InstalledPath.Contains("Flarial"))
+            if (Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
-                if (!CustomDllButton.IsChecked.Value)
+                if (!Utils.IsGameOpen())
                 {
-                    WebClient webClient = new WebClient();
-                    DownloadProgressChangedEventHandler among =
-                        new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                    webClient.DownloadProgressChanged += among;
-                    await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
-                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                            "MFPlat.dll"));
-                    if (!Utils.IsGameOpen())
-                        Utils.OpenGame();
-                }
-                else
-                {
-                    File.Copy(custom_dll_path,
-                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                            "MFPlat.dll"), true);
-                    if (!Utils.IsGameOpen())
-                        Utils.OpenGame();
+                    if (!CustomDllButton.IsChecked.Value)
+                    {
+                        WebClient webClient = new WebClient();
+                        DownloadProgressChangedEventHandler among =
+                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                        webClient.DownloadProgressChanged += among;
+                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
+                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                                "MFPlat.dll"));
+                        if (!Utils.IsGameOpen())
+                            Utils.OpenGame();
+                    }
+                    else
+                    {
+                        File.Copy(custom_dll_path,
+                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                                "MFPlat.dll"), true);
+                        if (!Utils.IsGameOpen())
+                            Utils.OpenGame();
+                    }
                 }
             }
             else
@@ -649,7 +652,7 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                
+                if(!Utils.IsGameOpen())
                 File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
