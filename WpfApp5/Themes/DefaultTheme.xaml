@@ -4,9 +4,7 @@
         <!--Window Styles-->
         <ResourceDictionary>
             <Style x:Key="WindowStyle" TargetType="Window">
-                <Setter Property="AllowsTransparency" Value="True"/>
                 <Setter Property="Background" Value="#120e0f"/>
-                <Setter Property="WindowStyle" Value="None"/>
                 <Setter Property="Title" Value="Flarial Launcher"/>
                 <Setter Property="Height" Value="400"/>
                 <Setter Property="Width" Value="600"/>
@@ -18,10 +16,10 @@
                 </Setter>
             </Style>
             <Style x:Key="MainPageStyle" TargetType="Grid">
-                <Setter Property="Visibility" Value="Visible"/>
+                <Setter Property="Visibility" Value="Hidden"/>
             </Style>
             <Style x:Key="LoginPageStyle" TargetType="Grid">
-                <Setter Property="Visibility" Value="Hidden"/>
+                <Setter Property="Visibility" Value="Visible"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
                 <Setter Property="VerticalAlignment" Value="Bottom"/>
                 <Setter Property="Width" Value="600"/>
