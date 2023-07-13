@@ -387,19 +387,19 @@ namespace Flarial.Launcher
                             TestVersions[version] = "Installed";
                         }
                 }
-            }
-
-            ChosenVersion = version;
-            versionLabel.Content = ChosenVersion;
+                
+                ChosenVersion = version;
+                versionLabel.Content = ChosenVersion;
             
-            Trace.WriteLine(version);
+                Trace.WriteLine(version);
             
-            bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-            if(!succeeded)
-            {
-                radioButton.Style = FindResource("test2") as Style;
-                radioButton.IsChecked = false;
-                TestVersions[version] = "Not Installed";
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
+                if(!succeeded || !VersionManagement.isInstalling)
+                {
+                    radioButton.Style = FindResource("test2") as Style;
+                    radioButton.IsChecked = false;
+                    TestVersions[version] = "Not Installed";
+                }
             }
         }
 

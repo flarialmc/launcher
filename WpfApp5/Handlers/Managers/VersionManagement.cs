@@ -18,7 +18,7 @@ namespace Flarial.Launcher.Managers
     public class VersionManagement
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
-
+        public static bool isInstalling = false;
         public class VersionStruct
         {
             public string Version { get; set; }
@@ -298,6 +298,7 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string version)
         {
+            isInstalling = true;
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
@@ -326,6 +327,7 @@ namespace Flarial.Launcher.Managers
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
                     Trace.WriteLine("Failed to deploy.");
+                    isInstalling = false;
                     return false;
                 }
 
@@ -341,6 +343,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine("Installation complete.");
             }
 
+            isInstalling = false;
             return ello;
         }
     }
