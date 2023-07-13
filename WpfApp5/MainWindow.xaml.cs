@@ -387,8 +387,6 @@ namespace Flarial.Launcher
                             TestVersions[version] = "Installed";
                         }
                 }
-
-                Trace.WriteLine(version);
             
                 bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
                 if(!succeeded || !VersionManagement.isInstalling)
