@@ -1,5 +1,5 @@
--target net6.0
--input 10.0.22621.0
+-target netstandard2.0
+-input 7.0
 -input 
 -output "Generated Files"
 

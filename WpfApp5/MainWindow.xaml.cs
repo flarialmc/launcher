@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Microsoft.Web.WebView2.Core;
 using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -35,12 +36,12 @@ namespace Flarial.Launcher
     {
         public int duration = 300;
 
-        private static readonly WebClient? Client = new WebClient();
+        private static readonly WebClient Client = new WebClient();
 
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
-        public Window1 w = new();
+        public Window1 w = new Window1();
         public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
@@ -174,7 +175,7 @@ namespace Flarial.Launcher
 
             Task.Delay(1);
 
-            Dispatcher.BeginInvoke(() => RPCManager.Initialize());
+            Dispatcher.BeginInvoke((Action)(() => RPCManager.Initialize()));
 
             Application.Current.MainWindow = this;
         }
@@ -324,7 +325,7 @@ namespace Flarial.Launcher
         private void AddRadioButton(string version, string status)
         {
             RadioButton radioButton = new RadioButton();
-            Style? style1 = null;
+            Style style1 = null;
             string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
@@ -443,7 +444,7 @@ namespace Flarial.Launcher
 
         private void loadConfig()
         {
-            ConfigData? config = Config.getConfig();
+            ConfigData config = Config.getConfig();
 
             if (config == null)
             {
@@ -470,7 +471,7 @@ namespace Flarial.Launcher
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
         }
 
-        private async void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
+        private async void CoreWebView2_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             if (e.Uri.StartsWith("https://flarial.net"))
             {
@@ -482,7 +483,7 @@ namespace Flarial.Launcher
         {
             try
             {
-                if (Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri? uri) && uri != null)
+                if (Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri uri) && uri != null)
                 {
                     string code = uri.Query.TrimStart('?').Split('&').FirstOrDefault(p => p.StartsWith("code="))?.Substring(5);
                     if (!string.IsNullOrEmpty(code))
@@ -554,6 +555,8 @@ namespace Flarial.Launcher
                         StaffTag.Visibility = Visibility.Visible;
                     else if (guildUser.roles.Contains("1059408198261551145"))
                         BetaTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1050447423635460197"))
+                        ExecTag.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
                 else
@@ -787,7 +790,7 @@ namespace Flarial.Launcher
             MessageBox.ShowDialog();
         }
 
-        private void Window_OnClosing(object? sender, CancelEventArgs e)
+        private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Environment.Exit(0);
         }
