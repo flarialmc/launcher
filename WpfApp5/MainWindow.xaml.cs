@@ -243,8 +243,8 @@ namespace Flarial.Launcher
             if (!Directory.Exists(BackupManager.backupDirectory))
                 Directory.CreateDirectory(BackupManager.backupDirectory);
 
-            if (!Directory.Exists(VersionManagement.launcherPath + "Versions\\"))
-                Directory.CreateDirectory(VersionManagement.launcherPath + "Versions\\");
+            if (!Directory.Exists(VersionManagement.launcherPath + "\\Versions\\"))
+                Directory.CreateDirectory(VersionManagement.launcherPath + "\\Versions\\");
 
             if (!Directory.Exists(VersionManagement.launcherPath))
                 Directory.CreateDirectory(VersionManagement.launcherPath);
