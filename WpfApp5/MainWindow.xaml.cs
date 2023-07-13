@@ -556,6 +556,8 @@ namespace Flarial.Launcher
                         StaffTag.Visibility = Visibility.Visible;
                     else if (guildUser.roles.Contains("1059408198261551145"))
                         BetaTag.Visibility = Visibility.Visible;
+                    else if (guildUser.roles.Contains("1050447423635460197"))
+                        ExecTag.Visibility = Visibility.Visible;
                     Trace.WriteLine("iz beta bro");
                 }
                 else
