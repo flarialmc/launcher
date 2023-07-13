@@ -647,9 +647,10 @@ namespace Flarial.Launcher
                         DownloadProgressChangedEventHandler among =
                             new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                         webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
+                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
                             Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
                                 "MFPlat.dll"));
+                        
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
                     }
