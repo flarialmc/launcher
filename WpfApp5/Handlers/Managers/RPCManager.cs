@@ -26,7 +26,6 @@ namespace Flarial.Launcher.Managers
 
             _timer = new Timer(100); // 100 milliseconds
             _timer.Elapsed += TimerElapsed;
-            _timer.AutoReset = true;
             _timer.Enabled = true;
 
             InLauncher();
@@ -41,17 +40,14 @@ namespace Flarial.Launcher.Managers
                 {
                     return;
                 }
-                else
-                {
-                    var a = GetServerInfo(ip);
-                    previousContent = ip; // Add this line to update previousContent
-                    if (a.largeImageKey == "flarialbig")
-                    {
-                        a.largeImageKey = "mcicon";
-                    }
-                    SetPresence(a.Detail, "flarialbig", a.largeImageKey, a.ipAddress);
 
+                var a = GetServerInfo(ip);
+                previousContent = ip; // Add this line to update previousContent
+                if (a.largeImageKey == "flarialbig")
+                {
+                    a.largeImageKey = "mcicon";
                 }
+                SetPresence(a.Detail, a.largeImageKey, "flarialbig", a.ipAddress);
             }
             else
             {
@@ -72,7 +68,10 @@ namespace Flarial.Launcher.Managers
                 "serverip.txt"
             );
 
+            if(File.Exists(flarialPath))
             return File.ReadAllText(flarialPath);
+
+            return "";
         }
 
         public static void InLauncher()
@@ -89,6 +88,8 @@ namespace Flarial.Launcher.Managers
             client.Initialize();
         }
 
+        private static RichPresence currentPresence = null;
+
         private static void SetPresence(string details, string smallKey, string bigKey, string bigimgText)
         {
             DateTime? dateTimestampEnd = null;
@@ -104,18 +105,22 @@ namespace Flarial.Launcher.Managers
                 SmallImageKey = smallKey != "None" ? smallKey : null
             };
 
-            client.SetPresence(new RichPresence
+            if (currentPresence == null)
             {
-                Details = details,
-                Assets = assets,
-                Timestamps = new Timestamps
+                currentPresence = new RichPresence();
+                currentPresence.Timestamps = new Timestamps
                 {
                     Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
                         ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampStart)
                         : DateTime.UtcNow,
                     End = dateTimestampEnd
-                }
-            });
+                };
+            }
+
+            currentPresence.Details = details;
+            currentPresence.Assets = assets;
+
+            client.SetPresence(currentPresence);
         }
 
         private static serverInformation GetServerInfo(string ip)

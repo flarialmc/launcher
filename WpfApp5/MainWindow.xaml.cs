@@ -148,12 +148,12 @@ namespace Flarial.Launcher
             string first = "Not Installed";
             string second = "Not Installed";
 
-            if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
+            if (Minecraft.GetVersion().ToString() == "1.20.1001.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
                 versionLabel.Content = "1.20.10";
                 second = "Selected";
             }
-            else if (Minecraft.GetVersion().ToString() == "1.20.1.0")
+            else if (Minecraft.GetVersion().ToString() == "1.20.1.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
@@ -363,43 +363,42 @@ namespace Flarial.Launcher
 
                 
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-                timer.Tick += (object s, EventArgs _e) => {
-                    string[] tags2 =
+                timer.Tick += Timer_Tick;
+                timer.Start();
+                
+                radioButton.Style = FindResource("test3") as Style;
+
+                void Timer_Tick(object sender, EventArgs e)
+                {
+                        string[] tags2 =
                         {
                             $"pack://application:,,,/Images/{version}.png", version,
                             $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
                         };
-                    radioButton.Content = 415 - (progressPercentage / 100 * 415);
-                    radioButton.Tag = tags2;
+                        radioButton.Content = 415 - (progressPercentage / 100 * 415);
+                        radioButton.Tag = tags2;
 
-                    time += 50;
+                        time += 50;
 
-                    if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
-                    {
-                        timer.Stop();
-                        radioButton.Style = FindResource("test1") as Style;
-                        radioButton.IsChecked = true;
-                        TestVersions[version] = "Installed";
-                    }
-                };
-                
-                timer.Start();
-                
-                radioButton.Style = FindResource("test3") as Style;
-                
-            }
-
-            ChosenVersion = version;
-            versionLabel.Content = ChosenVersion;
+                        if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
+                        {
+                            timer.Stop();
+                            radioButton.Style = FindResource("test1") as Style;
+                            radioButton.IsChecked = true;
+                            TestVersions[version] = "Installed";
+                        }
+                }
             
-            Trace.WriteLine(version);
-            
-            bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-            if(!succeeded)
-            {
-                radioButton.Style = FindResource("test2") as Style;
-                radioButton.IsChecked = false;
-                TestVersions[version] = "Not Installed";
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
+                if(!succeeded || !VersionManagement.isInstalling)
+                {
+                    radioButton.Style = FindResource("test2") as Style;
+                    radioButton.IsChecked = false;
+                    TestVersions[version] = "Not Installed";
+                    
+                    ChosenVersion = version;
+                    versionLabel.Content = ChosenVersion;
+                }
             }
         }
 
@@ -579,20 +578,33 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (!CustomDllButton.IsChecked.Value)
+            if(Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
-                WebClient webClient = new WebClient();
-                DownloadProgressChangedEventHandler among = new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                webClient.DownloadProgressChanged += among;
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"), Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
-                if(!Utils.IsGameOpen())
-                Utils.OpenGame();
+                if (!CustomDllButton.IsChecked.Value)
+                {
+                    WebClient webClient = new WebClient();
+                    DownloadProgressChangedEventHandler among =
+                        new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                    webClient.DownloadProgressChanged += among;
+                    await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
+                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                            "MFPlat.dll"));
+                    if (!Utils.IsGameOpen())
+                        Utils.OpenGame();
+                }
+                else
+                {
+                    File.Copy(custom_dll_path,
+                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                            "MFPlat.dll"), true);
+                    if (!Utils.IsGameOpen())
+                        Utils.OpenGame();
+                }
             }
             else
             {
-                File.Copy(custom_dll_path, Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"), true);
-                if(!Utils.IsGameOpen())
-                    Utils.OpenGame();
+                CustomDialogBox MessageBox = new CustomDialogBox("Error", "You haven't installed Minecraft from our Launcher. Please go to Options -> Versions for that and select your preferred version.", "MessageBox");
+                MessageBox.ShowDialog();
             }
         }
 
