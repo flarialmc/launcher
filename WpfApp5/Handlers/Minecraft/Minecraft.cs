@@ -37,13 +37,21 @@ public static partial class Minecraft
 
     }
 
+    public static bool isInstalled()
+    {
+        PackageManager = new Windows.Management.Deployment.PackageManager();
+        var Packages = PackageManager.FindPackages(FamilyName);
+        return Packages.Count() != 0;
+    }
+
     public static void InitManagers()
     {
         PackageManager = new Windows.Management.Deployment.PackageManager();
         var Packages = PackageManager.FindPackages(FamilyName);
         if (Packages.Count() == 0)
         {
-            MessageBox.Show("You don't have MC installed LOL");
+            CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
+            MessageBox.ShowDialog();
         }
         else
         {
@@ -63,7 +71,8 @@ public static partial class Minecraft
 
         if (Packages.Count() == 0)
         {
-            MessageBox.Show("You don't have MC installed LOL");
+            CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
+            MessageBox.ShowDialog();
         }
         else
         {

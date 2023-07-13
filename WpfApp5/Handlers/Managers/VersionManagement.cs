@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Management.Deployment;
+using Newtonsoft.Json.Linq;
+using Application = System.Windows.Application;
 
 namespace Flarial.Launcher.Managers
 {
@@ -44,30 +47,29 @@ namespace Flarial.Launcher.Managers
                 return null;
             }
         }
+        
+        public static string ExtractUrl(string jsonString)
+        {
+            // Parse the JSON string into a JObject
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            // Get the value of the "url" property
+            string url = (string)jsonObject["url"];
+
+            return url;
+        }
 
         public static async Task<string> GetVersionLinkAsync(string version)
         {
-            try
-            {
-                var allVersions = await GetVersionsAsync();
-                string assetLink = $"https://github.com/PlasmaWasTaken/LocalStorage/releases/download/44/Minecraft{version}.Appx";
+            string result = "";
+            WebClient webClient = new WebClient();
+            if (version == "1.20.0") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.0.1&arch=x64")).Result);
+            if (version == "1.20.10") result = null;
 
-                if (!allVersions.Contains(version))
-                {
-                    MessageBox.Show("This version is not available for download!");
-                    assetLink = null;
-                }
-
-                return assetLink;
-            }
-            catch (Octokit.RateLimitExceededException)
-            {
-                MessageBox.Show("Octokit Rate Limit was reached.");
-                return null;
-            }
+            return result;
         }
 
-        public static async Task DownloadApplication(string version)
+        public static async Task<bool> DownloadApplication(string version)
         {
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
             string url = await GetVersionLinkAsync(version);
@@ -75,7 +77,7 @@ namespace Flarial.Launcher.Managers
             if (File.Exists(path))
             {
                 Trace.WriteLine("File already exists, download skipped.");
-                return;
+                return true;
             }
 
             if (!string.IsNullOrEmpty(url))
@@ -90,8 +92,17 @@ namespace Flarial.Launcher.Managers
             }
             else
             {
-                Trace.WriteLine("URL was null, download failed.");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
+                        "There was an issue with the URL. Please report this in our discord.", "MessageBox");
+                    MessageBox.ShowDialog();
+                });
+
+                return false;
             }
+
+            return true;
         }
         public static async Task<bool> InstallAppBundle(string appBundleUri)
         {
@@ -147,6 +158,7 @@ namespace Flarial.Launcher.Managers
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
+            if(e.ProgressPercentage != 100)
             MainWindow.progressPercentage = e.ProgressPercentage;
             MainWindow.progressBytesReceived = e.BytesReceived;
             MainWindow.progressBytesTotal = e.TotalBytesToReceive;
@@ -228,44 +240,50 @@ namespace Flarial.Launcher.Managers
         }
 
 
-        public static async Task InstallMinecraft(string version)
+        public static async Task<bool> InstallMinecraft(string version)
         {
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
-            await DownloadApplication(version);
-            Trace.WriteLine("Finished downloading the specified version's application bundle.");
-            
-            Minecraft.Init();
+            bool ello = await DownloadApplication(version);
 
-            if (Minecraft.Package != null)
+            if (ello)
             {
-                await BackupManager.CreateBackup("temp");
-                Trace.WriteLine("Uninstalling current Minecraft version.");
+                Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
-                var packageManager = new PackageManager();
+                Minecraft.Init();
 
-                RemoveMinecraftPackage();
+                if (Minecraft.Package != null)
+                {
+                    await BackupManager.CreateBackup("temp");
+                    Trace.WriteLine("Uninstalling current Minecraft version.");
 
+                    var packageManager = new PackageManager();
+
+                    RemoveMinecraftPackage();
+
+                }
+
+                Trace.WriteLine("Deploying Minecraft's Application Bundle.");
+                if (await InstallAppBundle(path) == false)
+                {
+                    Trace.WriteLine("Failed to deploy.");
+                    return false;
+                }
+
+                await Task.Delay(1);
+
+                Trace.WriteLine("Temporary backup found, now loading.");
+                await BackupManager.LoadBackup("temp");
+
+                Trace.WriteLine("Temporary backup loaded, now deleting.");
+                await BackupManager.DeleteBackup("temp");
+
+
+                Trace.WriteLine("Installation complete.");
             }
 
-            Trace.WriteLine("Deploying Minecraft's Application Bundle.");
-            if (await InstallAppBundle(path) == false)
-            {
-                Trace.WriteLine("Failed to deploy.");
-                return;
-            }
-
-            await Task.Delay(1);
-
-            Trace.WriteLine("Temporary backup found, now loading.");
-            await BackupManager.LoadBackup("temp");
-
-            Trace.WriteLine("Temporary backup loaded, now deleting.");
-            await BackupManager.DeleteBackup("temp");
-
-
-            Trace.WriteLine("Installation complete.");
+            return ello;
         }
     }
 }

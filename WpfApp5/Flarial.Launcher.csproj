@@ -84,6 +84,10 @@
 
     <Resource Include="Images\1.19.51.1.jpg" />
     <Resource Include="Images\1.19.51.1_2.jpg" />
+    <None Remove="Images\1.20.10.png" />
+    <Resource Include="Images\1.20.10.png" />
+    <None Remove="Images\1.20.0.png" />
+    <Resource Include="Images\1.20.0.png" />
   </ItemGroup>
 
   <ItemGroup>

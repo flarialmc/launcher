@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +23,7 @@ using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
+using Timer = System.Timers.Timer;
 
 namespace Flarial.Launcher
 {
@@ -106,6 +108,7 @@ namespace Flarial.Launcher
             string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
             Trace.WriteLine(latestVer);
             double among = Convert.ToDouble(latestVer);
+            
             if (version != 0.666 && version <= among)
             {
                 startInfo.Arguments = "updater.ps1";
@@ -118,11 +121,18 @@ namespace Flarial.Launcher
                 Trace.WriteLine("It's development time.");
             }
 
+            versionLabel.Content = Minecraft.GetVersion();
+
+            string first = "Not Installed";
+            string second = "Not Installed";
+
+            if (Minecraft.GetVersion().ToString() == "1.20.1001.0") second = "Selected";
+            else if (Minecraft.GetVersion().ToString() == "1.20.1.0") first = "Selected";
+            
             TestVersions = new Dictionary<string, string>
     {
-        { "1.16.100.4", "Not Installed" },
-        { "1.19.51.1", "Selected" },
-        { "1.19.70", "Installed" }
+        { "1.20.0", first },
+        { "1.20.10", second },
     };
 
             foreach (string version in TestVersions.Keys)
@@ -130,7 +140,7 @@ namespace Flarial.Launcher
                 AddRadioButton(version, TestVersions[version]);
             }
 
-            versionLabel.Content = Minecraft.GetVersion();
+            
             SetGreetingLabel();
 
             Task.Delay(1);
@@ -286,7 +296,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style? style1 = null;
-            string[] tags = { "/Images/Gus1.png", version, "temp" };
+            string[] tags = {$"/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -314,28 +324,33 @@ namespace Flarial.Launcher
 
             if (TestVersions[version] == "Not Installed")
             {
-                radioButton.Style = FindResource("test3") as Style;
 
                 foreach (RadioButton rb in VersionsPanel.Children)
                 {
                     rb.IsEnabled = true;
                 }
+                long time = 0;
 
+                
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += Timer_Tick;
                 timer.Start();
+                
+                radioButton.Style = FindResource("test3") as Style;
 
                 void Timer_Tick(object sender, EventArgs e)
                 {
                         string[] tags2 =
                         {
-                            "/Images/Gus1.png", version,
+                            $"/Images/{version}.png", version,
                             $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
                         };
                         radioButton.Content = 415 - (progressPercentage / 100 * 415);
                         radioButton.Tag = tags2;
 
-                        if (progressPercentage == 100)
+                        time += 50;
+
+                        if (progressPercentage == 100 || Minecraft.isInstalled() && time > 3000)
                         {
                             timer.Stop();
                             radioButton.Style = FindResource("test1") as Style;
@@ -347,14 +362,15 @@ namespace Flarial.Launcher
 
             ChosenVersion = version;
             versionLabel.Content = ChosenVersion;
-
-            try
+            
+            Trace.WriteLine(version);
+            
+            bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
+            if(!succeeded)
             {
-                await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-            }
-            catch (RateLimitExceededException)
-            {
-                MessageBox.Show("Octokit Rate Limit was reached.");
+                radioButton.Style = FindResource("test2") as Style;
+                radioButton.IsChecked = false;
+                TestVersions[version] = "Not Installed";
             }
         }
 
