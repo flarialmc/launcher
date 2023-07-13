@@ -82,10 +82,12 @@ namespace Flarial.Minimal
                     newPath += arg;
                 
                 if (Directory.Exists(newPath))
-                {
                     location = newPath;
-                }
-                    
+                else 
+                    if (Directory.Exists(location))
+                        foreach (string file in Directory.GetFiles(location))
+                            System.IO.File.Delete(file);
+                  
             }
 
             Install();
