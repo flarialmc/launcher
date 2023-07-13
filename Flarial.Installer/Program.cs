@@ -31,7 +31,7 @@ namespace Flarial.Minimal
             shortcut.Save();
         }
         
-        static private void Install()
+        static private async void Install()
         {
             try
             {
@@ -41,6 +41,8 @@ namespace Flarial.Minimal
                 }
 
                 WebClient client = new WebClient();
+
+                bool done = false;
 
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
@@ -52,10 +54,18 @@ namespace Flarial.Minimal
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
-                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
+                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "\\flarial.minimal.exe", "Launch Flarial Minimal");
+                    done = true;
                 };
 
                 client.DownloadFileAsync(new Uri(url), location + "latest.zip");
+
+                while (!done)
+                {
+                    
+                }
+
+                MessageBox.Show("Flarial Has been installed", "Flarial installer");
             } catch (Exception e)
             {
                 MessageBox.Show($"Whoops! An error occurred: {e.Message}.\nPlease check your internet connection and if this keeps occurring contact us in our discord server.", "Flarial Installer", MessageBoxButton.OK, MessageBoxImage.Error);
