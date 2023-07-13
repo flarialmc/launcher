@@ -316,7 +316,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style? style1 = null;
-            string[] tags = {$"/Images/{version}.png", version, "temp" };
+            string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -362,7 +362,7 @@ namespace Flarial.Launcher
                 {
                         string[] tags2 =
                         {
-                            $"/Images/{version}.png", version,
+                            $"pack://application:,,,/Images/{version}.png", version,
                             $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
                         };
                         radioButton.Content = 415 - (progressPercentage / 100 * 415);
