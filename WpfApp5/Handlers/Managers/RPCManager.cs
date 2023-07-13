@@ -162,7 +162,14 @@ namespace Flarial.Launcher.Managers
                         largeImageKey = "zeqamc",
                         Detail = "Zeqa Network"
                     };
-                case "":
+                case "none":
+                    return new serverInformation()
+                    {
+                        ipAddress = ip,
+                        largeImageKey = "flarialbig",
+                        Detail = "Ready to play"
+                    };
+                case "none ":
                     return new serverInformation()
                     {
                         ipAddress = ip,
@@ -170,6 +177,13 @@ namespace Flarial.Launcher.Managers
                         Detail = "Ready to play"
                     };
                 case "world":
+                    return new serverInformation()
+                    {
+                        ipAddress = "In a world",
+                        largeImageKey = "flarialbig",
+                        Detail = "Playing Singleplayer"
+                    };
+                case "world ":
                     return new serverInformation()
                     {
                         ipAddress = "In a world",
