@@ -65,7 +65,7 @@ namespace Flarial.Launcher.Managers
             string result = "";
             WebClient webClient = new WebClient();
             if (version == "1.20.0") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.0.1&arch=x64")).Result);
-            if (version == "1.20.10") result = null;
+            if (version == "1.20.10") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.10.1&arch=x64")).Result);
             
             Trace.WriteLine(version);
 
@@ -162,6 +162,7 @@ namespace Flarial.Launcher.Managers
         private static void ReportProgress(DeploymentProgress progress)
         {
             // Report the progress of the deployment
+            if(progress.percentage != 100)
             MainWindow.progressPercentage = (int)progress.percentage;
         }
 
@@ -351,6 +352,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine("Installation complete.");
             }
 
+            MainWindow.progressPercentage = 100;
             isInstalling = false;
             return ello;
         }

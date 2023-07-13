@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,24 +18,43 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Microsoft.Web.WebView2.Core;
-using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Timer = System.Timers.Timer;
+using Flarial.NewsPanel;
+using ScrollAnimateBehavior.AttachedBehaviors;
 
 namespace Flarial.Launcher
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    public class News
+    {
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public string Author { get; set; }
+        public string RoleName { get; set; }
+        public string RoleColor { get; set; }
+        public string AuthorAvatar { get; set; }
+        public string Date { get; set; }
+        public string Background { get; set; }
+    }
+
+    public class Root
+    {
+        public List<News> News { get; set; }
+    }
+
     public partial class MainWindow
     {
         public int duration = 300;
 
         private static readonly WebClient Client = new WebClient();
+        List<double> data = new List<double>();
+        Root deserializedNews;
 
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
@@ -61,7 +79,9 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
+
             loadConfig();
+
 
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -91,6 +111,9 @@ namespace Flarial.Launcher
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
+
+            if (autoLogin)
+                AttemptLogin();
 
             if (custom_dll_path != "amongus")
                 CustomDllButton.IsChecked = true;
@@ -130,7 +153,45 @@ namespace Flarial.Launcher
             string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
             Trace.WriteLine(latestVer);
             double among = Convert.ToDouble(latestVer);
-            
+
+            string text = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/news.json"));
+            deserializedNews = JsonConvert.DeserializeObject<Root>(text);
+
+            int i = 0;
+            foreach (News item in deserializedNews.News)
+            {
+                NewsBorder newsBorder = new NewsBorder
+                {
+                    Title = item.Title,
+                    Body = item.Body,
+                    Author = item.Author,
+                    RoleName = item.RoleName,
+                    RoleColor = item.RoleColor,
+                    Date = item.Date,
+                    AuthorAvatar = item.AuthorAvatar,
+                    Background1 = item.Background
+                };
+                NewsStackPanel.Children.Add(newsBorder);
+                RadioButton rb1 = new RadioButton { Tag = new ImageBrush { ImageSource = new ImageSourceConverter().ConvertFromString(item.Background) as ImageSource } };
+                double y = 0;
+                OverviewStackPanel.Children.Add(rb1);
+                NewsStackPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                NewsStackPanel.Arrange(new Rect(0, 0, NewsStackPanel.DesiredSize.Width, NewsStackPanel.DesiredSize.Height));
+                newsBorder.Loaded += delegate
+                {
+                    try { y = data.Last(); }
+                    catch { y = 0; }
+                    void button1_Click(object sender, RoutedEventArgs e) => ScrollAnimationBehavior.AnimateScroll(NewsScrollViewer, y);
+                    rb1.Click += new RoutedEventHandler(button1_Click);
+                    data.Add(y + newsBorder.ActualHeight);
+                    newsBorder.Title = newsBorder.ActualHeight.ToString();
+                };
+                i++;
+            }
+            RadioButton rb = (RadioButton)OverviewStackPanel.Children[0];
+            rb.IsChecked = true;
+            NewsScrollViewer.UpdateLayout();
+
             if (version != 0.666 && version <= among)
             {
                 startInfo.Arguments = "updater.ps1";
@@ -158,7 +219,7 @@ namespace Flarial.Launcher
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
             }
-            
+
             TestVersions = new Dictionary<string, string>
     {
         { "1.20.0", first },
@@ -170,7 +231,7 @@ namespace Flarial.Launcher
                 AddRadioButton(version, TestVersions[version]);
             }
 
-            
+
             SetGreetingLabel();
 
             Task.Delay(1);
@@ -297,6 +358,8 @@ namespace Flarial.Launcher
             };
         }
 
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => this.DragMove();
+
         private async void OptionsButton_Click(object sender, RoutedEventArgs args)
         {
             RadioButton0.IsChecked = true;
@@ -326,7 +389,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style style1 = null;
-            string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
+            string[] tags = { $"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -350,7 +413,7 @@ namespace Flarial.Launcher
             RadioButton radioButton = (RadioButton)sender;
             object[] tags = (object[])radioButton.Tag;
             string version = tags[1].ToString();
-            
+
 
             if (TestVersions[version] == "Not Installed")
             {
@@ -361,7 +424,7 @@ namespace Flarial.Launcher
                 }
                 long time = 0;
 
-                
+
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += (object s, EventArgs _e) =>
                 {
@@ -375,7 +438,7 @@ namespace Flarial.Launcher
 
                     time += 50;
 
-                    if (Minecraft.isInstalled() && time > 7000)
+                    if (Minecraft.isInstalled() && time > 7000 && progressPercentage == 100)
                     {
                         Trace.WriteLine("yes 1");
                         timer.Stop();
@@ -386,13 +449,13 @@ namespace Flarial.Launcher
                         versionLabel.Content = ChosenVersion;
                     }
                 };
-                
+
                 timer.Start();
-                
+
                 radioButton.Style = FindResource("test3") as Style;
 
                 bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version));
-                if(!succeeded)
+                if (!succeeded)
                 {
                     radioButton.Style = FindResource("test2") as Style;
                     radioButton.IsChecked = false;
@@ -587,9 +650,10 @@ namespace Flarial.Launcher
                         DownloadProgressChangedEventHandler among =
                             new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                         webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
+                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
                             Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
                                 "MFPlat.dll"));
+                        
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
                     }
@@ -652,8 +716,8 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                if(!Utils.IsGameOpen())
-                File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
+                if (!Utils.IsGameOpen() && File.Exists(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll")))
+                    File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
             else this.Hide();
@@ -774,7 +838,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             OptionsGrid.Visibility = Visibility.Hidden;
-            LoginGrid.Margin = new Thickness(0,0,0,0);
+            LoginGrid.Margin = new Thickness(0, 0, 0, 0);
             LoginGrid.Width = 600;
             LoginGrid.Height = 400;
             LoginGrid.Opacity = 1;
@@ -806,6 +870,8 @@ namespace Flarial.Launcher
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
+
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.InitialDirectory = @"C:\";
             dialog.CheckFileExists = true;
@@ -845,6 +911,18 @@ namespace Flarial.Launcher
         {
             autoLogin = false;
         }
+
+        private void LOL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            NewsGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            NewsGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Visible;
+        }
     }
 }
 
@@ -856,6 +934,10 @@ public class ShowMessageCommand : ICommand
         {
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+
+                NvidiaPanelAndInternetOptimizer.OptimizeNvidiaPanelAndInternetForMinecraft();
+                MinecraftOptimizer.OptimizeMinecraft();
+                WindowsOptimizer.OptimizeIntelProcessor();
                 Application.Current.MainWindow.Show();
             }
         }

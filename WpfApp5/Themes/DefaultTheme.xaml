@@ -4,10 +4,8 @@
         <!--Window Styles-->
         <ResourceDictionary>
             <Style x:Key="WindowStyle" TargetType="Window">
-                <Setter Property="AllowsTransparency" Value="True"/>
                 <Setter Property="Background" Value="#120e0f"/>
-                <Setter Property="WindowStyle" Value="None"/>
-<Setter Property="Title" Value="Flarial Launcher"/>
+                <Setter Property="Title" Value="Flarial Launcher"/>
                 <Setter Property="Height" Value="400"/>
                 <Setter Property="Width" Value="600"/>
                 <Setter Property="ResizeMode" Value="NoResize"/>
@@ -994,8 +992,8 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <Image Source="/Images/account.png" Width="19" Height="19" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
-                                <Label Content="Guest" Foreground="#FFFFFF" FontSize="14" FontFamily="/Fonts/#Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="51.5" Margin="0,0,20,-25"/>
+                                <Image Source="pack://application:,,,/Images/account.png" Width="19" Height="19" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0"/>
+                                <Label Content="Guest" Foreground="#FFFFFF" FontSize="14" FontFamily="Unbounded" HorizontalAlignment="Right" VerticalAlignment="Center" Height="51.5" Margin="0,0,20,-25"/>
 
                                 <Grid.Clip>
                                     <RectangleGeometry Rect="0,0,120,50" RadiusX="12" RadiusY="12"/>
@@ -1197,9 +1195,32 @@
         </ResourceDictionary>
         <!--Main Page Styles-->
         <ResourceDictionary>
-            <Style x:Key="BackgroundImage" TargetType="Image">
-                <Setter Property="Source" Value="pack://application:,,,/Images/background.png"/>
-                <Setter Property="Margin" Value="-6,0,0,0"/>
+            <Style x:Key="BackgroundImage" TargetType="ContentControl">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <Image Source="pack://application:,,,/Images/background2.png" Stretch="UniformToFill" Margin="0,50,0,50"/>
+                                <Border Height="100" VerticalAlignment="Top" Margin="0,50,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Offset="0" Color="#ff120e0f"/>
+                                            <GradientStop Offset="1" Color="#00120e0f"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Border Height="100" VerticalAlignment="Bottom" Margin="0,0,0,50">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                                            <GradientStop Offset="0" Color="#ff120e0f"/>
+                                            <GradientStop Offset="1" Color="#00120e0f"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
             
             <Style x:Key="IconImage" TargetType="Image">
@@ -1318,37 +1339,58 @@
 
             <Style x:Key="NewsGrid" TargetType="Grid">
                 <Setter Property="Width" Value="275"/>
-                <Setter Property="Height" Value="120"/>
-                <Setter Property="Margin" Value="0,0,0,65"/>
+                <Setter Property="Height" Value="50"/>
+                <Setter Property="Margin" Value="0,-60,0,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Background">
                     <Setter.Value>
-                        <SolidColorBrush Color="Black" Opacity="0.6"/>
+                        <SolidColorBrush Color="Black" Opacity="0.6" x:Name="brush"/>
                     </Setter.Value>
                 </Setter>
                 <Setter Property="Clip">
                     <Setter.Value>
-                        <RectangleGeometry Rect="0,0,275,120" RadiusX="15" RadiusY="15"/>
+                        <RectangleGeometry Rect="0,0,275,50" RadiusX="15" RadiusY="15"/>
                     </Setter.Value>
                 </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#151515" Duration="0:0:0.1" Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#000000" Duration="0:0:0.1" Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style x:Key="NewsIcon" TargetType="Image">
                 <Setter Property="Source" Value="pack://application:,,,/Images/news.png"/>
                 <Setter Property="Width" Value="26"/>
                 <Setter Property="Height" Value="26"/>
-                <Setter Property="VerticalAlignment" Value="Top"/>
-                <Setter Property="Margin" Value="0,13,80,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,130,0"/>
             </Style>
 
             <Style x:Key="NewsHeader" TargetType="Label">
-                <Setter Property="Content" Value="News"/>
+                <Setter Property="Content" Value="Flarial News"/>
                 <Setter Property="Foreground" Value="#FFFFFF"/>
-                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontSize" Value="16"/>
                 <Setter Property="FontFamily" Value="Unbounded"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="Height" Value="32"/>
-                <Setter Property="Margin" Value="20,9,0,0"/>
+                <Setter Property="Margin" Value="20,0,0,0"/>
             </Style>
 
             <Style x:Key="NewsTitle" TargetType="Label">
@@ -1360,6 +1402,7 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="Height" Value="35"/>
                 <Setter Property="Margin" Value="0,39,0,0"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
             </Style>
 
             <Style x:Key="NewsBody" TargetType="TextBlock">
@@ -1372,6 +1415,7 @@
                 <Setter Property="VerticalAlignment" Value="Top"/>
                 <Setter Property="Width" Value="265"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
                 <Setter Property="Margin" Value="0,64,0,0"/>
             </Style>
 
@@ -1379,7 +1423,7 @@
                 <Setter Property="Width" Value="275"/>
                 <Setter Property="Height" Value="50"/>
                 <Setter Property="Orientation" Value="Horizontal"/>
-                <Setter Property="Margin" Value="0,140,0,0"/>
+                <Setter Property="Margin" Value="0,70,0,0"/>
             </Style>
 
             <Style x:Key="OptionsButton" TargetType="Button">
@@ -1461,6 +1505,7 @@
                 <Setter Property="Height" Value="50"/>
                 <Setter Property="Width" Value="130"/>
                 <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Margin" Value="0,0,0,0"/>
             </Style>
 
             <Color x:Key="CloseNormal">#FFFFFF</Color>
