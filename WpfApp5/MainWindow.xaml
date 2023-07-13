@@ -27,7 +27,7 @@
             /-->
 
         <Grid x:Name="MainGrid" Style="{DynamicResource MainPageStyle}">
-            <Image Style="{DynamicResource BackgroundImage}"/>
+            <ContentControl Style="{DynamicResource BackgroundImage}"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
             <Image Style="{DynamicResource IconImage}"/>
             <Label Content="Good Morning!" x:Name="GreetingLabel" Style="{DynamicResource GreetingLabelStyle}"/>

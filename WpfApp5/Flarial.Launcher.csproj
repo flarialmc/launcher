@@ -15,6 +15,7 @@
     <None Remove="Images\account.png" />
     <None Remove="Images\back.png" />
     <None Remove="Images\background.png" />
+    <None Remove="Images\background2.png" />
     <None Remove="Images\close.png" />
     <None Remove="Images\discord-mark-white.png" />
     <None Remove="Images\general.png" />
@@ -66,6 +67,7 @@
     <Resource Include="Images\account.png" />
     <Resource Include="Images\back.png" />
     <Resource Include="Images\background.png" />
+    <Resource Include="Images\background2.png" />
     <Resource Include="Images\close.png" />
     <Resource Include="Images\discord-mark-white.png" />
     <Resource Include="Images\general.png" />
@@ -92,6 +94,7 @@
     <Resource Include="Images\1.20.10.png" />
     <None Remove="Images\1.20.0.png" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Resource Include="Images\1.20.0.png" />
