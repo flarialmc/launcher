@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:AttachedBehavior="clr-namespace:ScrollAnimateBehavior.AttachedBehaviors"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" WindowStyle="None"
@@ -59,7 +60,7 @@
             <Label Style="{DynamicResource LauncherLabel}"/>
             <Label x:Name="VersionLabel" Content="v1" Style="{DynamicResource LauncherVersionLabel}"/>
             <Label x:Name="statusLabel" Style="{DynamicResource StatusLabelStyle}"/>
-            <Grid Name="LOL" Style="{DynamicResource NewsGrid}">
+            <Grid Name="LOL" Style="{DynamicResource NewsGrid}" MouseLeftButtonUp="LOL_MouseLeftButtonUp">
                 <Image Style="{DynamicResource NewsIcon}"/>
                 <Label Style="{DynamicResource NewsHeader}"/>
                 <Label Style="{DynamicResource NewsTitle}"/>
@@ -143,6 +144,76 @@
                     </RadioButton>
                 </StackPanel>
             </Grid>
+        </Grid>
+        <Grid Visibility="Hidden" x:Name="NewsGrid">
+            <Image Source="/Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
+            <Label Content="Flarial" Foreground="#fe4443" FontSize="30" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
+            <Label Content="News" Foreground="#ffffff" FontSize="30" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="195,14,0,0"/>
+            <Label x:Name="test123" Content="The latest news!" Foreground="#525252" FontSize="24" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,45,0,0"/>
+            <Grid Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"/>
+            <Button Style="{DynamicResource CloseButton}" Click="Button_Click_2"/>
+            <ScrollViewer
+            AttachedBehavior:ScrollAnimationBehavior.IsEnabled="True"                         
+                      AttachedBehavior:ScrollAnimationBehavior.TimeDuration="00:00:00.20"
+                      AttachedBehavior:ScrollAnimationBehavior.PointsToScroll="16"
+            x:Name="NewsScrollViewer" Margin="25,100,155,15" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="NewsStackPanel"/>
+            </ScrollViewer>
+            <ScrollViewer AttachedBehavior:ScrollAnimationBehavior.IsEnabled="True"                         
+                      AttachedBehavior:ScrollAnimationBehavior.TimeDuration="00:00:00.20"
+                      AttachedBehavior:ScrollAnimationBehavior.PointsToScroll="16"
+                      HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,100,10,20" Width="130" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="0,0,0,10"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border Height="75" BorderThickness="0" BorderBrush="#ffffff" CornerRadius="10" Background="{TemplateBinding Property=Tag}" x:Name="border">
+                                        <Border CornerRadius="10" Background="#000000" Opacity="0" x:Name="grid"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="RadioButton.IsChecked" Value="True">
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ThicknessAnimation Duration="0:0:0.1" To="1,1,1,1" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ThicknessAnimation Duration="0:0:0.1" To="0,0,0,0" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0:0:0.1" To="0.2" Storyboard.TargetName="grid" Storyboard.TargetProperty="Opacity"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="grid" Storyboard.TargetProperty="Opacity"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ScrollViewer.Resources>
+                <StackPanel x:Name="OverviewStackPanel"/>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Window>

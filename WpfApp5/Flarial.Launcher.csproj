@@ -18,7 +18,6 @@
     <None Remove="Images\close.png" />
     <None Remove="Images\discord-mark-white.png" />
     <None Remove="Images\general.png" />
-    <None Remove="Images\Gus1.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\icon.png" />
     <None Remove="Images\news.png" />
@@ -70,7 +69,6 @@
     <Resource Include="Images\close.png" />
     <Resource Include="Images\discord-mark-white.png" />
     <Resource Include="Images\general.png" />
-    <Resource Include="Images\Gus1.png" />
     <Resource Include="Images\icon.ico" />
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\news.png" />
@@ -90,12 +88,6 @@
     <Resource Include="Images\versions.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-
-    <Resource Include="Images\1.16.100.4.jpg" />
-    <Resource Include="Images\1.16.100.4_2.jpg" />
-
-    <Resource Include="Images\1.19.51.1.jpg" />
-    <Resource Include="Images\1.19.51.1_2.jpg" />
     <None Remove="Images\1.20.10.png" />
     <Resource Include="Images\1.20.10.png" />
     <None Remove="Images\1.20.0.png" />
