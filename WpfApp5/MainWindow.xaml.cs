@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Microsoft.Web.WebView2.Core;
 using Octokit;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
