@@ -1,37 +1,42 @@
-﻿using System;
+﻿using Flarial.Launcher.Structures;
+using System;
+using System.Runtime.CompilerServices;
 
-namespace Flarial.Launcher;
-
-public static partial class Minecraft
+namespace Flarial.Launcher
 {
-    public static class Backups
+
+    public static partial class Minecraft
     {
-        public record BackupDescriptor(string Name, Guid Id, Version Version, DateTime Date);
-
-        public static BackupDescriptor CreateBackupDescriptor(string name, Guid id) => new BackupDescriptor
-        (
-            Name: name,
-            Id: id,
-            Version: GetVersion(),
-            Date: DateTime.Now
-        );
-
-        public static string FormatBackupDescriptor(BackupDescriptor bd) =>
-            $"{FormatBackupDescriptorVersion(bd)} | " +
-            $"{FormatBackupDescriptorDate(bd)} | " +
-            $"{FormatBackupDescriptorId(bd)}";
-
-        public static string FormatBackupDescriptorId(BackupDescriptor bd) => bd.Id.ToString();
-        public static string FormatBackupDescriptorVersion(BackupDescriptor bd) => bd.Version.ToString();
-
-        public static string FormatBackupDescriptorDate(BackupDescriptor bd)
+        public static class Backups
         {
-            var now = DateTime.Now;
-            var today = DateOnly.FromDateTime(now);
+            public class BackupDescriptor
+            {
+                public BackupDescriptor(string name, Guid id, Version version, DateTime date)
+                {
+                    this.name = name;
+                    this.id = id;
+                    this.version = version;
+                    this.date = date;
+                }
 
-            return today == DateOnly.FromDateTime(bd.Date)
-                ? $"Today {bd.Date.Hour:D2}:{bd.Date.Minute:D2}"
-                : $"{bd.Date.Day:D2}.{bd.Date.Month:D2}.{bd.Date.Year:D4} ";
+                public string name;
+                public Guid id;
+                public Version version;
+                public DateTime date;
+            };
+
+            public static BackupDescriptor CreateBackupDescriptor(string name, Guid id) => new BackupDescriptor(name, id, GetVersion(), DateTime.Now);
+
+
+            public static string FormatBackupDescriptor(BackupDescriptor bd) =>
+                $"{FormatBackupDescriptorVersion(bd)} | " +
+                $"{FormatBackupDescriptorDate(bd)} | " +
+                $"{FormatBackupDescriptorId(bd)}";
+
+            public static string FormatBackupDescriptorId(BackupDescriptor bd) => bd.id.ToString();
+            public static string FormatBackupDescriptorVersion(BackupDescriptor bd) => bd.version.ToString();
+
+            public static string FormatBackupDescriptorDate(BackupDescriptor bd) => $"{bd.date.Day:D2}.{bd.date.Month:D2}.{bd.date.Year:D4}";
         }
     }
 }

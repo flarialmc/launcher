@@ -35,12 +35,12 @@ namespace Flarial.Launcher
     {
         public int duration = 300;
 
-        private static readonly WebClient? Client = new WebClient();
+        private static readonly WebClient Client = new WebClient();
 
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
-        public Window1 w = new();
+        public Window1 w = new Window1();
         public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
@@ -174,7 +174,7 @@ namespace Flarial.Launcher
 
             Task.Delay(1);
 
-            Dispatcher.BeginInvoke(() => RPCManager.Initialize());
+            Dispatcher.BeginInvoke((Action)(() => RPCManager.Initialize()));
 
             Application.Current.MainWindow = this;
         }
@@ -324,7 +324,7 @@ namespace Flarial.Launcher
         private void AddRadioButton(string version, string status)
         {
             RadioButton radioButton = new RadioButton();
-            Style? style1 = null;
+            Style style1 = null;
             string[] tags = {$"pack://application:,,,/Images/{version}.png", version, "temp" };
 
             if (status == "Installed")
@@ -362,31 +362,30 @@ namespace Flarial.Launcher
 
                 
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-                timer.Tick += Timer_Tick;
-                timer.Start();
-                
-                radioButton.Style = FindResource("test3") as Style;
-
-                void Timer_Tick(object sender, EventArgs e)
-                {
-                        string[] tags2 =
+                timer.Tick += (object s, EventArgs _e) => {
+                    string[] tags2 =
                         {
                             $"pack://application:,,,/Images/{version}.png", version,
                             $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
                         };
-                        radioButton.Content = 415 - (progressPercentage / 100 * 415);
-                        radioButton.Tag = tags2;
+                    radioButton.Content = 415 - (progressPercentage / 100 * 415);
+                    radioButton.Tag = tags2;
 
-                        time += 50;
+                    time += 50;
 
-                        if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
-                        {
-                            timer.Stop();
-                            radioButton.Style = FindResource("test1") as Style;
-                            radioButton.IsChecked = true;
-                            TestVersions[version] = "Installed";
-                        }
-                }
+                    if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
+                    {
+                        timer.Stop();
+                        radioButton.Style = FindResource("test1") as Style;
+                        radioButton.IsChecked = true;
+                        TestVersions[version] = "Installed";
+                    }
+                };
+                
+                timer.Start();
+                
+                radioButton.Style = FindResource("test3") as Style;
+                
             }
 
             ChosenVersion = version;
@@ -445,7 +444,7 @@ namespace Flarial.Launcher
 
         private void loadConfig()
         {
-            ConfigData? config = Config.getConfig();
+            ConfigData config = Config.getConfig();
 
             if (config == null)
             {
@@ -472,7 +471,7 @@ namespace Flarial.Launcher
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
         }
 
-        private async void CoreWebView2_NavigationStarting(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
+        private async void CoreWebView2_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
             if (e.Uri.StartsWith("https://flarial.net"))
             {
@@ -484,7 +483,7 @@ namespace Flarial.Launcher
         {
             try
             {
-                if (Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri? uri) && uri != null)
+                if (Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri uri) && uri != null)
                 {
                     string code = uri.Query.TrimStart('?').Split('&').FirstOrDefault(p => p.StartsWith("code="))?.Substring(5);
                     if (!string.IsNullOrEmpty(code))
@@ -776,7 +775,7 @@ namespace Flarial.Launcher
             MessageBox.ShowDialog();
         }
 
-        private void Window_OnClosing(object? sender, CancelEventArgs e)
+        private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Environment.Exit(0);
         }

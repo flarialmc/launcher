@@ -32,7 +32,7 @@ namespace Flarial.Launcher.Managers
             InLauncher();
         }
 
-        private static void TimerElapsed(object? sender, ElapsedEventArgs e)
+        private static void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             if (Process.GetProcessesByName("minecraft.windows").Length > 0)
             {

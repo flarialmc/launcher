@@ -8,7 +8,7 @@ namespace Flarial.Launcher.Handlers.Functions
     {
         public static bool IsFontInstalled(string fontName)
         {
-            using var testFont = new Font(fontName, 8);
+            var testFont = new Font(fontName, 8);
             return 0 == string.Compare(fontName, testFont.Name, StringComparison.InvariantCultureIgnoreCase);
         }
 

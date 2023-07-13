@@ -148,7 +148,7 @@ namespace Flarial.Launcher.Managers
                 }
 
                 var text = await CreateConfig();
-                await File.WriteAllTextAsync(backupConfigPath, text);
+                await Task.Run(() => File.WriteAllText(backupConfigPath, text));
             }
             catch (Exception ex)
             {

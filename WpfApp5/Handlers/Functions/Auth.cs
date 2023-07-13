@@ -59,10 +59,10 @@ namespace Flarial.Launcher.Functions
         {
             if (!File.Exists(Path))
             {
-                await File.WriteAllTextAsync(Path, string.Empty);
+                await Task.Run(() => File.WriteAllText(Path, string.Empty));
             }
 
-            var raw = await File.ReadAllTextAsync(Path);
+            var raw = await Task.Run(() => File.ReadAllText(Path));
 
             if (string.IsNullOrEmpty(raw))
             {
@@ -75,7 +75,7 @@ namespace Flarial.Launcher.Functions
 
                 var tss = JsonConvert.SerializeObject(ts);
 
-                await File.WriteAllTextAsync(Path, tss);
+                await Task.Run(() => File.WriteAllText(Path, tss));
             }
             else
             {
@@ -103,18 +103,18 @@ namespace Flarial.Launcher.Functions
 
                 var tss = JsonConvert.SerializeObject(ts);
 
-                await File.WriteAllTextAsync(Path, tss);
+                await Task.Run(() => File.WriteAllText(Path, tss));
             }
         }
 
-        public static async Task<TokenStructure?> GetCache()
+        public static async Task<TokenStructure> GetCache()
         {
             if (!File.Exists(Path))
             {
                 return null;
             }
 
-            var s = await File.ReadAllTextAsync(Path);
+            var s = await Task.Run(() => File.ReadAllText(Path));
             return JsonConvert.DeserializeObject<TokenStructure>(s);
         }
     }
