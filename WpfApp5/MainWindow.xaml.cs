@@ -106,6 +106,7 @@ namespace Flarial.Launcher
             }
 
             BetaDLLButton.IsChecked = shouldUseBetaDLL;
+            AutoLoginButton.IsChecked = autoLogin;
 
             InitializeAnimations();
 
@@ -584,6 +585,12 @@ namespace Flarial.Launcher
                 await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"), Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 if(!Utils.IsGameOpen())
                 Utils.OpenGame();
+            }
+            else
+            {
+                File.Copy(custom_dll_path, Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"), true);
+                if(!Utils.IsGameOpen())
+                    Utils.OpenGame();
             }
         }
 
