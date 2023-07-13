@@ -1342,7 +1342,7 @@
             <Style x:Key="NewsGrid" TargetType="Grid">
                 <Setter Property="Width" Value="275"/>
                 <Setter Property="Height" Value="50"/>
-                <Setter Property="Margin" Value="0,0,0,-10"/>
+                <Setter Property="Margin" Value="0,-60,0,0"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Background">
                     <Setter.Value>
@@ -1425,7 +1425,7 @@
                 <Setter Property="Width" Value="275"/>
                 <Setter Property="Height" Value="50"/>
                 <Setter Property="Orientation" Value="Horizontal"/>
-                <Setter Property="Margin" Value="0,140,0,0"/>
+                <Setter Property="Margin" Value="0,70,0,0"/>
             </Style>
 
             <Style x:Key="OptionsButton" TargetType="Button">
@@ -1507,6 +1507,7 @@
                 <Setter Property="Height" Value="50"/>
                 <Setter Property="Width" Value="130"/>
                 <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Margin" Value="0,0,0,0"/>
             </Style>
 
             <Color x:Key="CloseNormal">#FFFFFF</Color>
