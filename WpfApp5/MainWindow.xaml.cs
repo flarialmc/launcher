@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Handlers.Functions;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Windows.Media.Protection.PlayReady;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -31,6 +33,8 @@ namespace Flarial.Launcher
     {
         public int duration = 300;
 
+        private static readonly WebClient? Client = new WebClient();
+
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
@@ -41,6 +45,7 @@ namespace Flarial.Launcher
         public string custom_dll_path = "amongus";
         public string custom_theme_path = "main_default";
         public bool closeToTray;
+        public bool autoLogin;
         public bool isLoggedIn;
         private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
         private string ChosenVersion;
@@ -52,6 +57,22 @@ namespace Flarial.Launcher
         public MainWindow()
         {
             loadConfig();
+
+            if (!FontManager.IsFontInstalled("Unbounded"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
+                FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
+                File.Delete($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
+            }
+
+            if (!FontManager.IsFontInstalled("Sofia Sans"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf", "SofiaSans-VariableFont_wght.ttf");
+                FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
+                File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
+            }
+
+            //Trace.WriteLine(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
 
             if (!Utils.IsAdministrator)
             {
@@ -283,7 +304,7 @@ namespace Flarial.Launcher
         {
             RadioButton radioButton = new RadioButton();
             Style? style1 = null;
-            string[] tags = { "/Images/Gus1.png", version, "temp" };
+            string[] tags = { "pack://application:,,,/Images/Gus1.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
@@ -326,7 +347,7 @@ namespace Flarial.Launcher
                 void Timer_Tick(object sender, EventArgs e)
                 {
                     progress++;
-                    string[] tags2 = { "/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
+                    string[] tags2 = { "pack://application:,,,/Images/Gus1.png", version, $"{progress}% - 0 of 100MB" };
                     radioButton.Content = 415 - (progress / 100 * 415);
                     radioButton.Tag = tags2;
 
@@ -407,6 +428,7 @@ namespace Flarial.Launcher
             custom_dll_path = config.custom_dll_path;
             closeToTray = config.closeToTray;
             custom_theme_path = config.custom_theme_path;
+            autoLogin = config.autoLogin;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -710,9 +732,15 @@ namespace Flarial.Launcher
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
-            await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray);
-            var app = (App)Application.Current;
-            app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+            await Config.saveConfig(minecraft_version, false, custom_dll_path, shouldUseBetaDLL, closeToTray, autoLogin, custom_theme_path);
+            if (custom_theme_path != "main_default")
+            {
+                var app = (App)Application.Current;
+                app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+            }
+
+            CustomDialogBox MessageBox = new CustomDialogBox("Config", "Successfully saved your config.", "MessageBox");
+            MessageBox.ShowDialog();
         }
 
         private void Window_OnClosing(object? sender, CancelEventArgs e)
@@ -722,7 +750,7 @@ namespace Flarial.Launcher
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "We need this to verify if you have Flarial Beta, the discord login page is in a webview so none of your login info is shared with us.", "MessageBox");
+            CustomDialogBox MessageBox = new CustomDialogBox("Why do we need this?", "We need this to verify if you have Flarial Beta, the window is just a webview of the actual discord login page, so none of your login info is shared with us.", "MessageBox");
             MessageBox.ShowDialog();
         }
 
@@ -756,6 +784,16 @@ namespace Flarial.Launcher
         private void CustomThemeButton_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void AutoLoginButton_Checked(object sender, RoutedEventArgs e)
+        {
+            autoLogin = true;
+        }
+
+        private void AutoLoginButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            autoLogin = false;
         }
     }
 }
