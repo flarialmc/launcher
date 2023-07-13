@@ -47,6 +47,7 @@ namespace Flarial.Minimal
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
 
+                    
                     ZipFile.ExtractToDirectory(location + "latest.zip", location);
 
                     System.IO.File.Delete(location + "latest.zip");
