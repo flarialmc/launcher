@@ -60,17 +60,20 @@
             <Label Style="{DynamicResource LauncherLabel}"/>
             <Label x:Name="VersionLabel" Content="v1" Style="{DynamicResource LauncherVersionLabel}"/>
             <Label x:Name="statusLabel" Style="{DynamicResource StatusLabelStyle}"/>
-            <Grid Name="LOL" Style="{DynamicResource NewsGrid}" MouseLeftButtonUp="LOL_MouseLeftButtonUp">
-                <Image Style="{DynamicResource NewsIcon}"/>
-                <Label Style="{DynamicResource NewsHeader}"/>
-                <Label Style="{DynamicResource NewsTitle}"/>
-                <TextBlock Style="{DynamicResource NewsBody}"/>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Name="LOL" Style="{DynamicResource NewsGrid}" MouseLeftButtonUp="LOL_MouseLeftButtonUp">
+                    <Image Style="{DynamicResource NewsIcon}"/>
+                    <Label Style="{DynamicResource NewsHeader}"/>
+                    <Label Style="{DynamicResource NewsTitle}"/>
+                    <TextBlock Style="{DynamicResource NewsBody}"/>
+                </Grid>
+
+                <StackPanel Style="{DynamicResource MainButtonStackPanel}">
+                    <Button Style="{DynamicResource LaunchButton}" Click="Inject_Click"/>
+                    <Button x:Name="OptionsButton" Style="{DynamicResource OptionsButton}"/>
+                </StackPanel>
             </Grid>
 
-            <StackPanel Style="{DynamicResource MainButtonStackPanel}">
-                <Button Style="{DynamicResource LaunchButton}" Click="Inject_Click"/>
-                <Button x:Name="OptionsButton" Style="{DynamicResource OptionsButton}"/>
-            </StackPanel>
         </Grid>
         <Grid x:Name="LoginGrid" Style="{DynamicResource LoginPageStyle}">
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
