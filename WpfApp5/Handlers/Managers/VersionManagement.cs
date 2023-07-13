@@ -245,34 +245,53 @@ namespace Flarial.Launcher.Managers
                 return false;
             }
         }
-        
-        public static async Task ExtractAppxAsync(string appxFilePath, string outputFolderPath)
+
+        public static async Task ExtractAppxAsync(string appxFilePath, string outputFolderPath, string version)
         {
             int totalEntries = 0;
             int currentEntry = 0;
 
-            using (ZipArchive archive = ZipFile.OpenRead(appxFilePath))
+            if (!Directory.Exists(outputFolderPath))
             {
-                totalEntries = archive.Entries.Count;
-
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                using (ZipArchive archive = ZipFile.OpenRead(appxFilePath))
                 {
-                    string entryOutputPath = Path.Combine(outputFolderPath, entry.FullName);
-                    string entryDirectory = Path.GetDirectoryName(entryOutputPath);
+                    totalEntries = archive.Entries.Count;
 
-                    if (!string.IsNullOrEmpty(entryDirectory))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        Directory.CreateDirectory(entryDirectory);
-                    }
+                        string entryOutputPath = Path.Combine(outputFolderPath, entry.FullName);
+                        string entryDirectory = Path.GetDirectoryName(entryOutputPath);
 
-                    if (!entry.FullName.EndsWith("/"))
-                    {
-                        await Task.Run(() => entry.ExtractToFile(entryOutputPath, true));
-                    }
+                        if (!string.IsNullOrEmpty(entryDirectory))
+                        {
+                            Directory.CreateDirectory(entryDirectory);
+                        }
 
-                    currentEntry++;
-                    MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
+                        if (!entry.FullName.EndsWith("/"))
+                        {
+                            await Task.Run(() => entry.ExtractToFile(entryOutputPath, true));
+                        }
+
+                        currentEntry++;
+                        MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
+                    }
                 }
+
+                WebClient webClient = new WebClient();
+                
+                if(File.Exists( Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png")))
+                    File.Delete( Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
+                
+                if(File.Exists(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
+                       "ui", "title.png")))
+                    File.Delete(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
+                        "ui", "title.png"));
+                
+                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/assets/flarial-title.png"),
+                    Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
+                        "ui", "title.png"));
+                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/assets/flarial_mogang.png"),
+                    Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
         }
 
@@ -303,7 +322,7 @@ namespace Flarial.Launcher.Managers
 
                 Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
-                await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version));
+                await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
                     Trace.WriteLine("Failed to deploy.");

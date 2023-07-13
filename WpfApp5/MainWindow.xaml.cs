@@ -147,12 +147,12 @@ namespace Flarial.Launcher
             string first = "Not Installed";
             string second = "Not Installed";
 
-            if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
+            if (Minecraft.GetVersion().ToString() == "1.20.1001.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
                 versionLabel.Content = "1.20.10";
                 second = "Selected";
             }
-            else if (Minecraft.GetVersion().ToString() == "1.20.1.0")
+            else if (Minecraft.GetVersion().ToString() == "1.20.1.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
@@ -577,20 +577,33 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (!CustomDllButton.IsChecked.Value)
+            if(Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
-                WebClient webClient = new WebClient();
-                DownloadProgressChangedEventHandler among = new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                webClient.DownloadProgressChanged += among;
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"), Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
-                if(!Utils.IsGameOpen())
-                Utils.OpenGame();
+                if (!CustomDllButton.IsChecked.Value)
+                {
+                    WebClient webClient = new WebClient();
+                    DownloadProgressChangedEventHandler among =
+                        new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                    webClient.DownloadProgressChanged += among;
+                    await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest"),
+                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                            "MFPlat.dll"));
+                    if (!Utils.IsGameOpen())
+                        Utils.OpenGame();
+                }
+                else
+                {
+                    File.Copy(custom_dll_path,
+                        Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
+                            "MFPlat.dll"), true);
+                    if (!Utils.IsGameOpen())
+                        Utils.OpenGame();
+                }
             }
             else
             {
-                File.Copy(custom_dll_path, Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"), true);
-                if(!Utils.IsGameOpen())
-                    Utils.OpenGame();
+                CustomDialogBox MessageBox = new CustomDialogBox("Error", "You haven't installed Minecraft from our Launcher. Please go to Options -> Versions for that and select your preferred version.", "MessageBox");
+                MessageBox.ShowDialog();
             }
         }
 
