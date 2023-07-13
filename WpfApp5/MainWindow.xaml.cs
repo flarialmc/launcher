@@ -363,41 +363,40 @@ namespace Flarial.Launcher
 
                 
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-                timer.Tick += Timer_Tick;
+                timer.Tick += (object s, EventArgs _e) =>
+                {
+                    string[] tags2 =
+                    {
+                        $"pack://application:,,,/Images/{version}.png", version,
+                        $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
+                    };
+                    radioButton.Content = 415 - (progressPercentage / 100 * 415);
+                    radioButton.Tag = tags2;
+
+                    time += 50;
+
+                    if (Minecraft.isInstalled() && time > 7000)
+                    {
+                        Trace.WriteLine("yes 1");
+                        timer.Stop();
+                        radioButton.Style = FindResource("test1") as Style;
+                        radioButton.IsChecked = true;
+                        TestVersions[version] = "Installed";
+                        ChosenVersion = version;
+                        versionLabel.Content = ChosenVersion;
+                    }
+                };
+                
                 timer.Start();
                 
                 radioButton.Style = FindResource("test3") as Style;
 
-                void Timer_Tick(object sender, EventArgs e)
-                {
-                        string[] tags2 =
-                        {
-                            $"pack://application:,,,/Images/{version}.png", version,
-                            $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
-                        };
-                        radioButton.Content = 415 - (progressPercentage / 100 * 415);
-                        radioButton.Tag = tags2;
-
-                        time += 50;
-
-                        if (progressPercentage == 100 && Minecraft.isInstalled() && time > 3000)
-                        {
-                            timer.Stop();
-                            radioButton.Style = FindResource("test1") as Style;
-                            radioButton.IsChecked = true;
-                            TestVersions[version] = "Installed";
-                        }
-                }
-            
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(ChosenVersion));
-                if(!succeeded || !VersionManagement.isInstalling)
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version));
+                if(!succeeded)
                 {
                     radioButton.Style = FindResource("test2") as Style;
                     radioButton.IsChecked = false;
                     TestVersions[version] = "Not Installed";
-                    
-                    ChosenVersion = version;
-                    versionLabel.Content = ChosenVersion;
                 }
             }
         }
@@ -650,6 +649,7 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
+                
                 File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }

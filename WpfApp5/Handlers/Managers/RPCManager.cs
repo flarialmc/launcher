@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
+using Flarial.Launcher.Functions;
 
 namespace Flarial.Launcher.Managers
 {
@@ -33,26 +34,25 @@ namespace Flarial.Launcher.Managers
 
         private static void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (Process.GetProcessesByName("minecraft.windows").Length > 0)
+            if (Utils.IsGameOpen())
             {
                 var ip = readIp();
-                if (ip == previousContent)
+                if (ip != previousContent || Utils.IsGameOpen())
                 {
-                    return;
-                }
 
-                var a = GetServerInfo(ip);
-                previousContent = ip; // Add this line to update previousContent
-                if (a.largeImageKey == "flarialbig")
-                {
-                    a.largeImageKey = "mcicon";
+                    var a = GetServerInfo(ip);
+                    previousContent = ip; // Add this line to update previousContent
+                    if (a.largeImageKey == "flarialbig")
+                    {
+                        a.largeImageKey = "mcicon";
+                    }
+
+                    SetPresence(a.Detail, a.largeImageKey, "flarialbig", a.ipAddress);
                 }
-                SetPresence(a.Detail, a.largeImageKey, "flarialbig", a.ipAddress);
             }
             else
             {
                 InLauncher();
-                _timer.Stop();
             }
         }
 

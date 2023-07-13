@@ -66,6 +66,8 @@ namespace Flarial.Launcher.Managers
             WebClient webClient = new WebClient();
             if (version == "1.20.0") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.0.1&arch=x64")).Result);
             if (version == "1.20.10") result = null;
+            
+            Trace.WriteLine(version);
 
             return result;
         }
@@ -96,7 +98,7 @@ namespace Flarial.Launcher.Managers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
-                        "There was an issue with the URL. Please report this in our discord.", "MessageBox");
+                        $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
                     MessageBox.ShowDialog();
                 });
 
@@ -286,6 +288,12 @@ namespace Flarial.Launcher.Managers
                        "ui", "title.png")))
                     File.Delete(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
                         "ui", "title.png"));
+
+                using (StreamWriter writer = new StreamWriter(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "splashes.json"), false))
+                {
+                    string jsonString = "{ \"splashes\": [ \"§4Flarial §fMan!\" ] }";
+                        writer.WriteLine(jsonString);
+                    }
                 
                 await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/assets/flarial-title.png"),
                     Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
