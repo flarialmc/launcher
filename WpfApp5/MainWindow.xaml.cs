@@ -653,6 +653,7 @@ namespace Flarial.Launcher
             if (closeToTray == false)
             {
                 if(!Utils.IsGameOpen())
+                    if (File.Exists(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll")))
                 File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
