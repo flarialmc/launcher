@@ -22,17 +22,39 @@ using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
+using Timer = System.Timers.Timer;
+using Flarial.NewsPanel;
+using ScrollAnimateBehavior.AttachedBehaviors;
 
 namespace Flarial.Launcher
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    public class News
+    {
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public string Author { get; set; }
+        public string RoleName { get; set; }
+        public string RoleColor { get; set; }
+        public string AuthorAvatar { get; set; }
+        public string Date { get; set; }
+        public string Background { get; set; }
+    }
+
+    public class Root
+    {
+        public List<News> News { get; set; }
+    }
+
     public partial class MainWindow
     {
         public int duration = 300;
 
         private static readonly WebClient Client = new WebClient();
+        List<double> data = new List<double>();
+        Root deserializedNews;
 
         Storyboard myWidthAnimatedButtonStoryboard1 = new Storyboard();
         Storyboard myWidthAnimatedButtonStoryboard2 = new Storyboard();
@@ -128,6 +150,44 @@ namespace Flarial.Launcher
             string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
             Trace.WriteLine(latestVer);
             double among = Convert.ToDouble(latestVer);
+
+            string text = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/news.json"));
+            deserializedNews = JsonConvert.DeserializeObject<Root>(text);
+
+            int i = 0;
+            foreach (News item in deserializedNews.News)
+            {
+                NewsBorder newsBorder = new NewsBorder
+                {
+                    Title = item.Title,
+                    Body = item.Body,
+                    Author = item.Author,
+                    RoleName = item.RoleName,
+                    RoleColor = item.RoleColor,
+                    Date = item.Date,
+                    AuthorAvatar = item.AuthorAvatar,
+                    Background1 = item.Background
+                };
+                NewsStackPanel.Children.Add(newsBorder);
+                RadioButton rb1 = new RadioButton { Tag = new ImageBrush { ImageSource = new ImageSourceConverter().ConvertFromString(item.Background) as ImageSource } };
+                double y = 0;
+                OverviewStackPanel.Children.Add(rb1);
+                NewsStackPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                NewsStackPanel.Arrange(new Rect(0, 0, NewsStackPanel.DesiredSize.Width, NewsStackPanel.DesiredSize.Height));
+                newsBorder.Loaded += delegate
+                {
+                    try { y = data.Last(); }
+                    catch { y = 0; }
+                    void button1_Click(object sender, RoutedEventArgs e) => ScrollAnimationBehavior.AnimateScroll(NewsScrollViewer, y);
+                    rb1.Click += new RoutedEventHandler(button1_Click);
+                    data.Add(y + newsBorder.ActualHeight);
+                    newsBorder.Title = newsBorder.ActualHeight.ToString();
+                };
+                i++;
+            }
+            RadioButton rb = (RadioButton)OverviewStackPanel.Children[0];
+            rb.IsChecked = true;
+            NewsScrollViewer.UpdateLayout();
 
             if (version != 0.666 && version <= among)
             {
@@ -294,6 +354,8 @@ namespace Flarial.Launcher
                 Duration = new Duration(TimeSpan.FromMilliseconds(duration))
             };
         }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => this.DragMove();
 
         private async void OptionsButton_Click(object sender, RoutedEventArgs args)
         {
@@ -844,6 +906,18 @@ namespace Flarial.Launcher
         private void AutoLoginButton_Unchecked(object sender, RoutedEventArgs e)
         {
             autoLogin = false;
+        }
+
+        private void LOL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            NewsGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            NewsGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Visible;
         }
     }
 }

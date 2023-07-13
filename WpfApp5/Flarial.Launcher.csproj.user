@@ -21,6 +21,9 @@
     <Page Update="CustomDialogBox.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="NewsBorder.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Themes\DefaultTheme.xaml">
       <SubType>Designer</SubType>
     </Page>
