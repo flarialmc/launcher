@@ -208,7 +208,7 @@ namespace Flarial.Launcher
                     string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
                     Trace.WriteLine(scriptPath);
                     ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = "powershell.exe";
+                    psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
                     psi.Arguments = $"\"{scriptPath}\"";
                     psi.UseShellExecute = false;
 
