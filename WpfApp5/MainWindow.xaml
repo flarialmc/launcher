@@ -101,16 +101,25 @@
                 </ScrollViewer>
             </Grid>
             <Grid Style="{DynamicResource OptionsGeneralGridStyle}" x:Name="OptionsGeneralGrid">
-                <StackPanel Style="{DynamicResource OptionsGeneralStackPanel}">
-                    <ToggleButton x:Name="CustomDllButton" Style="{DynamicResource ToggleButton}" Content="Custom DLL" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                    <ToggleButton x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Visibility="Collapsed" Content="Beta DLL" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
-                    <ToggleButton x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Content="Close To Tray" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
-                    <ToggleButton x:Name="CustomThemeButton" Style="{DynamicResource ToggleButton}" Content="Custom Theme" x:Uid="CustomThemeButton" Checked="CustomThemeButton_Checked" Unchecked="CustomThemeButton_Unchecked"/>
-                    <ToggleButton x:Name="AutoLoginButton" Style="{DynamicResource ToggleButton}" Content="Auto Login" x:Uid="AutoLoginButton" Checked="AutoLoginButton_Checked" Unchecked="AutoLoginButton_Unchecked"/>
-                </StackPanel>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="100" Click="Button_Click">
-
-                </Button>
+                <ScrollViewer Margin="0,0,0,75" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel Style="{DynamicResource OptionsGeneralStackPanel}">
+                        <ToggleButton x:Name="CustomDllButton" Style="{DynamicResource ToggleButton}" Content="Custom DLL" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
+                        <local:CustomTextBox Type="dll" x:Name="dllTextBox" Visibility="Collapsed"/>
+                        <ToggleButton x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Visibility="Collapsed" Content="Beta DLL" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
+                        <ToggleButton x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Content="Close To Tray" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
+                        <ToggleButton x:Name="CustomThemeButton" Style="{DynamicResource ToggleButton}" Content="Custom Theme" x:Uid="CustomThemeButton" Checked="CustomThemeButton_Checked" Unchecked="CustomThemeButton_Unchecked"/>
+                        <local:CustomTextBox Type="theme" x:Name="themeTextBox" Visibility="Collapsed"/>
+                        <ToggleButton x:Name="AutoLoginButton" Style="{DynamicResource ToggleButton}" Content="Auto Login" x:Uid="AutoLoginButton" Checked="AutoLoginButton_Checked" Unchecked="AutoLoginButton_Unchecked"/>
+                    </StackPanel>
+                </ScrollViewer>
+                <Border Height="10" VerticalAlignment="Bottom" Margin="0,0,0,75">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Color="#00402a2e" Offset="0"/>
+                            <GradientStop Color="#ff402a2e" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
                 <Button x:Name="SaveConfigButton" Style="{DynamicResource SaveConfigButtonStyle}" Click="SaveConfig"/>
             </Grid>
 

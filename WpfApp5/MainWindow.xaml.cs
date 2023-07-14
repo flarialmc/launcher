@@ -63,8 +63,8 @@ namespace Flarial.Launcher
         public bool ifBeta;
         public double version = 0.666; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
-        public string custom_dll_path = "amongus";
-        public string custom_theme_path = "main_default";
+        public static string custom_dll_path = "amongus";
+        public static string custom_theme_path = "main_default";
         public bool closeToTray;
         public bool autoLogin;
         public bool isLoggedIn;
@@ -82,6 +82,7 @@ namespace Flarial.Launcher
 
             loadConfig();
 
+            Trace.WriteLine(custom_theme_path);
 
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -116,12 +117,20 @@ namespace Flarial.Launcher
                 AttemptLogin();
 
             if (custom_dll_path != "amongus")
+            {
                 CustomDllButton.IsChecked = true;
+                dllTextBox.Visibility = Visibility.Visible;
+                dllTextBox.Text = custom_dll_path;
+            }
+                
 
             TrayButton.IsChecked = closeToTray;
 
             if (!(custom_theme_path == "main_default"))
             {
+                CustomThemeButton.IsChecked = true;
+                themeTextBox.Visibility = Visibility.Visible;
+                themeTextBox.Text = custom_theme_path;
                 if (!string.IsNullOrEmpty(custom_theme_path))
                 {
                     var app = (App)Application.Current;
@@ -757,30 +766,13 @@ namespace Flarial.Launcher
         //i could implement the OpenFileDialog my self but im only responisble for the frontend + im lazy as shit
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (custom_dll_path == "amongus")
-            {
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.InitialDirectory = @"C:\";
-                dialog.DefaultExt = "dll";
-                dialog.Filter = "DLL Files|*.dll;";
-                dialog.CheckFileExists = true;
-                dialog.CheckPathExists = true;
-                dialog.Multiselect = false;
-                dialog.Title = "Select Custom DLL";
-
-                if (dialog.ShowDialog() == true)
-                {
-
-                    custom_dll_path = dialog.FileName;
-                    Trace.WriteLine(custom_dll_path);
-
-                }
-            }
+            dllTextBox.Visibility = Visibility.Visible;
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             custom_dll_path = "amongus";
+            dllTextBox.Visibility = Visibility.Collapsed;
             Trace.WriteLine(custom_dll_path);
         }
 
@@ -889,11 +881,12 @@ namespace Flarial.Launcher
         private void CustomThemeButton_Unchecked(object sender, RoutedEventArgs e)
         {
             custom_theme_path = "main_default";
+            themeTextBox.Visibility = Visibility.Collapsed;
         }
 
         private void CustomThemeButton_Checked(object sender, RoutedEventArgs e)
         {
-
+            themeTextBox.Visibility = Visibility.Visible;
         }
 
         private void AutoLoginButton_Checked(object sender, RoutedEventArgs e)
