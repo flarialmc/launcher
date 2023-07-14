@@ -194,9 +194,18 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                startInfo.Arguments = "updater.ps1";
-                process.StartInfo = startInfo;
-                process.Start();
+                using (Process pp = new Process())
+                {
+                    string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
+                    Trace.WriteLine(scriptPath);
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.FileName = "powershell.exe";
+                    psi.Arguments = $"\"{scriptPath}\"";
+                    psi.UseShellExecute = false;
+
+                    Process.Start(psi);
+                }
+                
                 Environment.Exit(0);
             }
             else if (version == 0.666)
