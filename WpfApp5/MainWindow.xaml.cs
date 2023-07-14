@@ -204,15 +204,27 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
+                /*string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
                     Trace.WriteLine(scriptPath);
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
                     psi.Arguments = $"\"{scriptPath}\"";
                     psi.UseShellExecute = false;
+                    Process.Start(psi);*/
+
+                var client = new WebClient();
+                client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.FileName = Path.Combine(Path.GetTempPath(), "flarial.installer.exe");
+                    psi.Arguments = "update";
+
                     Process.Start(psi);
-                
-                Environment.Exit(0);
+
+                    Environment.Exit(0);
+                };
+
+                client.DownloadFileAsync(new Uri("cdn.flarial.net/installer.exe"), Path.Combine(Path.GetTempPath(), "flarial.installer.exe"));
             }
             else if (version == 0.666)
             {
