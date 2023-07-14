@@ -82,8 +82,6 @@ namespace Flarial.Launcher
 
             loadConfig();
 
-            Trace.WriteLine(custom_theme_path);
-
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
                 Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
@@ -146,9 +144,9 @@ namespace Flarial.Launcher
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-
+            
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "powershell.exe";
+            startInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
             startInfo.Arguments = "set-executionpolicy unrestricted";
             startInfo.UseShellExecute = false;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -156,6 +154,8 @@ namespace Flarial.Launcher
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
+            
+            Trace.WriteLine(startInfo.FileName);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
