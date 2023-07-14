@@ -49,27 +49,27 @@ namespace Flarial.Minimal
 
                 client.DownloadProgressChanged += (object s, DownloadProgressChangedEventArgs e) =>
                 {
-                    
-                        bar.Value = 2 + (int)((double)e.ProgressPercentage * 0.88);
+
+                    bar.Value = 2 + (int)((double)e.ProgressPercentage * 0.88);
                 };
 
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
-                    
-                        bar.Value = 92;
+
+                    bar.Value = 92;
                     ZipFile.ExtractToDirectory(location + "latest.zip", location);
 
                     System.IO.File.Delete(location + "latest.zip");
-                    
-                        bar.Value = 96;
+
+                    bar.Value = 96;
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
-                    
-                        bar.Value = 98;
+
+                    bar.Value = 98;
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "\\flarial.minimal.exe", "Launch Flarial Minimal");
-                    
-                        bar.Value = 100;
+
+                    bar.Value = 100;
 
                     if (!silent)
                         MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial Installer");
@@ -92,11 +92,6 @@ namespace Flarial.Minimal
 
         static void Main(string[] args)
         {
-
-            if (Directory.Exists(location))
-                foreach (string file in Directory.GetFiles(location))
-                    System.IO.File.Delete(file);
-           
             if (args.Length > 0) //custom installation path
             {
                 if (args[0] == "update")
@@ -112,18 +107,24 @@ namespace Flarial.Minimal
                 foreach (string arg in args)
                     newPath += arg;
 
-                if (Directory.Exists(newPath))
-                    location = newPath;
+                Directory.CreateDirectory(newPath);
+
+                location = newPath;
             }
 
-        nvm:
+            if (Directory.Exists(location))
+                foreach (string file in Directory.GetFiles(location))
+                    System.IO.File.Delete(file);
+
+
+                nvm:
 
             form = new Progressbar();
 
             if (!silent)
                 form.Show();
             else
-                form.label1.Text = "Flarial Updater"; 
+                form.label1.Text = "Flarial Updater";
 
             bar = form.GetProgressBar();
             bar.Value = 2;
