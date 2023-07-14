@@ -12,12 +12,16 @@ using IWshRuntimeLibrary;
 using System.Reflection;
 using System.Security.Policy;
 using System.ComponentModel;
-using System.Windows;
+using System.Windows.Forms;
+using Flarial.Installer;
+using System.Windows.Controls;
 
 namespace Flarial.Minimal
 {
     class Program
     {
+        static private System.Windows.Forms.ProgressBar bar;
+        static private Progressbar form;
         static private string location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Flarial\";
         static private string url = "https://cdn.flarial.net/launcher/latest.zip";
 
@@ -30,7 +34,7 @@ namespace Flarial.Minimal
             shortcut.Description = description;
             shortcut.Save();
         }
-        
+
         static private async void Install()
         {
             try
@@ -42,12 +46,13 @@ namespace Flarial.Minimal
 
                 WebClient client = new WebClient();
 
-                bool done = false;
+                client.DownloadProgressChanged += (object s, DownloadProgressChangedEventArgs e) =>
+                {
+                    bar.Value = e.ProgressPercentage;
+                };
 
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
-
-                    
                     ZipFile.ExtractToDirectory(location + "latest.zip", location);
 
                     System.IO.File.Delete(location + "latest.zip");
@@ -56,25 +61,30 @@ namespace Flarial.Minimal
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "\\flarial.minimal.exe", "Launch Flarial Minimal");
-                    done = true;
+
+                    MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial installer");
+                    
+                    form.Close();
+                    Process.GetCurrentProcess().Kill();
                 };
 
                 client.DownloadFileAsync(new Uri(url), location + "latest.zip");
-
-                while (!done)
-                {
-                    
-                }
-
-                MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial installer");
-            } catch (Exception e)
+                Application.Run(form);
+            }
+            catch (Exception e)
             {
-                MessageBox.Show($"Whoops! An error occurred: {e.Message}.\nPlease check your internet connection and if this keeps occurring contact us in our discord server.", "Flarial Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Whoops! An error occurred: {e.Message}.\nPlease check your internet connection and if this keeps occurring contact us in our discord server.", "Flarial Installer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         static void Main(string[] args)
-        {
+        { 
+            form = new Progressbar();
+            form.Show();
+            bar = form.GetProgressBar();
+            bar.Value = 1;
+
+
             if (Directory.Exists(location))
                 foreach (string file in Directory.GetFiles(location))
                     System.IO.File.Delete(file);
