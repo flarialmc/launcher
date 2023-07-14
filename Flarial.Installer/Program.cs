@@ -48,20 +48,24 @@ namespace Flarial.Minimal
 
                 client.DownloadProgressChanged += (object s, DownloadProgressChangedEventArgs e) =>
                 {
-                    bar.Value = e.ProgressPercentage;
+                    bar.Value = 2 + (int)((double)e.ProgressPercentage * 0.88);
                 };
 
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
+                    bar.Value = 92;
                     ZipFile.ExtractToDirectory(location + "latest.zip", location);
 
                     System.IO.File.Delete(location + "latest.zip");
-
+                    bar.Value = 96;
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
                     CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
+                    bar.Value = 98;
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "\\flarial.minimal.exe", "Launch Flarial Minimal");
 
+                    bar.Value = 100;
+                    
                     MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial installer");
                     
                     form.Close();
@@ -82,7 +86,7 @@ namespace Flarial.Minimal
             form = new Progressbar();
             form.Show();
             bar = form.GetProgressBar();
-            bar.Value = 1;
+            bar.Value = 2;
 
 
             if (Directory.Exists(location))
