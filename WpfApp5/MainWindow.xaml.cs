@@ -61,7 +61,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.0; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public double version = 0.99; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public string custom_dll_path = "amongus";
         public string custom_theme_path = "main_default";
@@ -192,7 +192,7 @@ namespace Flarial.Launcher
             rb.IsChecked = true;
             NewsScrollViewer.UpdateLayout();
 
-            if (version != 0.666 && version <= among)
+            if (version != 0.666 && version < among)
             {
                 startInfo.Arguments = "updater.ps1";
                 process.StartInfo = startInfo;
