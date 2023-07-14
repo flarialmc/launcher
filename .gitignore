@@ -6,7 +6,8 @@ WpfApp5/bin
 .sln
 WpfApp5/Flarial.Launcher.csproj
 *.rsp
-/Flarial.Installer/obj/Debug
-/Flarial.Minimal/bin/Debug
-/Flarial.Minimal/obj/Debug
-/Flarial.Installer/bin/Debug
+/Flarial.Installer/obj
+/Flarial.Installer/bin
+/Flarial.Minimal/obj
+/Flarial.Minimal/bin
+Flarial.Minimal/obj/Release/Flarial.Minimal.csproj.AssemblyReference.cache
