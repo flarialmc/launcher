@@ -76,6 +76,7 @@ namespace Flarial.Launcher
         public static int progressPercentage;
         public static long progressBytesReceived;
         public static long progressBytesTotal;
+        public static string progressType;
 
         public MainWindow()
         {
@@ -203,17 +204,13 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                using (Process pp = new Process())
-                {
-                    string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
+                string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
                     Trace.WriteLine(scriptPath);
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
                     psi.Arguments = $"\"{scriptPath}\"";
                     psi.UseShellExecute = false;
-
                     Process.Start(psi);
-                }
                 
                 Environment.Exit(0);
             }
@@ -446,10 +443,18 @@ namespace Flarial.Launcher
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += (object s, EventArgs _e) =>
                 {
+                    string acc = "";
+                    if (progressType == "download")
+                        acc = $"- {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB";
+                    else if (progressType == "Extracting")
+                        acc = $"- Extracting {progressBytesReceived} of {progressBytesTotal}";
+                    else if (progressType == "Installing")
+                        acc = $"Installing..";
+                    
                     string[] tags2 =
                     {
                         $"pack://application:,,,/Images/{version}.png", version,
-                        $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
+                        $"{progressPercentage}% " + acc
                     };
                     radioButton.Content = 415 - (progressPercentage / 100 * 415);
                     radioButton.Tag = tags2;
@@ -478,6 +483,10 @@ namespace Flarial.Launcher
                     radioButton.Style = FindResource("test2") as Style;
                     radioButton.IsChecked = false;
                     TestVersions[version] = "Not Installed";
+                }
+                else
+                {
+                    progressPercentage = 100;
                 }
             }
         }

@@ -164,12 +164,17 @@ namespace Flarial.Launcher.Managers
             // Report the progress of the deployment
             if(progress.percentage != 100)
             MainWindow.progressPercentage = (int)progress.percentage;
+
+            MainWindow.progressType = "Installing";
         }
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
+            MainWindow.progressType = "download";
+            
             if(e.ProgressPercentage != 100)
             MainWindow.progressPercentage = e.ProgressPercentage;
+            
             MainWindow.progressBytesReceived = e.BytesReceived;
             MainWindow.progressBytesTotal = e.TotalBytesToReceive;
             Trace.WriteLine($"Downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage}% complete...");
@@ -276,6 +281,9 @@ namespace Flarial.Launcher.Managers
                         }
 
                         currentEntry++;
+                        MainWindow.progressType = "Extracting";
+                        MainWindow.progressBytesTotal = totalEntries;
+                        MainWindow.progressBytesReceived = currentEntry;
                         MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
                     }
                 }
@@ -352,7 +360,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine("Installation complete.");
             }
 
-            MainWindow.progressPercentage = 100;
+            
             isInstalling = false;
             return ello;
         }

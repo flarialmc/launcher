@@ -51,8 +51,9 @@ namespace Flarial.Launcher
             var Packages = PackageManager.FindPackages(FamilyName);
             if (Packages.Count() == 0)
             {
-                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
+                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed to verify that you have bought the game.", "MessageBox");
                 MessageBox.ShowDialog();
+                Environment.Exit(0);
             }
             else
             {
@@ -70,19 +71,10 @@ namespace Flarial.Launcher
             if (PackageManager is null) throw new NullReferenceException();
             var Packages = PackageManager.FindPackages(FamilyName);
 
-            if (Packages.Count() == 0)
-            {
-                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
-                MessageBox.ShowDialog();
-            }
-            else
+            if (Packages.Count() != 0)
             {
                 Package = Packages.First();
             }
-
-
-
-
         }
 
         public static Version GetVersion()
