@@ -66,7 +66,7 @@ namespace Flarial.Minimal
                     
                 }
 
-                MessageBox.Show("Flarial Has been installed", "Flarial installer");
+                MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial installer");
             } catch (Exception e)
             {
                 MessageBox.Show($"Whoops! An error occurred: {e.Message}.\nPlease check your internet connection and if this keeps occurring contact us in our discord server.", "Flarial Installer", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -75,6 +75,10 @@ namespace Flarial.Minimal
 
         static void Main(string[] args)
         {
+            if (Directory.Exists(location))
+                foreach (string file in Directory.GetFiles(location))
+                    System.IO.File.Delete(file);
+
             if (args.Length > 0) //custom installation path
             { 
                 string newPath = "";
@@ -83,12 +87,7 @@ namespace Flarial.Minimal
                     newPath += arg;
                 
                 if (Directory.Exists(newPath))
-                    location = newPath;
-                else 
-                    if (Directory.Exists(location))
-                        foreach (string file in Directory.GetFiles(location))
-                            System.IO.File.Delete(file);
-                  
+                    location = newPath;      
             }
 
             Install();
