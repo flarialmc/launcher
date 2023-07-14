@@ -61,7 +61,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.0; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public double version = 1.1; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -76,13 +76,12 @@ namespace Flarial.Launcher
         public static int progressPercentage;
         public static long progressBytesReceived;
         public static long progressBytesTotal;
+        public static string progressType;
 
         public MainWindow()
         {
 
             loadConfig();
-
-            Trace.WriteLine(custom_theme_path);
 
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -146,9 +145,9 @@ namespace Flarial.Launcher
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-
+            
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "powershell.exe";
+            startInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
             startInfo.Arguments = "set-executionpolicy unrestricted";
             startInfo.UseShellExecute = false;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -156,6 +155,8 @@ namespace Flarial.Launcher
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
+            
+            Trace.WriteLine(startInfo.FileName);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
@@ -203,17 +204,13 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                using (Process pp = new Process())
-                {
-                    string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
+                string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
                     Trace.WriteLine(scriptPath);
                     ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = "powershell.exe";
+                    psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
                     psi.Arguments = $"\"{scriptPath}\"";
                     psi.UseShellExecute = false;
-
                     Process.Start(psi);
-                }
                 
                 Environment.Exit(0);
             }
@@ -436,6 +433,12 @@ namespace Flarial.Launcher
             if (TestVersions[version] == "Not Installed")
             {
 
+                if (version == "1.20.0")
+                {
+                    CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
+                    MessageBox.ShowDialog();
+                }
+
                 foreach (RadioButton rb in VersionsPanel.Children)
                 {
                     rb.IsEnabled = true;
@@ -446,10 +449,18 @@ namespace Flarial.Launcher
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += (object s, EventArgs _e) =>
                 {
+                    string acc = "";
+                    if (progressType == "download")
+                        acc = $"- {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB";
+                    else if (progressType == "Extracting")
+                        acc = $"- Extracting {progressBytesReceived} of {progressBytesTotal}";
+                    else if (progressType == "Installing")
+                        acc = $"Installing..";
+                    
                     string[] tags2 =
                     {
                         $"pack://application:,,,/Images/{version}.png", version,
-                        $"{progressPercentage}% - {progressBytesReceived / 1048576} of {progressBytesTotal / 1048576}MB"
+                        $"{progressPercentage}% " + acc
                     };
                     radioButton.Content = 415 - (progressPercentage / 100 * 415);
                     radioButton.Tag = tags2;
@@ -478,6 +489,10 @@ namespace Flarial.Launcher
                     radioButton.Style = FindResource("test2") as Style;
                     radioButton.IsChecked = false;
                     TestVersions[version] = "Not Installed";
+                }
+                else
+                {
+                    progressPercentage = 100;
                 }
             }
         }
@@ -662,26 +677,35 @@ namespace Flarial.Launcher
             {
                 if (!Utils.IsGameOpen())
                 {
-                    if (!CustomDllButton.IsChecked.Value)
+                    if (versionLabel.Content != "1.20.0" && !CustomDllButton.IsChecked.Value)
                     {
-                        WebClient webClient = new WebClient();
-                        DownloadProgressChangedEventHandler among =
-                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                        webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
-                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                                "MFPlat.dll"));
-                        
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
-                    }
-                    else
+                        if (!CustomDllButton.IsChecked.Value)
+                        {
+                            WebClient webClient = new WebClient();
+                            DownloadProgressChangedEventHandler among =
+                                new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                            webClient.DownloadProgressChanged += among;
+                            await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
+                                Path.Combine(VersionManagement.launcherPath, "Versions",
+                                    versionLabel.Content.ToString(),
+                                    "MFPlat.dll"));
+
+                            if (!Utils.IsGameOpen())
+                                Utils.OpenGame();
+                        }
+                        else
+                        {
+                            File.Copy(custom_dll_path,
+                                Path.Combine(VersionManagement.launcherPath, "Versions",
+                                    versionLabel.Content.ToString(),
+                                    "MFPlat.dll"), true);
+                            if (!Utils.IsGameOpen())
+                                Utils.OpenGame();
+                        }
+                    } else if (versionLabel.Content == "1.20.0")
                     {
-                        File.Copy(custom_dll_path,
-                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                                "MFPlat.dll"), true);
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
+                        CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
+                        MessageBox.ShowDialog();
                     }
                 }
             }
