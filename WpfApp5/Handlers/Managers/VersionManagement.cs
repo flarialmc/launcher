@@ -180,48 +180,6 @@ namespace Flarial.Launcher.Managers
             Trace.WriteLine($"Downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage}% complete...");
         }
 
-        public static async Task<string> CacheVersionsList()
-        {
-            var jsonPath = Path.Combine(launcherPath, "List.json");
-
-            if (File.Exists(jsonPath))
-            {
-                return File.ReadAllText(jsonPath);
-            }
-
-            var versionStructs = new List<VersionStruct>();
-            var allVersions = await GetVersionsAsync();
-
-            using (var client = new WebClient())
-            {
-                foreach (var version in allVersions)
-                {
-                    var url = await GetVersionLinkAsync(version);
-                    var descUri = new Uri($"https://cdn.flarial.net/VersionsStructure/{version}.txt");
-
-                    try
-                    {
-                        var desc = await client.DownloadStringTaskAsync(descUri);
-                        versionStructs.Add(new VersionStruct
-                        {
-                            DownloadURL = url,
-                            Version = version.Remove(version.LastIndexOf(".")),
-                            Description = desc
-                        });
-                    }
-                    catch (WebException ex)
-                    {
-                        Trace.WriteLine($"Failed to download description for version {version}: {ex.Message}");
-                    }
-                }
-            }
-
-            var json = JsonSerializer.Serialize(versionStructs);
-            File.WriteAllText(jsonPath, json);
-
-            return json;
-        }
-
         public static async Task<bool> RemoveMinecraftPackage()
         {
             try
@@ -238,18 +196,21 @@ namespace Flarial.Launcher.Managers
 
                 if (removePackageTask.Status == TaskStatus.RanToCompletion)
                 {
+                    
                     Trace.WriteLine("Package removal succeeded!");
                     return true;
                 }
                 else
                 {
-                    Trace.WriteLine("Package removal failed.");
+                    CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
+                    MessageBox.ShowDialog();
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}");
+                CustomDialogBox MessageBox = new CustomDialogBox("Failed", $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}", "MessageBox");
+                MessageBox.ShowDialog();
                 return false;
             }
         }
@@ -332,18 +293,18 @@ namespace Flarial.Launcher.Managers
                     await BackupManager.CreateBackup("temp");
                     Trace.WriteLine("Uninstalling current Minecraft version.");
 
-                    var packageManager = new PackageManager();
-
-                    RemoveMinecraftPackage();
+                    await RemoveMinecraftPackage();
 
                 }
 
                 Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
                 await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+                
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
-                    Trace.WriteLine("Failed to deploy.");
+                    CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
+                    MessageBox.ShowDialog();
                     isInstalling = false;
                     return false;
                 }

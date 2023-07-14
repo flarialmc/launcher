@@ -433,6 +433,12 @@ namespace Flarial.Launcher
             if (TestVersions[version] == "Not Installed")
             {
 
+                if (version == "1.20.0")
+                {
+                    CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
+                    MessageBox.ShowDialog();
+                }
+
                 foreach (RadioButton rb in VersionsPanel.Children)
                 {
                     rb.IsEnabled = true;
@@ -671,26 +677,35 @@ namespace Flarial.Launcher
             {
                 if (!Utils.IsGameOpen())
                 {
-                    if (!CustomDllButton.IsChecked.Value)
+                    if (versionLabel.Content != "1.20.0" && !CustomDllButton.IsChecked.Value)
                     {
-                        WebClient webClient = new WebClient();
-                        DownloadProgressChangedEventHandler among =
-                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                        webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
-                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                                "MFPlat.dll"));
-                        
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
-                    }
-                    else
+                        if (!CustomDllButton.IsChecked.Value)
+                        {
+                            WebClient webClient = new WebClient();
+                            DownloadProgressChangedEventHandler among =
+                                new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                            webClient.DownloadProgressChanged += among;
+                            await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
+                                Path.Combine(VersionManagement.launcherPath, "Versions",
+                                    versionLabel.Content.ToString(),
+                                    "MFPlat.dll"));
+
+                            if (!Utils.IsGameOpen())
+                                Utils.OpenGame();
+                        }
+                        else
+                        {
+                            File.Copy(custom_dll_path,
+                                Path.Combine(VersionManagement.launcherPath, "Versions",
+                                    versionLabel.Content.ToString(),
+                                    "MFPlat.dll"), true);
+                            if (!Utils.IsGameOpen())
+                                Utils.OpenGame();
+                        }
+                    } else if (versionLabel.Content == "1.20.0")
                     {
-                        File.Copy(custom_dll_path,
-                            Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(),
-                                "MFPlat.dll"), true);
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
+                        CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
+                        MessageBox.ShowDialog();
                     }
                 }
             }
