@@ -39,7 +39,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.BackColor = System.Drawing.Color.Black;
+            this.progressBar1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(18)))), ((int)(((byte)(20)))));
             this.progressBar1.ForeColor = System.Drawing.Color.DarkRed;
             this.progressBar1.Location = new System.Drawing.Point(-8, 52);
             this.progressBar1.Name = "progressBar1";
@@ -81,7 +81,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(18)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(332, 85);
             this.ControlBox = false;
             this.Controls.Add(this.pictureBox2);
@@ -110,7 +110,7 @@
 
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
