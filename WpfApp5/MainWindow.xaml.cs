@@ -775,12 +775,6 @@ namespace Flarial.Launcher
                     Trace.WriteLine(custom_dll_path);
 
                 }
-                else
-                {
-                    dialog.ShowDialog();
-                    custom_dll_path = dialog.FileName;
-                    Trace.WriteLine(custom_dll_path);
-                }
             }
         }
 
