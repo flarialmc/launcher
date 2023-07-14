@@ -19,7 +19,7 @@
                 <Setter Property="Visibility" Value="Hidden"/>
             </Style>
             <Style x:Key="LoginPageStyle" TargetType="Grid">
-                <Setter Property="Visibility" Value="Hidden"/>
+                <Setter Property="Visibility" Value="Visible"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
                 <Setter Property="VerticalAlignment" Value="Bottom"/>
                 <Setter Property="Width" Value="600"/>
@@ -27,7 +27,7 @@
                 <Setter Property="Background" Value="#120e0f"/>
             </Style>
             <Style x:Key="OptionsPageStyle" TargetType="Grid">
-                <Setter Property="Visibility" Value="Visible"/>
+                <Setter Property="Visibility" Value="Hidden"/>
                 <Setter Property="Background" Value="#120e0f"/>
             </Style>
         </ResourceDictionary>

@@ -5,27 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Flarial.Launcher"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
+
         xmlns:AttachedBehavior="clr-namespace:ScrollAnimateBehavior.AttachedBehaviors"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         AllowsTransparency="True" WindowStyle="None"
         Style="{DynamicResource WindowStyle}">
     <Grid>
-
-        <!--Grid.Resources>
-            <global:ShowMessageCommand
-                x:Key="MessageCommand" />
-        </Grid.Resources>
-        
-        <tb:TaskbarIcon
-            IconSource="/Images/icon.ico"
-            ToolTipText="Flarial" 
-            LeftClickCommand="{DynamicResource MessageCommand}"
-            LeftClickCommandParameter="Among"
-            /-->
-
         <Grid x:Name="MainGrid" Style="{DynamicResource MainPageStyle}">
             <ContentControl Style="{DynamicResource BackgroundImage}"/>
             <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>

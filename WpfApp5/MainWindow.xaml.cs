@@ -128,11 +128,11 @@ namespace Flarial.Launcher
 
             if (!(custom_theme_path == "main_default"))
             {
-                CustomThemeButton.IsChecked = true;
-                themeTextBox.Visibility = Visibility.Visible;
-                themeTextBox.Text = custom_theme_path;
                 if (!string.IsNullOrEmpty(custom_theme_path))
                 {
+                    CustomThemeButton.IsChecked = true;
+                    themeTextBox.Visibility = Visibility.Visible;
+                    themeTextBox.Text = custom_theme_path;
                     var app = (App)Application.Current;
                     app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
                 }
