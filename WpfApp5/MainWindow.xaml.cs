@@ -242,13 +242,13 @@ namespace Flarial.Launcher
             }
             else if (Minecraft.GetVersion().ToString() == "1.20.1.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
-                versionLabel.Content = "1.20.0.1";
+                versionLabel.Content = "1.20.0";
                 first = "Selected";
             }
 
             TestVersions = new Dictionary<string, string>
     {
-        { "1.20.0.1", first },
+        { "1.20.0", first },
         { "1.20.10", second },
     };
 
@@ -444,7 +444,7 @@ namespace Flarial.Launcher
             if (TestVersions[version] == "Not Installed")
             {
 
-                if (version == "1.20.0.1")
+                if (version == "1.20.0")
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
                     MessageBox.ShowDialog();
@@ -969,7 +969,6 @@ public class ShowMessageCommand : ICommand
 
                 NvidiaPanelAndInternetOptimizer.OptimizeNvidiaPanelAndInternetForMinecraft();
                 MinecraftOptimizer.OptimizeMinecraft();
-                await VersionManagement.deleteCorrupted();
                 Application.Current.MainWindow.Show();
             }
         }
