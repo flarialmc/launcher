@@ -266,15 +266,24 @@ namespace Flarial.Launcher.Managers
                 }
                 else
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
-                    MessageBox.ShowDialog();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        CustomDialogBox MessageBox =
+                            new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
+                        MessageBox.ShowDialog();
+                    });
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                CustomDialogBox MessageBox = new CustomDialogBox("Failed", $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}", "MessageBox");
-                MessageBox.ShowDialog();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                        $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                        "MessageBox");
+                    MessageBox.ShowDialog();
+                });
                 return false;
             }
         }
@@ -367,8 +376,11 @@ namespace Flarial.Launcher.Managers
 
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
-                    MessageBox.ShowDialog();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
+                        MessageBox.ShowDialog();
+                    });
                     isInstalling = false;
                     return false;
                 }

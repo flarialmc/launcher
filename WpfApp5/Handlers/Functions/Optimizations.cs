@@ -473,6 +473,8 @@ namespace Flarial.Launcher.Handlers.Functions
     }
 
 
+
+
     public class AMDPreRenderedFrames
     {
         private const int ADL_OK = 0;
