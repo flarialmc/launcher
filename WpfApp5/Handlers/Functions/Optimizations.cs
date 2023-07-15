@@ -471,4 +471,280 @@ namespace Flarial.Launcher.Handlers.Functions
         private const int SPIF_UPDATEINIFILE = 0x01;
         private const int SPIF_SENDCHANGE = 0x02;
     }
+
+
+
+
+    public class AMDPreRenderedFrames
+    {
+        private const int ADL_OK = 0;
+        private const int ADL_MAX_PATH = 256;
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Main_Control_Create(int enumConnectedAdapters);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Main_Control_Destroy();
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Adapter_NumberOfAdapters_Get(ref int numAdapters);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Adapter_AdapterInfo_Get(IntPtr info, int size);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Adapter_Active_Get(int adapterIndex, ref int status);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Adapter_Crossfire_Caps(int adapterIndex, ref int capable, ref int enabled);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Overdrive_Caps(int adapterIndex, ref int supported, ref int enabled, ref int version);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Overdrive6_PowerControlInfo_Get(int adapterIndex, ref int min, ref int max, ref int currentValue, ref int defaultValue, ref int stepValue);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Overdrive6_PowerControl_Get(int adapterIndex, ref int value);
+
+        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int ADL_Overdrive6_PowerControl_Set(int adapterIndex, int value);
+
+        private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E968-E325-11CE-BFC1-08002BE10318}\0000\UMD";
+        private const string RegistryValueName = "FlipQueueSize";
+
+        public static void SetFlipQueueSizeToHexValue()
+        {
+            try
+            {
+                Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("31,00"), RegistryValueKind.Binary);
+                Console.WriteLine("FlipQueueSize set to hexadecimal value successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error setting FlipQueueSize: " + ex.Message);
+            }
+        }
+
+        private static byte[] GetByteDataFromHexString(string hexString)
+        {
+            string[] hexValues = hexString.Split(',');
+            byte[] byteData = new byte[hexValues.Length];
+
+            for (int i = 0; i < hexValues.Length; i++)
+            {
+                byteData[i] = byte.Parse(hexValues[i], System.Globalization.NumberStyles.HexNumber);
+            }
+
+            return byteData;
+        }
+
+        public static void SetMaximumPreRenderedFramesToZero()
+        {
+            if (IsAMDProcessor())
+            {
+                int numAdapters = 0;
+                int result = ADL_Main_Control_Create(1);
+
+                if (result != ADL_OK)
+                {
+                    Console.WriteLine("Failed to initialize ADL.");
+                    return;
+                }
+
+                result = ADL_Adapter_NumberOfAdapters_Get(ref numAdapters);
+
+                if (result != ADL_OK)
+                {
+                    Console.WriteLine("Failed to get the number of adapters.");
+                    ADL_Main_Control_Destroy();
+                    return;
+                }
+
+                if (numAdapters == 0)
+                {
+                    Console.WriteLine("No AMD adapters found.");
+                    ADL_Main_Control_Destroy();
+                    return;
+                }
+
+                IntPtr info = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
+
+                result = ADL_Adapter_AdapterInfo_Get(info, Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
+
+                if (result != ADL_OK)
+                {
+                    Console.WriteLine("Failed to get adapter information.");
+                    Marshal.FreeCoTaskMem(info);
+                    ADL_Main_Control_Destroy();
+                    return;
+                }
+
+                for (int i = 0; i < numAdapters; i++)
+                {
+                    IntPtr currentInfo = new IntPtr(info.ToInt64() + (Marshal.SizeOf(typeof(AdapterInfo)) * i));
+                    AdapterInfo adapterInfo = (AdapterInfo)Marshal.PtrToStructure(currentInfo, typeof(AdapterInfo));
+
+                    int status = 0;
+                    result = ADL_Adapter_Active_Get(adapterInfo.AdapterIndex, ref status);
+
+                    if (result != ADL_OK)
+                    {
+                        Console.WriteLine("Failed to get adapter status.");
+                        continue;
+                    }
+
+                    if (status != 1)
+                    {
+                        Console.WriteLine("Adapter is not active.");
+                        continue;
+                    }
+
+                    int capable = 0;
+                    int enabled = 0;
+                    result = ADL_Adapter_Crossfire_Caps(adapterInfo.AdapterIndex, ref capable, ref enabled);
+
+                    if (result != ADL_OK)
+                    {
+                        Console.WriteLine("Failed to get Crossfire capabilities.");
+                        continue;
+                    }
+
+                    if (capable == 1 && enabled == 1)
+                    {
+                        Console.WriteLine("Crossfire is enabled for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                        continue;
+                    }
+
+                    int supported = 0;
+                    int overdriveEnabled = 0;
+                    int version = 0;
+                    result = ADL_Overdrive_Caps(adapterInfo.AdapterIndex, ref supported, ref overdriveEnabled, ref version);
+
+                    if (result != ADL_OK)
+                    {
+                        Console.WriteLine("Failed to get Overdrive capabilities.");
+                        continue;
+                    }
+
+                    if (supported == 0)
+                    {
+                        Console.WriteLine("Overdrive is not supported for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                        continue;
+                    }
+
+                    int minPower = 0;
+                    int maxPower = 0;
+                    int currentPower = 0;
+                    int defaultPower = 0;
+                    int stepPower = 0;
+                    result = ADL_Overdrive6_PowerControlInfo_Get(adapterInfo.AdapterIndex, ref minPower, ref maxPower, ref currentPower, ref defaultPower, ref stepPower);
+
+                    if (result != ADL_OK)
+                    {
+                        Console.WriteLine("Failed to get Power Control information.");
+                        continue;
+                    }
+
+                    if (currentPower != 0)
+                    {
+                        Console.WriteLine("Power Control is already modified for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                        continue;
+                    }
+
+                    result = ADL_Overdrive6_PowerControl_Set(adapterInfo.AdapterIndex, 0);
+
+                    if (result != ADL_OK)
+                    {
+                        Console.WriteLine("Failed to set Power Control value for adapter " + adapterInfo.AdapterIndex + ".");
+                        continue;
+                    }
+
+                    Console.WriteLine("Maximum pre-rendered frames set to 0 successfully for adapter " + adapterInfo.AdapterIndex + ".");
+                }
+
+                Marshal.FreeCoTaskMem(info);
+                ADL_Main_Control_Destroy();
+            }
+            else
+            {
+                Console.WriteLine("Not an AMD processor. Cannot modify maximum pre-rendered frames.");
+            }
+        }
+
+        private static bool IsAMDProcessor()
+        {
+            string processorName = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER");
+            return processorName.Contains("AuthenticAMD");
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct AdapterInfo
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+            public string UDID;
+            public int BusNumber;
+            public int DeviceNumber;
+            public int FunctionNumber;
+            public int VendorID;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+            public string AdapterName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+            public string DisplayName;
+            public int Present;
+            public int Exist;
+            public int DriverPath;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+            public string DriverPathExt;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+            public string PNPString;
+            public int OSDisplayIndex;
+            public int AdapterIndex; // Added AdapterIndex property
+        }
+    }
+
+    public class IntelPreRenderedFrames
+    {
+        private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration";
+        private const string RegistryValueName = "FlipQueueSize";
+
+        public static void SetPreRenderedFramesToZero()
+        {
+            if (IsIntelProcessor())
+            {
+                try
+                {
+                    Registry.SetValue(RegistryKeyPath, RegistryValueName, 0, RegistryValueKind.DWord);
+                    Console.WriteLine("Maximum pre-rendered frames set to 0 successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error setting maximum pre-rendered frames: " + ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Not an Intel processor. Cannot modify maximum pre-rendered frames.");
+            }
+        }
+
+        private static bool IsIntelProcessor()
+        {
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT Manufacturer FROM Win32_Processor"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    string manufacturer = obj["Manufacturer"].ToString();
+                    if (manufacturer.ToLower().Contains("intel"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+
+
 }
