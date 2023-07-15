@@ -967,8 +967,10 @@ public class ShowMessageCommand : ICommand
             if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
 
-                NvidiaPanelAndInternetOptimizer.OptimizeNvidiaPanelAndInternetForMinecraft();
+                NvidiaWifiOptimizer.Optimize();
                 MinecraftOptimizer.OptimizeMinecraft();
+                AMDOptimizer.Optimize();
+                IntelOptimizer.OptimizeIntelProcessor();
                 Application.Current.MainWindow.Show();
             }
         }

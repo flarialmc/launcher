@@ -1,12 +1,13 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Diagnostics;
-using System.Management;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Flarial.Launcher.Handlers.Functions
 {
-    public class NvidiaPanelAndInternetOptimizer
+    using Microsoft.Win32;
+    using System;
+    using System.Diagnostics;
+    using System.Management;
+
+    public class NvidiaWifiOptimizer
     {
         private const string NvidiaRegKey = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\PCI\";
         private const string NvidiaRegSubKey = @"NVIDIA_DEV.0";
@@ -15,7 +16,7 @@ namespace Flarial.Launcher.Handlers.Functions
         private const string MinecraftExecutable = "minecraft.windows.exe";
         private const string NvidiaPanelExecutable = "nvcplui.exe";
 
-        public static void OptimizeNvidiaPanelAndInternetForMinecraft()
+        public static void Optimize()
         {
             // Check if Nvidia GPU is present
             if (IsNvidiaGPU())
@@ -79,6 +80,8 @@ namespace Flarial.Launcher.Handlers.Functions
         {
             // Set TCP/IP optimizations for reduced latency and improved throughput
             SetTcpIpOptimizations();
+            DisableNagleAlgorithm();
+            FlushDnsCache();
         }
 
         private static void SetTcpIpOptimizations()
@@ -88,6 +91,12 @@ namespace Flarial.Launcher.Handlers.Functions
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TCPNoDelay", 1, RegistryValueKind.DWord);
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 64240, RegistryValueKind.DWord);
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 64, RegistryValueKind.DWord);
+        }
+
+        private static void DisableNagleAlgorithm()
+        {
+            // Disable the Nagle algorithm for improved network responsiveness
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 0, RegistryValueKind.DWord);
         }
 
         public static void DisableNvidiaPanelAndInternetOptimizations()
@@ -125,8 +134,42 @@ namespace Flarial.Launcher.Handlers.Functions
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TCPNoDelay", 0, RegistryValueKind.DWord);
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 0, RegistryValueKind.DWord);
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 128, RegistryValueKind.DWord);
+
+            // Enable the Nagle algorithm (revert the change)
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 1, RegistryValueKind.DWord);
+        }
+        public static void FlushDnsCache()
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            {
+                FileName = "ipconfig",
+                Arguments = "/flushdns",
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
+
+            Process process = new Process
+            {
+                StartInfo = processStartInfo
+            };
+
+            process.Start();
+            process.WaitForExit();
+
+            string output = process.StandardOutput.ReadToEnd();
+
+            if (process.ExitCode == 0)
+            {
+                Console.WriteLine("DNS cache flushed successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to flush DNS cache. Error: " + output);
+            }
         }
     }
+
 
     public class MinecraftOptimizer
     {
@@ -475,7 +518,7 @@ namespace Flarial.Launcher.Handlers.Functions
 
 
 
-    public class AMDPreRenderedFrames
+    public class AMDOptimizer
     {
         private const int ADL_OK = 0;
         private const int ADL_MAX_PATH = 256;
@@ -678,6 +721,31 @@ namespace Flarial.Launcher.Handlers.Functions
             return processorName.Contains("AuthenticAMD");
         }
 
+        public static void SetHighPerformanceMode()
+        {
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "54533251-82be-4824-96c1-47b60b740d00", "High performance", RegistryValueKind.String);
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7", "Attributes", 2, RegistryValueKind.DWord);
+        }
+        public static void SetPowerProfile()
+        {
+            Process.Start("powercfg.exe", "/s 54533251-82be-4824-96c1-47b60b740d00");
+        }
+        public static void DisableCoolnQuiet()
+        {
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\3edd42d6-2b98-4beb-9965-3afcbcbc1425", "Attributes", 0, RegistryValueKind.DWord);
+        }
+        public static void Optimize()
+        {
+            if (IsAMDProcessor())
+            {
+                SetHighPerformanceMode();
+                SetMaximumPreRenderedFramesToZero();
+                SetFlipQueueSizeToHexValue();
+                DisableCoolnQuiet();
+                SetPowerProfile();
+            }
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         private struct AdapterInfo
         {
@@ -703,12 +771,21 @@ namespace Flarial.Launcher.Handlers.Functions
         }
     }
 
-    public class IntelPreRenderedFrames
+
+    public class IntelOptimizer
     {
         private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration";
         private const string RegistryValueName = "FlipQueueSize";
 
-        public static void SetPreRenderedFramesToZero()
+        public static void OptimizeIntelProcessor()
+        {
+            SetPreRenderedFramesToZero();
+            SetPowerProfile();
+            SetHighPerformanceMode();
+            EnableTurboBoost();
+        }
+
+        private static void SetPreRenderedFramesToZero()
         {
             if (IsIntelProcessor())
             {
@@ -726,6 +803,22 @@ namespace Flarial.Launcher.Handlers.Functions
             {
                 Console.WriteLine("Not an Intel processor. Cannot modify maximum pre-rendered frames.");
             }
+        }
+
+        private static void SetPowerProfile()
+        {
+            Process.Start("powercfg.exe", "/s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+        }
+
+        private static void SetHighPerformanceMode()
+        {
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", "High performance", RegistryValueKind.String);
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\5d76a2ca-e8c0-402f-a133-2158492d58ad", "Attributes", 2, RegistryValueKind.DWord);
+        }
+
+        private static void EnableTurboBoost()
+        {
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec", "Attributes", 0, RegistryValueKind.DWord);
         }
 
         private static bool IsIntelProcessor()
