@@ -2,7 +2,9 @@
 using Flarial.Launcher.Handlers.Functions;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Structures;
+using Flarial.NewsPanel;
 using Newtonsoft.Json;
+using ScrollAnimateBehavior.AttachedBehaviors;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,9 +24,6 @@ using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
-using Timer = System.Timers.Timer;
-using Flarial.NewsPanel;
-using ScrollAnimateBehavior.AttachedBehaviors;
 
 namespace Flarial.Launcher
 {
@@ -121,7 +120,7 @@ namespace Flarial.Launcher
                 dllTextBox.Visibility = Visibility.Visible;
                 dllTextBox.Text = custom_dll_path;
             }
-                
+
 
             TrayButton.IsChecked = closeToTray;
 
@@ -145,7 +144,7 @@ namespace Flarial.Launcher
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-            
+
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
             startInfo.Arguments = "set-executionpolicy unrestricted";
@@ -155,7 +154,7 @@ namespace Flarial.Launcher
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
-            
+
             Trace.WriteLine(startInfo.FileName);
 
             WebClient webClient = new WebClient();
@@ -243,13 +242,13 @@ namespace Flarial.Launcher
             }
             else if (Minecraft.GetVersion().ToString() == "1.20.1.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
             {
-                versionLabel.Content = "1.20.0";
+                versionLabel.Content = "1.20.0.1";
                 first = "Selected";
             }
 
             TestVersions = new Dictionary<string, string>
     {
-        { "1.20.0", first },
+        { "1.20.0.1", first },
         { "1.20.10", second },
     };
 
@@ -445,7 +444,7 @@ namespace Flarial.Launcher
             if (TestVersions[version] == "Not Installed")
             {
 
-                if (version == "1.20.0")
+                if (version == "1.20.0.1")
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
                     MessageBox.ShowDialog();
@@ -468,7 +467,7 @@ namespace Flarial.Launcher
                         acc = $"- Extracting {progressBytesReceived} of {progressBytesTotal}";
                     else if (progressType == "Installing")
                         acc = $"Installing..";
-                    
+
                     string[] tags2 =
                     {
                         $"pack://application:,,,/Images/{version}.png", version,
@@ -689,7 +688,7 @@ namespace Flarial.Launcher
             {
                 if (!Utils.IsGameOpen())
                 {
-                    if (versionLabel.Content != "1.20.0" && !CustomDllButton.IsChecked.Value)
+                    if (versionLabel.Content != "1.20.0.1" && !CustomDllButton.IsChecked.Value)
                     {
                         if (!CustomDllButton.IsChecked.Value)
                         {
@@ -714,7 +713,8 @@ namespace Flarial.Launcher
                             if (!Utils.IsGameOpen())
                                 Utils.OpenGame();
                         }
-                    } else if (versionLabel.Content == "1.20.0")
+                    }
+                    else if (versionLabel.Content == "1.20.0.1")
                     {
                         CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
                         MessageBox.ShowDialog();
@@ -960,7 +960,7 @@ namespace Flarial.Launcher
 
 public class ShowMessageCommand : ICommand
 {
-    public void Execute(object parameter)
+    public async void Execute(object parameter)
     {
         if (parameter.ToString() == "Among")
         {
@@ -969,7 +969,7 @@ public class ShowMessageCommand : ICommand
 
                 NvidiaPanelAndInternetOptimizer.OptimizeNvidiaPanelAndInternetForMinecraft();
                 MinecraftOptimizer.OptimizeMinecraft();
-                WindowsOptimizer.OptimizeIntelProcessor();
+                await VersionManagement.deleteCorrupted();
                 Application.Current.MainWindow.Show();
             }
         }
