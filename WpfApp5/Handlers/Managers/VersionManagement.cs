@@ -366,13 +366,13 @@ namespace Flarial.Launcher.Managers
                     await BackupManager.CreateBackup("temp");
                     Trace.WriteLine("Uninstalling current Minecraft version.");
 
-                    await RemoveMinecraftPackage();
-
                 }
 
                 Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
                 await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+                    
+                await RemoveMinecraftPackage();
 
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {

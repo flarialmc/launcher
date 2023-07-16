@@ -38,8 +38,6 @@ namespace Flarial.Launcher
 
             }
 
-
-
         }
 
         public static bool isInstalled()
