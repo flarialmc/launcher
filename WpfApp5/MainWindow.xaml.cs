@@ -61,7 +61,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.1; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public double version = 1.2; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -216,15 +216,15 @@ namespace Flarial.Launcher
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
                     ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = Path.Combine(Path.GetTempPath(), "flarial.installer.exe");
+                    psi.FileName = "flarial.installer.exe";
                     psi.Arguments = "update";
-
+                    
                     Process.Start(psi);
 
                     Environment.Exit(0);
                 };
 
-                client.DownloadFileAsync(new Uri("cdn.flarial.net/installer.exe"), Path.Combine(Path.GetTempPath(), "flarial.installer.exe"));
+                client.DownloadFileAsync(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
             }
             else if (version == 0.666)
             {

@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Flarial.Installer;
 using System.Windows.Controls;
+using File = IWshRuntimeLibrary.File;
 
 namespace Flarial.Minimal
 {
@@ -38,6 +39,7 @@ namespace Flarial.Minimal
 
         static private void Install()
         {
+            Directory.Delete(location, true);
             try
             {
                 if (!Directory.Exists(location))
@@ -55,7 +57,7 @@ namespace Flarial.Minimal
 
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
-
+                    
                     bar.Value = 92;
                     ZipFile.ExtractToDirectory(location + "latest.zip", location);
 
