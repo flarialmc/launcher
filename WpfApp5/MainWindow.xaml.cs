@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -95,7 +96,7 @@ namespace Flarial.Launcher
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
             }
-
+            
             //Trace.WriteLine(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
 
             if (!Utils.IsAdministrator)
@@ -684,32 +685,29 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (!Utils.IsGameOpen())
-            {
                 if (versionLabel.Content != "1.20.0.1" && !CustomDllButton.IsChecked.Value)
                 {
                     if (!CustomDllButton.IsChecked.Value)
                     {
-                        WebClient webClient = new WebClient();
-                        DownloadProgressChangedEventHandler among =
-                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                        webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
-                            Path.Combine(VersionManagement.launcherPath, "Versions",
-                                versionLabel.Content.ToString(),
-                                "MFPlat.dll"));
-
+                        
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
+                        
+                        WebClient webClient = new WebClient();
+                        DownloadProgressChangedEventHandler among = DownloadProgressCallback;
+                        webClient.DownloadProgressChanged += among;
+                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"), System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\x.dll");
+                        
+                        Insertion.Insert(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\x.dll");
+
                     }
                     else
                     {
-                        File.Copy(custom_dll_path,
-                            Path.Combine(VersionManagement.launcherPath, "Versions",
-                                versionLabel.Content.ToString(),
-                                "MFPlat.dll"), true);
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
+                        
+                        Insertion.Insert(custom_dll_path);
+
                     }
                 }
                 else if (versionLabel.Content == "1.20.0.1")
@@ -721,15 +719,12 @@ namespace Flarial.Launcher
 
                     if (CustomDllButton.IsChecked.Value)
                     {
-                        File.Copy(custom_dll_path,
-                            Path.Combine(VersionManagement.launcherPath, "Versions",
-                                versionLabel.Content.ToString(),
-                                "MFPlat.dll"), true);
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
+                        
+                        Insertion.Insert(custom_dll_path);
                     }
                 }
-            }
         }
 
 
@@ -986,4 +981,36 @@ public class ShowMessageCommand : ICommand
     }
 
     public event EventHandler CanExecuteChanged;
+}
+
+static class DLLImports
+{
+
+    [DllImport("DllUtil.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int AddTheDLLToTheGame(string path);
+}
+
+public enum DllReturns
+{
+    SUCCESS = 0,
+    ERROR_PROCESS_NOT_FOUND = 1,
+    ERROR_PROCESS_OPEN = 2,
+    ERROR_ALLOCATE_MEMORY = 3,
+    ERROR_WRITE_MEMORY = 4,
+    ERROR_GET_PROC_ADDRESS = 5,
+    ERROR_CREATE_REMOTE_THREAD = 6,
+    ERROR_WAIT_FOR_SINGLE_OBJECT = 7,
+    ERROR_VIRTUAL_FREE_EX = 8,
+    ERROR_CLOSE_HANDLE = 9,
+    ERROR_UNKNOWN = 10,
+    ERROR_NO_PATH = 11,
+    ERROR_NO_ACCESS = 12,
+    ERROR_NO_FILE = 13
+}
+public class Insertion
+{
+    public static DllReturns Insert(string path)
+    {
+        return (DllReturns)DLLImports.AddTheDLLToTheGame(path);
+    }
 }
