@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
-using Octokit;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
-using System.Windows;
 using Windows.Management.Deployment;
 using Application = System.Windows.Application;
 
@@ -16,102 +13,7 @@ namespace Flarial.Launcher.Managers
     public class VersionManagement
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
-        public static bool isInstalling = false;
-        public class VersionStruct
-        {
-            public string Version { get; set; }
-            public string DownloadURL { get; set; }
-            public string Description { get; set; }
-        }
 
-        public static long GetTotalDownloadableBytes(string url)
-        {
-            try
-            {
-                // Create a web request to the specified URL
-                WebRequest request = WebRequest.Create(url);
-
-                // Get the response from the web server
-                using (WebResponse response = request.GetResponse())
-                {
-                    // Get the content length from the response headers
-                    if (long.TryParse(response.Headers.Get("Content-Length"), out long contentLength))
-                    {
-                        return contentLength;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while retrieving the content length: {ex.Message}");
-            }
-
-            return 0; // Return 0 if the content length cannot be determined or an error occurs
-        }
-        public static long GetTotalBytesOfFile(string filePath)
-        {
-            try
-            {
-                // Check if the file exists
-                if (File.Exists(filePath))
-                {
-                    // Get the file info
-                    FileInfo fileInfo = new FileInfo(filePath);
-
-                    // Return the length (total bytes) of the file
-                    return fileInfo.Length;
-                }
-                else
-                {
-                    Console.WriteLine($"File '{filePath}' does not exist.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while getting the file size: {ex.Message}");
-            }
-
-            return 0; // Return 0 if the file size cannot be determined or an error occurs
-        }
-        public static async Task deleteCorrupted()
-        {
-            string path = Path.Combine(launcherPath, "Versions");
-            WebClient webClient = new WebClient();
-
-            foreach (var file in Directory.GetFiles(path))
-            {
-                Trace.WriteLine(file);
-
-                string uselessStuffRemoved = file.ToLower().Replace("minecraft", "").Replace(".appx", "");
-                if (GetTotalBytesOfFile(file) < GetTotalDownloadableBytes(ExtractUrl(await webClient.DownloadStringTaskAsync(new Uri($"https://api.jiayi.software/api/v1/minecraft/download_url?version={uselessStuffRemoved}&arch=x64")))))
-                {
-                    Trace.WriteLine(uselessStuffRemoved);
-                }
-            }
-
-        }
-        public static async Task<List<string>> GetVersionsAsync()
-        {
-            try
-            {
-                var client = new GitHubClient(new ProductHeaderValue("SomeName"));
-                var assets = await client.Repository.Release.GetAllAssets("PlasmaWasTaken", "LocalStorage", 56308497);
-
-                List<string> releaseAssets = new List<string>();
-                foreach (var asset in assets)
-                {
-                    var withoutMinecraft = asset.Name.Substring(9);
-                    releaseAssets.Add(withoutMinecraft.Substring(0, withoutMinecraft.Length - 5));
-                }
-
-                return releaseAssets;
-            }
-            catch (Octokit.RateLimitExceededException)
-            {
-                MessageBox.Show("Octokit API rate limit was reached.");
-                return null;
-            }
-        }
 
         public static string ExtractUrl(string jsonString)
         {
@@ -349,7 +251,6 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string version)
         {
-            isInstalling = true;
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
@@ -381,7 +282,7 @@ namespace Flarial.Launcher.Managers
                         CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
                         MessageBox.ShowDialog();
                     });
-                    isInstalling = false;
+                    
                     return false;
                 }
 
@@ -396,9 +297,6 @@ namespace Flarial.Launcher.Managers
 
                 Trace.WriteLine("Installation complete.");
             }
-
-
-            isInstalling = false;
             return ello;
         }
     }
