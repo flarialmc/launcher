@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -145,18 +146,6 @@ namespace Flarial.Launcher
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
-            startInfo.Arguments = "set-executionpolicy unrestricted";
-            startInfo.UseShellExecute = false;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.CreateNoWindow = true;
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-
-            Trace.WriteLine(startInfo.FileName);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
@@ -685,7 +674,7 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-                if (versionLabel.Content != "1.20.0.1" && !CustomDllButton.IsChecked.Value)
+                if (versionLabel.Content == "1.20.10")
                 {
                     if (!CustomDllButton.IsChecked.Value)
                     {
@@ -693,18 +682,14 @@ namespace Flarial.Launcher
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
                         
-                        WebClient webClient = new WebClient();
-                        DownloadProgressChangedEventHandler among = DownloadProgressCallback;
-                        webClient.DownloadProgressChanged += among;
-                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"), System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\x.dll");
-                        
-                        Insertion.Insert(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\x.dll");
+                        await Client?.DownloadFileTaskAsync("https://cdn.flarial.net/dll/latest.dll", Path.Combine(VersionManagement.launcherPath, "real.dll"));
 
+                        Trace.WriteLine(Path.Combine(VersionManagement.launcherPath, "real.dll"));
+                        Trace.WriteLine(Insertion.Insert(Path.Combine(VersionManagement.launcherPath, "real.dll")));
                     }
                     else
                     {
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
+                        Utils.OpenGame();
                         
                         Insertion.Insert(custom_dll_path);
 
