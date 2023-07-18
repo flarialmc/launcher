@@ -50,13 +50,13 @@ namespace Flarial.Minimal
 
                 WebClient client = new WebClient();
 
-                client.DownloadProgressChanged += (object s, DownloadProgressChangedEventArgs e) =>
+                client.DownloadProgressChanged += (s, e) =>
                 {
 
-                    bar.Value = 2 + (int)((double)e.ProgressPercentage * 0.88);
+                    bar.Value = 2 + (int)(e.ProgressPercentage * 0.88);
                 };
 
-                client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
+                client.DownloadFileCompleted += (s, e) =>
                 {
                     
                     bar.Value = 92;

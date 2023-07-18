@@ -674,7 +674,10 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-                if (versionLabel.Content == "1.20.10")
+            if (versionLabel.Content == "1.20.1001.0")
+                versionLabel.Content = "1.20.10";
+            
+                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0")
                 {
                     if (!CustomDllButton.IsChecked.Value)
                     {
@@ -695,7 +698,7 @@ namespace Flarial.Launcher
 
                     }
                 }
-                else if (versionLabel.Content == "1.20.0.1")
+                else
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning",
                         "Our client does not support this version. If you are using a custom dll, That will be used instead.",
