@@ -39,6 +39,7 @@ namespace Flarial.Minimal
 
         static private void Install()
         {
+            if(Directory.Exists(location))
             Directory.Delete(location, true);
             try
             {
