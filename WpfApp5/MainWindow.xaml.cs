@@ -684,47 +684,51 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (Minecraft.Package.InstalledPath.Contains("Flarial"))
+            if (!Utils.IsGameOpen())
             {
-                if (!Utils.IsGameOpen())
+                if (versionLabel.Content != "1.20.0.1" && !CustomDllButton.IsChecked.Value)
                 {
-                    if (versionLabel.Content != "1.20.0.1" && !CustomDllButton.IsChecked.Value)
+                    if (!CustomDllButton.IsChecked.Value)
                     {
-                        if (!CustomDllButton.IsChecked.Value)
-                        {
-                            WebClient webClient = new WebClient();
-                            DownloadProgressChangedEventHandler among =
-                                new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                            webClient.DownloadProgressChanged += among;
-                            await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
-                                Path.Combine(VersionManagement.launcherPath, "Versions",
-                                    versionLabel.Content.ToString(),
-                                    "MFPlat.dll"));
+                        WebClient webClient = new WebClient();
+                        DownloadProgressChangedEventHandler among =
+                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                        webClient.DownloadProgressChanged += among;
+                        await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"),
+                            Path.Combine(VersionManagement.launcherPath, "Versions",
+                                versionLabel.Content.ToString(),
+                                "MFPlat.dll"));
 
-                            if (!Utils.IsGameOpen())
-                                Utils.OpenGame();
-                        }
-                        else
-                        {
-                            File.Copy(custom_dll_path,
-                                Path.Combine(VersionManagement.launcherPath, "Versions",
-                                    versionLabel.Content.ToString(),
-                                    "MFPlat.dll"), true);
-                            if (!Utils.IsGameOpen())
-                                Utils.OpenGame();
-                        }
+                        if (!Utils.IsGameOpen())
+                            Utils.OpenGame();
                     }
-                    else if (versionLabel.Content == "1.20.0.1")
+                    else
                     {
-                        CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
-                        MessageBox.ShowDialog();
+                        File.Copy(custom_dll_path,
+                            Path.Combine(VersionManagement.launcherPath, "Versions",
+                                versionLabel.Content.ToString(),
+                                "MFPlat.dll"), true);
+                        if (!Utils.IsGameOpen())
+                            Utils.OpenGame();
                     }
                 }
-            }
-            else
-            {
-                CustomDialogBox MessageBox = new CustomDialogBox("Error", "You haven't installed Minecraft from our Launcher. Please go to Options -> Versions for that and select your preferred version.", "MessageBox");
-                MessageBox.ShowDialog();
+                else if (versionLabel.Content == "1.20.0.1")
+                {
+                    CustomDialogBox MessageBox = new CustomDialogBox("Warning",
+                        "Our client does not support this version. If you are using a custom dll, That will be used instead.",
+                        "MessageBox");
+                    MessageBox.ShowDialog();
+
+                    if (CustomDllButton.IsChecked.Value)
+                    {
+                        File.Copy(custom_dll_path,
+                            Path.Combine(VersionManagement.launcherPath, "Versions",
+                                versionLabel.Content.ToString(),
+                                "MFPlat.dll"), true);
+                        if (!Utils.IsGameOpen())
+                            Utils.OpenGame();
+                    }
+                }
             }
         }
 
