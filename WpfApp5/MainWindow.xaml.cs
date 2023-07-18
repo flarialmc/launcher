@@ -478,7 +478,7 @@ namespace Flarial.Launcher
 
                     time += 50;
 
-                    if (Minecraft.isInstalled() && time > 7000 && progressPercentage == 100)
+                    if (Minecraft.isInstalled() && time > 7000 && progressPercentage == 100 && progressType == "Installing")
                     {
                         Trace.WriteLine("yes 1");
                         timer.Stop();
