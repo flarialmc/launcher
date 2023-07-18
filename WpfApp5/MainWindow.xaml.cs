@@ -694,6 +694,7 @@ namespace Flarial.Launcher
                     {
                         Utils.OpenGame();
                         
+                        Thread.Sleep(5000);
                         Insertion.Insert(custom_dll_path);
 
                     }
