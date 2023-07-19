@@ -193,14 +193,6 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                /*string scriptPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher", "updater.ps1");
-                    Trace.WriteLine(scriptPath);
-                    ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\\WindowsPowerShell\\v1.0\\powershell.exe");
-                    psi.Arguments = $"\"{scriptPath}\"";
-                    psi.UseShellExecute = false;
-                    Process.Start(psi);*/
-
                 var client = new WebClient();
                 client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
                 {
@@ -225,12 +217,12 @@ namespace Flarial.Launcher
             string first = "Not Installed";
             string second = "Not Installed";
 
-            if (Minecraft.GetVersion().ToString() == "1.20.1001.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
+            if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
             {
                 versionLabel.Content = "1.20.10";
                 second = "Selected";
             }
-            else if (Minecraft.GetVersion().ToString() == "1.20.1.0" && Minecraft.Package.InstalledPath.Contains("Flarial"))
+            else if (Minecraft.GetVersion().ToString() == "1.20.1.0")
             {
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
@@ -759,8 +751,6 @@ namespace Flarial.Launcher
         {
             if (closeToTray == false)
             {
-                if (!Utils.IsGameOpen() && File.Exists(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll")))
-                    File.Delete(Path.Combine(VersionManagement.launcherPath, "Versions", versionLabel.Content.ToString(), "MFPlat.dll"));
                 Environment.Exit(0);
             }
             else this.Hide();
@@ -945,32 +935,6 @@ namespace Flarial.Launcher
             MainGrid.Visibility = Visibility.Visible;
         }
     }
-}
-
-public class ShowMessageCommand : ICommand
-{
-    public async void Execute(object parameter)
-    {
-        if (parameter.ToString() == "Among")
-        {
-            if (MessageBox.Show("Show application?", "Flarial", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
-
-                NvidiaWifiOptimizer.Optimize();
-                MinecraftOptimizer.OptimizeMinecraft();
-                AMDOptimizer.Optimize();
-                IntelOptimizer.OptimizeIntelProcessor();
-                Application.Current.MainWindow.Show();
-            }
-        }
-    }
-
-    public bool CanExecute(object parameter)
-    {
-        return true;
-    }
-
-    public event EventHandler CanExecuteChanged;
 }
 
 static class DLLImports

@@ -64,18 +64,22 @@ namespace Flarial.Minimal
 
                     System.IO.File.Delete(location + "latest.zip");
 
+                    Thread.Sleep(1000);
                     bar.Value = 96;
-                    CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
-                    CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.launcher.exe", location + "flarial.launcher.exe", "Launch Flarial");
+                    CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
+                    CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
 
                     bar.Value = 98;
-                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "flarial.minimal.exe", location + "flarial.minimal.exe", "Launch Flarial Minimal");
-                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "flarial.minimal.exe", location + "\\flarial.minimal.exe", "Launch Flarial Minimal");
+                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "Flarial.Minimal.exe", location + "Flarial.Minimal.exe", "Launch Flarial Minimal");
+                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Minimal.exe", location + "\\Flarial.Minimal.exe", "Launch Flarial Minimal");
 
                     bar.Value = 100;
 
+                    bar.Dispose();
+                    
+
                     if (!silent)
-                        MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu.", "Flarial Installer");
+                        MessageBox.Show("Flarial has been installed.\nYou can find it on your desktop and in the windows menu. WINDOWS DEFENDER MIGHT REMOVE FLARIAL BECAUSE IT'S DUMB! BE CAREFUL!", "Flarial Installer");
 
                     if (!silent)
                         form.Close();
