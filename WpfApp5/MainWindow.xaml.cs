@@ -230,7 +230,6 @@ namespace Flarial.Launcher
 
             TestVersions = new Dictionary<string, string>
     {
-        { "1.20.0", first },
         { "1.20.10", second },
     };
 
@@ -666,10 +665,8 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if (versionLabel.Content == "1.20.1001.0")
-                versionLabel.Content = "1.20.10";
             
-                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0")
+                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0" || versionLabel.Content == "1.20.1201.0")
                 {
                     if (!CustomDllButton.IsChecked.Value)
                     {

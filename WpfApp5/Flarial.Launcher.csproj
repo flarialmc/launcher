@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
 	<TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>1058433624430612640.ico</ApplicationIcon>
@@ -10,6 +10,10 @@
     <LangVersion>10</LangVersion>
         <PublishAot>true</PublishAot>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>FlarialLauncher</RootNamespace>
+    <AssemblyName>FlarialLauncher</AssemblyName>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
