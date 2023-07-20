@@ -10,8 +10,8 @@
     <LangVersion>10</LangVersion>
         <PublishAot>true</PublishAot>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RootNamespace>FlarialLauncher</RootNamespace>
-    <AssemblyName>FlarialLauncher</AssemblyName>
+    <RootNamespace>Flarial.Launcher</RootNamespace>
+    <AssemblyName>Flarial.Launcher</AssemblyName>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
 <FileAlignment>512</FileAlignment>
