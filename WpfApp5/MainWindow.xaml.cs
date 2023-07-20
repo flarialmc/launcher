@@ -323,7 +323,7 @@ namespace Flarial.Launcher
                 OptionsGrid.Visibility = Visibility.Visible;
                 //myWidthAnimatedButtonStoryboard1.Begin(OptionsGrid);
                 await Task.Delay(duration);
-                MainGrid.Visibility = Visibility.Hidden;
+                Grid.Visibility = Visibility.Hidden;
             };
 
             RadioButton3.Checked += async delegate (object sender, RoutedEventArgs args)
