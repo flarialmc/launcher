@@ -665,8 +665,9 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine(versionLabel.Content);
             
-                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0" || versionLabel.Content == "1.20.1201.0")
+                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0" || Minecraft.GetVersion().ToString() == "1.20.1201.0")
                 {
                     if (!CustomDllButton.IsChecked.Value)
                     {
@@ -691,7 +692,7 @@ namespace Flarial.Launcher
                 else
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning",
-                        "Our client does not support this version. If you are using a custom dll, That will be used instead.",
+                        "Our client does not support this version. If you are using a custom dll, That will be used instead. We only support 1.20.10 or 1.20.12.",
                         "MessageBox");
                     MessageBox.ShowDialog();
 
