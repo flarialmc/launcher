@@ -1,27 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Net;
 using IWshRuntimeLibrary;
-using System.Reflection;
-using System.Security.Policy;
-using System.ComponentModel;
 using System.Windows.Forms;
 using Flarial.Installer;
-using System.Windows.Controls;
-using File = IWshRuntimeLibrary.File;
 
 namespace Flarial.Minimal
 {
     class Program
     {
-        static private System.Windows.Forms.ProgressBar bar;
+        static private ProgressBar bar;
         static private Progressbar form;
         static private string location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Flarial\";
         static private string url = "https://cdn.flarial.net/launcher/latest.zip";
