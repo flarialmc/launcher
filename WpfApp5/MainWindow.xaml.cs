@@ -684,7 +684,7 @@ namespace Flarial.Launcher
                     {
                         Utils.OpenGame();
                         
-                        Thread.Sleep(5000);
+                        await Minecraft.WaitForModules();
                         Insertion.Insert(custom_dll_path);
 
                     }

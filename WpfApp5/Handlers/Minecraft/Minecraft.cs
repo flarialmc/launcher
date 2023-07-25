@@ -86,19 +86,20 @@ namespace Flarial.Launcher
         
         public static async Task WaitForModules()
         {
-            while (Minecraft.Process == null)
+            while (Process == null)
             {
-                await Task.Delay(4000);
+                Init();
+                await Task.Delay(100);
             }
 
             Console.WriteLine("Waiting for Minecraft to load");
             while (true)
             {
-                Minecraft.Process.Refresh();
-                if (Minecraft.Process.Modules.Count > 155)
+                Process.Refresh();
+                if (Process.Modules.Count > 155)
                     break;
-                else
-                    await Task.Delay(4000);
+                
+                await Task.Delay(100);
             }
             Console.WriteLine("Minecraft finished loading");
         }

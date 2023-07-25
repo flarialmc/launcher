@@ -123,8 +123,7 @@ namespace Flarial.Minimal
                 foreach (string file in Directory.GetFiles(location))
                     System.IO.File.Delete(file);
 
-
-                nvm:
+            nvm:
 
             form = new Progressbar();
 
