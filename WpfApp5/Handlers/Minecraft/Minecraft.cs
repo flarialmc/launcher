@@ -86,9 +86,17 @@ namespace Flarial.Launcher
         
         public static async Task WaitForModules()
         {
+            if(Process is { HasExited: true }) Process = null;
+            
             while (Process == null)
             {
-                Init();
+                var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+                if (mcIndex.Length > 0)
+                {
+                    Process = mcIndex[0];
+
+                }
+                
                 await Task.Delay(100);
             }
 

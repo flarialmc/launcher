@@ -8,6 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Flarial.Minimal</RootNamespace>
     <AssemblyName>Flarial.Minimal</AssemblyName>
+    <TargetFramework>net48</TargetFramework>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
