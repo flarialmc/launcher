@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Flarial.Minimal
@@ -26,7 +24,8 @@ namespace Flarial.Minimal
         {
             while (Process == null)
             {
-                await Task.Delay(4000);
+                init();
+                await Task.Delay(100);
             }
 
             while (true)
@@ -35,7 +34,7 @@ namespace Flarial.Minimal
                 if (Process.Modules.Count > 155)
                     break;
                 
-                await Task.Delay(4000);
+                await Task.Delay(100);
             }
         }
     }
@@ -61,16 +60,14 @@ namespace Flarial.Minimal
     static class DLLImports
     {
 
-        [DllImport("DllUtil.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("dont.delete", CallingConvention = CallingConvention.Cdecl)]
         public static extern int AddTheDLLToTheGame(string path);
     }
 
     public class Insertion
     {
-        public static async Task<DllReturns> Insert(string path)
+        public static DllReturns Insert(string path)
         {
-            Minecraft.init();
-            await Minecraft.WaitForModules();
             return (DllReturns)DLLImports.AddTheDLLToTheGame(path);
         }
     }

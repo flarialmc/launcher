@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="1058433624430612640.ico" />
-    <Content Include="DllUtil.dll" />
+    <Content Include="dont.delete" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

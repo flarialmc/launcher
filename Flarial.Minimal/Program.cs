@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Net;
-using System.ComponentModel;
-using System.IO;
-using System.Threading;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Flarial.Minimal
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
+            Minecraft.init();
 
-            string dllpath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Flarial.dll";
+            string dllpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Flarial.dll";
 
             if (Process.GetProcessesByName("Minecraft.Windows.exe").Length == 0)
             {
@@ -60,20 +62,15 @@ namespace Flarial.Minimal
             {
                 WebClient client = new WebClient();
                 Console.WriteLine("Downloading the latest DLL");
-                client.DownloadFileAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"), dllpath);
-                bool done = false;
-                client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
-                {
-                    done = true;
+                await client.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"), dllpath);
+           
                     Console.WriteLine("Latest DLL has been downloaded");
-                };
-
-                while (!done) { }
-
-                Console.WriteLine("Injecting");
-                Console.WriteLine(Insertion.Insert(dllpath));
+                    Console.WriteLine("Waiting for Minecraft to load.");
+                    
+                    await Minecraft.WaitForModules();
+                    Console.WriteLine(Insertion.Insert(dllpath));
             }
-            Console.WriteLine("Injected");
+            Console.WriteLine("Enjoy!");
             Thread.Sleep(3000);
         }
     }
