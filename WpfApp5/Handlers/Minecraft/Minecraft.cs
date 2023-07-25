@@ -13,7 +13,7 @@ namespace Flarial.Launcher
         public static Process Process;
         public const string FamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-        public static Windows.Management.Deployment.PackageManager PackageManager { get; private set; }
+        public static PackageManager PackageManager { get; private set; }
         public static Windows.ApplicationModel.Package Package { get; private set; }
         public static Windows.ApplicationModel.PackageId PackageId => Package.Id ?? throw new NullReferenceException();
         public static Windows.System.ProcessorArchitecture PackageArchitecture => PackageId.Architecture;

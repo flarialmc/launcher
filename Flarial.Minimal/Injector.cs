@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,6 +8,38 @@ using System.Threading.Tasks;
 
 namespace Flarial.Minimal
 {
+    public static class Minecraft
+    {
+        private static Process Process;
+
+        public static void init()
+        {
+            var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+            if (mcIndex.Length > 0)
+            {
+                Process = mcIndex[0];
+
+            }
+        }
+        
+        public static async Task WaitForModules()
+        {
+            while (Process == null)
+            {
+                await Task.Delay(4000);
+            }
+
+            while (true)
+            {
+                Process.Refresh();
+                if (Process.Modules.Count > 155)
+                    break;
+                
+                await Task.Delay(4000);
+            }
+        }
+    }
+    
     public enum DllReturns
     {
         SUCCESS = 0,
@@ -34,8 +67,10 @@ namespace Flarial.Minimal
 
     public class Insertion
     {
-        public static DllReturns Insert(string path)
+        public static async Task<DllReturns> Insert(string path)
         {
+            Minecraft.init();
+            await Minecraft.WaitForModules();
             return (DllReturns)DLLImports.AddTheDLLToTheGame(path);
         }
     }
