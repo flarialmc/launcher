@@ -677,7 +677,7 @@ namespace Flarial.Launcher
                         
                         await Client?.DownloadFileTaskAsync("https://cdn.flarial.net/dll/latest.dll", Path.Combine(VersionManagement.launcherPath, "real.dll"));
 
-                        Thread.Sleep(5000);
+                        await Minecraft.WaitForModules();
                         Trace.WriteLine(Insertion.Insert(Path.Combine(VersionManagement.launcherPath, "real.dll")));
                     }
                     else
@@ -701,7 +701,7 @@ namespace Flarial.Launcher
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
                         
-                        Thread.Sleep(5000);
+                        await Minecraft.WaitForModules();
                         Insertion.Insert(custom_dll_path);
                     }
                 }

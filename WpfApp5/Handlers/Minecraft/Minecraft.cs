@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Xml;
+using System.Threading.Tasks;
 using Windows.Management.Deployment;
-using Flarial.Launcher.Managers;
 
 namespace Flarial.Launcher
 {
@@ -86,5 +83,25 @@ namespace Flarial.Launcher
             var v = PackageVersion;
             return new Version(v.Major, v.Minor, v.Build, v.Revision);
         }
+        
+        public static async Task WaitForModules()
+        {
+            while (Minecraft.Process == null)
+            {
+                await Task.Delay(4000);
+            }
+
+            Console.WriteLine("Waiting for Minecraft to load");
+            while (true)
+            {
+                Minecraft.Process.Refresh();
+                if (Minecraft.Process.Modules.Count > 155)
+                    break;
+                else
+                    await Task.Delay(4000);
+            }
+            Console.WriteLine("Minecraft finished loading");
+        }
+
     }
 }
