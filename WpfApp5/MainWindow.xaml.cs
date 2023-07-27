@@ -83,10 +83,9 @@ namespace Flarial.Launcher
         {
 
             loadConfig();
-            
+
             Client?.DownloadFileAsync(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
-
-
+            
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
                 Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
@@ -201,8 +200,6 @@ namespace Flarial.Launcher
                     psi.Arguments = "update";
                     
                     Process.Start(psi);
-                    
-                    Thread.Sleep(5000);
 
                     Environment.Exit(0);
 
