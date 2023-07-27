@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -82,6 +83,9 @@ namespace Flarial.Launcher
         {
 
             loadConfig();
+            
+            Client?.DownloadFileAsync(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
+
 
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -192,19 +196,16 @@ namespace Flarial.Launcher
 
             if (version != 0.666 && version < among)
             {
-                var client = new WebClient();
-                client.DownloadFileCompleted += (object s, AsyncCompletedEventArgs e) =>
-                {
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.FileName = "flarial.installer.exe";
                     psi.Arguments = "update";
                     
                     Process.Start(psi);
+                    
+                    Thread.Sleep(5000);
 
                     Environment.Exit(0);
-                };
 
-                client.DownloadFileAsync(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
             }
             else if (version == 0.666)
             {
