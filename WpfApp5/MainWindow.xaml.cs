@@ -80,16 +80,6 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
-            
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "powershell.exe";
-            startInfo.Arguments = "set-executionpolicy unrestricted";
-            startInfo.UseShellExecute = false;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.CreateNoWindow = true;
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
 
             loadConfig();
 
@@ -782,6 +772,8 @@ namespace Flarial.Launcher
 
         private void OptionsVersionClick(object sender, RoutedEventArgs e)
         {
+            CustomDialogBox MessageBox = new CustomDialogBox("WARNING!!!!!!!!!!!!", "MAKE SURE YOU HAVE 'Developer Mode' ENABLED! You can find it in Windows settings.", "MessageBox");
+            MessageBox.ShowDialog();
             OptionsVerionGrid.Visibility = Visibility.Visible;
             OptionsGeneralGrid.Visibility = Visibility.Hidden;
             OptionsAccountGrid.Visibility = Visibility.Hidden;

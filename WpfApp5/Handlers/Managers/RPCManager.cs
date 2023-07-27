@@ -107,6 +107,14 @@ namespace Flarial.Launcher.Managers
 
             if (currentPresence == null)
             {
+                // Add the "Download" button
+                var button = new Button
+                {
+                    Label = "Download",
+                    Url = "https://flarial.net/discord"
+                    
+                };
+
                 currentPresence = new RichPresence();
                 currentPresence.Timestamps = new Timestamps
                 {
@@ -115,6 +123,8 @@ namespace Flarial.Launcher.Managers
                         : DateTime.UtcNow,
                     End = dateTimestampEnd
                 };
+                
+                currentPresence.Buttons = new Button[] { button };
             }
 
             currentPresence.Details = details;
