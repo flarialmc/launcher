@@ -62,7 +62,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.22; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public double version = 1.23; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -83,8 +83,30 @@ namespace Flarial.Launcher
         {
 
             loadConfig();
+            
+            WebClient webClient = new WebClient();
 
-            Client?.DownloadFileAsync(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
+            
+            string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
+            Trace.WriteLine(latestVer);
+            double among = Convert.ToDouble(latestVer);
+            
+            Environment.CurrentDirectory = VersionManagement.launcherPath;
+            
+            
+            if (version != 0.666 && version < among)
+            {
+                webClient.DownloadFile(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
+
+                
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.FileName = "flarial.installer.exe";
+                psi.Arguments = "update";
+                    
+                Process.Start(psi);
+
+                Environment.Exit(0);
+            }
             
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
@@ -110,8 +132,6 @@ namespace Flarial.Launcher
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
-
-            Environment.CurrentDirectory = VersionManagement.launcherPath;
 
             InitializeComponent();
 
@@ -148,13 +168,7 @@ namespace Flarial.Launcher
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-
-            WebClient webClient = new WebClient();
-            webClient.DownloadFile(new Uri("https://cdn.flarial.net/updater.ps1"), "updater.ps1");
-            string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
-            Trace.WriteLine(latestVer);
-            double among = Convert.ToDouble(latestVer);
-
+            
             string text = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/news.json"));
             deserializedNews = JsonConvert.DeserializeObject<Root>(text);
 
