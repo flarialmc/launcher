@@ -19,11 +19,11 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup <Configuration Condition=" '$(Configuration)' == '' ">Debug_VSTS</Configuration>
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup <Configuration Condition=" '$(Configuration)' == '' ">Debug_VSTS</Configuration>
     <DebugType>none</DebugType>
   </PropertyGroup>
 
