@@ -87,24 +87,28 @@ namespace Flarial.Launcher
             WebClient webClient = new WebClient();
 
             
-
-                Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
+            if(!FontManager.IsFontInstalled("Unbounded"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf",
+                    "Unbounded-VariableFont_wght.ttf");
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
-            
+            }
 
-                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf", "SofiaSans-VariableFont_wght.ttf");
+            if(!FontManager.IsFontInstalled("Sofia Sans"))
+            {
+                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf",
+                    "SofiaSans-VariableFont_wght.ttf");\
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
-            
-            //Trace.WriteLine(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+            }
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
             
-            Environment.CurrentDirectory = VersionManagement.launcherPath;
+                        Environment.CurrentDirectory = VersionManagement.launcherPath;
 
 
             InitializeComponent();
