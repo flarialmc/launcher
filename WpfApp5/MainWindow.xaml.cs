@@ -87,27 +87,8 @@ namespace Flarial.Launcher
             WebClient webClient = new WebClient();
 
             
-            string latestVer = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/latestVersion.txt"));
-            Trace.WriteLine(latestVer);
-            double among = Convert.ToDouble(latestVer);
-            
             Environment.CurrentDirectory = VersionManagement.launcherPath;
-            
-            
-            if (version != 0.666 && version < among)
-            {
-                webClient.DownloadFile(new Uri("https://cdn.flarial.net/installer.exe"), "flarial.installer.exe");
 
-                
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.FileName = "flarial.installer.exe";
-                psi.Arguments = "update";
-                    
-                Process.Start(psi);
-
-                Environment.Exit(0);
-            }
-            
             if (!FontManager.IsFontInstalled("Unbounded"))
             {
                 Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf", "Unbounded-VariableFont_wght.ttf");
@@ -207,18 +188,7 @@ namespace Flarial.Launcher
             rb.IsChecked = true;
             NewsScrollViewer.UpdateLayout();
 
-            if (version != 0.666 && version < among)
-            {
-                    ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = "flarial.installer.exe";
-                    psi.Arguments = "update";
-                    
-                    Process.Start(psi);
-
-                    Environment.Exit(0);
-
-            }
-            else if (version == 0.666)
+            if (version == 0.666)
             {
                 Trace.WriteLine("It's development time.");
             }
