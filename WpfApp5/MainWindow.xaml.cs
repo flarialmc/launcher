@@ -94,7 +94,7 @@ namespace Flarial.Launcher
                 File.Delete($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
             
 
-                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf", "SofiaSans-VariableFont_wght.ttf");\
+                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf", "SofiaSans-VariableFont_wght.ttf");
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
