@@ -99,7 +99,7 @@ namespace Flarial.Launcher
             if(!FontManager.IsFontInstalled("Sofia Sans"))
             {
                 Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf",
-                    "SofiaSans-VariableFont_wght.ttf");\
+                    "SofiaSans-VariableFont_wght.ttf");
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
