@@ -106,7 +106,15 @@ namespace Flarial.Launcher
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
             }
             
-            Client?.DownloadFile("https://cdn.flarial.net/dll/DllUtil.dll", "dont.delete");
+            string url = "https://cdn.flarial.net/dll/DllUtil.dll";
+            string filePath = "dont.delete";
+
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = client.GetAsync(url).Result;
+                byte[] fileBytes = response.Content.ReadAsByteArrayAsync().Result;
+                File.WriteAllBytes(filePath, fileBytes);
+            }
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
