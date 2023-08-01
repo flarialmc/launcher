@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -644,9 +645,17 @@ namespace Flarial.Launcher
                         
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
-                        
-                        await Client?.DownloadFileTaskAsync("https://cdn.flarial.net/dll/latest.dll", Path.Combine(VersionManagement.launcherPath, "real.dll"));
 
+                        string url = "https://cdn.flarial.net/dll/latest.dll";
+                        string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
+
+                        using (HttpClient client = new HttpClient())
+                        {
+                            HttpResponseMessage response = await client.GetAsync(url);
+                            byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+                            File.WriteAllBytes(filePath, fileBytes);
+                        }
+                        
                         await Minecraft.WaitForModules();
                         Trace.WriteLine(Insertion.Insert(Path.Combine(VersionManagement.launcherPath, "real.dll")));
                     }
