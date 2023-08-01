@@ -63,7 +63,7 @@ namespace Flarial.Minimal
 
                     bar.Value = 98;
                     CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "Flarial.Minimal.exe", location + "Flarial.Minimal.exe", "Launch Flarial Minimal");
-                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Minimal.exe", location + "\\Flarial.Minimal.exe", "Launch Flarial Minimal");
+                    CreateShortcut("Flarial Minimal", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Minimal.exe", location + "Flarial.Minimal.exe", "Launch Flarial Minimal");
 
                     bar.Value = 100;
 

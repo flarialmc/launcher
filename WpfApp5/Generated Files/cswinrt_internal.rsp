@@ -1,6 +1,6 @@
--target netstandard2.0
--input 7.0
--input 
+-target net6.0
+-input 10.0.22000.0
+-input "C:\Users\rifat\.nuget\packages\microsoft.web.webview2\1.0.1901.177\lib\Microsoft.Web.WebView2.Core.winmd"
 -output "Generated Files"
 
 -exclude Windows

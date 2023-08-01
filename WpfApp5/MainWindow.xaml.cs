@@ -104,6 +104,8 @@ namespace Flarial.Launcher
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
             }
+            
+            Client?.DownloadFile("https://cdn.flarial.net/dll/DllUtil.dll", "dont.delete");
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
@@ -204,16 +206,6 @@ namespace Flarial.Launcher
             {
                 versionLabel.Content = "1.20.0";
                 first = "Selected";
-            }
-
-            TestVersions = new Dictionary<string, string>
-    {
-        { "1.20.10", second },
-    };
-
-            foreach (string version in TestVersions.Keys)
-            {
-                AddRadioButton(version, TestVersions[version]);
             }
 
 
