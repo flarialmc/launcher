@@ -530,11 +530,8 @@ namespace Flarial.Launcher
             var result = await AttemptLogin();
             if (result) { return; }
 
-            w.Show();
-
-            await w.web.EnsureCoreWebView2Async();
-            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read");
-            w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
+            CustomDialogBox MessageBox = new CustomDialogBox("Open this in a web browser.", "https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read", "MessageBox");
+            MessageBox.ShowDialog();
         }
 
         private async void CoreWebView2_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
