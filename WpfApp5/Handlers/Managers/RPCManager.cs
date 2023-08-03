@@ -204,7 +204,7 @@ namespace Flarial.Launcher.Managers
                     return new serverInformation()
                     {
                         ipAddress = ip,
-                        Detail = "Playing Multiplayer",
+                        Detail = "Playing on " + ip,
                         largeImageKey = "flarialbig"
                     };
             }
