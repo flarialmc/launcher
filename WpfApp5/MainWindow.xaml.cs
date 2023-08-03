@@ -90,7 +90,7 @@ namespace Flarial.Launcher
             
             if(!FontManager.IsFontInstalled("Unbounded"))
             {
-                Client?.DownloadFile("https://cdn.flarial.net/assets/Unbounded-VariableFont_wght.ttf",
+                Client?.DownloadFile("https://cdn-c6f.pages.dev/assets/Unbounded-VariableFont_wght.ttf",
                     "Unbounded-VariableFont_wght.ttf");
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\Unbounded-VariableFont_wght.ttf");
@@ -99,14 +99,14 @@ namespace Flarial.Launcher
 
             if(!FontManager.IsFontInstalled("Sofia Sans"))
             {
-                Client?.DownloadFile("https://cdn.flarial.net/assets/SofiaSans-VariableFont_wght.ttf",
+                Client?.DownloadFile("https://cdn-c6f.pages.dev/assets/SofiaSans-VariableFont_wght.ttf",
                     "SofiaSans-VariableFont_wght.ttf");
                 Thread.Sleep(100);
                 FontManager.InstallFont($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
                 File.Delete($"{Directory.GetCurrentDirectory()}\\SofiaSans-VariableFont_wght.ttf");
             }
             
-            string url = "https://cdn.flarial.net/dll/DllUtil.dll";
+            string url = "https://cdn-c6f.pages.dev/dll/DllUtil.dll";
             string filePath = "dont.delete";
 
             using (HttpClient client = new HttpClient())
@@ -158,7 +158,7 @@ namespace Flarial.Launcher
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
             
-            string text = webClient.DownloadString(new Uri("https://cdn.flarial.net/launcher/news.json"));
+            string text = webClient.DownloadString(new Uri("https://cdn-c6f.pages.dev/launcher/news.json"));
             deserializedNews = JsonConvert.DeserializeObject<Root>(text);
 
             int i = 0;
@@ -654,7 +654,7 @@ namespace Flarial.Launcher
                         if (!Utils.IsGameOpen())
                             Utils.OpenGame();
 
-                        string url = "https://cdn.flarial.net/dll/latest.dll";
+                        string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
                         string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
 
                         using (HttpClient client = new HttpClient())

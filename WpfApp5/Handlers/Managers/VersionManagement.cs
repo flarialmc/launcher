@@ -240,10 +240,10 @@ namespace Flarial.Launcher.Managers
                     writer.WriteLine(jsonString);
                 }
 
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/assets/flarial-title.png"),
+                await webClient.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/assets/flarial-title.png"),
                     Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
                         "ui", "title.png"));
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/assets/flarial_mogang.png"),
+                await webClient.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/assets/flarial_mogang.png"),
                     Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
         }

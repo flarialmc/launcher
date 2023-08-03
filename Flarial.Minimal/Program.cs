@@ -62,7 +62,7 @@ namespace Flarial.Minimal
             {
                 WebClient client = new WebClient();
                 Console.WriteLine("Downloading the latest DLL");
-                await client.DownloadFileTaskAsync(new Uri("https://cdn.flarial.net/dll/latest.dll"), dllpath);
+                await client.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/dll/latest.dll"), dllpath);
            
                     Console.WriteLine("Latest DLL has been downloaded");
                     Console.WriteLine("Waiting for Minecraft to load.");
