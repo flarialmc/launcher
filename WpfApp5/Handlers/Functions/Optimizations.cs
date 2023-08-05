@@ -1,36 +1,58 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+using Microsoft.VisualBasic.Logging;
+using Octokit;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Security.Policy;
+using System.Threading.Channels;
+using System.Windows.Documents;
+using System.Xml.Linq;
 
 namespace Flarial.Launcher.Handlers.Functions
 {
-    using Microsoft.Win32;
-    using System;
-    using System.Diagnostics;
-    using System.Management;
+
+
+
 
     public class NvidiaWifiOptimizer
     {
         private const string NvidiaRegKey = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\PCI\";
         private const string NvidiaRegSubKey = @"NVIDIA_DEV.0";
         private const string NvidiaRegValue = "DeviceDesc";
-
-        private const string MinecraftExecutable = "minecraft.windows.exe";
+        private const string MinecraftExecutable = "Minecraft.Windows";
         private const string NvidiaPanelExecutable = "nvcplui.exe";
+
+        private static bool nvidiaPanelOptimized = false; // To keep track of Nvidia panel optimization status
+        private static bool internetOptimized = false; // To keep track of internet optimization status
 
         public static void Optimize()
         {
             // Check if Nvidia GPU is present
             if (IsNvidiaGPU())
             {
-                // Optimize Nvidia panel settings for Minecraft
-                SetNvidiaPanelSettings();
+                // Optimize Nvidia panel settings for Minecraft if not already optimized
+                if (!nvidiaPanelOptimized)
+                {
+                    SetNvidiaPanelSettings();
+                    nvidiaPanelOptimized = true; // Mark Nvidia panel as optimized
+                }
             }
             else
             {
                 Console.WriteLine("Nvidia GPU not found. Unable to optimize Nvidia panel settings.");
             }
 
-            // Optimize internet settings for Minecraft
-            OptimizeInternetSettings();
+            // Optimize internet settings for Minecraft if not already optimized
+            if (!internetOptimized)
+            {
+                OptimizeInternetSettings();
+                internetOptimized = true; // Mark internet settings as optimized
+            }
         }
 
         private static bool IsNvidiaGPU()
@@ -78,34 +100,79 @@ namespace Flarial.Launcher.Handlers.Functions
 
         private static void OptimizeInternetSettings()
         {
-            // Set TCP/IP optimizations for reduced latency and improved throughput
-            SetTcpIpOptimizations();
-            DisableNagleAlgorithm();
-            FlushDnsCache();
+            // Modify internet settings in the Windows registry if not already optimized
+            if (!internetOptimized)
+            {
+                SetTcpAckFrequency();
+                SetTcpNoDelay();
+                SetTcpIpOptimizations();
+                DisableNagleAlgorithm();
+                internetOptimized = true; // Mark internet settings as optimized
+            }
+        }
+
+        private static void SetTcpAckFrequency()
+        {
+            // Set TcpAckFrequency to 1 for better internet responsiveness if not already set
+            int tcpAckFrequency = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", -1);
+            if (tcpAckFrequency != 1)
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", 1, RegistryValueKind.DWord);
+            }
+        }
+
+        private static void SetTcpNoDelay()
+        {
+            // Set TcpNoDelay to 1 for improved network performance if not already set
+            int tcpNoDelay = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpNoDelay", -1);
+            if (tcpNoDelay != 1)
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpNoDelay", 1, RegistryValueKind.DWord);
+            }
         }
 
         private static void SetTcpIpOptimizations()
         {
-            // Modify TCP/IP settings using registry keys
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", 1, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TCPNoDelay", 1, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 64240, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 64, RegistryValueKind.DWord);
+            // Modify TCP/IP settings using registry keys if not already set
+            int tcpAckFrequency = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", -1);
+            int tcpNoDelay = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpNoDelay", -1);
+            int tcpWindowSize = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", -1);
+            int defaultTTL = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", -1);
+
+            if (tcpAckFrequency != 1 || tcpNoDelay != 1 || tcpWindowSize != 64240 || defaultTTL != 64)
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", 1, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpNoDelay", 1, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 64240, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 64, RegistryValueKind.DWord);
+            }
         }
 
         private static void DisableNagleAlgorithm()
         {
-            // Disable the Nagle algorithm for improved network responsiveness
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 0, RegistryValueKind.DWord);
+            // Disable the Nagle algorithm for improved network responsiveness if not already disabled
+            int tcpDelAckTicks = (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", -1);
+            if (tcpDelAckTicks != 0)
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 0, RegistryValueKind.DWord);
+            }
         }
 
         public static void DisableNvidiaPanelAndInternetOptimizations()
         {
-            // Disable Nvidia panel settings for Minecraft
-            DisableNvidiaPanelSettings();
+            // Disable Nvidia panel settings for Minecraft if optimized
+            if (nvidiaPanelOptimized)
+            {
+                DisableNvidiaPanelSettings();
+                nvidiaPanelOptimized = false; // Mark Nvidia panel as not optimized
+            }
 
-            // Disable internet optimizations for Minecraft
-            DisableInternetSettings();
+            // Disable internet optimizations for Minecraft if optimized
+            if (internetOptimized)
+            {
+                DisableInternetSettings();
+                internetOptimized = false; // Mark internet settings as not optimized
+            }
         }
 
         private static void DisableNvidiaPanelSettings()
@@ -129,15 +196,19 @@ namespace Flarial.Launcher.Handlers.Functions
 
         private static void DisableInternetSettings()
         {
-            // Reset TCP/IP optimizations to default values
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", 2, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TCPNoDelay", 0, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 0, RegistryValueKind.DWord);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 128, RegistryValueKind.DWord);
+            // Reset TCP/IP optimizations to default values if optimized
+            if (internetOptimized)
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpAckFrequency", 2, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TCPNoDelay", 0, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpWindowSize", 0, RegistryValueKind.DWord);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "DefaultTTL", 128, RegistryValueKind.DWord);
 
-            // Enable the Nagle algorithm (revert the change)
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 1, RegistryValueKind.DWord);
+                // Enable the Nagle algorithm (revert the change)
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters", "TcpDelAckTicks", 1, RegistryValueKind.DWord);
+            }
         }
+
         public static void FlushDnsCache()
         {
             ProcessStartInfo processStartInfo = new ProcessStartInfo
@@ -171,34 +242,75 @@ namespace Flarial.Launcher.Handlers.Functions
     }
 
 
+
     public class MinecraftOptimizer
     {
-        private const string MinecraftExecutable = "minecraft.windows.exe";
+        private const string MinecraftExecutable = "Minecraft.Windows";
 
         public static int DesiredRAMAllocation { get; set; } = 4096; // Default to 4GB (4096MB) of RAM allocation
 
         public static void OptimizeMinecraft()
         {
+            // Check if Minecraft is running
+            Process minecraftProcess = GetMinecraftProcess();
+            if (minecraftProcess == null)
+            {
+                Console.WriteLine("Minecraft is not running. No optimizations performed.");
+                return;
+            }
+
             // Set process priority and affinity for Minecraft
             SetProcessSettings();
 
-            // Disable fullscreen optimizations for Minecraft
-            DisableFullscreenOptimizations();
+            // Check if fullscreen optimizations and DPI scaling are supported
+            bool isFullscreenOptimizationsSupported = IsFullscreenOptimizationsSupported();
+            bool isDPIScalingSupported = IsDPIScalingSupported();
 
-            // Disable DPI scaling for Minecraft
-            DisableDpiScaling();
+            // Disable fullscreen optimizations for Minecraft if supported
+            //if (isFullscreenOptimizationsSupported)
+            //{
+            //    DisableFullscreenOptimizations(minecraftProcess.MainWindowHandle);
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Fullscreen optimizations not supported on this version of Windows. Skipping...");
+            //}
+
+            // Disable DPI scaling for Minecraft if supported
+            //if (isDPIScalingSupported)
+            //{
+            //    DisableDpiScaling(minecraftProcess.MainWindowHandle);
+            //}
+            //else
+            //{
+            //    Console.WriteLine("DPI scaling not supported on this version of Windows. Skipping...");
+            //}
 
             // Check DirectX version and apply optimizations accordingly
             string directXVersion = GetDirectXVersion();
             if (directXVersion == "DirectX 11")
             {
-                // Apply DirectX 11 optimizations for Minecraft
-                ApplyDirectX11Optimizations();
+                // Apply DirectX 11 optimizations for Minecraft if supported
+                if (isFullscreenOptimizationsSupported)
+                {
+                    ApplyDirectX11Optimizations();
+                }
+                else
+                {
+                    Console.WriteLine("DirectX 11 optimizations require fullscreen optimizations. Skipping...");
+                }
             }
             else if (directXVersion == "DirectX 12")
             {
-                // Apply DirectX 12 optimizations for Minecraft
-                ApplyDirectX12Optimizations();
+                // Apply DirectX 12 optimizations for Minecraft if supported
+                if (isFullscreenOptimizationsSupported)
+                {
+                    ApplyDirectX12Optimizations();
+                }
+                else
+                {
+                    Console.WriteLine("DirectX 12 optimizations require fullscreen optimizations. Skipping...");
+                }
             }
             else
             {
@@ -213,6 +325,69 @@ namespace Flarial.Launcher.Handlers.Functions
 
             // Perform additional performance and internet optimizations
             AdditionalOptimizations();
+        }
+
+        private static bool IsFullscreenOptimizationsSupported()
+        {
+            // Check if fullscreen optimizations are supported on the current version of Windows
+            OperatingSystem os = Environment.OSVersion;
+            Version version = os.Version;
+
+            // Fullscreen optimizations are supported on Windows 10 version 1803 (April 2018 Update) and above.
+            return os.Platform == PlatformID.Win32NT && version >= new Version(10, 0, 17134);
+        }
+
+        private static bool IsDPIScalingSupported()
+        {
+            // Check if DPI scaling is supported on the current version of Windows
+            OperatingSystem os = Environment.OSVersion;
+            Version version = os.Version;
+
+            // DPI scaling is supported on Windows 8.1 (Windows 6.3) and above.
+            return os.Platform == PlatformID.Win32NT && version >= new Version(6, 3);
+        }
+
+        //private static void DisableFullscreenOptimizations(IntPtr mainWindowHandle)
+        //{
+        //    // Disable fullscreen optimizations for Minecraft window
+        //    SetWindowDisplayAttribute(mainWindowHandle, WindowDisplayAttribute.WDA_MONITOR, 1);
+        //}
+
+        //private static void DisableDpiScaling(IntPtr mainWindowHandle)
+        //{
+        //    // Disable DPI scaling for Minecraft window
+        //    SetProcessDpiAwareness(mainWindowHandle, ProcessDpiAwareness.Process_Per_Monitor_DPI_Aware);
+        //}
+
+        private static void SetProcessSettings()
+        {
+            // Find the Minecraft process
+            Process minecraftProcess = GetMinecraftProcess();
+
+            if (minecraftProcess != null)
+            {
+                // Set the Minecraft process priority to high for better performance
+                minecraftProcess.PriorityClass = ProcessPriorityClass.High;
+
+                // Set the Minecraft process affinity to a single CPU core
+                minecraftProcess.ProcessorAffinity = new IntPtr(1);
+            }
+            else
+            {
+                Console.WriteLine("Minecraft process not found. Unable to set process settings.");
+            }
+        }
+
+        private static Process GetMinecraftProcess()
+        {
+            // Find the Minecraft process by name
+            Process[] processes = Process.GetProcessesByName(MinecraftExecutable);
+
+            // Return the first found process
+            if (processes.Length > 0)
+                return processes[0];
+            else
+                return null;
         }
 
         private static void ApplyDirectX11Optimizations()
@@ -343,17 +518,6 @@ namespace Flarial.Launcher.Handlers.Functions
         {
             // Adjust system settings for improved performance
             AdjustPowerSettings();
-            AdjustVisualEffects();
-
-            // Optimize internet settings
-            OptimizeInternetSettings();
-
-            // Perform disk cleanup and defragmentation
-            PerformDiskCleanup();
-            PerformDiskDefragmentation();
-
-            // Disable unnecessary startup programs
-            DisableStartupPrograms();
 
             // Optimize RAM allocation
             OptimizeRAMAllocation();
@@ -363,36 +527,6 @@ namespace Flarial.Launcher.Handlers.Functions
         {
             // Set power plan to High Performance for better performance
             Process.Start("powercfg.exe", "/s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
-        }
-
-        private static void AdjustVisualEffects()
-        {
-            // Adjust visual effects for better performance
-            Process.Start("SystemPropertiesPerformance.exe");
-        }
-
-        private static void OptimizeInternetSettings()
-        {
-            // Adjust internet settings for better network performance
-            Process.Start("inetcpl.cpl");
-        }
-
-        private static void PerformDiskCleanup()
-        {
-            // Perform disk cleanup to free up space
-            Process.Start("cleanmgr.exe");
-        }
-
-        private static void PerformDiskDefragmentation()
-        {
-            // Perform disk defragmentation for improved disk performance
-            Process.Start("dfrgui.exe");
-        }
-
-        private static void DisableStartupPrograms()
-        {
-            // Disable unnecessary startup programs for faster system boot
-            Process.Start("taskmgr.exe");
         }
 
         private static void OptimizeRAMAllocation()
@@ -415,54 +549,6 @@ namespace Flarial.Launcher.Handlers.Functions
             {
                 Console.WriteLine("Minecraft process not found. Unable to optimize RAM allocation.");
             }
-        }
-
-        private static Process GetMinecraftProcess()
-        {
-            // Find the Minecraft process by name
-            Process[] processes = Process.GetProcessesByName(MinecraftExecutable);
-
-            // Return the first found process
-            return processes.Length > 0 ? processes[0] : null;
-        }
-
-        private static void SetProcessSettings()
-        {
-            // Find the Minecraft process
-            Process minecraftProcess = GetMinecraftProcess();
-
-            if (minecraftProcess != null)
-            {
-                // Set the Minecraft process priority to high for better performance
-                minecraftProcess.PriorityClass = ProcessPriorityClass.High;
-
-                // Set the Minecraft process affinity to a single CPU core
-                minecraftProcess.ProcessorAffinity = new IntPtr(1);
-            }
-            else
-            {
-                Console.WriteLine("Minecraft process not found. Unable to set process settings.");
-            }
-        }
-
-        private static void DisableFullscreenOptimizations()
-        {
-            // Find the Minecraft process main window handle
-            Process minecraftProcess = GetMinecraftProcess();
-            IntPtr mainWindowHandle = minecraftProcess.MainWindowHandle;
-
-            // Disable fullscreen optimizations for Minecraft window
-            SetWindowDisplayAttribute(mainWindowHandle, WindowDisplayAttribute.WDA_MONITOR, 1);
-        }
-
-        private static void DisableDpiScaling()
-        {
-            // Find the Minecraft process main window handle
-            Process minecraftProcess = GetMinecraftProcess();
-            IntPtr mainWindowHandle = minecraftProcess.MainWindowHandle;
-
-            // Disable DPI scaling for Minecraft window
-            SetProcessDpiAwareness(mainWindowHandle, ProcessDpiAwareness.Process_Per_Monitor_DPI_Aware);
         }
 
         private static string GetDirectXVersion()
@@ -489,11 +575,11 @@ namespace Flarial.Launcher.Handlers.Functions
             return "Unknown";
         }
 
-        [DllImport("user32.dll")]
-        private static extern bool SetWindowDisplayAttribute(IntPtr hWnd, WindowDisplayAttribute attribute, int attributeValue);
+        //[DllImport("user32.dll")]
+        //private static extern bool SetWindowDisplayAttribute(IntPtr hWnd, WindowDisplayAttribute attribute, int attributeValue);
 
-        [DllImport("user32.dll")]
-        private static extern bool SetProcessDpiAwareness(IntPtr hWnd, ProcessDpiAwareness awareness);
+        //[DllImport("user32.dll")]
+        //private static extern bool SetProcessDpiAwareness(IntPtr hWnd, ProcessDpiAwareness awareness);
 
         private enum WindowDisplayAttribute
         {
@@ -518,326 +604,399 @@ namespace Flarial.Launcher.Handlers.Functions
 
 
 
-    public class AMDOptimizer
+
+    public class OptimizerManager
     {
-        private const int ADL_OK = 0;
-        private const int ADL_MAX_PATH = 256;
+        private const string AMDProcessorIdentifier = "AuthenticAMD";
 
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Main_Control_Create(int enumConnectedAdapters);
+        private AMDOptimizer amdOptimizer = new AMDOptimizer();
+        private IntelOptimizer intelOptimizer = new IntelOptimizer();
 
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Main_Control_Destroy();
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Adapter_NumberOfAdapters_Get(ref int numAdapters);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Adapter_AdapterInfo_Get(IntPtr info, int size);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Adapter_Active_Get(int adapterIndex, ref int status);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Adapter_Crossfire_Caps(int adapterIndex, ref int capable, ref int enabled);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Overdrive_Caps(int adapterIndex, ref int supported, ref int enabled, ref int version);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Overdrive6_PowerControlInfo_Get(int adapterIndex, ref int min, ref int max, ref int currentValue, ref int defaultValue, ref int stepValue);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Overdrive6_PowerControl_Get(int adapterIndex, ref int value);
-
-        [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int ADL_Overdrive6_PowerControl_Set(int adapterIndex, int value);
-
-        private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E968-E325-11CE-BFC1-08002BE10318}\0000\UMD";
-        private const string RegistryValueName = "FlipQueueSize";
-
-        public static void SetFlipQueueSizeToHexValue()
-        {
-            try
-            {
-                Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("31,00"), RegistryValueKind.Binary);
-                Console.WriteLine("FlipQueueSize set to hexadecimal value successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error setting FlipQueueSize: " + ex.Message);
-            }
-        }
-
-        private static byte[] GetByteDataFromHexString(string hexString)
-        {
-            string[] hexValues = hexString.Split(',');
-            byte[] byteData = new byte[hexValues.Length];
-
-            for (int i = 0; i < hexValues.Length; i++)
-            {
-                byteData[i] = byte.Parse(hexValues[i], System.Globalization.NumberStyles.HexNumber);
-            }
-
-            return byteData;
-        }
-
-        public static void SetMaximumPreRenderedFramesToZero()
+        public void Optimize()
         {
             if (IsAMDProcessor())
-            {
-                int numAdapters = 0;
-                int result = ADL_Main_Control_Create(1);
-
-                if (result != ADL_OK)
-                {
-                    Console.WriteLine("Failed to initialize ADL.");
-                    return;
-                }
-
-                result = ADL_Adapter_NumberOfAdapters_Get(ref numAdapters);
-
-                if (result != ADL_OK)
-                {
-                    Console.WriteLine("Failed to get the number of adapters.");
-                    ADL_Main_Control_Destroy();
-                    return;
-                }
-
-                if (numAdapters == 0)
-                {
-                    Console.WriteLine("No AMD adapters found.");
-                    ADL_Main_Control_Destroy();
-                    return;
-                }
-
-                IntPtr info = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
-
-                result = ADL_Adapter_AdapterInfo_Get(info, Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
-
-                if (result != ADL_OK)
-                {
-                    Console.WriteLine("Failed to get adapter information.");
-                    Marshal.FreeCoTaskMem(info);
-                    ADL_Main_Control_Destroy();
-                    return;
-                }
-
-                for (int i = 0; i < numAdapters; i++)
-                {
-                    IntPtr currentInfo = new IntPtr(info.ToInt64() + (Marshal.SizeOf(typeof(AdapterInfo)) * i));
-                    AdapterInfo adapterInfo = (AdapterInfo)Marshal.PtrToStructure(currentInfo, typeof(AdapterInfo));
-
-                    int status = 0;
-                    result = ADL_Adapter_Active_Get(adapterInfo.AdapterIndex, ref status);
-
-                    if (result != ADL_OK)
-                    {
-                        Console.WriteLine("Failed to get adapter status.");
-                        continue;
-                    }
-
-                    if (status != 1)
-                    {
-                        Console.WriteLine("Adapter is not active.");
-                        continue;
-                    }
-
-                    int capable = 0;
-                    int enabled = 0;
-                    result = ADL_Adapter_Crossfire_Caps(adapterInfo.AdapterIndex, ref capable, ref enabled);
-
-                    if (result != ADL_OK)
-                    {
-                        Console.WriteLine("Failed to get Crossfire capabilities.");
-                        continue;
-                    }
-
-                    if (capable == 1 && enabled == 1)
-                    {
-                        Console.WriteLine("Crossfire is enabled for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
-                        continue;
-                    }
-
-                    int supported = 0;
-                    int overdriveEnabled = 0;
-                    int version = 0;
-                    result = ADL_Overdrive_Caps(adapterInfo.AdapterIndex, ref supported, ref overdriveEnabled, ref version);
-
-                    if (result != ADL_OK)
-                    {
-                        Console.WriteLine("Failed to get Overdrive capabilities.");
-                        continue;
-                    }
-
-                    if (supported == 0)
-                    {
-                        Console.WriteLine("Overdrive is not supported for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
-                        continue;
-                    }
-
-                    int minPower = 0;
-                    int maxPower = 0;
-                    int currentPower = 0;
-                    int defaultPower = 0;
-                    int stepPower = 0;
-                    result = ADL_Overdrive6_PowerControlInfo_Get(adapterInfo.AdapterIndex, ref minPower, ref maxPower, ref currentPower, ref defaultPower, ref stepPower);
-
-                    if (result != ADL_OK)
-                    {
-                        Console.WriteLine("Failed to get Power Control information.");
-                        continue;
-                    }
-
-                    if (currentPower != 0)
-                    {
-                        Console.WriteLine("Power Control is already modified for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
-                        continue;
-                    }
-
-                    result = ADL_Overdrive6_PowerControl_Set(adapterInfo.AdapterIndex, 0);
-
-                    if (result != ADL_OK)
-                    {
-                        Console.WriteLine("Failed to set Power Control value for adapter " + adapterInfo.AdapterIndex + ".");
-                        continue;
-                    }
-
-                    Console.WriteLine("Maximum pre-rendered frames set to 0 successfully for adapter " + adapterInfo.AdapterIndex + ".");
-                }
-
-                Marshal.FreeCoTaskMem(info);
-                ADL_Main_Control_Destroy();
-            }
+                amdOptimizer.Optimize();
             else
-            {
-                Console.WriteLine("Not an AMD processor. Cannot modify maximum pre-rendered frames.");
-            }
+            intelOptimizer.Optimize();
+        }
+
+        public void RevertOptimizations()
+        {
+            if (IsAMDProcessor())
+            
+                amdOptimizer.RevertOptimizations();
+            else
+
+            intelOptimizer.RevertOptimizations();
         }
 
         private static bool IsAMDProcessor()
         {
             string processorName = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER");
-            return processorName.Contains("AuthenticAMD");
+            return processorName.Contains(AMDProcessorIdentifier);
         }
 
-        public static void SetHighPerformanceMode()
+
+        public class AMDOptimizer
         {
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "54533251-82be-4824-96c1-47b60b740d00", "High performance", RegistryValueKind.String);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7", "Attributes", 2, RegistryValueKind.DWord);
-        }
-        public static void SetPowerProfile()
-        {
-            Process.Start("powercfg.exe", "/s 54533251-82be-4824-96c1-47b60b740d00");
-        }
-        public static void DisableCoolnQuiet()
-        {
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\3edd42d6-2b98-4beb-9965-3afcbcbc1425", "Attributes", 0, RegistryValueKind.DWord);
-        }
-        public static void Optimize()
-        {
-            if (IsAMDProcessor())
+            private const int ADL_OK = 0;
+            private const int ADL_MAX_PATH = 256;
+            private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E968-E325-11CE-BFC1-08002BE10318}\0000\UMD";
+            private const string RegistryValueName = "FlipQueueSize";
+
+            private bool preRenderedFramesModified = false; // To keep track of pre-rendered frames modification status
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Main_Control_Create(int enumConnectedAdapters);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Main_Control_Destroy();
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Adapter_NumberOfAdapters_Get(ref int numAdapters);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Adapter_AdapterInfo_Get(IntPtr info, int size);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Adapter_Active_Get(int adapterIndex, ref int status);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Adapter_Crossfire_Caps(int adapterIndex, ref int capable, ref int enabled);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Overdrive_Caps(int adapterIndex, ref int supported, ref int enabled, ref int version);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Overdrive6_PowerControlInfo_Get(int adapterIndex, ref int min, ref int max, ref int currentValue, ref int defaultValue, ref int stepValue);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Overdrive6_PowerControl_Get(int adapterIndex, ref int value);
+
+            [DllImport("atiadlxx.dll", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int ADL_Overdrive6_PowerControl_Set(int adapterIndex, int value);
+
+            private bool InitializeADL()
             {
-                SetHighPerformanceMode();
-                SetMaximumPreRenderedFramesToZero();
-                SetFlipQueueSizeToHexValue();
-                DisableCoolnQuiet();
-                SetPowerProfile();
+                return ADL_Main_Control_Create(1) == ADL_OK;
+            }
+
+            private void DestroyADL()
+            {
+                ADL_Main_Control_Destroy();
+            }
+
+            private int GetNumberOfAdapters()
+            {
+                int numAdapters = 0;
+                ADL_Adapter_NumberOfAdapters_Get(ref numAdapters);
+                return numAdapters;
+            }
+
+            private AdapterInfo[] GetAdapterInformation(int numAdapters)
+            {
+                IntPtr info = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
+                ADL_Adapter_AdapterInfo_Get(info, Marshal.SizeOf(typeof(AdapterInfo)) * numAdapters);
+                AdapterInfo[] adapterInfoArray = new AdapterInfo[numAdapters];
+                for (int i = 0; i < numAdapters; i++)
+                {
+                    IntPtr currentInfo = new IntPtr(info.ToInt64() + (Marshal.SizeOf(typeof(AdapterInfo)) * i));
+                    adapterInfoArray[i] = (AdapterInfo)Marshal.PtrToStructure(currentInfo, typeof(AdapterInfo));
+                }
+                Marshal.FreeCoTaskMem(info);
+                return adapterInfoArray;
+            }
+
+            private bool IsCrossfireEnabled(int adapterIndex)
+            {
+                int capable = 0;
+                int enabled = 0;
+                ADL_Adapter_Crossfire_Caps(adapterIndex, ref capable, ref enabled);
+                return capable == 1 && enabled == 1;
+            }
+
+            private bool IsOverdriveSupported(int adapterIndex)
+            {
+                int supported = 0;
+                int overdriveEnabled = 0;
+                int version = 0;
+                ADL_Overdrive_Caps(adapterIndex, ref supported, ref overdriveEnabled, ref version);
+                return supported == 1;
+            }
+
+            private bool IsPowerControlModified(int adapterIndex)
+            {
+                int currentValue = 0;
+                ADL_Overdrive6_PowerControl_Get(adapterIndex, ref currentValue);
+                return currentValue != 0;
+            }
+
+            private bool SetPowerControl(int adapterIndex, int value)
+            {
+                int result = ADL_Overdrive6_PowerControl_Set(adapterIndex, value);
+                return result == ADL_OK;
+            }
+
+            private byte[] GetByteDataFromHexString(string hexString)
+            {
+                string[] hexValues = hexString.Split(',');
+                byte[] byteData = new byte[hexValues.Length];
+
+                for (int i = 0; i < hexValues.Length; i++)
+                {
+                    byteData[i] = byte.Parse(hexValues[i], System.Globalization.NumberStyles.HexNumber);
+                }
+
+                return byteData;
+            }
+
+            public void SetFlipQueueSizeToHexValue()
+            {
+                try
+                {
+                    Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("31,00"), RegistryValueKind.Binary);
+                    Console.WriteLine("FlipQueueSize set to hexadecimal value successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error setting FlipQueueSize: " + ex.Message);
+                }
+            }
+
+            public void SetMaximumPreRenderedFramesToZero()
+            {
+                if (IsAMDProcessor())
+                {
+                    if (InitializeADL())
+                    {
+                        int numAdapters = GetNumberOfAdapters();
+
+                        if (numAdapters == 0)
+                        {
+                            Console.WriteLine("No AMD adapters found.");
+                            DestroyADL();
+                            return;
+                        }
+
+                        AdapterInfo[] adapterInfoArray = GetAdapterInformation(numAdapters);
+
+                        foreach (var adapterInfo in adapterInfoArray)
+                        {
+                            if (!adapterInfo.IsActive)
+                            {
+                                Console.WriteLine("Adapter " + adapterInfo.AdapterIndex + " is not active.");
+                                continue;
+                            }
+
+                            if (IsCrossfireEnabled(adapterInfo.AdapterIndex))
+                            {
+                                Console.WriteLine("Crossfire is enabled for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                continue;
+                            }
+
+                            if (!IsOverdriveSupported(adapterInfo.AdapterIndex))
+                            {
+                                Console.WriteLine("Overdrive is not supported for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                continue;
+                            }
+
+                            if (IsPowerControlModified(adapterInfo.AdapterIndex))
+                            {
+                                Console.WriteLine("Power Control is already modified for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                continue;
+                            }
+
+                            if (SetPowerControl(adapterInfo.AdapterIndex, 0))
+                            {
+                                preRenderedFramesModified = true; // Mark the modification status
+                                Console.WriteLine("Maximum pre-rendered frames set to 0 successfully for adapter " + adapterInfo.AdapterIndex + ".");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Failed to set Power Control value for adapter " + adapterInfo.AdapterIndex + ".");
+                            }
+                        }
+
+                        DestroyADL();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to initialize ADL.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Not an AMD processor. Cannot modify maximum pre-rendered frames.");
+                }
+            }
+
+        
+            public void SetHighPerformanceMode()
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "54533251-82be-4824-96c1-47b60b740d00", "High performance", RegistryValueKind.String);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7", "Attributes", 2, RegistryValueKind.DWord);
+            }
+
+            public void SetPowerProfile()
+            {
+                Process.Start("powercfg.exe", "/s 54533251-82be-4824-96c1-47b60b740d00");
+            }
+
+            public void DisableCoolnQuiet()
+            {
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\3edd42d6-2b98-4beb-9965-3afcbcbc1425", "Attributes", 0, RegistryValueKind.DWord);
+            }
+
+            public void Optimize()
+            {
+               
+                    SetHighPerformanceMode();
+                    SetMaximumPreRenderedFramesToZero();
+                    SetFlipQueueSizeToHexValue();
+                    DisableCoolnQuiet();
+                    SetPowerProfile();
+             
+            }
+
+            public void RevertOptimizations()
+            {
+                if (preRenderedFramesModified)
+                {
+                    // Revert Maximum Pre-Rendered Frames optimization
+                    // Set pre-rendered frames back to the original value or default value
+                    SetMaximumPreRenderedFramesToDefault();
+                    Console.WriteLine("Reverted Maximum Pre-Rendered Frames optimization.");
+                    preRenderedFramesModified = false; // Mark the modification status as reverted
+                }
+            }
+
+            private void SetMaximumPreRenderedFramesToDefault()
+            {
+                try
+                {
+                    // Replace this with logic to set pre-rendered frames back to the default value
+                    // You might need to read the original value before modifying it and then set it back.
+                    Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("original_hex_value_here"), RegistryValueKind.Binary);
+                    Console.WriteLine("Maximum Pre-Rendered Frames set back to default value.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error setting Maximum Pre-Rendered Frames to default: " + ex.Message);
+                }
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct AdapterInfo
+            {
+                [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+                public string UDID;
+                public int BusNumber;
+                public int DeviceNumber;
+                public int FunctionNumber;
+                public int VendorID;
+                [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+                public string AdapterName;
+                [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+                public string DisplayName;
+                public int Present;
+                public int Exist;
+                public int DriverPath;
+                [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+                public string DriverPathExt;
+                [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
+                public string PNPString;
+                public int OSDisplayIndex;
+                public int AdapterIndex; // Added AdapterIndex property
+
+                public bool IsActive => Exist == 1 && Present == 1;
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct AdapterInfo
+        public class IntelOptimizer
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
-            public string UDID;
-            public int BusNumber;
-            public int DeviceNumber;
-            public int FunctionNumber;
-            public int VendorID;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
-            public string AdapterName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
-            public string DisplayName;
-            public int Present;
-            public int Exist;
-            public int DriverPath;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
-            public string DriverPathExt;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ADL_MAX_PATH)]
-            public string PNPString;
-            public int OSDisplayIndex;
-            public int AdapterIndex; // Added AdapterIndex property
-        }
-    }
+            private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration";
+            private const string RegistryValueName = "FlipQueueSize";
 
+            private bool preRenderedFramesModified = false; // To keep track of pre-rendered frames modification status
 
-    public class IntelOptimizer
-    {
-        private const string RegistryKeyPath = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration";
-        private const string RegistryValueName = "FlipQueueSize";
+            public void Optimize()
+            {
+             
+                    SetPreRenderedFramesToZero();
+                    SetPowerProfileToHighPerformance();
+                    EnableTurboBoost();
+                    Console.WriteLine("Intel processor optimization completed.");
+             
+            }
 
-        public static void OptimizeIntelProcessor()
-        {
-            SetPreRenderedFramesToZero();
-            SetPowerProfile();
-            SetHighPerformanceMode();
-            EnableTurboBoost();
-        }
+            public void RevertOptimizations()
+            {
+                if (preRenderedFramesModified)
+                {
+                    // Revert Maximum Pre-Rendered Frames optimization
+                    // Set pre-rendered frames back to the original value or default value
+                    SetPreRenderedFramesToDefault();
+                    Console.WriteLine("Reverted Maximum Pre-Rendered Frames optimization for Intel processor.");
+                    preRenderedFramesModified = false; // Mark the modification status as reverted
+                }
+            }
 
-        private static void SetPreRenderedFramesToZero()
-        {
-            if (IsIntelProcessor())
+            private void SetPreRenderedFramesToDefault()
+            {
+                try
+                {
+                    // Replace this with logic to set pre-rendered frames back to the default value
+                    Registry.SetValue(RegistryKeyPath, RegistryValueName, 0, RegistryValueKind.DWord);
+                    Console.WriteLine("Pre-Rendered Frames set back to default value for Intel processor.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error setting Pre-Rendered Frames to default: " + ex.Message);
+                }
+            }
+
+            private void SetPreRenderedFramesToZero()
             {
                 try
                 {
                     Registry.SetValue(RegistryKeyPath, RegistryValueName, 0, RegistryValueKind.DWord);
-                    Console.WriteLine("Maximum pre-rendered frames set to 0 successfully.");
+                    preRenderedFramesModified = true; // Mark the modification status
+                    Console.WriteLine("Pre-Rendered Frames set to 0 for Intel processor.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error setting maximum pre-rendered frames: " + ex.Message);
+                    Console.WriteLine("Error setting Pre-Rendered Frames: " + ex.Message);
                 }
             }
-            else
+
+            private void SetPowerProfileToHighPerformance()
             {
-                Console.WriteLine("Not an Intel processor. Cannot modify maximum pre-rendered frames.");
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", "High performance", RegistryValueKind.String);
+                Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\5d76a2ca-e8c0-402f-a133-2158492d58ad", "Attributes", 2, RegistryValueKind.DWord);
+                Console.WriteLine("Power profile set to High Performance for Intel processor.");
             }
-        }
 
-        private static void SetPowerProfile()
-        {
-            Process.Start("powercfg.exe", "/s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
-        }
-
-        private static void SetHighPerformanceMode()
-        {
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", "High performance", RegistryValueKind.String);
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\5d76a2ca-e8c0-402f-a133-2158492d58ad", "Attributes", 2, RegistryValueKind.DWord);
-        }
-
-        private static void EnableTurboBoost()
-        {
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec", "Attributes", 0, RegistryValueKind.DWord);
-        }
-
-        private static bool IsIntelProcessor()
-        {
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT Manufacturer FROM Win32_Processor"))
+            private void EnableTurboBoost()
             {
-                foreach (ManagementObject obj in searcher.Get())
-                {
-                    string manufacturer = obj["Manufacturer"].ToString();
-                    if (manufacturer.ToLower().Contains("intel"))
-                    {
-                        return true;
-                    }
-                }
+                // Add logic here to enable Turbo Boost for Intel processor
+                // You may need to use WMI or other methods to control Turbo Boost.
+                // For example:
+                // ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                // foreach (ManagementObject obj in searcher.Get())
+                // {
+                //     obj["TurboBoostEnabled"] = true;
+                //     obj.Put();
+                //     Console.WriteLine("Turbo Boost enabled for Intel processor.");
+                // }
             }
-            return false;
+
+          
         }
+
     }
 
 
-
 }
+
+
+

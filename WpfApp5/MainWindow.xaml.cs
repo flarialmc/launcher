@@ -71,6 +71,8 @@ namespace Flarial.Launcher
         public bool autoLogin;
         public bool isLoggedIn;
         private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
+     
+     
         private string ChosenVersion;
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public bool shouldUseBetaDLL;
@@ -83,6 +85,7 @@ namespace Flarial.Launcher
         public MainWindow()
         {
 
+            
             loadConfig();
             
             WebClient webClient = new WebClient();
@@ -205,7 +208,15 @@ namespace Flarial.Launcher
 
             string first = "Not Installed";
             string second = "Not Installed";
+            TestVersions = new Dictionary<string, string>
+    {
+        { "1.20.10", second },
+    };
 
+            foreach (string version in TestVersions.Keys)
+            {
+                AddRadioButton(version, TestVersions[version]);
+            }
             if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
             {
                 versionLabel.Content = "1.20.10";
@@ -572,6 +583,7 @@ namespace Flarial.Launcher
 
         private async Task<bool> AttemptLogin()
         {
+
             var cached = await Auth.GetCache();
             if (cached != null && cached.expiry > DateTime.Now)
             {
@@ -648,11 +660,11 @@ namespace Flarial.Launcher
             
                 if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0" || Minecraft.GetVersion().ToString() == "1.20.1201.0")
                 {
-                    if (!CustomDllButton.IsChecked.Value)
+
+                string pathToExecute = "";
+                
+                if (!CustomDllButton.IsChecked.Value)
                     {
-                        
-                        if (!Utils.IsGameOpen())
-                            Utils.OpenGame();
 
                         string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
                         string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
@@ -663,20 +675,39 @@ namespace Flarial.Launcher
                             byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
                             File.WriteAllBytes(filePath, fileBytes);
                         }
-                        
-                        await Minecraft.WaitForModules();
-                        Trace.WriteLine(Insertion.Insert(Path.Combine(VersionManagement.launcherPath, "real.dll")));
-                    }
-                    else
-                    {
-                        Utils.OpenGame();
-                        
-                        await Minecraft.WaitForModules();
-                        Insertion.Insert(custom_dll_path);
+                    pathToExecute = filePath;
 
-                    }
                 }
                 else
+                    {
+                    pathToExecute = custom_dll_path;
+
+
+
+
+                    }
+                try
+                {
+                    new OptimizerManager().Optimize();
+                    
+                    NvidiaWifiOptimizer.Optimize();
+
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                    Trace.WriteLine(ex.StackTrace);
+
+                }
+
+                Utils.disableVsync();
+                Utils.OpenGame();
+
+                await Minecraft.WaitForModules();
+               
+                Insertion.Insert(pathToExecute);
+            }
+            else
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning",
                         "Our client does not support this version. If you are using a custom dll, That will be used instead. We only support 1.20.10 or 1.20.12.",
@@ -685,7 +716,6 @@ namespace Flarial.Launcher
 
                     if (CustomDllButton.IsChecked.Value)
                     {
-                        if (!Utils.IsGameOpen())
                             Utils.OpenGame();
                         
                         await Minecraft.WaitForModules();
@@ -760,11 +790,11 @@ namespace Flarial.Launcher
 
         private void OptionsVersionClick(object sender, RoutedEventArgs e)
         {
-            CustomDialogBox MessageBox = new CustomDialogBox("WARNING!!!!!!!!!!!!", "MAKE SURE YOU HAVE 'Developer Mode' ENABLED! You can find it in Windows settings.", "MessageBox");
-            MessageBox.ShowDialog();
+       
             OptionsVerionGrid.Visibility = Visibility.Visible;
             OptionsGeneralGrid.Visibility = Visibility.Hidden;
             OptionsAccountGrid.Visibility = Visibility.Hidden;
+          
         }
 
         private void OptionsAccountClick(object sender, RoutedEventArgs e)
@@ -921,6 +951,7 @@ namespace Flarial.Launcher
             NewsGrid.Visibility = Visibility.Hidden;
             MainGrid.Visibility = Visibility.Visible;
         }
+
     }
 }
 

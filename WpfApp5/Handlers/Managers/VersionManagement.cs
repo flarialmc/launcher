@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Flarial.Launcher.Functions;
+using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +16,16 @@ namespace Flarial.Launcher.Managers
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
 
+      
 
+        static void EnableDeveloperMode()
+        {
+            const string developerModeKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock";
+            const string developerModeValueName = "AllowDevelopmentWithoutDevLicense";
+
+            // Set the value to 1 to enable Developer Mode
+            Registry.SetValue(developerModeKey, developerModeValueName, 1, RegistryValueKind.DWord);
+        }
         public static string ExtractUrl(string jsonString)
         {
             // Parse the JSON string into a JObject
@@ -75,63 +86,71 @@ namespace Flarial.Launcher.Managers
         }
         public static async Task<bool> InstallAppBundle(string dir)
         {
-
             Trace.WriteLine("called installappbundle");
             Trace.WriteLine(dir);
+
             try
             {
                 var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
                 Trace.WriteLine(packageUri.ToString());
 
-
                 File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
+
                 var packageManager = new PackageManager();
+      
+              
+                    
 
-                var addPackageOperation = packageManager.RegisterPackageAsync(packageUri, null, DeploymentOptions.ForceUpdateFromAnyVersion | DeploymentOptions.DevelopmentMode);
-                addPackageOperation.Progress += (sender, args) => ReportProgress(args);
+                    var progress = new Progress<DeploymentProgress>(ReportProgress);
+                    var registerPackageOperation = packageManager.RegisterPackageByUriAsync(packageUri, new RegisterPackageOptions() { DeveloperMode = true });
+                registerPackageOperation.Progress += (sender, args) => ReportProgress(args);
 
-                var addPackageTask = addPackageOperation.AsTask();
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(300)); // Adjust timeout duration as needed
+                    var removePackageTask = registerPackageOperation.AsTask();
 
-                var completedTask = await Task.WhenAny(addPackageTask, timeoutTask);
+                    await removePackageTask;
 
-                if (completedTask == addPackageTask && addPackageTask.Status == TaskStatus.RanToCompletion)
-                {
-                    // Check if the package is registered after deployment
-                    Minecraft.Init();
-                    var packageName = Minecraft.Package;
-
-                    if (packageName != null)
+                    if (removePackageTask.Status == TaskStatus.RanToCompletion)
                     {
-                        Trace.WriteLine("Installation succeeded!");
+
+                        Trace.WriteLine("Package installation succeeded!");
                         return true;
                     }
                     else
                     {
-                        Trace.WriteLine("Package registration check failed.");
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            CustomDialogBox MessageBox =
+                                new CustomDialogBox("Failed", "Failed to install package.", "MessageBox");
+                            MessageBox.ShowDialog();
+                        });
                         return false;
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Trace.WriteLine("Installation timed out.");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                            $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                            "MessageBox");
+                        MessageBox.ShowDialog();
+
+
+                    });
                     return false;
                 }
             }
-            catch (Exception ex)
-            {
-                Trace.WriteLine($"AddPackageSample failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}");
-                return false;
-            }
-        }
-
         private static void ReportProgress(DeploymentProgress progress)
         {
             // Report the progress of the deployment
-            if (progress.percentage != 100)
+            if (progress.percentage < 100)
+            {
                 MainWindow.progressPercentage = (int)progress.percentage;
 
-            MainWindow.progressType = "Installing";
+                MainWindow.progressType = "Installing";
+
+                Trace.WriteLine(progress.percentage);
+            }
         }
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
@@ -251,6 +270,19 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string version)
         {
+            if (!Utils.IsDeveloperModeEnabled())
+            {
+                // Enable Developer Mode
+                EnableDeveloperMode();
+                Trace.WriteLine("Developer Mode has been enabled.");
+            }
+            else
+            {
+                Trace.WriteLine("Developer Mode is already enabled on your system.");
+                // Continue with the rest of your application logic here.
+            }
+
+
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
@@ -264,16 +296,25 @@ namespace Flarial.Launcher.Managers
 
                 if (Minecraft.Package != null)
                 {
+
+                 
+                    if (await BackupManager.GetConfig("temp") == null) 
                     await BackupManager.CreateBackup("temp");
                     Trace.WriteLine("Uninstalling current Minecraft version.");
 
+                    await RemoveMinecraftPackage();
                 }
 
-                Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
-                await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
-                    
-                await RemoveMinecraftPackage();
+
+
+                if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
+                {
+                    await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+                }
+
+
+                Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
                 if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
                 {
@@ -288,12 +329,14 @@ namespace Flarial.Launcher.Managers
 
                 await Task.Delay(1);
 
-                Trace.WriteLine("Temporary backup found, now loading.");
-                await BackupManager.LoadBackup("temp");
+                if (await BackupManager.GetConfig("temp") != null)
+                {
+                    Trace.WriteLine("Temporary backup found, now loading.");
+                    await BackupManager.LoadBackup("temp");
 
-                Trace.WriteLine("Temporary backup loaded, now deleting.");
-                await BackupManager.DeleteBackup("temp");
-
+                    Trace.WriteLine("Temporary backup loaded, now deleting.");
+                    await BackupManager.DeleteBackup("temp");
+                }
 
                 Trace.WriteLine("Installation complete.");
             }
