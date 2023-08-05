@@ -49,11 +49,20 @@ namespace Flarial.Launcher.Functions
             if (!File.Exists(Path))
             {
                 return null;
+
+
             }
 
             if (File.ReadAllText(Path).Length == 0)
             {
-                return null;
+                return new ConfigData()
+                {autoLogin = true,
+                closeToTray = true,
+                shouldUseBetaDll = false,
+                shouldUseCustomDLL = false,
+                
+                }
+                ;
             }
             var s = File.ReadAllText(Path);
 
