@@ -41,8 +41,8 @@ namespace Flarial.Launcher.Managers
         {
             string result = "";
             WebClient webClient = new WebClient();
-            if (version == "1.20.0.1") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.0.1&arch=x64")).Result);
             if (version == "1.20.10") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.10.1&arch=x64")).Result);
+            if (version == "1.20.15") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.15.1&arch=x64")).Result);
 
             Trace.WriteLine(version);
 

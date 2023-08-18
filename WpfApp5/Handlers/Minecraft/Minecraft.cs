@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,11 +78,23 @@ namespace Flarial.Launcher
                 Package = Packages.First();
             }
         }
+        public static double RoundToSignificantDigits(this double d, int digits)
+        {
+            if (d == 0)
+                return 0;
 
+            double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(d))) + 1);
+            return scale * Math.Round(d / scale, digits);
+        }
         public static Version GetVersion()
         {
             var v = PackageVersion;
-            return new Version(v.Major, v.Minor, v.Build, v.Revision);
+
+          double buildVersion =  (double)v.Build;
+           var Ok = (int)buildVersion.RoundToSignificantDigits(2);
+          ;
+            return new Version(v.Major, v.Minor,
+               int.Parse(Ok.ToString().Substring(0, 2)));
         }
         
         public static async Task WaitForModules()
