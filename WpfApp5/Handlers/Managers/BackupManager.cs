@@ -29,12 +29,7 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<List<string>> GetAllBackupsAsync()
         {
-            return await Task.Run(() =>
-            {
-                return Directory.GetDirectories(backupDirectory)
-                    .Select(dir => Path.GetFileName(dir))
-                    .ToList();
-            });
+            return await Task.Run(() => Directory.GetDirectories(backupDirectory).Select(Path.GetFileName).ToList());
         }
 
         public static async Task LoadBackup(string backupName)
@@ -49,6 +44,7 @@ namespace Flarial.Launcher.Managers
                     "games",
                     "com.mojang"
                 );
+
                 var backupMojangPath = Path.Combine(backupDirectory, backupName, "com.mojang");
                 var backupRoamingPath = Path.Combine(backupDirectory, backupName, "RoamingState");
 
@@ -60,20 +56,24 @@ namespace Flarial.Launcher.Managers
 
                 await DirectoryCopyAsync(backupMojangPath, mcPath, true);
 
+                var flarialPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Packages",
+                    "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+                    "RoamingState"
+                );
                 if (Directory.Exists(backupRoamingPath))
                 {
-                    var flarialPath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "Packages",
-                        "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
-                        "RoamingState"
-                    );
                     await DirectoryCopyAsync(backupRoamingPath, flarialPath, true);
+                }
+                else
+                {
+                    MessageBox.Show("Roaming State backup data not found.", "Failed to Load Backup");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error");
             }
         }
 
@@ -84,6 +84,7 @@ namespace Flarial.Launcher.Managers
                 var backupDirectoryPath = Path.Combine(backupDirectory, backupName);
                 if (Directory.Exists(backupDirectoryPath))
                 {
+                    MessageBox.Show("Backup with the given name already exists.", "Failed to Create Backup");
                     return;
                 }
 
@@ -93,8 +94,6 @@ namespace Flarial.Launcher.Managers
                     "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
                     "LocalState",
                     "games"
-
-
                 );
                 var flarialPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -103,44 +102,18 @@ namespace Flarial.Launcher.Managers
                     "RoamingState"
                 );
 
-                var backupConfigPath = Path.Combine(backupDirectoryPath, "BackupConfig.json");
-
-                Directory.CreateDirectory(backupDirectoryPath);
-                Directory.CreateDirectory(Path.Combine(backupDirectoryPath));
-                Directory.CreateDirectory(Path.Combine(backupDirectoryPath));
-
-                if (Directory.Exists(mcPath))
-                {
-                    await Task.WhenAll(Directory.GetDirectories(mcPath)
-                        .Select(async dir =>
-                        {
-                            var attributes = File.GetAttributes(dir);
-                            if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                            {
-                                attributes &= ~FileAttributes.ReadOnly;
-                                File.SetAttributes(dir, attributes);
-                            }
-                            await DirectoryCopyAsync(dir, Path.Combine(backupDirectoryPath, Path.GetFileName(dir)), true);
-                        }));
-                }
-                else
+                if (!Directory.Exists(mcPath))
                 {
                     MessageBox.Show("Minecraft Data Path is invalid!", "Failed To Backup");
+                    return;
                 }
 
+                Directory.CreateDirectory(backupDirectoryPath);
+
+                await BackupDirectoryAsync(mcPath, Path.Combine(backupDirectoryPath, "com.mojang"));
                 if (Directory.Exists(flarialPath))
                 {
-                    await Task.WhenAll(Directory.GetDirectories(flarialPath)
-                        .Select(async dir =>
-                        {
-                            var attributes = File.GetAttributes(dir);
-                            if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                            {
-                                attributes &= ~FileAttributes.ReadOnly;
-                                File.SetAttributes(dir, attributes);
-                            }
-                            await DirectoryCopyAsync(dir, Path.Combine(backupDirectoryPath, "RoamingState", Path.GetFileName(dir)), true);
-                        }));
+                    await BackupDirectoryAsync(flarialPath, Path.Combine(backupDirectoryPath, "RoamingState"));
                 }
                 else
                 {
@@ -148,12 +121,36 @@ namespace Flarial.Launcher.Managers
                 }
 
                 var text = await CreateConfig();
-                await Task.Run(() => File.WriteAllText(backupConfigPath, text));
+                File.WriteAllText(Path.Combine(backupDirectoryPath, "BackupConfig.json"), text);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error");
             }
+        }
+
+        private static async Task BackupDirectoryAsync(string source, string destination)
+        {
+            var sourceDirectory = new DirectoryInfo(source);
+            if (!sourceDirectory.Exists)
+            {
+                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + source);
+            }
+
+            var destinationDirectory = Directory.CreateDirectory(destination);
+
+            await Task.WhenAll(sourceDirectory.GetFiles().Select(async file =>
+            {
+                var tempPath = Path.Combine(destinationDirectory.FullName, file.Name);
+                await Task.Run(() => file.CopyTo(tempPath, true));
+                Console.WriteLine($"Copying {file} to {tempPath}");
+            }));
+
+            await Task.WhenAll(sourceDirectory.GetDirectories().Select(subdir =>
+            {
+                var tempPath = Path.Combine(destinationDirectory.FullName, subdir.Name);
+                return DirectoryCopyAsync(subdir.FullName, tempPath, true);
+            }));
         }
 
         public static async Task DeleteBackup(string backupName)
@@ -185,47 +182,13 @@ namespace Flarial.Launcher.Managers
                 return null;
             }
 
-            using (FileStream openStream = File.OpenRead(path))
+            using (var openStream = File.OpenRead(path))
             {
                 return await JsonSerializer.DeserializeAsync<BackupConfiguration>(openStream).ConfigureAwait(false);
             }
         }
 
-        // Utilities
-        private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)
-        {
-            return attributes & ~attributesToRemove;
-        } // Utilities
-        private static async Task DirectoryCopyAsync(string sourceDirName, string destDirName, bool copySubDirs)
-        {
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirName);
-            }
-
-            Directory.CreateDirectory(destDirName);
-
-            var files = dir.GetFiles();
-            await Task.WhenAll(files.Select(async file =>
-            {
-                string tempPath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(tempPath, true);
-                Console.WriteLine("Copying " + file + " to " + tempPath);
-            }));
-
-            if (copySubDirs)
-            {
-                var dirs = dir.GetDirectories();
-                await Task.WhenAll(dirs.Select(subdir =>
-                {
-                    string tempPath = Path.Combine(destDirName, subdir.Name);
-                    return DirectoryCopyAsync(subdir.FullName, tempPath, copySubDirs);
-                }));
-            }
-        }
-
-        public static async Task DeleteDirectoryAsync(string targetDir)
+        private static async Task DeleteDirectoryAsync(string targetDir)
         {
             var files = Directory.GetFiles(targetDir);
             var dirs = Directory.GetDirectories(targetDir);
@@ -240,5 +203,35 @@ namespace Flarial.Launcher.Managers
 
             Directory.Delete(targetDir, false);
         }
+        private static async Task DirectoryCopyAsync(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirName);
+            }
+
+            Directory.CreateDirectory(destDirName);
+
+            var files = dir.GetFiles();
+            await Task.WhenAll(files.Select(async file =>
+            {
+                string tempPath = Path.Combine(destDirName, file.Name);
+                await Task.Run(() => file.CopyTo(tempPath, true));
+                Console.WriteLine("Copying " + file + " to " + tempPath);
+            }));
+
+            if (copySubDirs)
+            {
+                var dirs = dir.GetDirectories();
+                await Task.WhenAll(dirs.Select(subdir =>
+                {
+                    string tempPath = Path.Combine(destDirName, subdir.Name);
+                    return DirectoryCopyAsync(subdir.FullName, tempPath, copySubDirs);
+                }));
+            }
+        }
+
     }
+
 }
