@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -85,9 +86,8 @@ namespace Flarial.Launcher
         public MainWindow()
         {
 
-            
-            loadConfig();
-            
+            Trace.WriteLine("Debug 1");
+
             WebClient webClient = new WebClient();
 
             
@@ -118,115 +118,103 @@ namespace Flarial.Launcher
                 byte[] fileBytes = response.Content.ReadAsByteArrayAsync().Result;
                 File.WriteAllBytes(filePath, fileBytes);
             }
+            Trace.WriteLine("Debug 2");
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
-            
-                        Environment.CurrentDirectory = VersionManagement.launcherPath;
+            Trace.WriteLine("Debug 3");
+
 
 
             InitializeComponent();
-
-            if (autoLogin)
-                AttemptLogin();
-
-            if (custom_dll_path != "amongus")
-            {
-                CustomDllButton.IsChecked = true;
-                dllTextBox.Visibility = Visibility.Visible;
-                dllTextBox.Text = custom_dll_path;
-            }
+            loadConfig();
 
 
-            TrayButton.IsChecked = closeToTray;
+            InitializeNews();
+            Environment.CurrentDirectory = VersionManagement.launcherPath;
 
-            if (!(custom_theme_path == "main_default"))
-            {
-                if (!string.IsNullOrEmpty(custom_theme_path))
-                {
-                    CustomThemeButton.IsChecked = true;
-                    themeTextBox.Visibility = Visibility.Visible;
-                    themeTextBox.Text = custom_theme_path;
-                    var app = (App)Application.Current;
-                    app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
-                }
-            }
-
-            BetaDLLButton.IsChecked = shouldUseBetaDLL;
-            AutoLoginButton.IsChecked = autoLogin;
+            Trace.WriteLine("Debug 4");
 
             InitializeAnimations();
 
             OptionsButton.Click += OptionsButton_Click;
             RadioButton3.Checked += RadioButton3_Checked;
             LoginGuest.Click += LoginGuest_Click;
-            
-            string text = webClient.DownloadString(new Uri("https://cdn-c6f.pages.dev/launcher/news.json"));
-            deserializedNews = JsonConvert.DeserializeObject<Root>(text);
 
-            int i = 0;
-            foreach (News item in deserializedNews.News)
-            {
-                NewsBorder newsBorder = new NewsBorder
-                {
-                    Title = item.Title,
-                    Body = item.Body,
-                    Author = item.Author,
-                    RoleName = item.RoleName,
-                    RoleColor = item.RoleColor,
-                    Date = item.Date,
-                    AuthorAvatar = item.AuthorAvatar,
-                    Background1 = item.Background
-                };
-                NewsStackPanel.Children.Add(newsBorder);
-                RadioButton rb1 = new RadioButton { Tag = new ImageBrush { ImageSource = new ImageSourceConverter().ConvertFromString(item.Background) as ImageSource } };
-                double y = 0;
-                OverviewStackPanel.Children.Add(rb1);
-                NewsStackPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                NewsStackPanel.Arrange(new Rect(0, 0, NewsStackPanel.DesiredSize.Width, NewsStackPanel.DesiredSize.Height));
-                newsBorder.Loaded += delegate
-                {
-                    try { y = data.Last(); }
-                    catch { y = 0; }
-                    void button1_Click(object sender, RoutedEventArgs e) => ScrollAnimationBehavior.AnimateScroll(NewsScrollViewer, y);
-                    rb1.Click += new RoutedEventHandler(button1_Click);
-                    data.Add(y + newsBorder.ActualHeight);
-                    newsBorder.Title = newsBorder.ActualHeight.ToString();
-                };
-                i++;
-            }
-            RadioButton rb = (RadioButton)OverviewStackPanel.Children[0];
-            rb.IsChecked = true;
-            NewsScrollViewer.UpdateLayout();
+            Trace.WriteLine("Debug 5");
+
 
             if (version == 0.666)
             {
                 Trace.WriteLine("It's development time.");
             }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
             versionLabel.Content = Minecraft.GetVersion();
+            Trace.WriteLine("Debug 6");
 
+
+            WebClient versionsWc = new WebClient();
+        versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
+
+
+            string[] rawVersions = File.ReadAllLines("Supported.txt");
             string first = "Not Installed";
-            string second = "Not Installed";
-            TestVersions = new Dictionary<string, string>
-    {
-        { "1.20.10", second },
-    };
 
-            foreach (string version in TestVersions.Keys)
+            if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
             {
+                new CustomDialogBox("Unsupported Version", "You are currently using a Minecraft version unsupported by Flarial.", "MessageBox");
+            }
+            Trace.WriteLine("Debug 7");
+
+
+            foreach (var version in rawVersions)
+            {
+
+                if (Minecraft.GetVersion().ToString().Equals(version))
+                {
+
+
+                    TestVersions.Add(version, "Selected");
+                }
+                else
+                {
+
+                    string status = first;
+                    if (Directory.GetFiles(VersionManagement.launcherPath + "\\Versions").Contains(VersionManagement.launcherPath + "\\Versions" + $"\\{version}"))
+                    {
+
+                        status = "Click to Install";
+                    }
+                    TestVersions.Add(version, first);
+                }
+
                 AddRadioButton(version, TestVersions[version]);
+
             }
-            if (Minecraft.GetVersion().ToString() == "1.20.1001.0")
-            {
-                versionLabel.Content = "1.20.10";
-                second = "Selected";
-            }
-            else if (Minecraft.GetVersion().ToString() == "1.20.1.0")
-            {
-                versionLabel.Content = "1.20.0";
-                first = "Selected";
-            }
+
+
+            Trace.WriteLine("Debug 8");
+
+
+
+
+
+
+
+
 
 
             SetGreetingLabel();
@@ -234,10 +222,77 @@ namespace Flarial.Launcher
             Task.Delay(1);
 
             Dispatcher.BeginInvoke((Action)(() => RPCManager.Initialize()));
+            Trace.WriteLine("Debug 9");
 
             Application.Current.MainWindow = this;
+            Trace.WriteLine("Debug 10");
+
+        }
+        private void InitializeNews()
+        {
+            string newsUrl = "https://cdn-c6f.pages.dev/launcher/news.json";
+
+            using (WebClient webClient = new WebClient())
+            {
+                string text = webClient.DownloadString(newsUrl);
+                deserializedNews = JsonConvert.DeserializeObject<Root>(text);
+            }
+
+            double previousHeight = 0;
+
+            foreach (News item in deserializedNews.News)
+            {
+                NewsBorder newsBorder = CreateNewsBorder(item);
+                NewsStackPanel.Children.Add(newsBorder);
+
+                RadioButton rb1 = CreateRadioButton(item.Background);
+                OverviewStackPanel.Children.Add(rb1);
+
+                rb1.Click += (sender, e) => ScrollAnimationBehavior.AnimateScroll(NewsScrollViewer, previousHeight);
+
+                previousHeight += newsBorder.ActualHeight;
+            }
+
+            if (OverviewStackPanel.Children.Count > 0)
+            {
+                RadioButton rb = (RadioButton)OverviewStackPanel.Children[0];
+                rb.IsChecked = true;
+            }
+
+            NewsScrollViewer.UpdateLayout();
         }
 
+        private NewsBorder CreateNewsBorder(News item)
+        {
+            NewsBorder newsBorder = new NewsBorder
+            {
+                Title = item.Title,
+                Body = item.Body,
+                Author = item.Author,
+                RoleName = item.RoleName,
+                RoleColor = item.RoleColor,
+                Date = item.Date,
+                AuthorAvatar = item.AuthorAvatar,
+                Background1 = item.Background
+            };
+
+            newsBorder.Loaded += (sender, e) =>
+            {
+                double y = data.LastOrDefault();
+                void button1_Click(object s, RoutedEventArgs args) => ScrollAnimationBehavior.AnimateScroll(NewsScrollViewer, y);
+                RadioButton rb1 = (RadioButton)OverviewStackPanel.Children[NewsStackPanel.Children.IndexOf(newsBorder)];
+                rb1.Click += button1_Click;
+                data.Add(y + newsBorder.ActualHeight);
+                newsBorder.Title = newsBorder.ActualHeight.ToString();
+            };
+
+            return newsBorder;
+        }
+
+        private RadioButton CreateRadioButton(string background)
+        {
+            return new RadioButton { Tag = new ImageBrush { ImageSource = new ImageSourceConverter().ConvertFromString(background) as ImageSource } };
+        }
         private void CreateDirectoriesAndFiles()
         {
             if (!Directory.Exists(BackupManager.backupDirectory))
@@ -415,11 +470,7 @@ namespace Flarial.Launcher
             if (TestVersions[version] == "Not Installed")
             {
 
-                if (version == "1.20.0")
-                {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Warning", "Our client does not support this version. If you are using a custom dll, That will be used instead.", "MessageBox");
-                    MessageBox.ShowDialog();
-                }
+           
 
                 foreach (RadioButton rb in VersionsPanel.Children)
                 {
@@ -474,7 +525,17 @@ namespace Flarial.Launcher
                 }
                 else
                 {
+
+                    foreach (var version2 in TestVersions)
+                    {
+                        if (version2.Key != version)
+                        {
+                            TestVersions[version2.Key] = "Click to Install";
+                        }
+                    }
                     progressPercentage = 100;
+                 
+                    
                 }
             }
         }
@@ -519,13 +580,14 @@ namespace Flarial.Launcher
             this.Hide();
         }
 
-        private void loadConfig()
+        private async void loadConfig()
         {
             ConfigData config = Config.getConfig();
 
             if (config == null)
             {
-                return;
+                return;          
+            
             }
 
             minecraft_version = config.minecraft_version;
@@ -534,6 +596,36 @@ namespace Flarial.Launcher
             closeToTray = config.closeToTray;
             custom_theme_path = config.custom_theme_path;
             autoLogin = config.autoLogin;
+
+
+
+            if (autoLogin)
+                AttemptLogin();
+
+            if (custom_dll_path != "amongus")
+            {
+                CustomDllButton.IsChecked = true;
+                dllTextBox.Visibility = Visibility.Visible;
+                dllTextBox.Text = custom_dll_path;
+            }
+
+
+            TrayButton.IsChecked = closeToTray;
+
+            if (!(custom_theme_path == "main_default"))
+            {
+                if (!string.IsNullOrEmpty(custom_theme_path))
+                {
+                    CustomThemeButton.IsChecked = true;
+                    themeTextBox.Visibility = Visibility.Visible;
+                    themeTextBox.Text = custom_theme_path;
+                    var app = (App)Application.Current;
+                    app.ChangeTheme(new Uri(custom_theme_path, UriKind.Absolute));
+                }
+            }
+
+            BetaDLLButton.IsChecked = shouldUseBetaDLL;
+            AutoLoginButton.IsChecked = autoLogin;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
@@ -542,8 +634,9 @@ namespace Flarial.Launcher
             if (result) { return; }
 
             w.Show();
-
+            w.web.UseLayoutRounding = true;
             await w.web.EnsureCoreWebView2Async();
+
             w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read");
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
         }
@@ -656,11 +749,10 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine(versionLabel.Content);
             
-                if (versionLabel.Content == "1.20.10" || versionLabel.Content == "1.20.1001.0" || Minecraft.GetVersion().ToString() == "1.20.1201.0")
+                if (System.IO.File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
-
+                
                 string pathToExecute = "";
                 
                 if (!CustomDllButton.IsChecked.Value)
