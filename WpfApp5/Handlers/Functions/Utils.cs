@@ -16,6 +16,31 @@ namespace Flarial.Launcher.Functions
             return mc.Length > 0;
         }
 
+        static bool IsAdmin()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+      public  static void RestartAsAdmin()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = System.Reflection.Assembly.GetEntryAssembly().Location,
+                UseShellExecute = true,
+                Verb = "runas " // Request admin privileges
+            };
+
+            try
+            {
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to restart with admin privileges: " + ex.Message);
+            }
+        }
         public static void disableVsync()
         {
             var mcPath = Path.Combine(

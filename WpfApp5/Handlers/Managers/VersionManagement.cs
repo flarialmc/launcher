@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows;
 using Windows.Management.Deployment;
 using Application = System.Windows.Application;
 
@@ -84,6 +85,72 @@ namespace Flarial.Launcher.Managers
 
             return true;
         }
+
+        static async Task<bool> RunPowerShellAsAdminAsync(string command)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+            bool success = false;
+
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command}\"",
+                Verb = "runas", // This is what triggers running as admin
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            Process process = new Process
+            {
+                StartInfo = psi
+            };
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    Trace.WriteLine(e.Data); // Log to Trace
+                    Console.WriteLine(e.Data); // Print to console
+                    LogProgress(e.Data); // Check and log progress if found
+                }
+            };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    Trace.WriteLine(e.Data); // Log error to Trace
+                    Console.WriteLine(e.Data); // Print error to console
+                }
+            };
+
+            process.EnableRaisingEvents = true;
+            process.Exited += (sender, e) =>
+            {
+                success = process.ExitCode == 0; // Check if the process succeeded
+                taskCompletionSource.SetResult(success); // Complete the task with success status
+                process.Dispose(); // Clean up the process resources
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            await taskCompletionSource.Task; // Await the task completion
+            return success; // Return the success status
+        }
+
+        static void LogProgress(string output)
+        {
+            // Example: Assuming progress indicators start with "Progress:"
+            if (output.StartsWith("Progress:", StringComparison.OrdinalIgnoreCase))
+            {
+                Trace.WriteLine($"Progress: {output.Substring("Progress:".Length)}");
+                // Log or process the progress information here
+            }
+        }
         public static async Task<bool> InstallAppBundle(string dir)
         {
             Trace.WriteLine("called installappbundle");
@@ -97,36 +164,40 @@ namespace Flarial.Launcher.Managers
                 File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
 
                 var packageManager = new PackageManager();
-      
-              
-                    
 
-                    var progress = new Progress<DeploymentProgress>(ReportProgress);
-                    var registerPackageOperation = packageManager.RegisterPackageByUriAsync(packageUri, new RegisterPackageOptions() { DeveloperMode = true });
-                registerPackageOperation.Progress += (sender, args) => ReportProgress(args);
 
-                    var removePackageTask = registerPackageOperation.AsTask();
 
-                    await removePackageTask;
 
-                    if (removePackageTask.Status == TaskStatus.RanToCompletion)
-                    {
+                //    var progress = new Progress<DeploymentProgress>(ReportProgress);
 
-                        Trace.WriteLine("Package installation succeeded!");
-                        return true;
-                    }
-                    else
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            CustomDialogBox MessageBox =
-                                new CustomDialogBox("Failed", "Failed to install package.", "MessageBox");
-                            MessageBox.ShowDialog();
-                        });
-                        return false;
-                    }
-                }
-                catch (Exception ex)
+           return  await   RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
+
+
+                //var registerPackageOperation = packageManager.RegisterPackageByUriAsync(packageUri, new RegisterPackageOptions() { DeveloperMode = true });
+                //registerPackageOperation.Progress += (sender, args) => ReportProgress(args);
+
+                //    var registerPackageTask = registerPackageOperation.AsTask();
+
+                //    await registerPackageTask;
+
+                //    if (registerPackageTask.Status == TaskStatus.RanToCompletion)
+                //    {
+
+                //        Trace.WriteLine("Package installation succeeded!");
+                //        return true;
+                //    }
+                //    else
+                //    {
+                //        Application.Current.Dispatcher.Invoke(() =>
+                //        {
+                //            CustomDialogBox MessageBox =
+                //                new CustomDialogBox("Failed", "Failed to install package.", "MessageBox");
+                //            MessageBox.ShowDialog();
+                //        });
+                //        return false;
+                //    }
+            }
+            catch (Exception ex)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -339,6 +410,16 @@ namespace Flarial.Launcher.Managers
                 }
 
                 Trace.WriteLine("Installation complete.");
+
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
+                    
+                });
+
+                await Task.Delay(2000);
+                Environment.Exit(5);
             }
             return ello;
         }

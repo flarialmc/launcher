@@ -112,13 +112,16 @@ namespace Flarial.Launcher
             string url = "https://cdn-c6f.pages.dev/dll/DllUtil.dll";
             string filePath = "dont.delete";
 
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = client.GetAsync(url).Result;
                 byte[] fileBytes = response.Content.ReadAsByteArrayAsync().Result;
-                File.WriteAllBytes(filePath, fileBytes);
+                File.WriteAllBytes(Path.Combine(currentDirectory, filePath), fileBytes);
             }
-            Trace.WriteLine("Debug 2");
+            
+            Trace.WriteLine("Debug 2 " + currentDirectory);
 
             Minecraft.Init();
             CreateDirectoriesAndFiles();
@@ -207,7 +210,6 @@ namespace Flarial.Launcher
 
 
             Trace.WriteLine("Debug 8");
-
 
 
 
@@ -753,31 +755,21 @@ namespace Flarial.Launcher
                 if (System.IO.File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
                 
-                string pathToExecute = "";
                 
-                if (!CustomDllButton.IsChecked.Value)
-                    {
+                
+                string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
+                string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
+                string pathToExecute = filePath;
 
-                        string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
-                        string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
-
-                        using (HttpClient client = new HttpClient())
-                        {
-                            HttpResponseMessage response = await client.GetAsync(url);
-                            byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                            File.WriteAllBytes(filePath, fileBytes);
-                        }
-                    pathToExecute = filePath;
-
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+                    File.WriteAllBytes(filePath, fileBytes);
                 }
-                else
-                    {
-                    pathToExecute = custom_dll_path;
 
-
-
-
-                    }
+                if (CustomDllButton.IsChecked.Value && custom_dll_path != "") pathToExecute = custom_dll_path;
+                
                 try
                 {
                     new OptimizerManager().Optimize();
@@ -797,7 +789,11 @@ namespace Flarial.Launcher
 
                 await Minecraft.WaitForModules();
                
-                Insertion.Insert(pathToExecute);
+                CustomDialogBox MessageBox = new CustomDialogBox("test",
+                    Insertion.Insert(pathToExecute).ToString(),
+                    "MessageBox");
+                MessageBox.ShowDialog();
+               
             }
             else
                 {
