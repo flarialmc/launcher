@@ -117,8 +117,12 @@ namespace Flarial.Launcher
             while (true)
             {
                 Process.Refresh();
-                if (Process.Modules.Count > 155)
-                    break;
+                if (!Process.HasExited)
+                {
+                    if (Process.Modules.Count > 155)
+                        break;
+                }
+                else break;
                 
                 await Task.Delay(100);
             }
