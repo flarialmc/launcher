@@ -119,7 +119,7 @@ namespace Flarial.Launcher
                 Process.Refresh();
                 if (!Process.HasExited)
                 {
-                    if (Process.Modules.Count > 155)
+                    if (Process.Modules.Count > 160)
                         break;
                 }
                 else break;
