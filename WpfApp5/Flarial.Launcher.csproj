@@ -116,13 +116,12 @@
     <Resource Include="Images\versions.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <None Remove="Images\1.20.10.png" />
-    <None Remove="Images\1.20.0.png" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Resource Include="Images\1.20.10.png" />
+    <Resource Include="Images\1.20.12.png" />
   </ItemGroup>
 
   <ItemGroup>
