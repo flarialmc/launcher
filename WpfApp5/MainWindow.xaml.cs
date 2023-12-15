@@ -182,6 +182,7 @@ namespace Flarial.Launcher
             }
             Trace.WriteLine("Debug 7");
 
+            int count = 0;
 
             foreach (var version in rawVersions)
             {
@@ -204,7 +205,12 @@ namespace Flarial.Launcher
                     TestVersions.Add(version, first);
                 }
 
-                AddRadioButton(version, TestVersions[version]);
+                count++;
+                string imageName = "1.20.15";
+                if (count % 2 == 0) imageName = "1.20.12";
+                else imageName = "1.20.10";
+
+                AddRadioButton(version, TestVersions[version], imageName);
 
             }
 
@@ -439,11 +445,13 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Hidden;
         }
 
-        private void AddRadioButton(string version, string status)
+        private void AddRadioButton(string version, string status, string imagename)
         {
+
+            
             RadioButton radioButton = new RadioButton();
             Style style1 = null;
-            string[] tags = { $"pack://application:,,,/Images/{version}.png", version, "temp" };
+            string[] tags = { $"pack://application:,,,/Images/{imagename}.png", version, "temp" };
 
             if (status == "Installed")
                 style1 = this.FindResource("test1") as Style;
