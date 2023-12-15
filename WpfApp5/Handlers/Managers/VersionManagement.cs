@@ -44,7 +44,7 @@ namespace Flarial.Launcher.Managers
             string result = "";
             WebClient webClient = new WebClient();
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
+            versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/VersionDl.txt", "VersionDl.txt");
 
 
             string[] rawVersions = File.ReadAllLines("VersionDl.txt");
