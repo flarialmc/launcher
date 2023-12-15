@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,9 +43,21 @@ namespace Flarial.Launcher.Managers
         {
             string result = "";
             WebClient webClient = new WebClient();
-            if (version == "1.20.10") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.10.1&arch=x64")).Result);
-            if (version == "1.20.15") result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri("https://api.jiayi.software/api/v1/minecraft/download_url?version=1.20.15.1&arch=x64")).Result);
+            WebClient versionsWc = new WebClient();
+            versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
 
+
+            string[] rawVersions = File.ReadAllLines("VersionDl.txt");
+            
+            foreach (string combined in rawVersions)
+            {
+                string[] split = combined.Split(' ');
+                if (split[0].Contains(version))
+                {
+                    result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri(split[1])).Result);
+                }
+            }
+            
             Trace.WriteLine(version);
 
             return result;

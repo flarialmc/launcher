@@ -106,6 +106,7 @@ namespace Flarial.Launcher
                 var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
                 if (mcIndex.Length > 0)
                 {
+                    
                     Process = mcIndex[0];
 
                 }

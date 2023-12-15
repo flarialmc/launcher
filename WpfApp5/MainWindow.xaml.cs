@@ -798,7 +798,7 @@ namespace Flarial.Launcher
             else
                 {
                     CustomDialogBox MessageBox = new CustomDialogBox("Warning",
-                        "Our client does not support this version. If you are using a custom dll, That will be used instead. We only support 1.20.10 or 1.20.12.",
+                        "Our client does not support this version. If you are using a custom dll, That will be used instead. To switch versions, go to Options -> Versions.",
                         "MessageBox");
                     MessageBox.ShowDialog();
 
