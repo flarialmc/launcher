@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -63,7 +64,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.22; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public int version = 122; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -123,6 +124,9 @@ namespace Flarial.Launcher
                 File.WriteAllBytes(Path.Combine(currentDirectory, filePath), fileBytes);
             }
             
+            
+            
+            
             Trace.WriteLine("Debug 2 " + currentDirectory);
 
             Minecraft.Init();
@@ -155,11 +159,11 @@ namespace Flarial.Launcher
             
             WebClient updat = new WebClient();
             updat.DownloadFile("https://cdn-c6f.pages.dev/launcher/latestVersion.txt", "latestVersion.txt");
-
-
+            
             string[] updatRial = File.ReadAllLines("latestVersion.txt");
 
-            if (double.Parse(updatRial.First().ToString()) > version)
+            CultureInfo germanCulture = new CultureInfo("de-DE");
+            if (double.Parse(updatRial.First(), germanCulture) > version)
             {
                 Trace.WriteLine("I try 2 autoupdate");
                 
@@ -169,6 +173,7 @@ namespace Flarial.Launcher
                 p.StartInfo.FileName = "installer.exe";
                 p.Start();
                 
+                Trace.Close();
                 Environment.Exit(5);
             }
             
@@ -311,7 +316,8 @@ namespace Flarial.Launcher
         }
         private void CreateDirectoriesAndFiles()
         {
-
+            Trace.WriteLine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
+            
             if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial")))
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
             
