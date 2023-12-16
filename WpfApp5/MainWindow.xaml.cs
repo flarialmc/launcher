@@ -775,10 +775,8 @@ namespace Flarial.Launcher
             
                 if (System.IO.File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
-                
-                
-                
-                string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
+
+                    string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
 
@@ -810,7 +808,7 @@ namespace Flarial.Launcher
 
                 await Minecraft.WaitForModules();
                
-                CustomDialogBox MessageBox = new CustomDialogBox("test",
+                CustomDialogBox MessageBox = new CustomDialogBox("Launch Status",
                     Insertion.Insert(pathToExecute).ToString(),
                     "MessageBox");
                 MessageBox.ShowDialog();
