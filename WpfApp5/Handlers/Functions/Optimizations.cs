@@ -2,16 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Management;
-using Microsoft.VisualBasic.Logging;
-using Octokit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Security.Policy;
-using System.Threading.Channels;
-using System.Windows.Documents;
-using System.Xml.Linq;
 
 namespace Flarial.Launcher.Handlers.Functions
 {

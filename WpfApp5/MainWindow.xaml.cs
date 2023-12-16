@@ -18,14 +18,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
 
@@ -65,7 +63,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public double version = 1.23; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public double version = 1.22; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -156,26 +154,33 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("It's development time.");
             }
+            
+            WebClient updat = new WebClient();
+            updat.DownloadFile("https://cdn-c6f.pages.dev/launcher/latestVersion.txt", "latestVersion.txt");
 
 
+            string[] updatRial = File.ReadAllLines("latestVersion.txt");
 
-
-
-
-
-
-
-
-
-
-
+            if (double.Parse(updatRial.First().ToString()) > version)
+            {
+                Trace.WriteLine("I try 2 autoupdate");
+                
+                updat.DownloadFile("https://cdn-c6f.pages.dev/installer.exe", "installer.exe");
+                
+                var p = new Process();
+                p.StartInfo.FileName = "installer.exe";
+                p.Start();
+                
+                Environment.Exit(5);
+            }
+            
 
             versionLabel.Content = Minecraft.GetVersion();
             Trace.WriteLine("Debug 6");
 
 
             WebClient versionsWc = new WebClient();
-        versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
+           versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
 
 
             string[] rawVersions = File.ReadAllLines("Supported.txt");

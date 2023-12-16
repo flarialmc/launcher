@@ -84,7 +84,7 @@ namespace Flarial.Launcher.Managers
             client = new DiscordRpcClient("1067854754518151168");
             client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
             client.OnReady += (sender, e) => Trace.WriteLine("Received Ready from user {0}", e.User.Username);
-            client.OnPresenceUpdate += (sender, e) => Trace.WriteLine("Received Update! {0}", e.Presence);
+            client.OnPresenceUpdate += (sender, e) => Trace.WriteLine("Received Update! {0}", e.Presence.ToString());
             client.Initialize();
         }
 
