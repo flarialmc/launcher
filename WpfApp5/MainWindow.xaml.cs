@@ -311,14 +311,18 @@ namespace Flarial.Launcher
         }
         private void CreateDirectoriesAndFiles()
         {
+
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial")))
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
+            
+            if (!Directory.Exists(VersionManagement.launcherPath))
+                Directory.CreateDirectory(VersionManagement.launcherPath);
+            
             if (!Directory.Exists(BackupManager.backupDirectory))
                 Directory.CreateDirectory(BackupManager.backupDirectory);
 
             if (!Directory.Exists(VersionManagement.launcherPath + "\\Versions\\"))
                 Directory.CreateDirectory(VersionManagement.launcherPath + "\\Versions\\");
-
-            if (!Directory.Exists(VersionManagement.launcherPath))
-                Directory.CreateDirectory(VersionManagement.launcherPath);
 
             if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
                 File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
