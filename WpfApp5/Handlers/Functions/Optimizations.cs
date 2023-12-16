@@ -44,7 +44,7 @@ namespace Flarial.Launcher.Handlers.Functions
             }
             else
             {
-                Console.WriteLine("Nvidia GPU not found. Unable to optimize Nvidia panel settings.");
+                Trace.WriteLine("Nvidia GPU not found. Unable to optimize Nvidia panel settings.");
             }
 
             // Optimize internet settings for Minecraft if not already optimized
@@ -85,7 +85,7 @@ namespace Flarial.Launcher.Handlers.Functions
             }
             else
             {
-                Console.WriteLine("Nvidia panel process not found. Unable to set Nvidia panel settings.");
+                Trace.WriteLine("Nvidia panel process not found. Unable to set Nvidia panel settings.");
             }
         }
 
@@ -190,7 +190,7 @@ namespace Flarial.Launcher.Handlers.Functions
             }
             else
             {
-                Console.WriteLine("Nvidia panel process not found. Unable to disable Nvidia panel settings.");
+                Trace.WriteLine("Nvidia panel process not found. Unable to disable Nvidia panel settings.");
             }
         }
 
@@ -232,11 +232,11 @@ namespace Flarial.Launcher.Handlers.Functions
 
             if (process.ExitCode == 0)
             {
-                Console.WriteLine("DNS cache flushed successfully.");
+                Trace.WriteLine("DNS cache flushed successfully.");
             }
             else
             {
-                Console.WriteLine("Failed to flush DNS cache. Error: " + output);
+                Trace.WriteLine("Failed to flush DNS cache. Error: " + output);
             }
         }
     }
@@ -255,7 +255,7 @@ namespace Flarial.Launcher.Handlers.Functions
             Process minecraftProcess = GetMinecraftProcess();
             if (minecraftProcess == null)
             {
-                Console.WriteLine("Minecraft is not running. No optimizations performed.");
+                Trace.WriteLine("Minecraft is not running. No optimizations performed.");
                 return;
             }
 
@@ -273,7 +273,7 @@ namespace Flarial.Launcher.Handlers.Functions
             //}
             //else
             //{
-            //    Console.WriteLine("Fullscreen optimizations not supported on this version of Windows. Skipping...");
+            //    Trace.WriteLine("Fullscreen optimizations not supported on this version of Windows. Skipping...");
             //}
 
             // Disable DPI scaling for Minecraft if supported
@@ -283,7 +283,7 @@ namespace Flarial.Launcher.Handlers.Functions
             //}
             //else
             //{
-            //    Console.WriteLine("DPI scaling not supported on this version of Windows. Skipping...");
+            //    Trace.WriteLine("DPI scaling not supported on this version of Windows. Skipping...");
             //}
 
             // Check DirectX version and apply optimizations accordingly
@@ -297,7 +297,7 @@ namespace Flarial.Launcher.Handlers.Functions
                 }
                 else
                 {
-                    Console.WriteLine("DirectX 11 optimizations require fullscreen optimizations. Skipping...");
+                    Trace.WriteLine("DirectX 11 optimizations require fullscreen optimizations. Skipping...");
                 }
             }
             else if (directXVersion == "DirectX 12")
@@ -309,12 +309,12 @@ namespace Flarial.Launcher.Handlers.Functions
                 }
                 else
                 {
-                    Console.WriteLine("DirectX 12 optimizations require fullscreen optimizations. Skipping...");
+                    Trace.WriteLine("DirectX 12 optimizations require fullscreen optimizations. Skipping...");
                 }
             }
             else
             {
-                Console.WriteLine("Unknown DirectX version. Skipping DirectX optimizations.");
+                Trace.WriteLine("Unknown DirectX version. Skipping DirectX optimizations.");
             }
 
             // Optimize mouse settings
@@ -374,7 +374,7 @@ namespace Flarial.Launcher.Handlers.Functions
             }
             else
             {
-                Console.WriteLine("Minecraft process not found. Unable to set process settings.");
+                Trace.WriteLine("Minecraft process not found. Unable to set process settings.");
             }
         }
 
@@ -393,7 +393,7 @@ namespace Flarial.Launcher.Handlers.Functions
         private static void ApplyDirectX11Optimizations()
         {
             // Apply DirectX 11 optimizations for Minecraft
-            Console.WriteLine("Applying DirectX 11 optimizations for Minecraft.");
+            Trace.WriteLine("Applying DirectX 11 optimizations for Minecraft.");
 
             // Disable vsync for DirectX 11
             DisableVSyncDirectX11();
@@ -408,7 +408,7 @@ namespace Flarial.Launcher.Handlers.Functions
         private static void ApplyDirectX12Optimizations()
         {
             // Apply DirectX 12 optimizations for Minecraft
-            Console.WriteLine("Applying DirectX 12 optimizations for Minecraft.");
+            Trace.WriteLine("Applying DirectX 12 optimizations for Minecraft.");
 
             // Set maximum frame latency to 1 for DirectX 12
             SetMaxFrameLatencyDirectX12(1);
@@ -547,7 +547,7 @@ namespace Flarial.Launcher.Handlers.Functions
             }
             else
             {
-                Console.WriteLine("Minecraft process not found. Unable to optimize RAM allocation.");
+                Trace.WriteLine("Minecraft process not found. Unable to optimize RAM allocation.");
             }
         }
 
@@ -755,11 +755,11 @@ namespace Flarial.Launcher.Handlers.Functions
                 try
                 {
                     Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("31,00"), RegistryValueKind.Binary);
-                    Console.WriteLine("FlipQueueSize set to hexadecimal value successfully.");
+                    Trace.WriteLine("FlipQueueSize set to hexadecimal value successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error setting FlipQueueSize: " + ex.Message);
+                    Trace.WriteLine("Error setting FlipQueueSize: " + ex.Message);
                 }
             }
 
@@ -773,7 +773,7 @@ namespace Flarial.Launcher.Handlers.Functions
 
                         if (numAdapters == 0)
                         {
-                            Console.WriteLine("No AMD adapters found.");
+                            Trace.WriteLine("No AMD adapters found.");
                             DestroyADL();
                             return;
                         }
@@ -784,36 +784,36 @@ namespace Flarial.Launcher.Handlers.Functions
                         {
                             if (!adapterInfo.IsActive)
                             {
-                                Console.WriteLine("Adapter " + adapterInfo.AdapterIndex + " is not active.");
+                                Trace.WriteLine("Adapter " + adapterInfo.AdapterIndex + " is not active.");
                                 continue;
                             }
 
                             if (IsCrossfireEnabled(adapterInfo.AdapterIndex))
                             {
-                                Console.WriteLine("Crossfire is enabled for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                Trace.WriteLine("Crossfire is enabled for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
                                 continue;
                             }
 
                             if (!IsOverdriveSupported(adapterInfo.AdapterIndex))
                             {
-                                Console.WriteLine("Overdrive is not supported for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                Trace.WriteLine("Overdrive is not supported for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
                                 continue;
                             }
 
                             if (IsPowerControlModified(adapterInfo.AdapterIndex))
                             {
-                                Console.WriteLine("Power Control is already modified for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
+                                Trace.WriteLine("Power Control is already modified for adapter " + adapterInfo.AdapterIndex + ". Cannot modify maximum pre-rendered frames.");
                                 continue;
                             }
 
                             if (SetPowerControl(adapterInfo.AdapterIndex, 0))
                             {
                                 preRenderedFramesModified = true; // Mark the modification status
-                                Console.WriteLine("Maximum pre-rendered frames set to 0 successfully for adapter " + adapterInfo.AdapterIndex + ".");
+                                Trace.WriteLine("Maximum pre-rendered frames set to 0 successfully for adapter " + adapterInfo.AdapterIndex + ".");
                             }
                             else
                             {
-                                Console.WriteLine("Failed to set Power Control value for adapter " + adapterInfo.AdapterIndex + ".");
+                                Trace.WriteLine("Failed to set Power Control value for adapter " + adapterInfo.AdapterIndex + ".");
                             }
                         }
 
@@ -821,12 +821,12 @@ namespace Flarial.Launcher.Handlers.Functions
                     }
                     else
                     {
-                        Console.WriteLine("Failed to initialize ADL.");
+                        Trace.WriteLine("Failed to initialize ADL.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Not an AMD processor. Cannot modify maximum pre-rendered frames.");
+                    Trace.WriteLine("Not an AMD processor. Cannot modify maximum pre-rendered frames.");
                 }
             }
 
@@ -865,7 +865,7 @@ namespace Flarial.Launcher.Handlers.Functions
                     // Revert Maximum Pre-Rendered Frames optimization
                     // Set pre-rendered frames back to the original value or default value
                     SetMaximumPreRenderedFramesToDefault();
-                    Console.WriteLine("Reverted Maximum Pre-Rendered Frames optimization.");
+                    Trace.WriteLine("Reverted Maximum Pre-Rendered Frames optimization.");
                     preRenderedFramesModified = false; // Mark the modification status as reverted
                 }
             }
@@ -877,11 +877,11 @@ namespace Flarial.Launcher.Handlers.Functions
                     // Replace this with logic to set pre-rendered frames back to the default value
                     // You might need to read the original value before modifying it and then set it back.
                     Registry.SetValue(RegistryKeyPath, RegistryValueName, GetByteDataFromHexString("original_hex_value_here"), RegistryValueKind.Binary);
-                    Console.WriteLine("Maximum Pre-Rendered Frames set back to default value.");
+                    Trace.WriteLine("Maximum Pre-Rendered Frames set back to default value.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error setting Maximum Pre-Rendered Frames to default: " + ex.Message);
+                    Trace.WriteLine("Error setting Maximum Pre-Rendered Frames to default: " + ex.Message);
                 }
             }
 
@@ -925,7 +925,7 @@ namespace Flarial.Launcher.Handlers.Functions
                     SetPreRenderedFramesToZero();
                     SetPowerProfileToHighPerformance();
                     EnableTurboBoost();
-                    Console.WriteLine("Intel processor optimization completed.");
+                    Trace.WriteLine("Intel processor optimization completed.");
              
             }
 
@@ -936,7 +936,7 @@ namespace Flarial.Launcher.Handlers.Functions
                     // Revert Maximum Pre-Rendered Frames optimization
                     // Set pre-rendered frames back to the original value or default value
                     SetPreRenderedFramesToDefault();
-                    Console.WriteLine("Reverted Maximum Pre-Rendered Frames optimization for Intel processor.");
+                    Trace.WriteLine("Reverted Maximum Pre-Rendered Frames optimization for Intel processor.");
                     preRenderedFramesModified = false; // Mark the modification status as reverted
                 }
             }
@@ -947,11 +947,11 @@ namespace Flarial.Launcher.Handlers.Functions
                 {
                     // Replace this with logic to set pre-rendered frames back to the default value
                     Registry.SetValue(RegistryKeyPath, RegistryValueName, 0, RegistryValueKind.DWord);
-                    Console.WriteLine("Pre-Rendered Frames set back to default value for Intel processor.");
+                    Trace.WriteLine("Pre-Rendered Frames set back to default value for Intel processor.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error setting Pre-Rendered Frames to default: " + ex.Message);
+                    Trace.WriteLine("Error setting Pre-Rendered Frames to default: " + ex.Message);
                 }
             }
 
@@ -961,11 +961,11 @@ namespace Flarial.Launcher.Handlers.Functions
                 {
                     Registry.SetValue(RegistryKeyPath, RegistryValueName, 0, RegistryValueKind.DWord);
                     preRenderedFramesModified = true; // Mark the modification status
-                    Console.WriteLine("Pre-Rendered Frames set to 0 for Intel processor.");
+                    Trace.WriteLine("Pre-Rendered Frames set to 0 for Intel processor.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error setting Pre-Rendered Frames: " + ex.Message);
+                    Trace.WriteLine("Error setting Pre-Rendered Frames: " + ex.Message);
                 }
             }
 
@@ -973,7 +973,7 @@ namespace Flarial.Launcher.Handlers.Functions
             {
                 Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", "High performance", RegistryValueKind.String);
                 Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\5d76a2ca-e8c0-402f-a133-2158492d58ad", "Attributes", 2, RegistryValueKind.DWord);
-                Console.WriteLine("Power profile set to High Performance for Intel processor.");
+                Trace.WriteLine("Power profile set to High Performance for Intel processor.");
             }
 
             private void EnableTurboBoost()
@@ -986,7 +986,7 @@ namespace Flarial.Launcher.Handlers.Functions
                 // {
                 //     obj["TurboBoostEnabled"] = true;
                 //     obj.Put();
-                //     Console.WriteLine("Turbo Boost enabled for Intel processor.");
+                //     Trace.WriteLine("Turbo Boost enabled for Intel processor.");
                 // }
             }
 

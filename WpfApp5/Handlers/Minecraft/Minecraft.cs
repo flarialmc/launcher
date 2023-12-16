@@ -114,7 +114,7 @@ namespace Flarial.Launcher
                 await Task.Delay(100);
             }
 
-            Console.WriteLine("Waiting for Minecraft to load");
+            Trace.WriteLine("Waiting for Minecraft to load");
             while (true)
             {
                 Process.Refresh();
@@ -127,7 +127,7 @@ namespace Flarial.Launcher
                 
                 await Task.Delay(100);
             }
-            Console.WriteLine("Minecraft finished loading");
+            Trace.WriteLine("Minecraft finished loading");
         }
 
     }

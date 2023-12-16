@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -143,7 +144,7 @@ namespace Flarial.Launcher.Managers
             {
                 var tempPath = Path.Combine(destinationDirectory.FullName, file.Name);
                 await Task.Run(() => file.CopyTo(tempPath, true));
-                Console.WriteLine($"Copying {file} to {tempPath}");
+                Trace.WriteLine($"Copying {file} to {tempPath}");
             }));
 
             await Task.WhenAll(sourceDirectory.GetDirectories().Select(subdir =>
@@ -218,7 +219,7 @@ namespace Flarial.Launcher.Managers
             {
                 string tempPath = Path.Combine(destDirName, file.Name);
                 await Task.Run(() => file.CopyTo(tempPath, true));
-                Console.WriteLine("Copying " + file + " to " + tempPath);
+                Trace.WriteLine("Copying " + file + " to " + tempPath);
             }));
 
             if (copySubDirs)

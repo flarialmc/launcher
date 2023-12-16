@@ -43,7 +43,7 @@ namespace Flarial.Minimal
 
             if (args.Length > 0)
             {
-                Console.WriteLine("Checking for custom path");
+                Trace.WriteLine("Checking for custom path");
                 string newPath = "";
 
                 foreach (string arg in args)
@@ -54,23 +54,23 @@ namespace Flarial.Minimal
                 if (File.Exists(newPath))
                 {
                     dllpath = newPath;
-                    Console.WriteLine("Injecting custom dll");
-                    Console.WriteLine(Insertion.Insert(dllpath));
+                    Trace.WriteLine("Injecting custom dll");
+                    Trace.WriteLine(Insertion.Insert(dllpath));
                 }
             }
             else
             {
                 WebClient client = new WebClient();
-                Console.WriteLine("Downloading the latest DLL");
+                Trace.WriteLine("Downloading the latest DLL");
                 await client.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/dll/latest.dll"), dllpath);
            
-                    Console.WriteLine("Latest DLL has been downloaded");
-                    Console.WriteLine("Waiting for Minecraft to load.");
+                    Trace.WriteLine("Latest DLL has been downloaded");
+                    Trace.WriteLine("Waiting for Minecraft to load.");
                     
                     await Minecraft.WaitForModules();
-                    Console.WriteLine(Insertion.Insert(dllpath));
+                    Trace.WriteLine(Insertion.Insert(dllpath));
             }
-            Console.WriteLine("Enjoy!");
+            Trace.WriteLine("Enjoy!");
             Thread.Sleep(3000);
         }
     }

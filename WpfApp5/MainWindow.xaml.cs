@@ -54,6 +54,7 @@ namespace Flarial.Launcher
     public partial class MainWindow
     {
         public int duration = 300;
+        
 
         private static readonly WebClient Client = new WebClient();
         List<double> data = new List<double>();
@@ -85,6 +86,10 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
+            
+            Stream outResultsFile = File.Create ("log.txt");
+            var textListener = new TextWriterTraceListener (outResultsFile);
+            Trace.Listeners.Add (textListener);
 
             Trace.WriteLine("Debug 1");
 
@@ -500,9 +505,12 @@ namespace Flarial.Launcher
                     else if (progressType == "Installing")
                         acc = $"Installing..";
 
+                    string[] tag = radioButton.Tag as string[];
+                    
+                    
                     string[] tags2 =
                     {
-                        $"pack://application:,,,/Images/{version}.png", version,
+                        tag[0], version,
                         $"{progressPercentage}% " + acc
                     };
                     radioButton.Content = 415 - (progressPercentage / 100 * 415);

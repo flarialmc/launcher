@@ -125,7 +125,7 @@ namespace Flarial.Launcher.Managers
                 if (e.Data != null)
                 {
                     Trace.WriteLine(e.Data); // Log to Trace
-                    Console.WriteLine(e.Data); // Print to console
+                    Trace.WriteLine(e.Data); // Print to console
                     LogProgress(e.Data); // Check and log progress if found
                 }
             };
@@ -135,7 +135,7 @@ namespace Flarial.Launcher.Managers
                 if (e.Data != null)
                 {
                     Trace.WriteLine(e.Data); // Log error to Trace
-                    Console.WriteLine(e.Data); // Print error to console
+                    Trace.WriteLine(e.Data); // Print error to console
                 }
             };
 
@@ -385,7 +385,6 @@ namespace Flarial.Launcher.Managers
                     if (await BackupManager.GetConfig("temp") == null) 
                     await BackupManager.CreateBackup("temp");
                     Trace.WriteLine("Uninstalling current Minecraft version.");
-
                     await RemoveMinecraftPackage();
                 }
 

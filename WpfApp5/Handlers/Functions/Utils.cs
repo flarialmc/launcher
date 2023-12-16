@@ -38,7 +38,7 @@ namespace Flarial.Launcher.Functions
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to restart with admin privileges: " + ex.Message);
+                Trace.WriteLine("Failed to restart with admin privileges: " + ex.Message);
             }
         }
         public static void disableVsync()
