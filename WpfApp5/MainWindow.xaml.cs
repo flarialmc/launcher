@@ -84,14 +84,13 @@ namespace Flarial.Launcher
 
         public MainWindow()
         {
+            CreateDirectoriesAndFiles();
             
-            Stream outResultsFile = File.Create ($"{Managers.VersionManagement.launcherPath}\\log.txt");
-            var textListener = new TextWriterTraceListener (outResultsFile);
-            Trace.Listeners.Add (textListener);
+            Stream outResultsFile = File.Create($"{VersionManagement.launcherPath}\\log.txt");
+            var textListener = new TextWriterTraceListener(outResultsFile);
+            Trace.Listeners.Add(textListener);
 
             Trace.WriteLine("Debug 1");
-
-            WebClient webClient = new WebClient();
 
             
             if(!FontManager.IsFontInstalled("Unbounded"))
@@ -127,7 +126,6 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 2 " + currentDirectory);
 
             Minecraft.Init();
-            CreateDirectoriesAndFiles();
             Trace.WriteLine("Debug 3");
 
 
@@ -508,7 +506,7 @@ namespace Flarial.Launcher
                     else if (progressType == "Extracting")
                         acc = $"- Extracting {progressBytesReceived} of {progressBytesTotal}";
                     else if (progressType == "Installing")
-                        acc = $"Installing..";
+                        acc = $"Installing.... Please wait!";
 
                     string[] tag = radioButton.Tag as string[];
                     
@@ -592,8 +590,8 @@ namespace Flarial.Launcher
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            if (closeToTray == false) Environment.Exit(0);
-            this.Hide();
+            Trace.Close();
+            Environment.Exit(0);
         }
 
         private void HideGrid(object sender, RoutedEventArgs e)
@@ -871,11 +869,8 @@ namespace Flarial.Launcher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (closeToTray == false)
-            {
-                Environment.Exit(0);
-            }
-            else this.Hide();
+            Trace.Close();
+            Environment.Exit(0);
         }
 
 

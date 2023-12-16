@@ -53,7 +53,7 @@ namespace Flarial.Launcher
             if (Packages.Count() == 0)
             {
                     
-                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed to verify that you have bought the game.", "MessageBox");
+                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
                 MessageBox.ShowDialog();
                 Environment.Exit(0);
             }

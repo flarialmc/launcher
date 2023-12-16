@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using Windows.Foundation;
 using Windows.Management.Deployment;
 using Application = System.Windows.Application;
 
@@ -176,11 +177,10 @@ namespace Flarial.Launcher.Managers
 
                 File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
 
-                var packageManager = new PackageManager();
+                MainWindow.progressPercentage = 100;
+                MainWindow.progressType = "Installing";
 
-
-
-
+                
                 //    var progress = new Progress<DeploymentProgress>(ReportProgress);
 
            return  await   RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
@@ -233,7 +233,7 @@ namespace Flarial.Launcher.Managers
 
                 MainWindow.progressType = "Installing";
 
-                Trace.WriteLine(progress.percentage);
+                Trace.WriteLine(progress.percentage + "% yas");
             }
         }
 
@@ -243,34 +243,29 @@ namespace Flarial.Launcher.Managers
 
             if (e.ProgressPercentage != 100)
                 MainWindow.progressPercentage = e.ProgressPercentage;
+            else Trace.WriteLine("nigger");
 
             MainWindow.progressBytesReceived = e.BytesReceived;
             MainWindow.progressBytesTotal = e.TotalBytesToReceive;
-            Trace.WriteLine($"Downloaded {e.BytesReceived} of {e.TotalBytesToReceive} bytes. {e.ProgressPercentage}% complete...");
         }
 
         public static async Task<bool> RemoveMinecraftPackage()
         {
+            
             try
             {
                 var packageManager = new PackageManager();
+                
+                var removePackageOperation = packageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.RemoveForAllUsers);
 
-                var progress = new Progress<DeploymentProgress>(ReportProgress);
-                var removePackageOperation = packageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.None);
-                removePackageOperation.Progress += (sender, args) => ReportProgress(args);
-
-                var removePackageTask = removePackageOperation.AsTask();
-
-                await removePackageTask;
-
-                if (removePackageTask.Status == TaskStatus.RanToCompletion)
+                await removePackageOperation;
+                Trace.WriteLine("Yea it removed");
+                if (removePackageOperation.Status == AsyncStatus.Completed)
                 {
 
                     Trace.WriteLine("Package removal succeeded!");
                     return true;
                 }
-                else
-                {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         CustomDialogBox MessageBox =
@@ -278,7 +273,6 @@ namespace Flarial.Launcher.Managers
                         MessageBox.ShowDialog();
                     });
                     return false;
-                }
             }
             catch (Exception ex)
             {
@@ -380,20 +374,22 @@ namespace Flarial.Launcher.Managers
 
                 if (Minecraft.Package != null)
                 {
-
-                 
                     if (await BackupManager.GetConfig("temp") == null) 
                     await BackupManager.CreateBackup("temp");
                     Trace.WriteLine("Uninstalling current Minecraft version.");
                     await RemoveMinecraftPackage();
                 }
-
-
-
+                
+                Trace.WriteLine("Uninstalled.");
 
                 if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
                 {
+                    Trace.WriteLine("Starting extract.");
                     await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+                }
+                else
+                {
+                    Trace.WriteLine("The folder exists");
                 }
 
 
