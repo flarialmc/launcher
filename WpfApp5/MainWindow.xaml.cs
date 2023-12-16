@@ -85,7 +85,7 @@ namespace Flarial.Launcher
         public MainWindow()
         {
             
-            Stream outResultsFile = File.Create ("log.txt");
+            Stream outResultsFile = File.Create ($"{Managers.VersionManagement.launcherPath}\\log.txt");
             var textListener = new TextWriterTraceListener (outResultsFile);
             Trace.Listeners.Add (textListener);
 
