@@ -122,13 +122,10 @@ namespace Flarial.Launcher
                 {
                     if (Process.Modules.Count > 160)
                     {
-                        await Task.Delay(3500);
-                    }
+                        await Task.Delay(1500);
                         break;
+                    }
                 }
-                else break;
-                
-                
             }
             Trace.WriteLine("Minecraft finished loading");
         }
