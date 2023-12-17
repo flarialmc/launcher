@@ -4,9 +4,9 @@ using System.Threading;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Net;
-using IWshRuntimeLibrary;
 using System.Windows.Forms;
 using Flarial.Installer;
+using IWshRuntimeLibrary;
 
 namespace Flarial.Minimal
 {

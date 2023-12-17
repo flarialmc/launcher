@@ -321,7 +321,7 @@ namespace Flarial.Launcher.Handlers.Functions
         private static bool IsFullscreenOptimizationsSupported()
         {
             // Check if fullscreen optimizations are supported on the current version of Windows
-            OperatingSystem os = Environment.OSVersion;
+            System.OperatingSystem os = Environment.OSVersion;
             Version version = os.Version;
 
             // Fullscreen optimizations are supported on Windows 10 version 1803 (April 2018 Update) and above.
@@ -331,7 +331,7 @@ namespace Flarial.Launcher.Handlers.Functions
         private static bool IsDPIScalingSupported()
         {
             // Check if DPI scaling is supported on the current version of Windows
-            OperatingSystem os = Environment.OSVersion;
+            System.OperatingSystem os = Environment.OSVersion;
             Version version = os.Version;
 
             // DPI scaling is supported on Windows 8.1 (Windows 6.3) and above.

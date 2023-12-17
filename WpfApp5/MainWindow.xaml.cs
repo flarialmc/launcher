@@ -27,6 +27,8 @@ using System.Windows.Threading;
 using Application = System.Windows.Application;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using RadioButton = System.Windows.Controls.RadioButton;
+using IWshRuntimeLibrary;
+using File = System.IO.File;
 
 namespace Flarial.Launcher
 {
@@ -64,7 +66,7 @@ namespace Flarial.Launcher
         Storyboard myWidthAnimatedButtonStoryboard3 = new Storyboard();
         public Window1 w = new Window1();
         public bool ifBeta;
-        public int version = 122; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
+        public int version = 121; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
         public string minecraft_version = "amongus";
         public static string custom_dll_path = "amongus";
         public static string custom_theme_path = "main_default";
@@ -87,13 +89,19 @@ namespace Flarial.Launcher
         {
             CreateDirectoriesAndFiles();
             
+            string location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Flarial\";
+            if (!File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Flarial.lnk")))
+            {
+                CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
+                CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
+            }
+            
             Stream outResultsFile = File.Create($"{VersionManagement.launcherPath}\\log.txt");
             var textListener = new TextWriterTraceListener(outResultsFile);
             Trace.Listeners.Add(textListener);
 
             Trace.WriteLine("Debug 1");
 
-            
             if(!FontManager.IsFontInstalled("Unbounded"))
             {
                 Client?.DownloadFile("https://cdn-c6f.pages.dev/assets/Unbounded-VariableFont_wght.ttf",
@@ -171,6 +179,7 @@ namespace Flarial.Launcher
                 
                 var p = new Process();
                 p.StartInfo.FileName = "installer.exe";
+                p.StartInfo.Arguments = "update";
                 p.Start();
                 
                 Trace.Close();
@@ -434,6 +443,15 @@ namespace Flarial.Launcher
                 EasingFunction = new QuadraticEase(),
                 Duration = new Duration(TimeSpan.FromMilliseconds(duration))
             };
+        }
+        static private void CreateShortcut(string name, string directory, string targetFile, string iconlocation, string description)
+        {
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = shell.CreateShortcut(directory + $@"\{name}.lnk");
+            shortcut.TargetPath = targetFile;
+            shortcut.IconLocation = iconlocation;
+            shortcut.Description = description;
+            shortcut.Save();
         }
 
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => this.DragMove();
