@@ -536,16 +536,25 @@ namespace Flarial.Launcher
                     else if (progressType == "Extracting")
                         acc = $"- Extracting {progressBytesReceived} of {progressBytesTotal}";
                     else if (progressType == "Installing")
-                        acc = $"Installing.... Please wait!";
+                        acc = "Installing.... Please wait!";
+                    else if (progressType == "backup")
+                        acc = "Making a backup, Please wait! Might take long if you got huge amount of data.";
 
                     string[] tag = radioButton.Tag as string[];
-                    
-                    
+
                     string[] tags2 =
                     {
                         tag[0], version,
                         $"{progressPercentage}% " + acc
                     };
+                    if(progressPercentage > 100)
+                    {
+                        tags2 = new []
+                        {
+                            tag[0], version,
+                            acc
+                        };
+                    }
                     radioButton.Content = 415 - (progressPercentage / 100 * 415);
                     radioButton.Tag = tags2;
 

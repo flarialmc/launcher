@@ -374,8 +374,12 @@ namespace Flarial.Launcher.Managers
 
                 if (Minecraft.Package != null)
                 {
-                    if (await BackupManager.GetConfig("temp") == null) 
-                    await BackupManager.CreateBackup("temp");
+                    if (await BackupManager.GetConfig("temp") == null)
+                    {
+                        MainWindow.progressType = "backup";
+                        MainWindow.progressPercentage = 101;
+                        await BackupManager.CreateBackup("temp");
+                    }
                     Trace.WriteLine("Uninstalling current Minecraft version.");
                     await RemoveMinecraftPackage();
                 }

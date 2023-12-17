@@ -42,8 +42,7 @@ namespace Flarial.Launcher.Managers
                     "Packages",
                     "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
                     "LocalState",
-                    "games",
-                    "com.mojang"
+                    "games"
                 );
 
                 var backupMojangPath = Path.Combine(backupDirectory, backupName, "com.mojang");
