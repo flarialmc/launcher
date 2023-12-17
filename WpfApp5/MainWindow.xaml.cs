@@ -228,25 +228,18 @@ namespace Flarial.Launcher
                     TestVersions.Add(version, first);
                 }
 
+                int oldCount = count;
                 count++;
                 string imageName = "1.20.15";
                 if (count % 2 == 0) imageName = "1.20.12";
                 else imageName = "1.20.10";
 
-                AddRadioButton(version, TestVersions[version], imageName);
+                AddRadioButton(version, TestVersions[version], imageName, oldCount);
 
             }
 
 
             Trace.WriteLine("Debug 8");
-
-
-
-
-
-
-
-
 
             SetGreetingLabel();
 
@@ -482,7 +475,7 @@ namespace Flarial.Launcher
             LoginGrid.Visibility = Visibility.Hidden;
         }
 
-        private void AddRadioButton(string version, string status, string imagename)
+        private void AddRadioButton(string version, string status, string imagename, int num)
         {
 
             
@@ -504,6 +497,14 @@ namespace Flarial.Launcher
             radioButton.Tag = tags;
             radioButton.Checked += RadioButton_Checked;
 
+            
+            radioButton.Click += (sender, e) =>
+            {
+                for (int i = 0; i < num + 1; i++)
+                {
+                    VersionScrollViewer.ScrollToHorizontalOffset(207.5 * num);
+                }
+            };
             VersionsPanel.Children.Add(radioButton);
         }
 

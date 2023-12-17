@@ -82,7 +82,8 @@
             <Label Style="{DynamicResource SettingsTitle}"/>
             <Label Style="{DynamicResource SettingsSubtitle}" x:Name="Subtitle"/>
             <Grid Style="{DynamicResource OptionsVersionGridStyle}" x:Name="OptionsVerionGrid">
-                <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Style="{DynamicResource OptionsVersionScrollViewerStyle}">
+                <ScrollViewer 
+                              x:Name="VersionScrollViewer" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Style="{DynamicResource OptionsVersionScrollViewerStyle}">
                     <StackPanel Style="{DynamicResource OptionsVersionStackPanelStyle}" x:Name="VersionsPanel"/>
                 </ScrollViewer>
             </Grid>
