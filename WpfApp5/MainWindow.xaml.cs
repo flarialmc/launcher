@@ -89,12 +89,13 @@ namespace Flarial.Launcher
         {
             CreateDirectoriesAndFiles();
             
+            /*
             string location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Flarial\";
             if (!File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Flarial.lnk")))
             {
                 CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
                 CreateShortcut("Flarial", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), location + "Flarial.Launcher.exe", location + "Flarial.Launcher.exe", "Launch Flarial");
-            }
+            }*/
             
             Stream outResultsFile = File.Create($"{VersionManagement.launcherPath}\\log.txt");
             var textListener = new TextWriterTraceListener(outResultsFile);
