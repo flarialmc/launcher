@@ -31,7 +31,7 @@ namespace Flarial.Launcher.Pages
             InitializeComponent();
             sp = VersionItemStackPanel;
 
-            string fileContent = new WebClient().DownloadString("https://raw.githubusercontent.com/megahendick/Flarial.Laucher.Testing/main/versions.json");
+            string fileContent = new WebClient().DownloadString("https://cdn-c6f.pages.dev/launcher/versions.json");
 
             Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(fileContent);
 
@@ -40,6 +40,7 @@ namespace Flarial.Launcher.Pages
                 VersionItem versionItem = new VersionItem();
                 VersionItemStackPanel.Children.Add(versionItem);
                 VersionItemProperties.SetVersion(versionItem, version.Name);
+                VersionItemProperties.SetVersionLink(versionItem, version.verlink);
                 VersionItemProperties.SetState(versionItem, 0);
 
                 foreach (string file in Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"))
@@ -84,5 +85,7 @@ namespace Flarial.Launcher.Pages
     {
         public string Name { get; set; }
         public string ImgURL { get; set; }
+        
+        public string verlink { get; set; }
     }
 }

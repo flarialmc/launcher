@@ -24,6 +24,8 @@ namespace Flarial.Launcher.Styles
     /// </summary>
     public partial class VersionItem : RadioButton
     {
+        public string verlink = "";
+        
         public VersionItem()
         {
             DataContext = new VersionItemProperties();
@@ -48,9 +50,9 @@ namespace Flarial.Launcher.Styles
                 {
                     double acc = 0;
                     if (MainWindow.progressType == "download")
-                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal * 50;
+                        acc = MainWindow.progressBytesReceived;
                     else if (MainWindow.progressType == "Extracting")
-                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal * 25 + 50;
+                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal;
                     else if (MainWindow.progressType == "Installing")
                         acc = 75;
                     else if (MainWindow.progressType == "backup")
@@ -78,11 +80,12 @@ namespace Flarial.Launcher.Styles
 
                 VersionItemProperties.SetState(this, 1);
 
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version));
+                string link = VersionItemProperties.GetVersionLink(this);
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version));
                 if (!succeeded)
                 {
                     this.IsChecked = false;
-                    VersionItemProperties.SetState(this, 0);
+                    VersionItemProperties.SetState(this, 2);
                 }
                 else
                 {
@@ -121,11 +124,11 @@ namespace Flarial.Launcher.Styles
                 {
                     double acc = 0;
                     if (MainWindow.progressType == "download")
-                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal * 50;
+                        acc = MainWindow.progressBytesReceived;
                     else if (MainWindow.progressType == "Extracting")
-                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal * 25 + 50;
+                        acc = MainWindow.progressBytesReceived / MainWindow.progressBytesTotal;
                     else if (MainWindow.progressType == "Installing")
-                        acc = 75;
+                        acc = 99;
                     else if (MainWindow.progressType == "backup")
                         acc = 0;
 
@@ -150,8 +153,8 @@ namespace Flarial.Launcher.Styles
                 timer.Start();
 
                 VersionItemProperties.SetState(this, 1);
-
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version));
+                string link = VersionItemProperties.GetVersionLink(this);
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version));
                 if (!succeeded)
                 {
                     this.IsChecked = false;
@@ -289,6 +292,7 @@ namespace Flarial.Launcher.Styles
     {
         public static readonly System.Windows.DependencyProperty StateProperty;
         public static readonly System.Windows.DependencyProperty VersionProperty;
+        public static readonly System.Windows.DependencyProperty VersionLinkProperty;
         public static readonly System.Windows.DependencyProperty InstallPercentageProperty;
         public static readonly System.Windows.DependencyProperty ImageURLProperty;
 
@@ -298,6 +302,8 @@ namespace Flarial.Launcher.Styles
                 "State", typeof(int), typeof(VersionItemProperties));
             VersionProperty = System.Windows.DependencyProperty.RegisterAttached(
                 "Version", typeof(string), typeof(VersionItemProperties));
+            VersionLinkProperty = System.Windows.DependencyProperty.RegisterAttached(
+                "VersionLink", typeof(string), typeof(VersionItemProperties));
             InstallPercentageProperty = System.Windows.DependencyProperty.RegisterAttached(
                 "InstallPercentage", typeof(string), typeof(VersionItemProperties));
             ImageURLProperty = System.Windows.DependencyProperty.RegisterAttached(
@@ -318,10 +324,20 @@ namespace Flarial.Launcher.Styles
         {
             element.SetValue(VersionProperty, value);
         }
+        
+        public static void SetVersionLink(System.Windows.UIElement element, string value)
+        {
+            element.SetValue(VersionLinkProperty, value);        
+        }
 
         public static string GetVersion(System.Windows.UIElement element)
         {
             return (string)element.GetValue(VersionProperty);
+        }
+        
+        public static string GetVersionLink(System.Windows.UIElement element)
+        {
+            return (string)element.GetValue(VersionLinkProperty);
         }
 
         public static void SetInstallPercentage(System.Windows.UIElement element, string value)
