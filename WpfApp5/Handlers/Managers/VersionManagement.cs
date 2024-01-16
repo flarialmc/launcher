@@ -89,9 +89,10 @@ namespace Flarial.Launcher.Managers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
-                        $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
-                    MessageBox.ShowDialog();
+                    //CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
+                    //    $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
+                    //MessageBox.ShowDialog();
+                    MainWindow.CreateMessageBox($"Download failed: {url} issue with the URL");
                 });
 
                 return false;
@@ -214,12 +215,12 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                            $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                            "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                        //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                        //    "MessageBox");
+                        //MessageBox.ShowDialog();
 
-
+                        MainWindow.CreateMessageBox($"RegisterPackageAsync failed, {ex.Message}");
                     });
                     return false;
                 }
@@ -268,9 +269,10 @@ namespace Flarial.Launcher.Managers
                 }
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox =
-                            new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox =
+                        //    new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
+                        //MessageBox.ShowDialog();
+                        MainWindow.CreateMessageBox("Failed to remove package");
                     });
                     return false;
             }
@@ -278,10 +280,11 @@ namespace Flarial.Launcher.Managers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                        $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                        "MessageBox");
-                    MessageBox.ShowDialog();
+                    //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                    //    $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                    //    "MessageBox");
+                    //MessageBox.ShowDialog();
+                    MainWindow.CreateMessageBox($"RemovePackageAsync failed, {ex.Message}");
                 });
                 return false;
             }
@@ -403,8 +406,9 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
+                        //MessageBox.ShowDialog();
+                        MainWindow.CreateMessageBox("Failed to install");
                     });
                     
                     return false;
@@ -426,8 +430,8 @@ namespace Flarial.Launcher.Managers
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
-                    
+                    //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
+                    MainWindow.CreateMessageBox("Please restart the launcher for it to be able to install new patches");
                 });
 
                 await Task.Delay(2000);
