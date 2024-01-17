@@ -46,10 +46,11 @@ namespace Flarial.Launcher
         public static long progressBytesTotal;
         public static string progressType; 
         public bool shouldUseBetaDLL;
-        private ImageSource guestImage;
+        public static ImageBrush PFP;
         public static bool Reverse;
         public static TextBlock StatusLabel;
         public static TextBlock versionLabel;
+        public static TextBlock Username;
         private static StackPanel mbGrid;
 
         public MainWindow()
@@ -90,7 +91,9 @@ namespace Flarial.Launcher
 
             StatusLabel = statusLabel;
             versionLabel = VersionLabel;
+            Username = username;
             mbGrid = MbGrid;
+            PFP = pfp;
             SettingsPage.MainGrid = MainGrid;
             SettingsPage.b1 = MainBorder;
 

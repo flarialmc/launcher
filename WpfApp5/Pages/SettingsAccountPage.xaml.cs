@@ -107,15 +107,17 @@ namespace Flarial.Launcher.Pages
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             if (user != null)
             {
-                //Username.Content = user.username;
+                MainWindow.Username.Text = user.username;
                 //Username2.Content = user.username;
                 //guestImage = PFP.Source;
 
                 if (user.avatar != null)
                 {
                     var imageSource = new BitmapImage(new Uri($"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png"));
-                    //PFP.Source = imageSource;
-                    //PFP2.Source = imageSource;
+                    Image.ImageSource = imageSource;
+                    MainWindow.PFP.ImageSource = imageSource;
+                    RoleLabel.Text = user.username;
+                    NameLabel.Text = "Logged in as:";
                 }
             }
 

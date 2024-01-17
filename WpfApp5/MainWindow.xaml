@@ -88,11 +88,13 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Viewbox Grid.RowSpan="2">
-                            <Path Data="M29.9985 35.0001C39.4673 35.0001 47.1414 27.1661 47.1414 17.5001C47.1414 7.83411 39.4673 0.00012207 29.9985 0.00012207C20.5298 0.00012207 12.8557 7.83411 12.8557 17.5001C12.8557 27.1661 20.5298 35.0001 29.9985 35.0001ZM41.9985 39.3751H39.7619C36.7887 40.7697 33.4807 41.5626 29.9985 41.5626C26.5164 41.5626 23.2218 40.7697 20.2351 39.3751H17.9985C8.06104 39.3751 -0.00146484 47.6056 -0.00146484 57.7501V63.4376C-0.00146484 67.0607 2.878 70.0001 6.42711 70.0001H53.57C57.1191 70.0001 59.9985 67.0607 59.9985 63.4376V57.7501C59.9985 47.6056 51.936 39.3751 41.9985 39.3751Z" Fill="#FF2438"/>
-                        </Viewbox>
+                        <Border Grid.RowSpan="2" CornerRadius="22.5" Height="45" Width="45">
+                            <Border.Background>
+                                <ImageBrush Stretch="UniformToFill" x:Name="pfp" ImageSource="/Assets/guest.png"/>
+                            </Border.Background>
+                        </Border>
                         <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Logged in as:" VerticalAlignment="Center" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Text="Guest" VerticalAlignment="Center" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="username" Margin="10,0,0,0" Text="Guest" VerticalAlignment="Center" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
                     <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20">
                         <Grid.RowDefinitions>
