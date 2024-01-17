@@ -129,7 +129,6 @@ namespace Flarial.Launcher
 
 
             VersionLabel.Text = Minecraft.GetVersion().ToString();
-            Trace.WriteLine("Debug 6");
 
 
             WebClient versionsWc = new WebClient();
@@ -144,21 +143,16 @@ namespace Flarial.Launcher
                 CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
                 StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
             }
-            Trace.WriteLine("Debug 7");
-
-            Trace.WriteLine("Debug 8");
 
             Task.Delay(1);
 
-            Dispatcher.BeginInvoke((Action)(() => RPCManager.Initialize()));
-            Trace.WriteLine("Debug 9");
+            Dispatcher.InvokeAsync((Action)(() => RPCManager.Initialize()));
 
             Application.Current.MainWindow = this;
-            Trace.WriteLine("Debug 10");
 
             SetGreetingLabel();
 
-            
+
         }
 
         public static void CreateMessageBox(string text)
