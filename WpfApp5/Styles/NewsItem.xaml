@@ -33,7 +33,7 @@
                 </LinearGradientBrush>
             </Border.Background>
             <StackPanel Margin="15,10,0,0">
-                <TextBlock FontWeight="Medium" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Top" FontSize="22" Foreground="White" FontFamily="Space Grotesk"/>
+                <TextBlock FontWeight="Medium" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Top" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -49,11 +49,11 @@
                             <RectangleGeometry Rect="0,0,30,30" RadiusX="15" RadiusY="15"/>
                         </Image.Clip>
                     </Image>
-                    <TextBlock Grid.Column="1" FontWeight="Medium" Text="{Binding RoleName}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{Binding Path=RoleColor, Converter={StaticResource ColorConverter}}" FontFamily="Space Grotesk"/>
-                    <TextBlock Grid.Column="2"  FontWeight="Medium" Text="{Binding Author}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="White" FontFamily="Space Grotesk"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,-2,0,0" Text="{Binding Date}" Opacity="0.6" VerticalAlignment="Top" FontSize="8" Foreground="White" FontFamily="Space Grotesk"/>
+                    <TextBlock Grid.Column="1" FontWeight="Medium" Text="{Binding RoleName}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{Binding Path=RoleColor, Converter={StaticResource ColorConverter}}" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    <TextBlock Grid.Column="2"  FontWeight="Medium" Text="{Binding Author}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,-2,0,0" Text="{Binding Date}" Opacity="0.6" VerticalAlignment="Top" FontSize="8" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 </Grid>
-                <TextBlock Text="{Binding Body}" Grid.Column="1" TextWrapping="Wrap" Margin="0,5,15,15" VerticalAlignment="Top" FontSize="12" Foreground="#ffffff" FontFamily="Space Grotesk"/>
+                <TextBlock Text="{Binding Body}" Grid.Column="1" TextWrapping="Wrap" Margin="0,5,15,15" VerticalAlignment="Top" FontSize="12" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
             </StackPanel>
         </Border>
     </Grid>

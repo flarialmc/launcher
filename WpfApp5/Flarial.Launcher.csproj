@@ -55,6 +55,7 @@
    <None Remove="Assets\guest.png" />
    <None Remove="Assets\icon.png" />
    <None Remove="Assets\share.png" />
+   <None Remove="Assets\SpaceGrotesk.ttf" />
    <None Remove="Assets\v2bg.png" />
  </ItemGroup>
 
@@ -112,6 +113,7 @@
     <Resource Include="Assets\guest.png" />
     <Resource Include="Assets\icon.png" />
     <Resource Include="Assets\share.png" />
+    <Resource Include="Assets\SpaceGrotesk.ttf" />
     <Resource Include="Assets\v2bg.png" />
   </ItemGroup>
 

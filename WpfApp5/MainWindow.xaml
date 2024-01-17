@@ -57,7 +57,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Image Source="Assets/icon.png" Height="40" Margin="0" />
-                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="Space Grotesk"/>
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
                     <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Black" Opacity="0.4" VerticalAlignment="Bottom" Margin="20,0,0,80">
                         <Border.CornerRadius>
@@ -66,7 +66,7 @@
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="temp" FontSize="16" Foreground="#797676" FontFamily="Space Grotesk"/>
+                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="temp" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
                     <Grid Background="Transparent" MouseLeftButtonDown="MoveWindow"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
@@ -74,8 +74,8 @@
                         <Button Click="Close" Cursor="Hand" Height="20" Width="20" Template="{StaticResource CloseButtonTemplate}"/>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="Space Grotesk"/>
-                        <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="Space Grotesk"/>
+                        <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
                         <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
                     </StackPanel>
@@ -91,8 +91,8 @@
                         <Viewbox Grid.RowSpan="2">
                             <Path Data="M29.9985 35.0001C39.4673 35.0001 47.1414 27.1661 47.1414 17.5001C47.1414 7.83411 39.4673 0.00012207 29.9985 0.00012207C20.5298 0.00012207 12.8557 7.83411 12.8557 17.5001C12.8557 27.1661 20.5298 35.0001 29.9985 35.0001ZM41.9985 39.3751H39.7619C36.7887 40.7697 33.4807 41.5626 29.9985 41.5626C26.5164 41.5626 23.2218 40.7697 20.2351 39.3751H17.9985C8.06104 39.3751 -0.00146484 47.6056 -0.00146484 57.7501V63.4376C-0.00146484 67.0607 2.878 70.0001 6.42711 70.0001H53.57C57.1191 70.0001 59.9985 67.0607 59.9985 63.4376V57.7501C59.9985 47.6056 51.936 39.3751 41.9985 39.3751Z" Fill="#FF2438"/>
                         </Viewbox>
-                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Logged in as:" VerticalAlignment="Center" FontSize="16" Foreground="White" FontFamily="Space Grotesk"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Text="Guest" VerticalAlignment="Center" FontSize="16" Foreground="#FF2438" FontFamily="Space Grotesk"/>
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Logged in as:" VerticalAlignment="Center" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Text="Guest" VerticalAlignment="Center" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
                     <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20">
                         <Grid.RowDefinitions>
@@ -103,9 +103,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="Launcher" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="Space Grotesk"/>
-                        <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="Space Grotesk"/>
-                        <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready to inject" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="Space Grotesk"/>
+                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="Launcher" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready to inject" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
 
                     <Border Height="40" Background="{fw:AcrylicBrush bggrid}" CornerRadius="10,0,0,10" Margin="0,0,0,90" VerticalAlignment="Bottom" HorizontalAlignment="Right">
@@ -121,7 +121,7 @@
                                     <RectangleGeometry Rect="0,0,5,40"/>
                                 </Border.Clip>
                             </Border>
-                            <TextBlock Grid.Column="1" Margin="7.5,0,7.5,0" Text="News" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="Space Grotesk"/>
+                            <TextBlock Grid.Column="1" Margin="7.5,0,7.5,0" Text="News" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                             <Viewbox Grid.Column="2" Margin="0,12.5,7.5,12.5">
                                 <Path Name="NewsArrow" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" Data="M1.99854 24L11.9985 13L1.99854 2" Stroke="white" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round">
                                     <Path.RenderTransform>

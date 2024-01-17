@@ -43,7 +43,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Image Source="/Assets/icon.png" Height="50" Margin="0" />
-                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Newsfeed" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="Space Grotesk"/>
+                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Newsfeed" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 </Grid>
             </Grid>
         </Grid>

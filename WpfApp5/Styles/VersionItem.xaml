@@ -38,7 +38,7 @@
                             <Border.Background>
                                 <SolidColorBrush Color="White" Opacity="0.1"/>
                             </Border.Background>
-                            <TextBlock Text="{TemplateBinding Property=local:VersionItemProperties.Version}" Margin="10,5,10,5" FontSize="24" FontWeight="Medium" Foreground="White" FontFamily="Space Grotesk"/>
+                            <TextBlock Text="{TemplateBinding Property=local:VersionItemProperties.Version}" Margin="10,5,10,5" FontSize="24" FontWeight="Medium" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         </Border>
                     </Border>
                     <Border CornerRadius="10" Background="{fw:AcrylicBrush RootGrid}" Margin="20,20,20,25" VerticalAlignment="Bottom" HorizontalAlignment="Left">
@@ -47,9 +47,9 @@
                                 <SolidColorBrush Color="White" Opacity="0.1"/>
                             </Border.Background>
                             <StackPanel Margin="10,5,10,5" Orientation="Horizontal">
-                                <TextBlock Name="StateText1" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="Space Grotesk"/>
-                                <TextBlock Text="{TemplateBinding Property=local:VersionItemProperties.InstallPercentage}" Name="StateText2" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="Space Grotesk"/>
-                                <TextBlock Text="%" Name="StateText3" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="Space Grotesk"/>
+                                <TextBlock Name="StateText1" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                                <TextBlock Text="{TemplateBinding Property=local:VersionItemProperties.InstallPercentage}" Name="StateText2" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                                <TextBlock Text="%" Name="StateText3" FontSize="14" FontWeight="Medium" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                             </StackPanel>
                         </Border>
                     </Border>

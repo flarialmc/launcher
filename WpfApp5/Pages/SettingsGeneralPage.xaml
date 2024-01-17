@@ -34,7 +34,7 @@
                                 </Border.Background>
                             </Border>
                             <StackPanel Margin="15,0,15,0" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Name="tb" Text="Save Config" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="Space Grotesk"/>
+                                <TextBlock Name="tb" Text="Save Config" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                             </StackPanel>
                         </Grid>
                         <Border.RenderTransform>

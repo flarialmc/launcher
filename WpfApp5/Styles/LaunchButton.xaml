@@ -13,7 +13,7 @@
                         <Path  Data="M10.1524 3.38462C12.0216 3.38462 13.537 4.89998 13.537 6.76923C13.537 8.63849 12.0216 10.1538 10.1524 10.1538H6.76777V37.2308H33.8447V33.8462C33.8447 31.9768 35.36 30.4615 37.2293 30.4615C39.0986 30.4615 40.6139 31.9768 40.6139 33.8462V37.2308C40.6139 40.9694 37.5833 44 33.8447 44H6.76777C3.02922 44 -0.00146484 40.9694 -0.00146484 37.2308V10.1538C-0.00146484 6.4153 3.02922 3.38462 6.76777 3.38462H10.1524ZM43.9985 0V16.9168C43.9985 18.7861 42.4832 20.3014 40.6139 20.3014C38.7446 20.3014 37.2293 18.7861 37.2293 16.9168V11.5557L22.7286 26.0563C21.4069 27.3781 19.2638 27.3781 17.9421 26.0563C16.6203 24.7346 16.6203 22.5915 17.9421 21.2698L32.4428 6.76923H27.0626C25.1933 6.76923 23.6779 5.25387 23.6779 3.38462C23.6779 1.51536 25.1933 0 27.0626 0H43.9985Z" Fill="white"/>
                     </Viewbox>
 
-                    <TextBlock Margin="10,0,0,0" Text="Launch" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="#ffffff" FontFamily="Space Grotesk"/>
+                    <TextBlock Margin="10,0,0,0" Text="Launch" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 </StackPanel>
             </Grid>
             <Border.RenderTransform>

@@ -43,7 +43,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="5,0,5,0" Text="{Binding Text}" VerticalAlignment="Center" FontSize="14" Foreground="White" FontFamily="Space Grotesk"/>
+            <TextBlock Margin="5,0,5,0" Text="{Binding Text}" VerticalAlignment="Center" FontSize="14" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
             <Button Grid.Column="1" Height="25" Click="ButtonBase_OnClick">
                 <Button.Template>
                     <ControlTemplate>

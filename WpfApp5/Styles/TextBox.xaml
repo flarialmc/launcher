@@ -13,7 +13,7 @@
         <Grid.Clip>
             <RectangleGeometry Rect="0,0,515,30" RadiusX="10" RadiusY="10"/>
         </Grid.Clip>
-        <TextBlock Background="Transparent" Opacity="0.5" FontFamily="Space Grotesk" Margin="5,0,37.5,0" VerticalAlignment="Center" x:Name="textbox" FontSize="13" Text="{Binding Path=Text, Mode=TwoWay}">
+        <TextBlock Background="Transparent" Opacity="0.5" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Margin="5,0,37.5,0" VerticalAlignment="Center" x:Name="textbox" FontSize="13" Text="{Binding Path=Text, Mode=TwoWay}">
             <TextBlock.Foreground>
                 <SolidColorBrush Color="White" Opacity="1"/>
             </TextBlock.Foreground>

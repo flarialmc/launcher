@@ -30,7 +30,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Image Source="/Assets/icon.png" Height="40" Margin="0" />
-                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Settings" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="Space Grotesk"/>
+                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Settings" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 </Grid>
                 <RadioButton Grid.Row="1" Checked="Navigate_General" Name="GeneralPageButton" Content="General" Margin="30,0,30,25"/>
                 <RadioButton Grid.Row="2" Checked="Navigate_Version" Content="Version" Margin="30,0,30,25"/>
@@ -56,7 +56,7 @@
                                         <Path Data="M15.9003 0.806543C16.2831 1.18941 16.4981 1.70862 16.4981 2.25C16.4981 2.79138 16.2831 3.31059 15.9003 3.69346L7.13546 12.4583H30.7902C31.3317 12.4583 31.851 12.6734 32.2339 13.0563C32.6168 13.4392 32.8319 13.9585 32.8319 14.5C32.8319 15.0415 32.6168 15.5608 32.2339 15.9437C31.851 16.3266 31.3317 16.5417 30.7902 16.5417H7.13546L15.9003 25.3065C16.2722 25.6916 16.478 26.2073 16.4734 26.7427C16.4687 27.278 16.254 27.79 15.8755 28.1686C15.4969 28.5471 14.9848 28.7619 14.4495 28.7665C13.9142 28.7712 13.3985 28.5654 13.0134 28.1935L0.763422 15.9435C0.380669 15.5606 0.165649 15.0414 0.165649 14.5C0.165649 13.9586 0.380669 13.4394 0.763422 13.0565L13.0134 0.806543C13.3963 0.42379 13.9155 0.208771 14.4569 0.208771C14.9983 0.208771 15.5175 0.42379 15.9003 0.806543Z" Fill="White"/>
                                     </Viewbox>
                                 </Border>
-                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{TemplateBinding Property=RadioButton.Content}" VerticalAlignment="Center" FontSize="18" Foreground="White" FontFamily="Space Grotesk"/>
+                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{TemplateBinding Property=RadioButton.Content}" VerticalAlignment="Center" FontSize="18" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="Button.IsPressed" Value="True">

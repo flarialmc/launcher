@@ -48,7 +48,7 @@ namespace Flarial.Launcher.Styles
                 DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 timer.Tick += (object s, EventArgs _e) =>
                 {
-                    double acc = 0;
+                    /*double acc = 0;
                     if (MainWindow.progressType == "download")
                         acc = MainWindow.progressBytesReceived;
                     else if (MainWindow.progressType == "Extracting")
@@ -56,9 +56,9 @@ namespace Flarial.Launcher.Styles
                     else if (MainWindow.progressType == "Installing")
                         acc = 75;
                     else if (MainWindow.progressType == "backup")
-                        acc = 90;
+                        acc = 90;*/
 
-                    VersionItemProperties.SetInstallPercentage(this, String.Format("{0:0.00}", acc));
+                    VersionItemProperties.SetInstallPercentage(this, MainWindow.progressPercentage.ToString());
                         
 
                     time += 50;
