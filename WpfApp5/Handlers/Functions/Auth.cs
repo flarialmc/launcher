@@ -17,7 +17,7 @@ namespace Flarial.Launcher.Functions
     public static class Auth
     {
         public static string Path = $"{Managers.VersionManagement.launcherPath}\\cachedToken.txt";
-        public static string client_id = "1127566162490835006";
+        public static string client_id = "1058426966602174474";
         public static string client_sceret = "vMVoSCw3DciGp0p0HA7H6RjmMHWOXdIV";
         public static string redirect_url = "https://flarial.net";
 

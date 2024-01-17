@@ -34,17 +34,18 @@ namespace Flarial.Launcher.Pages
                 AttemptLogin();
         }
 
-        private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        private async Task loginner()
         {
             var result = await AttemptLogin();
             if (result) { return; }
-
+            
             w.Show();
             w.web.UseLayoutRounding = true;
             await w.web.EnsureCoreWebView2Async();
 
-            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1067854754518151168&redirect_uri=https%3A%2F%2Fflarial.net&response_type=code&scope=guilds%20identify%20guilds.members.read");
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
+            w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&response_type=code&redirect_uri=https%3A%2F%2Fflarial.net&scope=guilds.members.read+identify+guilds");
+            w.web.CoreWebView2.Settings.IsStatusBarEnabled = true;
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
@@ -54,8 +55,10 @@ namespace Flarial.Launcher.Pages
 
         private async void CoreWebView2_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
         {
-            if (e.Uri.StartsWith("https://flarial.net"))
+            Trace.WriteLine(e.Uri.ToString());
+            if (e.Uri.Contains("https://flarial.net"))
             {
+                Trace.WriteLine("Found");
                 await AttemptLoginWithoutCache(e);
             }
         }
@@ -73,14 +76,14 @@ namespace Flarial.Launcher.Pages
                         var atd = JsonConvert.DeserializeObject<AccessTokenData>(rawToken);
                         await Auth.CacheToken(atd.access_token, DateTime.Now, DateTime.Now + TimeSpan.FromSeconds(atd.expires_in));
                         string userResponse = await Auth.getReqUser(atd.access_token);
-                        LoginAccount(userResponse, atd.access_token);
+                        await LoginAccount(userResponse, atd.access_token);
                         return true;
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception trolling)
             {
-                return false;
+                Trace.WriteLine(trolling.StackTrace);
             }
             return false;
         }
@@ -100,6 +103,7 @@ namespace Flarial.Launcher.Pages
 
         private async Task LoginAccount(string userResponse, string authToken)
         {
+            Trace.WriteLine("TRYING TO LOG IN!");
             DiscordUser user = JsonConvert.DeserializeObject<DiscordUser>(userResponse);
             if (user != null)
             {
@@ -155,9 +159,9 @@ namespace Flarial.Launcher.Pages
             //MainGrid.Visibility = Visibility.Visible;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.CreateMessageBox("This feature is currently unavalible");
+            await loginner();
         }
     }
 }
