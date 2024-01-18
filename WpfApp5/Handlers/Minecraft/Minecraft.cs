@@ -52,10 +52,9 @@ namespace Flarial.Launcher
             
             if (Packages.Count() == 0)
             {
-                    
-                CustomDialogBox MessageBox = new CustomDialogBox("Error", "Minecraft needs to be installed.", "MessageBox");
-                MessageBox.ShowDialog();
-                Environment.Exit(0);
+
+                MainWindow.CreateMessageBox("Minecraft needs to be installed");
+                //Environment.Exit(0);
             }
             else
             {

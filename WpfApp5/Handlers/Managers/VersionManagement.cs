@@ -64,10 +64,14 @@ namespace Flarial.Launcher.Managers
             return result;
         }
 
-        public static async Task<bool> DownloadApplication(string version)
+        public static async Task<bool> DownloadApplication(string url, string version)
         {
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
-            string url = await GetVersionLinkAsync(version);
+
+            
+            WebClient webClient = new WebClient();
+            url = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri(url)).Result);
+            Trace.Write(url);
 
             if (File.Exists(path))
             {
@@ -78,20 +82,18 @@ namespace Flarial.Launcher.Managers
             if (!string.IsNullOrEmpty(url))
             {
                 Trace.WriteLine($"Got downloadable URL for Minecraft version {version}: {url}");
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.DownloadProgressChanged += DownloadProgressCallback;
+                webClient.DownloadProgressChanged += DownloadProgressCallback;
                     await webClient.DownloadFileTaskAsync(new Uri(url), path);
                     Trace.WriteLine("Download succeeded!");
-                }
             }
             else
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
-                        $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
-                    MessageBox.ShowDialog();
+                    //CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
+                    //    $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
+                    //MessageBox.ShowDialog();
+                    MainWindow.CreateMessageBox($"Download failed: {url} issue with the URL");
                 });
 
                 return false;
@@ -214,12 +216,12 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                            $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                            "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                        //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                        //    "MessageBox");
+                        //MessageBox.ShowDialog();
 
-
+                        MainWindow.CreateMessageBox($"RegisterPackageAsync failed, {ex.Message}");
                     });
                     return false;
                 }
@@ -245,8 +247,7 @@ namespace Flarial.Launcher.Managers
                 MainWindow.progressPercentage = e.ProgressPercentage;
             else Trace.WriteLine("nigger");
 
-            MainWindow.progressBytesReceived = e.BytesReceived;
-            MainWindow.progressBytesTotal = e.TotalBytesToReceive;
+            MainWindow.progressBytesReceived = e.ProgressPercentage;
         }
 
         public static async Task<bool> RemoveMinecraftPackage()
@@ -268,9 +269,10 @@ namespace Flarial.Launcher.Managers
                 }
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox =
-                            new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox =
+                        //    new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
+                        //MessageBox.ShowDialog();
+                        MainWindow.CreateMessageBox("Failed to remove package");
                     });
                     return false;
             }
@@ -278,10 +280,11 @@ namespace Flarial.Launcher.Managers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                        $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                        "MessageBox");
-                    MessageBox.ShowDialog();
+                    //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                    //    $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                    //    "MessageBox");
+                    //MessageBox.ShowDialog();
+                    MainWindow.CreateMessageBox($"RemovePackageAsync failed, {ex.Message}");
                 });
                 return false;
             }
@@ -346,7 +349,7 @@ namespace Flarial.Launcher.Managers
         }
 
 
-        public static async Task<bool> InstallMinecraft(string version)
+        public static async Task<bool> InstallMinecraft(string url, string version)
         {
             if (!Utils.IsDeveloperModeEnabled())
             {
@@ -364,7 +367,7 @@ namespace Flarial.Launcher.Managers
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
-            bool ello = await DownloadApplication(version);
+            bool ello = await DownloadApplication(url, version);
 
             if (ello)
             {
@@ -403,8 +406,9 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
-                        MessageBox.ShowDialog();
+                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
+                        //MessageBox.ShowDialog();
+                        MainWindow.CreateMessageBox("Failed to install");
                     });
                     
                     return false;
@@ -426,8 +430,8 @@ namespace Flarial.Launcher.Managers
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
-                    
+                    //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
+                    MainWindow.CreateMessageBox("Please restart the launcher for it to be able to install new patches");
                 });
 
                 await Task.Delay(2000);

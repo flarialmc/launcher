@@ -2,16 +2,23 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Flarial.Launcher"
+             xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+             xmlns:math="http://hexinnovation.com/math"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="TestDictionary1">
-                    <ResourceDictionary.MergedDictionaries>
-                        <ResourceDictionary Source="/Themes/DefaultTheme.xaml"/>
-                    </ResourceDictionary.MergedDictionaries>
-                </ResourceDictionary>
+                <!--  FluentWPF Controls  -->
+                <ResourceDictionary Source="pack://application:,,,/FluentWPF;component/Styles/Controls.xaml"/>
+                <ResourceDictionary Source="Styles/ScrollBar.xaml"/>
+                <ResourceDictionary Source="Styles/RadioButton.xaml"/>
+                <ResourceDictionary Source="Styles/ToggleButton.xaml"/>
+                <ResourceDictionary Source="Styles/MinimizeButton.xaml"/>
+                <ResourceDictionary Source="Styles/CloseButton.xaml"/>
+                <ResourceDictionary Source="Styles/LaunchButton.xaml"/>
+                <ResourceDictionary Source="Styles/SettingsButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <math:MathConverter x:Key="Math"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

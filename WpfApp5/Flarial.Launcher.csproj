@@ -41,26 +41,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fonts\SofiaSans-VariableFont_wght.ttf" />
-    <None Remove="Fonts\Unbounded-VariableFont_wght.ttf" />
-    <None Remove="Images\account.png" />
-    <None Remove="Images\back.png" />
-    <None Remove="Images\background.png" />
-    <None Remove="Images\background2.png" />
-    <None Remove="Images\close.png" />
-    <None Remove="Images\discord-mark-white.png" />
-    <None Remove="Images\general.png" />
-    <None Remove="Images\icon.ico" />
-    <None Remove="Images\icon.png" />
-    <None Remove="Images\news.png" />
-    <None Remove="Images\Saul_Goodman2.jpg" />
-    <None Remove="Images\setting.png" />
-    <None Remove="Images\share.png" />
-    <None Remove="Images\user2.png" />
-    <None Remove="Images\versions.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="1058433624430612640.ico" />
   </ItemGroup>
 
@@ -71,35 +51,27 @@
     <Page Remove="Handlers\UI\**" />
   </ItemGroup>
 
+ <ItemGroup>
+   <None Remove="Assets\guest.png" />
+   <None Remove="Assets\icon.png" />
+   <None Remove="Assets\share.png" />
+   <None Remove="Assets\SpaceGrotesk.ttf" />
+   <None Remove="Assets\v2bg.png" />
+ </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="DiscordRichPresence" Version="1.1.3.18" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1901.177" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
+    <PackageReference Include="MathConverter" Version="2.2.1" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
-    <PackageReference Include="System.Management" Version="7.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Fonts\SofiaSans-VariableFont_wght.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Fonts\Unbounded-VariableFont_wght.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\account.png" />
-    <Resource Include="Images\back.png" />
-    <Resource Include="Images\background.png" />
-    <Resource Include="Images\background2.png" />
-    <Resource Include="Images\close.png" />
-    <Resource Include="Images\discord-mark-white.png" />
-    <Resource Include="Images\general.png" />
-    <Resource Include="Images\icon.ico" />
-    <Resource Include="Images\icon.png" />
-    <Resource Include="Images\news.png" />
-    <Resource Include="Images\setting.png" />
-    <Resource Include="Images\share.png" />
-    <None Remove="Images\user.png" />
     <COMReference Include="Shell32">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -118,10 +90,12 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
-    <Resource Include="Images\user.png" />
-    <Resource Include="Images\versions.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
     <Reference Include="System.Drawing.Common">
       <HintPath>C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\7.0.9\System.Drawing.Common.dll</HintPath>
     </Reference>
@@ -129,12 +103,18 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
-    <Resource Include="Images\1.20.10.png" />
-    <Resource Include="Images\1.20.12.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Generated Files\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\guest.png" />
+    <Resource Include="Assets\icon.png" />
+    <Resource Include="Assets\share.png" />
+    <Resource Include="Assets\SpaceGrotesk.ttf" />
+    <Resource Include="Assets\v2bg.png" />
   </ItemGroup>
 
 </Project>

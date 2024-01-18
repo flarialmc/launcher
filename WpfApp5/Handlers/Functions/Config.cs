@@ -8,10 +8,18 @@ namespace Flarial.Launcher.Functions
 
     public class Config
     {
+        public static string Version;
+        public static bool UseCustomDLL;
+        public static string CustomDLLPath;
+        public static bool UseBetaDLL;
+        public static bool CloseToTray;
+        public static bool AutoLogin;
+        public static string CustomThemePath;
+
 
         public static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
-        public static async Task saveConfig(string version, bool shouldUseCustomDLLreal, string customdllpath, bool shouldUseBetaDLLreal, bool closeToTray, bool autoLoginreal, string customThemePath)
+        public static async Task saveConfig()
         {
             if (!File.Exists(Path))
             {
@@ -24,24 +32,60 @@ namespace Flarial.Launcher.Functions
 
             var ts = new ConfigData()
             {
-                minecraft_version = version,
+                minecraft_version = Version,
 
-                shouldUseCustomDLL = shouldUseCustomDLLreal,
+                shouldUseCustomDLL = UseCustomDLL,
 
-                custom_dll_path = customdllpath,
+                custom_dll_path = CustomDLLPath,
 
-                shouldUseBetaDll = shouldUseBetaDLLreal,
+                shouldUseBetaDll = UseBetaDLL,
 
-                closeToTray = closeToTray,
+                closeToTray = CloseToTray,
 
-                autoLogin = autoLoginreal,
+                autoLogin = AutoLogin,
 
-                custom_theme_path = customThemePath
+                custom_theme_path = CustomThemePath
             };
 
             var tss = JsonConvert.SerializeObject(ts);
 
             File.WriteAllText(Path, tss);
+
+            MainWindow.CreateMessageBox("Config saved");
+        }
+
+        public static void loadConfig()
+        {
+            ConfigData config = Config.getConfig();
+
+            if (config == null)
+            {
+                return;
+
+            }
+
+            Version = config.minecraft_version;
+            UseBetaDLL = config.shouldUseBetaDll;
+            CustomDLLPath = config.custom_dll_path;
+            CloseToTray = config.closeToTray;
+            AutoLogin = config.autoLogin;
+            UseCustomDLL = config.shouldUseCustomDLL;
+
+
+            
+
+            if (CustomDLLPath != "amongus")
+            {
+                //CustomDllButton.IsChecked = true;
+                //dllTextBox.Visibility = Visibility.Visible;
+                //dllTextBox.Text = custom_dll_path;
+            }
+
+
+            //TrayButton.IsChecked = closeToTray;
+
+            //BetaDLLButton.IsChecked = shouldUseBetaDLL;
+            //AutoLoginButton.IsChecked = autoLogin;
         }
 
         public static ConfigData getConfig()
@@ -57,7 +101,7 @@ namespace Flarial.Launcher.Functions
             {
                 return new ConfigData()
                 {autoLogin = true,
-                closeToTray = true,
+                closeToTray = false,
                 shouldUseBetaDll = false,
                 shouldUseCustomDLL = false,
                 

@@ -81,7 +81,7 @@ namespace Flarial.Launcher.Managers
 
         private static void InitializeDiscordClient()
         {
-            client = new DiscordRpcClient("1067854754518151168");
+            client = new DiscordRpcClient("1058426966602174474");
             client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
             client.OnReady += (sender, e) => Trace.WriteLine("Received Ready from user {0}", e.User.Username);
             client.OnPresenceUpdate += (sender, e) => Trace.WriteLine("Received Update! {0}", e.Presence.ToString());
@@ -150,13 +150,6 @@ namespace Flarial.Launcher.Managers
                         ipAddress = ip,
                         largeImageKey = "ngmc",
                         Detail = "Nethergames Network"
-                    };
-                case string _ when ip.Contains("hyperland"):
-                    return new serverInformation()
-                    {
-                        ipAddress = ip,
-                        largeImageKey = "hlmc",
-                        Detail = "Hyperlands Network"
                     };
                 case string _ when ip.Contains("cubecraft"):
                     return new serverInformation()

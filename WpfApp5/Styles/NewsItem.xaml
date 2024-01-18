@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Flarial.Launcher.Styles.NewsItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Flarial.Launcher.Styles"
+             mc:Ignorable="d" Width="355" d:DesignWidth="355">
+    <UserControl.Resources>
+        <local:ColorConverter x:Key="ColorConverter"/>
+        <local:ImageConverter x:Key="ImageConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Image Margin="5,0,10,0" Stretch="UniformToFill" VerticalAlignment="Top" Source="{Binding Path=BackgroundURL, Converter={StaticResource ImageConverter}}" Height="100">
+            <Image.Clip>
+                <RectangleGeometry Rect="0,0,337.5,120" RadiusX="20" RadiusY="20"/>
+            </Image.Clip>
+        </Image>
+        <Border Height="60" Width="345" VerticalAlignment="Top" Margin="0,41,0,0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Color="#ff201A1B" Offset="1"/>
+                    <GradientStop Color="#00201A1B" Offset="0"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+        <Border Width="345" CornerRadius="20">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <GradientStop Color="#FF2438" Offset="0"/>
+                    <GradientStop Color="#FF2438" Offset="0.01"/>
+                    <GradientStop Color="#00201A1B" Offset="0.01"/>
+                    <GradientStop Color="#00201A1B" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Margin="15,10,0,0">
+                <TextBlock FontWeight="Medium" TextWrapping="Wrap" Text="{Binding Title}" VerticalAlignment="Top" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.RowSpan="2" Height="30" Width="30" HorizontalAlignment="Left" Source="{Binding Path=AuthorAvatar, Converter={StaticResource ImageConverter}}" Stretch="UniformToFill">
+                        <Image.Clip>
+                            <RectangleGeometry Rect="0,0,30,30" RadiusX="15" RadiusY="15"/>
+                        </Image.Clip>
+                    </Image>
+                    <TextBlock Grid.Column="1" FontWeight="Medium" Text="{Binding RoleName}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{Binding Path=RoleColor, Converter={StaticResource ColorConverter}}" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    <TextBlock Grid.Column="2"  FontWeight="Medium" Text="{Binding Author}" Margin="5,-2.5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,-2,0,0" Text="{Binding Date}" Opacity="0.6" VerticalAlignment="Top" FontSize="8" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                </Grid>
+                <TextBlock Text="{Binding Body}" Grid.Column="1" TextWrapping="Wrap" Margin="0,5,15,15" VerticalAlignment="Top" FontSize="12" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

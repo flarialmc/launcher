@@ -3,216 +3,163 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Flarial.Launcher"
-
-        xmlns:AttachedBehavior="clr-namespace:ScrollAnimateBehavior.AttachedBehaviors"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
-        AllowsTransparency="True" WindowStyle="None"
-        Style="{DynamicResource WindowStyle}">
+        Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
+        Background="#120e0f" ResizeMode="NoResize" WindowStyle="None">
+    <Window.Clip>
+        <RectangleGeometry Rect="0,0,800,500" RadiusX="25" RadiusY="25"/>
+    </Window.Clip>
     <Grid>
-        <Grid x:Name="MainGrid" Style="{DynamicResource MainPageStyle}">
-            <ContentControl Style="{DynamicResource BackgroundImage}"/>
-            <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Style="{DynamicResource IconImage}"/>
-            <Label Content="Good Morning!" x:Name="GreetingLabel" Style="{DynamicResource GreetingLabelStyle}"/>
-            <Label Style="{DynamicResource GreetingLabelStyle2}"/>
-            <Label Content="Version" x:Name="versionLabel" Style="{DynamicResource VersionLabel}"/>
-            <Button Style="{DynamicResource CloseButton}" Click="CloseButton_Click"/>
-            <Image Style="{DynamicResource UserPFPImage}" x:Name="PFP"/>
-            <Label Style="{DynamicResource LIALabel}"/>
-            <StackPanel Style="{DynamicResource UsernameStackPanelStyle}">
-                <Label Style="{DynamicResource UsernameLabelStyle}" x:Name="Username"/>
-                <Border Style="{DynamicResource BetaTagStyle}" x:Name="BetaTag">
-                    <Label Style="{DynamicResource BetaTagLabelStyle}"/>
-                </Border>
-                <Border Style="{DynamicResource MediaTagStyle}" x:Name="MediaTag">
-                    <Label Style="{DynamicResource MediaTagLabelStyle}"/>
-                </Border>
-                <Border Style="{DynamicResource DevTagStyle}" x:Name="DevTag">
-                    <Label Style="{DynamicResource DevTagLabelStyle}"/>
-                </Border>
-                <Border Style="{DynamicResource StaffTagStyle}" x:Name="StaffTag">
-                    <Label Style="{DynamicResource StaffTagLabelStyle}"/>
-                </Border>
-                <Border Style="{DynamicResource ModTagStyle}" x:Name="ModTag">
-                    <Label Style="{DynamicResource ModTagLabelStyle}"/>
-                </Border>
-                <Border Style="{DynamicResource ExecTagStyle}" x:Name="ExecTag">
-                    <Label Style="{DynamicResource ExecTagLabelStyle}"/>
-                </Border>
-            </StackPanel>
-            <Label Style="{DynamicResource LauncherLabel}"/>
-            <Label x:Name="VersionLabel" Content="v1" Style="{DynamicResource LauncherVersionLabel}"/>
-            <Label x:Name="statusLabel" Style="{DynamicResource StatusLabelStyle}"/>
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid Name="LOL" Style="{DynamicResource NewsGrid}" MouseLeftButtonUp="LOL_MouseLeftButtonUp">
-                    <Image Style="{DynamicResource NewsIcon}"/>
-                    <Label Style="{DynamicResource NewsHeader}"/>
-                    <Label Style="{DynamicResource NewsTitle}"/>
-                    <TextBlock Style="{DynamicResource NewsBody}"/>
-                </Grid>
-
-                <StackPanel Style="{DynamicResource MainButtonStackPanel}">
-                    <Button Style="{DynamicResource LaunchButton}" Click="Inject_Click"/>
-                    <Button x:Name="OptionsButton" Style="{DynamicResource OptionsButton}"/>
-                </StackPanel>
-            </Grid>
-
-        </Grid>
-        <Grid x:Name="LoginGrid" Style="{DynamicResource LoginPageStyle}">
-            <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Style="{DynamicResource LoginIcon}"/>
-            <StackPanel Style="{DynamicResource LoginGreetingStackPanel}">
-                <Label Style="{DynamicResource LoginGreetingLabel1}"/>
-                <Label Style="{DynamicResource LoginGreetingLabel2}"/>
-            </StackPanel>
-            <Label Style="{DynamicResource LoginInfoLabel}"/>
-            <Button Style="{DynamicResource LoginTextButton}" Click="Button_Click_1"/>
-            <StackPanel Style="{DynamicResource LoginButtonsStackPanel}">
-                <Button Style="{DynamicResource LoginButton}" Click="Login_Click"/>
-                <Button Style="{DynamicResource LoginGuestButton}" x:Name="LoginGuest"/>
-            </StackPanel>
-        </Grid>
-
-        <Grid x:Name="OptionsGrid" Style="{DynamicResource OptionsPageStyle}">
-            <Grid Background="Transparent" MouseLeftButtonDown="DragWindow"/>
-            <Image Style="{DynamicResource SettingsIcon}"/>
-            <Label Style="{DynamicResource SettingsTitle}"/>
-            <Label Style="{DynamicResource SettingsSubtitle}" x:Name="Subtitle"/>
-            <Grid Style="{DynamicResource OptionsVersionGridStyle}" x:Name="OptionsVerionGrid">
-                <ScrollViewer 
-                              x:Name="VersionScrollViewer" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Style="{DynamicResource OptionsVersionScrollViewerStyle}">
-                    <StackPanel Style="{DynamicResource OptionsVersionStackPanelStyle}" x:Name="VersionsPanel"/>
-                </ScrollViewer>
-            </Grid>
-            <Grid Style="{DynamicResource OptionsGeneralGridStyle}" x:Name="OptionsGeneralGrid">
-                <ScrollViewer Margin="0,0,0,75" VerticalScrollBarVisibility="Hidden">
-                    <StackPanel Style="{DynamicResource OptionsGeneralStackPanel}">
-                        <ToggleButton x:Name="CustomDllButton" Style="{DynamicResource ToggleButton}" Content="Custom DLL" x:Uid="CustomDLLButton" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
-                        <local:CustomTextBox Type="dll" x:Name="dllTextBox" Visibility="Collapsed"/>
-                        <ToggleButton x:Name="BetaDLLButton" Style="{DynamicResource ToggleButton}" Visibility="Collapsed" Content="Beta DLL" x:Uid="CustomDLLButton" Checked="BetaButton_Checked" Unchecked="BetaButton_Unchecked"/>
-                        <ToggleButton x:Name="TrayButton" Style="{DynamicResource ToggleButton}" Content="Close To Tray" x:Uid="CustomDLLButton" Checked="TrayButton_Checked" Unchecked="TrayButton_Unchecked"/>
-                        <ToggleButton x:Name="CustomThemeButton" Style="{DynamicResource ToggleButton}" Content="Custom Theme" x:Uid="CustomThemeButton" Checked="CustomThemeButton_Checked" Unchecked="CustomThemeButton_Unchecked"/>
-                        <local:CustomTextBox Type="theme" x:Name="themeTextBox" Visibility="Collapsed"/>
-                        <ToggleButton x:Name="AutoLoginButton" Style="{DynamicResource ToggleButton}" Content="Auto Login" x:Uid="AutoLoginButton" Checked="AutoLoginButton_Checked" Unchecked="AutoLoginButton_Unchecked"/>
+        <Grid Name="MainGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="500"/>
+                <RowDefinition Height="500"/>
+            </Grid.RowDefinitions>
+            <Border Name="MainBorder" Background="#201A1B" CornerRadius="25">
+                <Grid>
+                    <Grid>
+                        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,75,0,75">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Image HorizontalAlignment="Center" Stretch="UniformToFill" Grid.RowSpan="3" Source="Assets/v2bg.png"/>
+                            <Rectangle Margin="-1">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Color="#ff201A1B" Offset="0"/>
+                                        <GradientStop Color="#00201A1B" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Grid.Row="2" Margin="-1">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                                        <GradientStop Color="#ff201A1B" Offset="0"/>
+                                        <GradientStop Color="#00201A1B" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Grid>
+                    </Grid>
+                    <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="Assets/icon.png" Height="40" Margin="0" />
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    </Grid>
+                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Black" Opacity="0.4" VerticalAlignment="Bottom" Margin="20,0,0,80">
+                        <Border.CornerRadius>
+                            <MultiBinding ConverterParameter="Min(x,y)/2" Converter="{StaticResource Math}">
+                                <Binding ElementName="VersionTextBorder" Path="ActualHeight" />
+                                <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
+                            </MultiBinding>
+                        </Border.CornerRadius>
+                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="temp" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    </Border>
+                    <Grid Background="Transparent" MouseLeftButtonDown="MoveWindow"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
+                        <Button Click="Minimize" Cursor="Hand" Height="20" Width="20" Margin="0,0,15,0" Template="{StaticResource MinimizeButtonTemplate}"/>
+                        <Button Click="Close" Cursor="Hand" Height="20" Width="20" Template="{StaticResource CloseButtonTemplate}"/>
                     </StackPanel>
-                </ScrollViewer>
-                <Border Height="10" VerticalAlignment="Bottom" Margin="0,0,0,75">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                            <GradientStop Color="#00402a2e" Offset="0"/>
-                            <GradientStop Color="#ff402a2e" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
-                </Border>
-                <Button x:Name="SaveConfigButton" Style="{DynamicResource SaveConfigButtonStyle}" Click="SaveConfig"/>
-            </Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
+                        <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
+                    </StackPanel>
+                    <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.RowSpan="2" CornerRadius="22.5" Height="45" Width="45">
+                            <Border.Background>
+                                <ImageBrush Stretch="UniformToFill" x:Name="pfp" ImageSource="/Assets/guest.png"/>
+                            </Border.Background>
+                        </Border>
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Logged in as:" VerticalAlignment="Center" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="username" Margin="10,0,0,0" Text="Guest" VerticalAlignment="Center" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    </Grid>
+                    <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="Launcher" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready to inject" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                    </Grid>
 
-            <Grid Style="{DynamicResource OptionsAccountGridStyle}" x:Name="OptionsAccountGrid">
-                <StackPanel Style="{DynamicResource OptionsAccountStackPanelStyle}">
-                    <Image Style="{DynamicResource OptionsAccountPFPStyle}" x:Name="PFP2"/>
-                    <Label Style="{DynamicResource OptionsAccountLabel}"/>
-                    <Label Style="{DynamicResource OptionsAccountUsernameStyle}" x:Name="Username2"/>
-                </StackPanel>
-                <Button x:Name="LogoutButton" Style="{DynamicResource LogoutButtonStyle}" Click="Logout"/>
-                <Button x:Name="LoginButton" Style="{DynamicResource LoginButtonStyle}" Click="LoginAmongus"/>
-            </Grid>
-            <Grid x:Name="OptionsCatagories" Style="{DynamicResource OptionsCatagoriesStyle}">
-                <StackPanel Style="{DynamicResource OptionsCatagoriesStackPanelStyle}">
-                    <RadioButton Content="General" Style="{DynamicResource OptionsButtonTheme}" IsChecked="True" Checked="OptionsGeneralClick" x:Name="RadioButton0">
-                        <RadioButton.Tag>
-                            <BitmapImage UriSource="Images/general.png"/>
-                        </RadioButton.Tag>
-                    </RadioButton>
-                    <RadioButton Content="Version" Checked="OptionsVersionClick" Style="{DynamicResource OptionsButtonTheme}">
-                        <RadioButton.Tag>
-                            <BitmapImage UriSource="Images/versions.png"/>
-                        </RadioButton.Tag>
-                    </RadioButton>
-                    <RadioButton Content="Account" Checked="OptionsAccountClick" Style="{DynamicResource OptionsButtonTheme}">
-                        <RadioButton.Tag>
-                            <BitmapImage UriSource="Images/account.png"/>
-                        </RadioButton.Tag>
-                    </RadioButton>
-                    <RadioButton Content="Back" Style="{DynamicResource OptionsButtonTheme}" x:Name="RadioButton3">
-                        <RadioButton.Tag>
-                            <BitmapImage UriSource="Images/back.png"/>
-                        </RadioButton.Tag>
-                    </RadioButton>
-                </StackPanel>
-            </Grid>
+                    <Border Height="40" Background="{fw:AcrylicBrush bggrid}" CornerRadius="10,0,0,10" Margin="0,0,0,90" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Name="bgb" Grid.ColumnSpan="3" Background="Black" Opacity="0.3" CornerRadius="10,0,0,10"/>
+                            <Border Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0" CornerRadius="10,0,0,10" Background="#FF2438">
+                                <Border.Clip>
+                                    <RectangleGeometry Rect="0,0,5,40"/>
+                                </Border.Clip>
+                            </Border>
+                            <TextBlock Grid.Column="1" Margin="7.5,0,7.5,0" Text="News" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                            <Viewbox Grid.Column="2" Margin="0,12.5,7.5,12.5">
+                                <Path Name="NewsArrow" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" Data="M1.99854 24L11.9985 13L1.99854 2" Stroke="white" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="0"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                            <Grid Grid.ColumnSpan="3" Cursor="Hand" Background="Transparent" MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp">
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="Grid.MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="bgb" Storyboard.TargetProperty="Opacity"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Grid.MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.1" To="0.3" Storyboard.TargetName="bgb" Storyboard.TargetProperty="Opacity"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+            <Border Width="0" Name="NewsBorder" Grid.Column="1" Background="#201A1B" CornerRadius="25">
+                <Frame Source="Pages/NewsPage.xaml"/>
+            </Border>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" Width="800" Name="SettingsBorder" Background="#120e0f" CornerRadius="25">
+                <Frame Source="Pages/SettingsPage.xaml"/>
+            </Border>
         </Grid>
-        <Grid Visibility="Hidden" x:Name="NewsGrid">
-            <Image Source="/Images/icon.png" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="23,23.5,0,0"/>
-            <Label Content="Flarial" Foreground="#fe4443" FontSize="30" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,14,0,0"/>
-            <Label Content="News" Foreground="#ffffff" FontSize="30" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="195,14,0,0"/>
-            <Label x:Name="test123" Content="The latest news!" Foreground="#525252" FontSize="24" FontFamily="Unbounded" VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Margin="80,45,0,0"/>
-            <Grid Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"/>
-            <Button Style="{DynamicResource CloseButton}" Click="Button_Click_2"/>
-            <ScrollViewer
-            AttachedBehavior:ScrollAnimationBehavior.IsEnabled="True"                         
-                      AttachedBehavior:ScrollAnimationBehavior.TimeDuration="00:00:00.20"
-                      AttachedBehavior:ScrollAnimationBehavior.PointsToScroll="16"
-            x:Name="NewsScrollViewer" Margin="25,100,155,15" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel x:Name="NewsStackPanel"/>
-            </ScrollViewer>
-            <ScrollViewer AttachedBehavior:ScrollAnimationBehavior.IsEnabled="True"                         
-                      AttachedBehavior:ScrollAnimationBehavior.TimeDuration="00:00:00.20"
-                      AttachedBehavior:ScrollAnimationBehavior.PointsToScroll="16"
-                      HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,100,10,20" Width="130" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
-                <ScrollViewer.Resources>
-                    <Style TargetType="RadioButton">
-                        <Setter Property="Margin" Value="0,0,0,10"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border Height="75" BorderThickness="0" BorderBrush="#ffffff" CornerRadius="10" Background="{TemplateBinding Property=Tag}" x:Name="border">
-                                        <Border CornerRadius="10" Background="#000000" Opacity="0" x:Name="grid"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="RadioButton.IsChecked" Value="True">
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <ThicknessAnimation Duration="0:0:0.1" To="1,1,1,1" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.EnterActions>
-                                            <Trigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <ThicknessAnimation Duration="0:0:0.1" To="0,0,0,0" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.ExitActions>
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Duration="0:0:0.1" To="0.2" Storyboard.TargetName="grid" Storyboard.TargetProperty="Opacity"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.EnterActions>
-                                            <Trigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="grid" Storyboard.TargetProperty="Opacity"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.ExitActions>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ScrollViewer.Resources>
-                <StackPanel x:Name="OverviewStackPanel"/>
-            </ScrollViewer>
-        </Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Name="MbGrid"/>
     </Grid>
 </Window>
