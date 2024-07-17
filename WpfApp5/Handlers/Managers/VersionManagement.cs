@@ -45,7 +45,7 @@ namespace Flarial.Launcher.Managers
             string result = "";
             WebClient webClient = new WebClient();
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFile("https://flarialbackup.ashank.tech/launcher/VersionDl.txt", "VersionDl.txt");
+            versionsWc.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/VersionDl.txt"), "VersionDl.txt");
 
 
             string[] rawVersions = File.ReadAllLines("VersionDl.txt");

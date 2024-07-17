@@ -57,6 +57,12 @@ namespace Flarial.Launcher
         {
             InitializeComponent();
             CreateDirectoriesAndFiles();
+            
+            
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             FileStream outResultsFile = new FileStream(
                 $"{VersionManagement.launcherPath}\\log.txt",
@@ -68,28 +74,14 @@ namespace Flarial.Launcher
             var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
             Trace.Listeners.Add(textListener);
             
-            Trace.WriteLine("Debug 1");
+            Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
+            Dispatcher.InvokeAsync((Action)(() => DownloadUtil()));
 
-            string url = "https://flarialbackup.ashank.tech/dll/DllUtil.dll";
-            string filePath = "dont.delete";
+            Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = client.GetAsync(url).Result;
-                byte[] fileBytes = response.Content.ReadAsByteArrayAsync().Result;
-                File.WriteAllBytes(Path.Combine(currentDirectory, filePath), fileBytes);
-            }
-
-
-
-
-            Trace.WriteLine("Debug 2 " + currentDirectory);
-
-            Minecraft.Init();
-            Trace.WriteLine("Debug 3");
+            Dispatcher.InvokeAsync((Action)(() => Minecraft.Init()));
+            Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
 
 
@@ -105,9 +97,9 @@ namespace Flarial.Launcher
 
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
-            Trace.WriteLine("Debug 4");
+            Trace.WriteLine("Debug 4 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Trace.WriteLine("Debug 5");
+            Trace.WriteLine("Debug 5 " + stopwatch.Elapsed.Milliseconds.ToString());
 
 
             if (version == 0.666)
@@ -115,9 +107,11 @@ namespace Flarial.Launcher
                 Trace.WriteLine("It's development time.");
             }
 
+            /*
             WebClient updat = new WebClient();
-            updat.DownloadFile("https://flarialbackup.ashank.tech/launcher/latestVersion.txt", "latestVersion.txt");
+            updat.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/latestVersion.txt"), "latestVersion.txt");
 
+            Trace.WriteLine("Debug 6");
             string[] updatRial = File.ReadAllLines("latestVersion.txt");
 
             CultureInfo germanCulture = new CultureInfo("de-DE");
@@ -125,7 +119,7 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("I try 2 autoupdate");
 
-                updat.DownloadFile("https://flarialbackup.ashank.tech/installer.exe", "installer.exe");
+                updat.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/installer.exe"), "installer.exe");
 
                 var p = new Process();
                 p.StartInfo.FileName = "installer.exe";
@@ -135,16 +129,46 @@ namespace Flarial.Launcher
                 Trace.Close();
                 Environment.Exit(5);
             }
+            */
+            
+            Trace.WriteLine("Debug 7 " + stopwatch.Elapsed.Milliseconds.ToString());
+            
+            Trace.WriteLine("Debug 8 " + stopwatch.Elapsed.Milliseconds.ToString());
 
+            Dispatcher.InvokeAsync((Action)(() => RPCManager.Initialize()));
 
+            Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
+            Application.Current.MainWindow = this;
+
+            SetGreetingLabel();
+
+            Dispatcher.InvokeAsync((Action)(() => TryDaVersionz()));
+            
+            Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
+            
+            stopwatch.Stop();
+
+        }
+
+        public async Task DownloadUtil()
+        {
+            string url = "https://flarialbackup.ashank.tech/dll/DllUtil.dll";
+            string filePath = "dont.delete";
+            
+            WebClient updat = new WebClient();
+            updat.DownloadFileAsync(new Uri(url), "dont.delete");
+        }
+
+        public async Task<bool> TryDaVersionz()
+        {
+            
             VersionLabel.Text = Minecraft.GetVersion().ToString();
 
 
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFile("https://flarialbackup.ashank.tech/launcher/Supported.txt", "Supported.txt");
-
-
-            string[] rawVersions = File.ReadAllLines("Supported.txt");
+            versionsWc.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/Supported.txt"), "Supported.txt");
+            
+            string[] rawVersions = await File.ReadAllLinesAsync("Supported.txt");
             string first = "Not Installed";
 
             if (Minecraft.GetVersion().ToString().StartsWith("0"))
@@ -156,15 +180,7 @@ namespace Flarial.Launcher
                 StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
             }
 
-            Task.Delay(1);
-
-            Dispatcher.InvokeAsync((Action)(() => RPCManager.Initialize()));
-
-            Application.Current.MainWindow = this;
-
-            SetGreetingLabel();
-
-
+            return true;
         }
 
         public static void CreateMessageBox(string text)
