@@ -52,6 +52,7 @@ namespace Flarial.Launcher
         public static TextBlock versionLabel;
         public static TextBlock Username;
         private static StackPanel mbGrid;
+        private static Stopwatch speed = new Stopwatch();
 
         public MainWindow()
         {
@@ -60,6 +61,7 @@ namespace Flarial.Launcher
             
             
             Stopwatch stopwatch = new Stopwatch();
+            speed.Start();
             stopwatch.Start();
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -252,43 +254,33 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             
-                if (System.IO.File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
+                if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
 
-                    string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
+                string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
 
-                using (HttpClient client = new HttpClient())
-                {
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    File.WriteAllBytes(filePath, fileBytes);
-                }
+
+                WebClient updat = new WebClient();
+                updat.DownloadFileAsync(new Uri(url), filePath);
+                
+                Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
 
                 if (Config.UseCustomDLL) pathToExecute = Config.CustomDLLPath;
                 
-                try
-                {
-                    new OptimizerManager().Optimize();
-                    
-                    NvidiaWifiOptimizer.Optimize();
-
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex.Message);
-                    Trace.WriteLine(ex.StackTrace);
-
-                }
-
-                Utils.disableVsync();
                 Utils.OpenGame();
 
                 await Minecraft.WaitForModules();
 
                 StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+                
+                
+                Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }
             else
                 {
