@@ -254,6 +254,8 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine(speed.Elapsed.Milliseconds);
+
             Stopwatch watch = new Stopwatch();
             watch.Start();
             Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
