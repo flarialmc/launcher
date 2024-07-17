@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Windows.Management.Deployment;
 
 namespace Flarial.Launcher
@@ -16,9 +17,6 @@ namespace Flarial.Launcher
 
         public static PackageManager PackageManager { get; private set; }
         public static Windows.ApplicationModel.Package Package { get; private set; }
-        public static Windows.ApplicationModel.PackageId PackageId => Package.Id ?? throw new NullReferenceException();
-        public static Windows.System.ProcessorArchitecture PackageArchitecture => PackageId.Architecture;
-        public static Windows.ApplicationModel.PackageVersion PackageVersion => PackageId.Version;
         public static Windows.Storage.ApplicationData ApplicationData { get; private set; }
 
         public static void Init()
@@ -52,8 +50,6 @@ namespace Flarial.Launcher
             
             if (Packages.Count() == 0)
             {
-
-                MainWindow.CreateMessageBox("Minecraft needs to be installed");
                 //Environment.Exit(0);
             }
             else
@@ -87,13 +83,19 @@ namespace Flarial.Launcher
         }
         public static Version GetVersion()
         {
-            var v = PackageVersion;
+            
+            if(Package != null)
+            {
+                var v = Package.Id.Version;
 
-          double buildVersion =  (double)v.Build;
-           var Ok = (int)buildVersion.RoundToSignificantDigits(2);
-          ;
-            return new Version(v.Major, v.Minor,
-               int.Parse(Ok.ToString().Substring(0, 2)));
+                double buildVersion = (double)v.Build;
+                var Ok = (int)buildVersion.RoundToSignificantDigits(2);
+                ;
+                return new Version(v.Major, v.Minor,
+                    int.Parse(Ok.ToString().Substring(0, 2)));
+            }
+
+            return new Version(0, 0);
         }
         
         public static async Task WaitForModules()

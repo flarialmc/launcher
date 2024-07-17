@@ -58,10 +58,16 @@ namespace Flarial.Launcher
             InitializeComponent();
             CreateDirectoriesAndFiles();
 
-            Stream outResultsFile = File.Create($"{VersionManagement.launcherPath}\\log.txt");
-            var textListener = new TextWriterTraceListener(outResultsFile);
-            Trace.Listeners.Add(textListener);
+            FileStream outResultsFile = new FileStream(
+                $"{VersionManagement.launcherPath}\\log.txt",
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.Read
+            );
 
+            var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
+            Trace.Listeners.Add(textListener);
+            
             Trace.WriteLine("Debug 1");
 
 
@@ -141,7 +147,10 @@ namespace Flarial.Launcher
             string[] rawVersions = File.ReadAllLines("Supported.txt");
             string first = "Not Installed";
 
-            if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
+            if (Minecraft.GetVersion().ToString().StartsWith("0"))
+            {
+                CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
+            } else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
             {
                 CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
                 StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
@@ -337,5 +346,22 @@ public class Insertion
     public static DllReturns Insert(string path)
     {
         return (DllReturns)DLLImports.AddTheDLLToTheGame(path);
+    }
+}
+
+public class AutoFlushTextWriterTraceListener : TextWriterTraceListener
+{
+    public AutoFlushTextWriterTraceListener(Stream stream) : base(stream) { }
+
+    public override void Write(string message)
+    {
+        base.Write(message);
+        Flush();
+    }
+
+    public override void WriteLine(string message)
+    {
+        base.WriteLine(message);
+        Flush();
     }
 }
