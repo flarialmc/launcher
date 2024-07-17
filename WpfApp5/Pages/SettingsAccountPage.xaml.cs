@@ -39,13 +39,21 @@ namespace Flarial.Launcher.Pages
             var result = await AttemptLogin();
             if (result) { return; }
             
+            w.WindowTitle = "https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&response_type=code&redirect_uri=https%3A%2F%2Fflarial.net&scope=guilds.members.read+identify+guilds";
+
             w.Show();
             w.web.UseLayoutRounding = true;
             await w.web.EnsureCoreWebView2Async();
 
-            w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
+
             w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&response_type=code&redirect_uri=https%3A%2F%2Fflarial.net&scope=guilds.members.read+identify+guilds");
+
+
+            w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
+
             w.web.CoreWebView2.Settings.IsStatusBarEnabled = true;
+            w.web.CoreWebView2.Settings.AreDevToolsEnabled = true;
+
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
