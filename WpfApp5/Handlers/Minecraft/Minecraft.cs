@@ -127,6 +127,10 @@ namespace Flarial.Launcher
                         break;
                     }
                 }
+                else
+                {
+                    break;
+                }
             }
             Trace.WriteLine("Minecraft finished loading");
         }
