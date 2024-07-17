@@ -45,7 +45,7 @@ namespace Flarial.Launcher.Managers
             string result = "";
             WebClient webClient = new WebClient();
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/VersionDl.txt", "VersionDl.txt");
+            versionsWc.DownloadFile("https://flarialbackup.ashank.tech/launcher/VersionDl.txt", "VersionDl.txt");
 
 
             string[] rawVersions = File.ReadAllLines("VersionDl.txt");
@@ -340,10 +340,10 @@ namespace Flarial.Launcher.Managers
                     writer.WriteLine(jsonString);
                 }
 
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/assets/flarial-title.png"),
+                await webClient.DownloadFileTaskAsync(new Uri("https://flarialbackup.ashank.tech/assets/flarial-title.png"),
                     Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
                         "ui", "title.png"));
-                await webClient.DownloadFileTaskAsync(new Uri("https://cdn-c6f.pages.dev/assets/flarial_mogang.png"),
+                await webClient.DownloadFileTaskAsync(new Uri("https://flarialbackup.ashank.tech/assets/flarial_mogang.png"),
                     Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
         }

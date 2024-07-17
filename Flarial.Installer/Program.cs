@@ -15,7 +15,7 @@ namespace Flarial.Minimal
         static private ProgressBar bar;
         static private Progressbar form;
         static private string location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Flarial\";
-        static private string url = "https://cdn-c6f.pages.dev/launcher/latest.zip";
+        static private string url = "https://flarialbackup.ashank.tech/launcher/latest.zip";
         static private bool silent = false;
 
         static private void CreateShortcut(string name, string directory, string targetFile, string iconlocation, string description)

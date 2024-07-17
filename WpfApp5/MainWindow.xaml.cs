@@ -71,7 +71,7 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 1");
 
 
-            string url = "https://cdn-c6f.pages.dev/dll/DllUtil.dll";
+            string url = "https://flarialbackup.ashank.tech/dll/DllUtil.dll";
             string filePath = "dont.delete";
 
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -116,7 +116,7 @@ namespace Flarial.Launcher
             }
 
             WebClient updat = new WebClient();
-            updat.DownloadFile("https://cdn-c6f.pages.dev/launcher/latestVersion.txt", "latestVersion.txt");
+            updat.DownloadFile("https://flarialbackup.ashank.tech/launcher/latestVersion.txt", "latestVersion.txt");
 
             string[] updatRial = File.ReadAllLines("latestVersion.txt");
 
@@ -125,7 +125,7 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("I try 2 autoupdate");
 
-                updat.DownloadFile("https://cdn-c6f.pages.dev/installer.exe", "installer.exe");
+                updat.DownloadFile("https://flarialbackup.ashank.tech/installer.exe", "installer.exe");
 
                 var p = new Process();
                 p.StartInfo.FileName = "installer.exe";
@@ -141,7 +141,7 @@ namespace Flarial.Launcher
 
 
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFile("https://cdn-c6f.pages.dev/launcher/Supported.txt", "Supported.txt");
+            versionsWc.DownloadFile("https://flarialbackup.ashank.tech/launcher/Supported.txt", "Supported.txt");
 
 
             string[] rawVersions = File.ReadAllLines("Supported.txt");
@@ -240,7 +240,7 @@ namespace Flarial.Launcher
                 if (System.IO.File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
 
-                    string url = "https://cdn-c6f.pages.dev/dll/latest.dll";
+                    string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
 

@@ -29,7 +29,7 @@ namespace Flarial.Launcher.Pages
         {
             InitializeComponent();
 
-            string newsUrl = "https://cdn-c6f.pages.dev/launcher/news.json";
+            string newsUrl = "https://flarialbackup.ashank.tech/launcher/news.json";
 
             using (WebClient webClient = new WebClient())
             {
