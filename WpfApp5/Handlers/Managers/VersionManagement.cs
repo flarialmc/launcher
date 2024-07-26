@@ -185,6 +185,7 @@ namespace Flarial.Launcher.Managers
                 
                 //    var progress = new Progress<DeploymentProgress>(ReportProgress);
 
+                Trace.WriteLine($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
            return  await   RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
 
 
@@ -220,8 +221,8 @@ namespace Flarial.Launcher.Managers
                         //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
                         //    "MessageBox");
                         //MessageBox.ShowDialog();
-
-                        MainWindow.CreateMessageBox($"RegisterPackageAsync failed, {ex.Message}");
+                        Trace.WriteLine($"RegisterPackageAsync failed, {ex.Message}");
+                        MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}");
                     });
                     return false;
                 }
@@ -418,9 +419,9 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed", "Failed to install.", "MessageBox");
-                        //MessageBox.ShowDialog();
+                        MessageBox.Show("");
                         MainWindow.CreateMessageBox("Failed to install");
+                        MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
                     });
                     
                     return false;

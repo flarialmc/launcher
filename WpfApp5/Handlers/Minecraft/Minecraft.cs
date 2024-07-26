@@ -100,7 +100,7 @@ namespace Flarial.Launcher
         
         
         
-        public static async Task WaitForModules()
+        public static async Task WaitForModules(Action action)
         {
             if(Process is { HasExited: true }) Process = null;
             
@@ -109,7 +109,6 @@ namespace Flarial.Launcher
                 var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
                 if (mcIndex.Length > 0)
                 {
-                    
                     Process = mcIndex[0];
 
                 }
@@ -120,9 +119,12 @@ namespace Flarial.Launcher
             Trace.WriteLine("Waiting for Minecraft to load");
             while (true)
             {
+                Trace.WriteLine("test");
+                
                 Process.Refresh();
                 if (!Process.HasExited)
                 {
+                    Trace.WriteLine(MainWindow.isDllDownloadFinished);
                     if (Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished)
                     {
                         await Task.Delay(1500);
@@ -131,10 +133,14 @@ namespace Flarial.Launcher
                 }
                 else
                 {
+                    
+                    Trace.WriteLine("Process GONE! (L)");
                     break;
                 }
             }
             Trace.WriteLine("Minecraft finished loading");
+
+            if (!Process.HasExited) action();
         }
 
     }

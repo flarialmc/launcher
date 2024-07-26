@@ -256,7 +256,7 @@ namespace Flarial.Launcher
         public static void DownloadProgressCallbackOfDLL(object sender, DownloadProgressChangedEventArgs e)
         {
             isDllDownloadFinished = (e.BytesReceived == e.TotalBytesToReceive);
-            StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived / 1000000, 2) + "/" + Decimal.Round(e.TotalBytesToReceive/1000000, 2);
+            StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived, 2) + "/" + Decimal.Round(e.TotalBytesToReceive, 2);
         }
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
@@ -266,6 +266,8 @@ namespace Flarial.Launcher
             Stopwatch watch = new Stopwatch();
             watch.Start();
             Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
+            
+            Trace.WriteLine("did work");
             
                 if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
@@ -279,16 +281,28 @@ namespace Flarial.Launcher
                 WebClient updat = new WebClient();
                 updat.DownloadFileAsync(new Uri(url), filePath);
                 updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
+
+                Trace.WriteLine("did work");
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
 
                 if (Config.UseCustomDLL) pathToExecute = Config.CustomDLLPath;
                 
+                Trace.WriteLine("did work");
+                
                 Utils.OpenGame();
+                
+                Trace.WriteLine("did work");
 
-                await Minecraft.WaitForModules();
+                Action action = () =>
+                {
+                    StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+                };
 
-                StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+                Task.Run(() =>
+                {
+                    Minecraft.WaitForModules(action);
+                });
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }
@@ -298,9 +312,16 @@ namespace Flarial.Launcher
                     if (Config.UseCustomDLL)
                     {
                        Utils.OpenGame();
-                        
-                        await Minecraft.WaitForModules();
-                        Insertion.Insert(Config.CustomDLLPath);
+
+                       Action action = () =>
+                       {
+                           Insertion.Insert(Config.CustomDLLPath);
+                       };
+
+                       Task.Run(() =>
+                       {
+                           Minecraft.WaitForModules(action);
+                       });
                     }
                 }
         }
