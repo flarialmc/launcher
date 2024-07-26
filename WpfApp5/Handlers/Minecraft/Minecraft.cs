@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Management.Deployment;
+using Flarial.Launcher.Functions;
 
 namespace Flarial.Launcher
 {
@@ -119,14 +120,14 @@ namespace Flarial.Launcher
             Trace.WriteLine("Waiting for Minecraft to load");
             while (true)
             {
-                Trace.WriteLine("test");
                 
                 Process.Refresh();
                 if (!Process.HasExited)
                 {
-                    Trace.WriteLine(MainWindow.isDllDownloadFinished);
-                    if (Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished)
-                    {
+                    if ((Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished) ||
+                        (Process.Modules.Count > 160 && Config.UseCustomDLL))
+
+                   {
                         await Task.Delay(1500);
                         break;
                     }
@@ -140,7 +141,15 @@ namespace Flarial.Launcher
             }
             Trace.WriteLine("Minecraft finished loading");
 
-            if (!Process.HasExited) action();
+            if (!Process.HasExited)
+            {
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    action();
+                });
+
+            }
         }
 
     }

@@ -272,27 +272,27 @@ namespace Flarial.Launcher
                 if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
                     
-                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
-
-                string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
+                
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
+                
+                if(!Config.UseCustomDLL)
+                {
+                    isDllDownloadFinished = false;
+                    StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
 
-                WebClient updat = new WebClient();
-                updat.DownloadFileAsync(new Uri(url), filePath);
-                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
+                    string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
 
-                Trace.WriteLine("did work");
+                    WebClient updat = new WebClient();
+                    updat.DownloadFileAsync(new Uri(url), filePath);
+                    updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
+                }
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
 
                 if (Config.UseCustomDLL) pathToExecute = Config.CustomDLLPath;
                 
-                Trace.WriteLine("did work");
-                
                 Utils.OpenGame();
-                
-                Trace.WriteLine("did work");
 
                 Action action = () =>
                 {
@@ -312,6 +312,8 @@ namespace Flarial.Launcher
                     if (Config.UseCustomDLL)
                     {
                        Utils.OpenGame();
+
+                       isDllDownloadFinished = true;
 
                        Action action = () =>
                        {
