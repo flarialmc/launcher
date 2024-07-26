@@ -238,6 +238,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine(progress.percentage + "% yas");
             }
         }
+        
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -361,6 +362,13 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine("Developer Mode is already enabled on your system.");
                 // Continue with the rest of your application logic here.
+            }
+
+            if (Utils.IsDeveloperModeEnabled())
+            {
+                
+                MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                
             }
 
 

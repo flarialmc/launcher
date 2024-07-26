@@ -42,6 +42,7 @@ namespace Flarial.Launcher
      
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public static int progressPercentage;
+        public static bool isDllDownloadFinished = false;
         public static long progressBytesReceived;
         public static long progressBytesTotal;
         public static string progressType; 
@@ -251,6 +252,12 @@ namespace Flarial.Launcher
             Trace.Close();
             Environment.Exit(0);
         }
+        
+        public static void DownloadProgressCallbackOfDLL(object sender, DownloadProgressChangedEventArgs e)
+        {
+            isDllDownloadFinished = (e.BytesReceived == e.TotalBytesToReceive);
+            StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived / 1000000, 2) + "/" + Decimal.Round(e.TotalBytesToReceive/1000000, 2);
+        }
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
@@ -262,14 +269,16 @@ namespace Flarial.Launcher
             
                 if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
+                    
+                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
 
                 string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
 
-
                 WebClient updat = new WebClient();
                 updat.DownloadFileAsync(new Uri(url), filePath);
+                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
 
@@ -281,7 +290,6 @@ namespace Flarial.Launcher
 
                 StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
                 
-                
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }
             else
@@ -289,7 +297,7 @@ namespace Flarial.Launcher
                 CreateMessageBox("Our client does not support this version. If you are using a custom dll, That will be used instead.");
                     if (Config.UseCustomDLL)
                     {
-                            Utils.OpenGame();
+                       Utils.OpenGame();
                         
                         await Minecraft.WaitForModules();
                         Insertion.Insert(Config.CustomDLLPath);

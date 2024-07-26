@@ -98,6 +98,8 @@ namespace Flarial.Launcher
             return new Version(0, 0);
         }
         
+        
+        
         public static async Task WaitForModules()
         {
             if(Process is { HasExited: true }) Process = null;
@@ -121,7 +123,7 @@ namespace Flarial.Launcher
                 Process.Refresh();
                 if (!Process.HasExited)
                 {
-                    if (Process.Modules.Count > 160)
+                    if (Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished)
                     {
                         await Task.Delay(1500);
                         break;
