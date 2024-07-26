@@ -364,11 +364,10 @@ namespace Flarial.Launcher.Managers
                 // Continue with the rest of your application logic here.
             }
 
-            if (Utils.IsDeveloperModeEnabled())
+            if (!Utils.IsDeveloperModeEnabled())
             {
-                
                 MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
-                
+                return false;
             }
 
 
@@ -383,6 +382,11 @@ namespace Flarial.Launcher.Managers
 
                 Minecraft.Init();
 
+                if (!Utils.IsDeveloperModeEnabled())
+                {
+                    MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                    return false;
+                }
                 if (Minecraft.Package != null)
                 {
                     if (await BackupManager.GetConfig("temp") == null)
