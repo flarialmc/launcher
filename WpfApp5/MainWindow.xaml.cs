@@ -255,7 +255,9 @@ namespace Flarial.Launcher
         
         public static void DownloadProgressCallbackOfDLL(object sender, DownloadProgressChangedEventArgs e)
         {
-            isDllDownloadFinished = (e.BytesReceived == e.TotalBytesToReceive);
+            isDllDownloadFinished = e.BytesReceived.ToString() == e.TotalBytesToReceive.ToString();
+            
+            if(isDllDownloadFinished) Trace.WriteLine(isDllDownloadFinished);
             StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived, 2) + "/" + Decimal.Round(e.TotalBytesToReceive, 2);
         }
 

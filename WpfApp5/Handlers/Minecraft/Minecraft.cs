@@ -124,6 +124,7 @@ namespace Flarial.Launcher
                 Process.Refresh();
                 if (!Process.HasExited)
                 {
+
                     if ((Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished) ||
                         (Process.Modules.Count > 160 && Config.UseCustomDLL))
 
