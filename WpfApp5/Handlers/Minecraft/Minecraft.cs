@@ -118,6 +118,8 @@ namespace Flarial.Launcher
         
         public static async Task RealDLLLoop()
         {
+            
+            Trace.WriteLine("starting RealDLLLoop.");
             while (true)
             {
                 //Trace.WriteLine(modules);
