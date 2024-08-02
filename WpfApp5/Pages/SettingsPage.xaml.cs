@@ -36,7 +36,11 @@ namespace Flarial.Launcher.Pages
         private void Navigate_General(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
         private void Navigate_Version(object sender, RoutedEventArgs e)
-            => SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
+        {
+            SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
+            MessageBox.Show("MAKE SURE YOU HAVE DEVELOPER MODE ENABLED IN WINDOWS! Or else the version changer WILL break.");
+
+        }
         private void Navigate_Account(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
     }

@@ -54,6 +54,7 @@ namespace Flarial.Launcher
         public static TextBlock Username;
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
+        public static Action actionOnInject;
 
         public MainWindow()
         {
@@ -77,6 +78,13 @@ namespace Flarial.Launcher
             var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
             Trace.Listeners.Add(textListener);
             
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                Exception ex = (Exception)args.ExceptionObject;
+                Trace.WriteLine($"Unhandled exception: {ex.Message}");
+                Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
+            };
+            
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             Dispatcher.InvokeAsync((Action)(() => DownloadUtil()));
@@ -86,7 +94,9 @@ namespace Flarial.Launcher
             Dispatcher.InvokeAsync((Action)(() => Minecraft.Init()));
             Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-
+            Trace.WriteLine("Adding MC Load Loop");
+            Task.Run(async () => await Minecraft.MCLoadLoop());
+            Trace.WriteLine("Added!");
 
             Config.loadConfig();
 
@@ -112,7 +122,7 @@ namespace Flarial.Launcher
 
             /*
             WebClient updat = new WebClient();
-            updat.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/latestVersion.txt"), "latestVersion.txt");
+            updat.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/latestVersion.txt"), "latestVersion.txt");
 
             Trace.WriteLine("Debug 6");
             string[] updatRial = File.ReadAllLines("latestVersion.txt");
@@ -122,7 +132,7 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("I try 2 autoupdate");
 
-                updat.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/installer.exe"), "installer.exe");
+                updat.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/installer.exe"), "installer.exe");
 
                 var p = new Process();
                 p.StartInfo.FileName = "installer.exe";
@@ -146,7 +156,6 @@ namespace Flarial.Launcher
             SetGreetingLabel();
 
             Dispatcher.InvokeAsync((Action)(() => TryDaVersionz()));
-            
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
@@ -155,7 +164,7 @@ namespace Flarial.Launcher
 
         public async Task DownloadUtil()
         {
-            string url = "https://flarialbackup.ashank.tech/dll/DllUtil.dll";
+            string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/DllUtil.dll";
             string filePath = "dont.delete";
             
             WebClient updat = new WebClient();
@@ -169,7 +178,7 @@ namespace Flarial.Launcher
 
 
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/Supported.txt"), "Supported.txt");
+            versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"), "Supported.txt");
             
             string[] rawVersions = await File.ReadAllLinesAsync("Supported.txt");
             string first = "Not Installed";
@@ -257,8 +266,17 @@ namespace Flarial.Launcher
         {
             isDllDownloadFinished = e.BytesReceived.ToString() == e.TotalBytesToReceive.ToString();
             
-            if(isDllDownloadFinished) Trace.WriteLine(isDllDownloadFinished);
-            StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived, 2) + "/" + Decimal.Round(e.TotalBytesToReceive, 2);
+            if(isDllDownloadFinished)
+            {
+                Trace.WriteLine(isDllDownloadFinished);
+                Trace.WriteLine("DLL Download Finished!");
+            } else StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived, 2) + "/" + Decimal.Round(e.TotalBytesToReceive, 2);
+
+            if (isDllDownloadFinished)
+            {
+                Trace.WriteLine("Download UPDATE: " + Minecraft.modules);
+                Task.Run(async () => await Minecraft.RealDLLLoop());
+            }
         }
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
@@ -283,7 +301,7 @@ namespace Flarial.Launcher
                     isDllDownloadFinished = false;
                     StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
 
-                    string url = "https://flarialbackup.ashank.tech/dll/latest.dll";
+                    string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
 
                     WebClient updat = new WebClient();
                     updat.DownloadFileAsync(new Uri(url), filePath);
@@ -296,15 +314,23 @@ namespace Flarial.Launcher
                 
                 Utils.OpenGame();
 
-                Action action = () =>
+                actionOnInject = () =>
                 {
-                    StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Trace.WriteLine("Injected!");
+                        StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+                    });
                 };
 
-                Task.Run(() =>
+                if (Config.UseCustomDLL)
                 {
-                    Minecraft.WaitForModules(action);
-                });
+                    Task.Run(async () =>
+                    {
+                        Trace.WriteLine("Starting loop!");
+                        await Minecraft.CustomDLLLoop();
+                    });
+                }
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }
@@ -315,16 +341,19 @@ namespace Flarial.Launcher
                     {
                        Utils.OpenGame();
 
-                       isDllDownloadFinished = true;
-
-                       Action action = () =>
+                       Dispatcher.InvokeAsync(() =>
                        {
-                           Insertion.Insert(Config.CustomDLLPath);
-                       };
+                           Trace.WriteLine("Starting loop!");
 
-                       Task.Run(() =>
-                       {
-                           Minecraft.WaitForModules(action);
+                           while (true)
+                           {
+                               if (Minecraft.modules >= 150)
+                               {
+                                   Trace.WriteLine("Injected!");
+                                   Insertion.Insert(Config.CustomDLLPath);
+                                   return;
+                               }
+                           }
                        });
                     }
                 }
@@ -406,5 +435,35 @@ public class AutoFlushTextWriterTraceListener : TextWriterTraceListener
     {
         base.WriteLine(message);
         Flush();
+    }
+}
+
+public class FileTraceListener : TraceListener
+{
+    private readonly StreamWriter _writer;
+
+    public FileTraceListener(string filePath)
+    {
+        _writer = new StreamWriter(filePath, true);
+    }
+
+    public override void Write(string message)
+    {
+        _writer.Write(message);
+    }
+
+    public override void WriteLine(string message)
+    {
+        _writer.WriteLine(message);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _writer?.Close();
+            _writer?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using Windows.Foundation;
 using Windows.Management.Deployment;
+using Flarial.Launcher.Pages;
+using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Flarial.Launcher.Managers
 {
@@ -45,7 +48,7 @@ namespace Flarial.Launcher.Managers
             string result = "";
             WebClient webClient = new WebClient();
             WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFileAsync(new Uri("https://flarialbackup.ashank.tech/launcher/VersionDl.txt"), "VersionDl.txt");
+            versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/VersionDl.txt"), "VersionDl.txt");
 
 
             string[] rawVersions = File.ReadAllLines("VersionDl.txt");
@@ -106,11 +109,13 @@ namespace Flarial.Launcher.Managers
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             bool success = false;
+            
+            Trace.WriteLine($"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"");
 
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "powershell",
-                Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command}\"",
+                Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"",
                 Verb = "runas", // This is what triggers running as admin
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -182,13 +187,13 @@ namespace Flarial.Launcher.Managers
                 MainWindow.progressPercentage = 100;
                 MainWindow.progressType = "Installing";
 
+                var manifestPath = Path.Combine(dir, "AppxManifest.xml");
+                var escapedPath = manifestPath.Replace("\"", "\\\"");
                 
+                Trace.WriteLine($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path \"{escapedPath}\" -Register");
+                return await RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path \"{escapedPath}\" -Register");
+
                 //    var progress = new Progress<DeploymentProgress>(ReportProgress);
-
-                Trace.WriteLine($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
-           return  await   RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path {dir}\\AppxManifest.xml -Register");
-
-
                 //var registerPackageOperation = packageManager.RegisterPackageByUriAsync(packageUri, new RegisterPackageOptions() { DeveloperMode = true });
                 //registerPackageOperation.Progress += (sender, args) => ReportProgress(args);
 
@@ -222,7 +227,7 @@ namespace Flarial.Launcher.Managers
                         //    "MessageBox");
                         //MessageBox.ShowDialog();
                         Trace.WriteLine($"RegisterPackageAsync failed, {ex.Message}");
-                        MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}");
+                        MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}", "ERROR!");
                     });
                     return false;
                 }
@@ -330,28 +335,14 @@ namespace Flarial.Launcher.Managers
 
                 if (File.Exists(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png")))
                     File.Delete(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
-
-                if (File.Exists(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
-                       "ui", "title.png")))
-                    File.Delete(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
-                        "ui", "title.png"));
-
-                using (StreamWriter writer = new StreamWriter(Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "splashes.json"), false))
-                {
-                    string jsonString = "{ \"splashes\": [ \"§4Flarial §fMan!\" ] }";
-                    writer.WriteLine(jsonString);
-                }
-
-                await webClient.DownloadFileTaskAsync(new Uri("https://flarialbackup.ashank.tech/assets/flarial-title.png"),
-                    Path.Combine(launcherPath, "Versions", version, "data", "resource_packs", "vanilla", "textures",
-                        "ui", "title.png"));
-                await webClient.DownloadFileTaskAsync(new Uri("https://flarialbackup.ashank.tech/assets/flarial_mogang.png"),
+                
+                await webClient.DownloadFileTaskAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/assets/flarial_mogang.png"),
                     Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
         }
 
 
-        public static async Task<bool> InstallMinecraft(string url, string version)
+        public static async Task<bool> InstallMinecraft(string url, string version, UIElement element)
         {
             if (!Utils.IsDeveloperModeEnabled())
             {
@@ -375,6 +366,8 @@ namespace Flarial.Launcher.Managers
             MainWindow.progressPercentage = 0;
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
+            element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 4));
+
             bool ello = await DownloadApplication(url, version);
 
             if (ello)
@@ -388,13 +381,17 @@ namespace Flarial.Launcher.Managers
                     MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
                     return false;
                 }
+
+                string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
+
                 if (Minecraft.Package != null)
                 {
-                    if (await BackupManager.GetConfig("temp") == null)
+                    if (await BackupManager.GetConfig(backupname) == null)
                     {
                         MainWindow.progressType = "backup";
-                        MainWindow.progressPercentage = 101;
-                        await BackupManager.CreateBackup("temp");
+                        MainWindow.progressPercentage = 100;
+                        element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 5));
+                        await BackupManager.CreateBackup(backupname);
                     }
                     Trace.WriteLine("Uninstalling current Minecraft version.");
                     await RemoveMinecraftPackage();
@@ -412,6 +409,9 @@ namespace Flarial.Launcher.Managers
                     Trace.WriteLine("The folder exists");
                 }
 
+                
+                element.Dispatcher.Invoke(() =>  VersionItemProperties.SetState(element, 1));
+
 
                 Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
@@ -419,7 +419,6 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        MessageBox.Show("");
                         MainWindow.CreateMessageBox("Failed to install");
                         MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
                     });
@@ -429,18 +428,14 @@ namespace Flarial.Launcher.Managers
 
                 await Task.Delay(1);
 
-                if (await BackupManager.GetConfig("temp") != null)
+                if (await BackupManager.GetConfig(backupname) != null)
                 {
                     Trace.WriteLine("Temporary backup found, now loading.");
-                    await BackupManager.LoadBackup("temp");
-
-                    Trace.WriteLine("Temporary backup loaded, now deleting.");
-                    await BackupManager.DeleteBackup("temp");
+                    await BackupManager.LoadBackup(backupname);
                 }
 
                 Trace.WriteLine("Installation complete.");
-
-
+                
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();

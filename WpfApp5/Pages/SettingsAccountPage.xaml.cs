@@ -2,20 +2,12 @@
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Flarial.Launcher.Pages
 {
@@ -44,15 +36,11 @@ namespace Flarial.Launcher.Pages
             w.Show();
             w.web.UseLayoutRounding = true;
             await w.web.EnsureCoreWebView2Async();
-
-
+            
             w.web.CoreWebView2.Navigate("https://discord.com/api/oauth2/authorize?client_id=1058426966602174474&response_type=code&redirect_uri=https%3A%2F%2Fflarial.net&scope=guilds.members.read+identify+guilds");
 
 
             w.web.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
-
-            w.web.CoreWebView2.Settings.IsStatusBarEnabled = true;
-            w.web.CoreWebView2.Settings.AreDevToolsEnabled = true;
 
         }
 

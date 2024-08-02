@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Management.Deployment;
@@ -13,12 +14,14 @@ namespace Flarial.Launcher
     public static partial class Minecraft
     {
 
-        public static Process Process;
+        public static Process Process1;
         public const string FamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
         public static PackageManager PackageManager { get; private set; }
         public static Windows.ApplicationModel.Package Package { get; private set; }
         public static Windows.Storage.ApplicationData ApplicationData { get; private set; }
+
+        public static int modules;
 
         public static void Init()
         {
@@ -31,7 +34,7 @@ namespace Flarial.Launcher
             var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
             if (mcIndex.Length > 0)
             {
-                Process = mcIndex[0];
+                Process1 = mcIndex[0];
 
             }
 
@@ -98,60 +101,92 @@ namespace Flarial.Launcher
 
             return new Version(0, 0);
         }
-        
-        
-        
-        public static async Task WaitForModules(Action action)
+
+        public static async Task CustomDLLLoop()
         {
-            if(Process is { HasExited: true }) Process = null;
-            
-            while (Process == null)
-            {
-                var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
-                if (mcIndex.Length > 0)
-                {
-                    Process = mcIndex[0];
-
-                }
-                
-                await Task.Delay(100);
-            }
-
-            Trace.WriteLine("Waiting for Minecraft to load");
             while (true)
             {
-                
-                Process.Refresh();
-                if (!Process.HasExited)
+                //Trace.WriteLine(modules);
+                if (modules >= 150)
                 {
-
-                    if ((Process.Modules.Count > 160 && MainWindow.isDllDownloadFinished) ||
-                        (Process.Modules.Count > 160 && Config.UseCustomDLL))
-
-                   {
-                        await Task.Delay(1500);
-                        break;
-                    }
-                }
-                else
-                {
-                    
-                    Trace.WriteLine("Process GONE! (L)");
-                    break;
+                    Trace.WriteLine("Injected!");
+                    Insertion.Insert(Config.CustomDLLPath);
+                    return;
                 }
             }
-            Trace.WriteLine("Minecraft finished loading");
-
-            if (!Process.HasExited)
+        }
+        
+        public static async Task RealDLLLoop()
+        {
+            while (true)
             {
-
-                Application.Current.Dispatcher.Invoke(() =>
+                //Trace.WriteLine(modules);
+                if (modules >= 150)
                 {
-                    action();
-                });
-
+                    Trace.WriteLine("Injected!");
+                    MainWindow.actionOnInject();
+                    return;
+                }
             }
         }
 
+        public static async Task MCLoadLoop()
+        {
+
+            while (true)
+            {
+                //Trace.WriteLine("Running loop...");
+
+                while (Process1 == null)
+                {
+                    //Trace.WriteLine("Trying to find process");
+                    var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+                    if (mcIndex.Length > 0)
+                    {
+                        Process1 = mcIndex[0];
+
+                    }
+                
+                    await Task.Delay(100);
+                }
+                
+                if(Process1.HasExited)
+                {
+                    Trace.WriteLine("Process GONE!");
+                    modules = 0;
+                    Process1 = null;
+                } else
+                {
+                    try
+                    {
+                        Process1 = Process.GetProcessesByName("Minecraft.Windows")[0];
+                        //Trace.WriteLine(Process1.ProcessName + " " + Process1.Id);
+
+                        try
+                        {
+                            //Trace.WriteLine("Load COUNT: " + Process1.Modules.Count);
+                            modules = Process1.Modules.Count;
+                        }
+                        catch (System.ComponentModel.Win32Exception ex)
+                        {
+                            Trace.WriteLine($"Failed to access modules: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine($"Unexpected error: {ex.Message}");
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Trace.WriteLine("No processes found with the name 'Minecraft.Windows'.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine($"Error finding process: {ex.Message}");
+                    }
+
+                }
+            }
+        }
     }
 }

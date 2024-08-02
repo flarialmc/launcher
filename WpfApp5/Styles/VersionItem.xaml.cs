@@ -81,7 +81,7 @@ namespace Flarial.Launcher.Styles
                 VersionItemProperties.SetState(this, 1);
 
                 string link = VersionItemProperties.GetVersionLink(this);
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version));
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version, this));
                 if (!succeeded)
                 {
                     this.IsChecked = false;
@@ -98,10 +98,7 @@ namespace Flarial.Launcher.Styles
                         }
                     }
                     MainWindow.progressPercentage = 100;
-
-
                 }
-                
             }
             else if (VersionItemProperties.GetState(this) == 2)
             {
@@ -154,7 +151,7 @@ namespace Flarial.Launcher.Styles
 
                 VersionItemProperties.SetState(this, 1);
                 string link = VersionItemProperties.GetVersionLink(this);
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version));
+                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version, this));
                 if (!succeeded)
                 {
                     this.IsChecked = false;
@@ -162,11 +159,7 @@ namespace Flarial.Launcher.Styles
                 }
                 else
                 {
-
-                    
                     MainWindow.progressPercentage = 100;
-
-
                 }
             }
         }

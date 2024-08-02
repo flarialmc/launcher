@@ -31,7 +31,7 @@ namespace Flarial.Launcher.Pages
             InitializeComponent();
             sp = VersionItemStackPanel;
 
-            string fileContent = new WebClient().DownloadString("https://flarialbackup.ashank.tech/launcher/versions.json");
+            string fileContent = new WebClient().DownloadString("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/versions.json");
 
             Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(fileContent);
 
