@@ -21,7 +21,7 @@ namespace Flarial.Launcher
         public static Windows.ApplicationModel.Package Package { get; private set; }
         public static Windows.Storage.ApplicationData ApplicationData { get; private set; }
 
-        public static int modules;
+        public static volatile int modules;
 
         public static void Init()
         {
@@ -121,13 +121,10 @@ namespace Flarial.Launcher
             Trace.WriteLine("starting RealDLLLoop.");
             while (true)
             {
-                //Trace.WriteLine(modules);
-                if (modules >= 150)
-                {
-                    Trace.WriteLine("Injected!");
-                    MainWindow.actionOnInject();
-                    break;
-                }
+                if (modules < 150) continue;
+                Trace.WriteLine("Injected!");
+                MainWindow.actionOnInject();
+                break;
             }
         }
 

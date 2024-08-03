@@ -57,8 +57,9 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
+            string today = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
             FileStream outResultsFile = new FileStream(
-                $"{VersionManagement.launcherPath}\\log.txt",
+                $"{VersionManagement.launcherPath}\\{today}.txt",
                 FileMode.Create,
                 FileAccess.Write,
                 FileShare.Read
