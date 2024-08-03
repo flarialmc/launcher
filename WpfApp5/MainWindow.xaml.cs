@@ -309,6 +309,8 @@ namespace Flarial.Launcher
                     {
                         Trace.WriteLine("Injected!");
                         StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+
+                        if (!File.Exists("dont.delete")) StatusLabel.Text = "Your antivirus has removed an important file.";
                     });
                 };
 
@@ -406,7 +408,9 @@ public class Insertion
 {
     public static DllReturns Insert(string path)
     {
-        return (DllReturns)DLLImports.AddTheDLLToTheGame(path);
+        DllReturns real = (DllReturns)DLLImports.AddTheDLLToTheGame(path);
+        Trace.WriteLine(real.ToString());
+        return real;
     }
 }
 

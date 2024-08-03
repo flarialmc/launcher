@@ -106,11 +106,10 @@ namespace Flarial.Launcher
         {
             while (true)
             {
-                //Trace.WriteLine(modules);
                 if (modules >= 150)
                 {
                     Trace.WriteLine("Injected!");
-                    Insertion.Insert(Config.CustomDLLPath);
+                    MainWindow.StatusLabel.Text = Insertion.Insert(Config.CustomDLLPath).ToString();
                     return;
                 }
             }
@@ -127,7 +126,7 @@ namespace Flarial.Launcher
                 {
                     Trace.WriteLine("Injected!");
                     MainWindow.actionOnInject();
-                    return;
+                    break;
                 }
             }
         }
