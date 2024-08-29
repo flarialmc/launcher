@@ -54,17 +54,27 @@ namespace Flarial.Launcher
             Stopwatch stopwatch = new Stopwatch();
             speed.Start();
             stopwatch.Start();
+            
+            Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            string today = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
-            FileStream outResultsFile = new FileStream(
-                $"{VersionManagement.launcherPath}\\{today}.txt",
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.Read
-            );
+            TraceListenerCollection listeners = Trace.Listeners;
 
-            var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
-            Trace.Listeners.Add(textListener);
+        
+
+                string today = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
+                FileStream outResultsFile = new FileStream(
+                    $"{VersionManagement.launcherPath}\\{today}.txt",
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.Read
+                );
+
+                var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
+                listeners.Add(textListener);
+            
+                Trace.WriteLine("\nMC Bought Status: " + Minecraft.StoreHelper.HasBought().Result);
+                Trace.WriteLine("Debug 0.5 " + stopwatch.Elapsed.Milliseconds.ToString());
+                
             
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
@@ -72,8 +82,6 @@ namespace Flarial.Launcher
                 Trace.WriteLine($"Unhandled exception: {ex.Message}");
                 Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
             };
-            
-            Trace.WriteLine("MC Bought Status: " + Minecraft.StoreHelper.HasBought().Result);
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
@@ -88,7 +96,11 @@ namespace Flarial.Launcher
             Task.Run(async () => await Minecraft.MCLoadLoop());
             Trace.WriteLine("Added!");
 
-            Config.loadConfig();
+            Task.Run(() =>
+            {
+                Config.loadConfig();
+
+            });
 
             StatusLabel = statusLabel;
             versionLabel = VersionLabel;
