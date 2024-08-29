@@ -22,8 +22,11 @@ namespace Flarial.Launcher.Pages
         {
             InitializeComponent();
 
-            if (Config.AutoLogin)
-                AttemptLogin();
+            Task.Run(() =>
+            {
+                if (Config.AutoLogin)
+                    AttemptLogin();
+            });
         }
 
         private async Task loginner()

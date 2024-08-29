@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Management.Deployment;
+using Windows.Services.Store;
 using Flarial.Launcher.Functions;
-
 namespace Flarial.Launcher
 {
 
@@ -29,16 +29,15 @@ namespace Flarial.Launcher
             InitManagers();
             FindPackage();
 
-
-
             var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
             if (mcIndex.Length > 0)
             {
                 Process1 = mcIndex[0];
 
             }
-
         }
+
+
 
         public static bool isInstalled()
         {
@@ -51,7 +50,7 @@ namespace Flarial.Launcher
         {
             PackageManager = new PackageManager();
             var Packages = PackageManager.FindPackages(FamilyName);
-            
+
             if (Packages.Count() == 0)
             {
                 //Environment.Exit(0);
@@ -77,6 +76,7 @@ namespace Flarial.Launcher
                 Package = Packages.First();
             }
         }
+
         public static double RoundToSignificantDigits(this double d, int digits)
         {
             if (d == 0)
@@ -85,10 +85,11 @@ namespace Flarial.Launcher
             double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(d))) + 1);
             return scale * Math.Round(d / scale, digits);
         }
+
         public static Version GetVersion()
         {
-            
-            if(Package != null)
+
+            if (Package != null)
             {
                 var v = Package.Id.Version;
 
@@ -109,21 +110,24 @@ namespace Flarial.Launcher
                 if (modules >= 150)
                 {
                     Trace.WriteLine("Injected!");
-                    MainWindow.StatusLabel.Text = Insertion.Insert(Config.CustomDLLPath).ToString();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.StatusLabel.Text = Insertion.Insert(Config.CustomDLLPath).ToString();
+                    });
                     return;
                 }
             }
         }
-        
+
         public static async Task RealDLLLoop()
         {
-            
+
             Trace.WriteLine("starting RealDLLLoop.");
             while (true)
             {
                 if (modules < 150) continue;
                 Trace.WriteLine("Injected!");
-                MainWindow.actionOnInject();
+                Application.Current.Dispatcher.Invoke(() => { MainWindow.actionOnInject(); });
                 break;
             }
         }
@@ -144,16 +148,17 @@ namespace Flarial.Launcher
                         Process1 = mcIndex[0];
 
                     }
-                
+
                     await Task.Delay(100);
                 }
-                
-                if(Process1.HasExited)
+
+                if (Process1.HasExited)
                 {
                     Trace.WriteLine("Process GONE!");
                     modules = 0;
                     Process1 = null;
-                } else
+                }
+                else
                 {
                     try
                     {
@@ -183,6 +188,26 @@ namespace Flarial.Launcher
                         Trace.WriteLine($"Error finding process: {ex.Message}");
                     }
 
+                }
+            }
+        }
+
+
+        public class StoreHelper
+        {
+            private static StoreContext context = StoreContext.GetDefault();
+
+            public static async Task<bool> HasBought()
+            {
+                try
+                {
+                    StoreAppLicense appLicense = await context.GetAppLicenseAsync();
+                    Trace.Write("TROLLING " + appLicense.IsActive + "\nIs Trial Mode: " + appLicense.IsTrial + "\nTrial time: " + appLicense.TrialTimeRemaining + "\nsmth: " + appLicense.IsTrialOwnedByThisUser);
+                    return appLicense.IsActive && !appLicense.IsTrial;
+                }
+                catch (Exception)
+                {
+                    return false;
                 }
             }
         }

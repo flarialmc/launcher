@@ -419,7 +419,7 @@ namespace Flarial.Launcher.Managers
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        MainWindow.CreateMessageBox("Failed to install");
+                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
                         MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
                     });
                     

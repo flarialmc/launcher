@@ -34,6 +34,12 @@ namespace Flarial.Launcher.Styles
 
         private async void VersionItem_OnClick(object sender, RoutedEventArgs e)
         {
+            
+            if(!Minecraft.StoreHelper.HasBought().Result)
+            {
+                MainWindow.CreateMessageBox("You haven't bought Minecraft! We cannot switch your Minecraft Version.");
+                MainWindow.CreateMessageBox("You have to update manually.");
+            }
             if (VersionItemProperties.GetState(this) == 0)
             {
                 foreach(VersionItem item in SettingsVersionPage.sp.Children)

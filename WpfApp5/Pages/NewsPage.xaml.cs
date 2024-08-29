@@ -29,32 +29,41 @@ namespace Flarial.Launcher.Pages
         {
             InitializeComponent();
 
-            string newsUrl = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/news.json";
-
-            using (WebClient webClient = new WebClient())
+            Task.Run(() =>
             {
-                string text = webClient.DownloadString(newsUrl);
-                deserializedNews = JsonConvert.DeserializeObject<NewsRoot>(text);
-            }
+                string newsUrl = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/news.json";
 
-            foreach (News item in deserializedNews.News)
-            {
-                sv.Children.Add(
-                    new NewsItem
+                using (WebClient webClient = new WebClient())
+                {
+                    string text = webClient.DownloadString(newsUrl);
+                    deserializedNews = JsonConvert.DeserializeObject<NewsRoot>(text);
+                }
+
+                // Use the Dispatcher to run the UI update code on the UI thread
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (News item in deserializedNews.News)
                     {
-                        Title = item.Title,
-                        Body = item.Body,
-                        Author = item.Author,
-                        RoleName = item.RoleName,
-                        RoleColor = item.RoleColor,
-                        BackgroundURL = item.Background,
-                        AuthorAvatar = item.AuthorAvatar,
-                        Date = item.Date
+                        sv.Children.Add(
+                            new NewsItem
+                            {
+                                Title = item.Title,
+                                Body = item.Body,
+                                Author = item.Author,
+                                RoleName = item.RoleName,
+                                RoleColor = item.RoleColor,
+                                BackgroundURL = item.Background,
+                                AuthorAvatar = item.AuthorAvatar,
+                                Date = item.Date
+                            }
+                        );
                     }
-                );
-            }
+                });
+            });
         }
     }
+
+
 
     public class News
     {

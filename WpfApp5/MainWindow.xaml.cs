@@ -44,7 +44,7 @@ namespace Flarial.Launcher
         public static TextBlock Username;
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
-        public static Action actionOnInject;
+        public static volatile Action actionOnInject;
 
         public MainWindow()
         {
@@ -54,8 +54,6 @@ namespace Flarial.Launcher
             Stopwatch stopwatch = new Stopwatch();
             speed.Start();
             stopwatch.Start();
-            
-            Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             string today = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
             FileStream outResultsFile = new FileStream(
@@ -74,6 +72,8 @@ namespace Flarial.Launcher
                 Trace.WriteLine($"Unhandled exception: {ex.Message}");
                 Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
             };
+            
+            Trace.WriteLine("MC Bought Status: " + Minecraft.StoreHelper.HasBought().Result);
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
@@ -149,6 +149,8 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
+            
+            MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
         }
 

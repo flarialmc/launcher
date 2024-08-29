@@ -38,7 +38,7 @@ namespace Flarial.Launcher.Pages
         private void Navigate_Version(object sender, RoutedEventArgs e)
         {
             SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-            MessageBox.Show("MAKE SURE YOU HAVE DEVELOPER MODE ENABLED IN WINDOWS! Or else the version changer WILL break.");
+            MessageBox.Show("!!! THIS IS A VERSION CHANGER. Not a Flarial Version SELECTOR! Use this when you need to downgrade to a version Flarial Supports. !!!\n To use Flarial, all you have to do is click Launch.", "MUST READ", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
         }
         private void Navigate_Account(object sender, RoutedEventArgs e)

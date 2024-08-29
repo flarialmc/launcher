@@ -26,55 +26,62 @@ namespace Flarial.Launcher.Pages
     public partial class SettingsVersionPage : Page
     {
         public static StackPanel sp;
+
         public SettingsVersionPage()
         {
             InitializeComponent();
-            sp = VersionItemStackPanel;
 
-            string fileContent = new WebClient().DownloadString("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/versions.json");
-
-            Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(fileContent);
-
-            foreach (var version in myDeserializedClass.Versions)
+            Task.Run(() =>
             {
-                VersionItem versionItem = new VersionItem();
-                VersionItemStackPanel.Children.Add(versionItem);
-                VersionItemProperties.SetVersion(versionItem, version.Name);
-                VersionItemProperties.SetVersionLink(versionItem, version.verlink);
-                VersionItemProperties.SetState(versionItem, 0);
+                // Fetch the data on a background thread
+                string fileContent =
+                    new WebClient().DownloadString(
+                        "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/versions.json");
 
-                foreach (string file in Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"))
+                Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(fileContent);
+
+                // Use the Dispatcher to marshal the UI updates to the main thread
+                Dispatcher.Invoke(() =>
                 {
-                    if (file.Contains(version.Name))
+                    sp = VersionItemStackPanel;
+
+                    foreach (var version in myDeserializedClass.Versions)
                     {
-                        VersionItemProperties.SetState(versionItem, 2);
+                        VersionItem versionItem = new VersionItem();
+                        VersionItemStackPanel.Children.Add(versionItem);
+                        VersionItemProperties.SetVersion(versionItem, version.Name);
+                        VersionItemProperties.SetVersionLink(versionItem, version.verlink);
+                        VersionItemProperties.SetState(versionItem, 0);
+
+                        foreach (string file in Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"))
+                        {
+                            if (file.Contains(version.Name))
+                            {
+                                VersionItemProperties.SetState(versionItem, 2);
+                            }
+                        }
+
+                        if (Minecraft.GetVersion().ToString() == version.Name)
+                        {
+                            VersionItemProperties.SetState(versionItem, 3);
+                            versionItem.IsChecked = true;
+                        }
+
+                        var bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.UriSource = new Uri(version.ImgURL);
+                        bitmapImage.EndInit();
+
+                        VersionItemProperties.SetImageURL(versionItem, bitmapImage);
                     }
-                }
-                if (Minecraft.GetVersion().ToString() == version.Name)
-                {
-                    VersionItemProperties.SetState(versionItem, 3);
-                    versionItem.IsChecked = true;
-                }
 
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.UriSource = new Uri(version.ImgURL); ;
-                bitmapImage.EndInit();
-
-                VersionItemProperties.SetImageURL(versionItem, bitmapImage);
-            }
-
-            VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[^1];
-            tempvi.Margin = new Thickness(0);
-
-            //if (Directory.GetFiles(VersionManagement.launcherPath + "\\Versions").Contains(VersionManagement.launcherPath + "\\Versions" + $"\\{version}"))
-
-            //foreach (string file in Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"))
-            //{
-            //    file.Contains()
-            //}
+                    VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[^1];
+                    tempvi.Margin = new Thickness(0);
+                });
+            });
         }
     }
+
 
     public class Root
     {
