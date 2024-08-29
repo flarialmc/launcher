@@ -199,11 +199,14 @@ namespace Flarial.Launcher
 
             public static async Task<bool> HasBought()
             {
+                return true;
                 try
                 {
                     StoreAppLicense appLicense = await context.GetAppLicenseAsync();
-                    Trace.Write("TROLLING " + appLicense.IsActive + "\nIs Trial Mode: " + appLicense.IsTrial + "\nTrial time: " + appLicense.TrialTimeRemaining + "\nsmth: " + appLicense.IsTrialOwnedByThisUser);
-                    return appLicense.IsActive && !appLicense.IsTrial;
+                    string minecraftStoreId = "9NBLGGH2JHXJ";
+                    Trace.WriteLine("TROLLING " + appLicense.IsActive + "\nIs Trial Mode: " + appLicense.IsTrial + "\nTrial time: " + appLicense.TrialTimeRemaining + "\nsmth: " + appLicense.IsTrialOwnedByThisUser + "\nContaints Key: " +  appLicense.AddOnLicenses.ContainsKey(minecraftStoreId));
+                    Trace.WriteLine("Funny Man"+ appLicense.AddOnLicenses.First().Value.SkuStoreId);
+                    return appLicense.IsActive && !appLicense.IsTrial && appLicense.AddOnLicenses.ContainsKey(minecraftStoreId) && appLicense.AddOnLicenses[minecraftStoreId].IsActive;
                 }
                 catch (Exception)
                 {

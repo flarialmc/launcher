@@ -374,8 +374,6 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
-                Minecraft.Init();
-
                 if (!Utils.IsDeveloperModeEnabled())
                 {
                     MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
