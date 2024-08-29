@@ -190,23 +190,31 @@ namespace Flarial.Launcher.Managers
                 var manifestPath = Path.Combine(dir, "AppxManifest.xml");
                 var escapedPath = manifestPath.Replace("\"", "\\\"");
                 
-                Trace.WriteLine($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path \"{escapedPath}\" -Register");
-                return await RunPowerShellAsAdminAsync($"Add-AppxPackage -ForceUpdateFromAnyVersion -Path \"{escapedPath}\" -Register");
+                Trace.WriteLine(escapedPath);
+                
+                var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions() { DeveloperMode = true });
+                var registerPackageTask = registerPackageOperation.AsTask();
+                await registerPackageTask;
 
+                if (registerPackageTask.Status == TaskStatus.RanToCompletion)
+                {
+
+                    Trace.WriteLine("Package installation succeeded!");
+                    return true;
+                } else
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                        MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
+                    });
+                    return false;
+                }
                 //    var progress = new Progress<DeploymentProgress>(ReportProgress);
-                //var registerPackageOperation = packageManager.RegisterPackageByUriAsync(packageUri, new RegisterPackageOptions() { DeveloperMode = true });
-                //registerPackageOperation.Progress += (sender, args) => ReportProgress(args);
 
-                //    var registerPackageTask = registerPackageOperation.AsTask();
+                //    
 
-                //    await registerPackageTask;
 
-                //    if (registerPackageTask.Status == TaskStatus.RanToCompletion)
-                //    {
-
-                //        Trace.WriteLine("Package installation succeeded!");
-                //        return true;
-                //    }
                 //    else
                 //    {
                 //        Application.Current.Dispatcher.Invoke(() =>
