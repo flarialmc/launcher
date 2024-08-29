@@ -173,6 +173,10 @@ namespace Flarial.Launcher
             
             WebClient updat = new WebClient();
             updat.DownloadFileAsync(new Uri(url), "dont.delete");
+            
+            filePath = "WUTokenHelper.dll";
+            url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/WUTokenHelper.dll";
+
         }
 
         public async Task<bool> TryDaVersionz()
@@ -395,12 +399,19 @@ namespace Flarial.Launcher
     }
 }
 
+static class WUTokenCaller
+{
+    [DllImport("WUTokenHelper.dll", CallingConvention = CallingConvention.StdCall)]
+    public static extern int GetWUToken([MarshalAs(UnmanagedType.LPWStr)] out string token);
+}
+
 static class DLLImports
 {
 
     [DllImport("dont.delete", CallingConvention = CallingConvention.Cdecl)]
     public static extern int AddTheDLLToTheGame(string path);
 }
+
 
 public enum DllReturns
 {
