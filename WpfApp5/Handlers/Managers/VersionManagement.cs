@@ -176,6 +176,9 @@ namespace Flarial.Launcher.Managers
         {
             Trace.WriteLine("called installappbundle");
             Trace.WriteLine(dir);
+            
+           CloseInstances();
+           DeleteAppDataFiles();
 
             try
             {
@@ -453,6 +456,57 @@ namespace Flarial.Launcher.Managers
                 Environment.Exit(5);
             }
             return ello;
+        }
+
+        static void CloseInstances()
+        {
+            string[] processesToClose = { "Minecraft.Windows.exe", "Minecraft.Windows" };
+
+            foreach (var processName in processesToClose)
+            {
+                // Get all processes with the specified name
+                Process[] processes = Process.GetProcessesByName(processName);
+
+                foreach (Process process in processes)
+                {
+                    try
+                    {
+                        process.CloseMainWindow();
+                        process.WaitForExit(5000);
+
+                        if (!process.HasExited)
+                        {
+                            process.Kill();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error closing process {processName}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        static void DeleteAppDataFiles()
+        {
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
+
+            try
+            {
+                if (Directory.Exists(appDataPath))
+                {
+                    Directory.Delete(appDataPath, true);
+                    Console.WriteLine("Application data deleted successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Application data directory does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting application data: {ex.Message}");
+            }
         }
     }
 }
