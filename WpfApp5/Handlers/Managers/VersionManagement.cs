@@ -7,10 +7,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Foundation;
 using Windows.Management.Deployment;
+using Windows.Storage;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
@@ -194,7 +196,7 @@ namespace Flarial.Launcher.Managers
                 var escapedPath = manifestPath.Replace("\"", "\\\"");
                 
                 Trace.WriteLine(escapedPath);
-                var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions() { DeveloperMode = true });
+                var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true});
                 var registerPackageTask = registerPackageOperation.AsTask();
                 
                 await registerPackageTask;
@@ -272,11 +274,12 @@ namespace Flarial.Launcher.Managers
         public static async Task<bool> RemoveMinecraftPackage()
         {
             
+            CloseInstances();
+            
             try
             {
-                var packageManager = new PackageManager();
                 
-                var removePackageOperation = packageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.RemoveForAllUsers);
+                var removePackageOperation = Minecraft.PackageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.RemoveForAllUsers);
 
                 await removePackageOperation;
                 Trace.WriteLine("Yea it removed");
@@ -284,6 +287,7 @@ namespace Flarial.Launcher.Managers
                 {
 
                     Trace.WriteLine("Package removal succeeded!");
+                    DeleteAppDataFiles();
                     return true;
                 }
                     Application.Current.Dispatcher.Invoke(() =>
@@ -460,6 +464,7 @@ namespace Flarial.Launcher.Managers
 
         static void CloseInstances()
         {
+            
             string[] processesToClose = { "Minecraft.Windows.exe", "Minecraft.Windows" };
 
             foreach (var processName in processesToClose)
@@ -481,7 +486,7 @@ namespace Flarial.Launcher.Managers
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error closing process {processName}: {ex.Message}");
+                        Trace.WriteLine($"Error closing process {processName}: {ex.Message}");
                     }
                 }
             }
@@ -489,6 +494,7 @@ namespace Flarial.Launcher.Managers
 
         static void DeleteAppDataFiles()
         {
+            
             string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
 
             try
@@ -496,17 +502,20 @@ namespace Flarial.Launcher.Managers
                 if (Directory.Exists(appDataPath))
                 {
                     Directory.Delete(appDataPath, true);
-                    Console.WriteLine("Application data deleted successfully.");
+                    Trace.WriteLine("Application data deleted successfully.");
                 }
                 else
                 {
-                    Console.WriteLine("Application data directory does not exist.");
+                    Trace.WriteLine("Application data directory does not exist.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting application data: {ex.Message}");
+                Trace.WriteLine($"Error deleting application data: {ex.Message}");
             }
+            
+            Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
+
         }
     }
 }
