@@ -412,6 +412,12 @@ static class DLLImports
     public static extern int AddTheDLLToTheGame(string path);
 }
 
+static class font
+{
+    [DllImport("gdi32.dll", SetLastError = true)]
+    public static extern int RemoveFontResource(string lpszFilename);
+}
+
 
 public enum DllReturns
 {
