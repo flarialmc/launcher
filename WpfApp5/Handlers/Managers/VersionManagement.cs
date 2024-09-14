@@ -494,16 +494,8 @@ namespace Flarial.Launcher.Managers
 
         static void DeleteAppDataFiles()
         {
-            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "162.ttf"));
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "163.ttf"));
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "164.ttf"));
             
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "font.ttf"));
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "font_bold.ttf"));
-            font.RemoveFontResource(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "minecraftia.ttf"));
-            Trace.WriteLine(Path.Combine(appDataPath, "RoamingState", "Flarial", "assets", "162.ttf"));
-
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
 
             try
             {
