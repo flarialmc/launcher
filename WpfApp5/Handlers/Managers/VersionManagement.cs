@@ -270,7 +270,7 @@ namespace Flarial.Launcher.Managers
             else
             {
                 MainWindow.isDownloadingVersion = false;
-                Trace.WriteLine("nigger");
+                Trace.WriteLine("done downloading");
             }
 
             MainWindow.progressBytesReceived = e.ProgressPercentage;

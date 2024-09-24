@@ -373,7 +373,7 @@ namespace Flarial.Launcher
                         Trace.WriteLine("Injected!");
                         StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
 
-                        if (!File.Exists("dont.delete")) StatusLabel.Text = "Your antivirus has removed an important file.";
+                        if (!File.Exists("dont.delete") || !File.Exists("real.dll")) StatusLabel.Text = "Your antivirus has removed an important file.";
                     });
                 };
 
@@ -390,7 +390,8 @@ namespace Flarial.Launcher
             }
             else
                 {
-                CreateMessageBox("Our client does not support this MINECRAFT version. If you are using a custom dll, That will be used instead.");
+                    Trace.Write($"Not SUPPORTED {Minecraft.GetVersion()}");
+                CreateMessageBox($"Our client does not support this MINECRAFT version {Minecraft.GetVersion()}. If you are using a custom dll, That will be used instead.");
                     if (Config.UseCustomDLL)
                     {
                        Utils.OpenGame();
