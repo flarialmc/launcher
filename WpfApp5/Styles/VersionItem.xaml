@@ -57,7 +57,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="local:VersionItemProperties.State" Value="0">
-                    <Setter TargetName="StateText1" Property="Text" Value="Not Installed"/>
+                    <Setter TargetName="StateText1" Property="Text" Value="Not Downloaded"/>
                     <Setter TargetName="StateText2" Property="Visibility" Value="Collapsed"/>
                     <Setter TargetName="StateText3" Property="Visibility" Value="Collapsed"/>
                     <Setter TargetName="StateText2" Property="Text" Value="0"/>
@@ -68,7 +68,7 @@
                     <Setter TargetName="StateText3" Property="Visibility" Value="Visible"/>
                 </Trigger>
                 <Trigger Property="local:VersionItemProperties.State" Value="2">
-                    <Setter TargetName="StateText1" Property="Text" Value="Installed"/>
+                    <Setter TargetName="StateText1" Property="Text" Value="Downloaded"/>
                     <Setter TargetName="StateText2" Property="Visibility" Value="Collapsed"/>
                     <Setter TargetName="StateText3" Property="Visibility" Value="Collapsed"/>
                     <Setter TargetName="StateText2" Property="Text" Value="100"/>

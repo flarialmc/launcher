@@ -109,7 +109,7 @@ namespace Flarial.Launcher
         {
             while (true)
             {
-                if (modules >= 150)
+                if (modules >= 153)
                 {
                     Trace.WriteLine("Injected!");
                     Application.Current.Dispatcher.Invoke(() =>
@@ -127,7 +127,7 @@ namespace Flarial.Launcher
             Trace.WriteLine("starting RealDLLLoop.");
             while (true)
             {
-                if (modules < 150) continue;
+                if (modules < 153) continue;
                 Trace.WriteLine("Injected!");
                 Application.Current.Dispatcher.Invoke(() => { MainWindow.actionOnInject(); });
                 break;

@@ -263,10 +263,15 @@ namespace Flarial.Launcher.Managers
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
             MainWindow.progressType = "download";
+            MainWindow.isDownloadingVersion = true;
 
             if (e.ProgressPercentage != 100)
                 MainWindow.progressPercentage = e.ProgressPercentage;
-            else Trace.WriteLine("nigger");
+            else
+            {
+                MainWindow.isDownloadingVersion = false;
+                Trace.WriteLine("nigger");
+            }
 
             MainWindow.progressBytesReceived = e.ProgressPercentage;
         }
@@ -313,39 +318,70 @@ namespace Flarial.Launcher.Managers
             }
         }
 
-        public static async Task ExtractAppxAsync(string appxFilePath, string outputFolderPath, string version)
+        public static async Task<bool> ExtractAppxAsync(string appxFilePath, string outputFolderPath, string version)
         {
             int totalEntries = 0;
             int currentEntry = 0;
 
             if (!Directory.Exists(outputFolderPath))
             {
-                using (ZipArchive archive = ZipFile.OpenRead(appxFilePath))
+                try
                 {
-                    totalEntries = archive.Entries.Count;
-
-                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    using (ZipArchive archive = ZipFile.OpenRead(appxFilePath))
                     {
-                        string entryOutputPath = Path.Combine(outputFolderPath, entry.FullName);
-                        string entryDirectory = Path.GetDirectoryName(entryOutputPath);
+                        totalEntries = archive.Entries.Count;
 
-                        if (!string.IsNullOrEmpty(entryDirectory))
+                        foreach (ZipArchiveEntry entry in archive.Entries)
                         {
-                            Directory.CreateDirectory(entryDirectory);
-                        }
+                            try
+                            {
+                                string entryOutputPath = Path.Combine(outputFolderPath, entry.FullName);
+                                string entryDirectory = Path.GetDirectoryName(entryOutputPath);
 
-                        if (!entry.FullName.EndsWith("/"))
-                        {
-                            await Task.Run(() => entry.ExtractToFile(entryOutputPath, true));
-                        }
+                                if (!string.IsNullOrEmpty(entryDirectory))
+                                {
+                                    Directory.CreateDirectory(entryDirectory);
+                                }
 
-                        currentEntry++;
-                        MainWindow.progressType = "Extracting";
-                        MainWindow.progressBytesTotal = totalEntries;
-                        MainWindow.progressBytesReceived = currentEntry;
-                        MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
+                                if (!entry.FullName.EndsWith("/"))
+                                {
+                                    await Task.Run(() => entry.ExtractToFile(entryOutputPath, true));
+                                }
+
+                                currentEntry++;
+                                MainWindow.progressType = "Extracting";
+                                MainWindow.progressBytesTotal = totalEntries;
+                                MainWindow.progressBytesReceived = currentEntry;
+                                MainWindow.progressPercentage = (int)((float)currentEntry / totalEntries * 100);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Failed to extract {entry.FullName}: {ex.Message}");
+                            }
+                        }
                     }
                 }
+                catch (InvalidDataException ex)
+                {
+                    Console.WriteLine($"The archive is invalid or corrupted: {ex.Message}");
+                    return false;
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine($"You do not have the required permissions: {ex.Message}");
+                    return false;
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"I/O error occurred: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                    return false;
+                }
+
 
                 WebClient webClient = new WebClient();
 
@@ -355,6 +391,8 @@ namespace Flarial.Launcher.Managers
                 await webClient.DownloadFileTaskAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/assets/flarial_mogang.png"),
                     Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
+
+            return true;
         }
 
 
@@ -397,6 +435,30 @@ namespace Flarial.Launcher.Managers
                 }
 
                 string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
+                
+                if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
+                {
+                    Trace.WriteLine("Starting extract.");
+                    bool result = await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+
+                    if (!result)
+                    {
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.CreateMessageBox("The Downloaded APPX is corrupted.");
+                            MainWindow.CreateMessageBox("Restart the Launcher and click your desired version again.");
+                        });
+
+                        File.Delete(path);
+                        
+                        return false;
+                    }
+                }
+                else
+                {
+                    Trace.WriteLine("The folder exists");
+                }
 
                 if (Minecraft.Package != null)
                 {
@@ -412,16 +474,6 @@ namespace Flarial.Launcher.Managers
                 }
                 
                 Trace.WriteLine("Uninstalled.");
-
-                if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
-                {
-                    Trace.WriteLine("Starting extract.");
-                    await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
-                }
-                else
-                {
-                    Trace.WriteLine("The folder exists");
-                }
 
                 
                 element.Dispatcher.Invoke(() =>  VersionItemProperties.SetState(element, 1));
@@ -453,11 +505,9 @@ namespace Flarial.Launcher.Managers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
-                    MainWindow.CreateMessageBox("Please restart the launcher for it to be able to install new patches");
+                    MainWindow.CreateMessageBox("Please restart the launcher for it to be able to utilize new patches");
                 });
 
-                await Task.Delay(2000);
-                Environment.Exit(5);
             }
             return ello;
         }

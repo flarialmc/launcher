@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using Application = System.Windows.Application;
 using RadioButton = System.Windows.Controls.RadioButton;
@@ -33,6 +34,7 @@ namespace Flarial.Launcher
         // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public static int progressPercentage;
         public static bool isDllDownloadFinished = false;
+        public static bool isDownloadingVersion = false;
         public static long progressBytesReceived;
         public static long progressBytesTotal;
         public static string progressType; 
@@ -46,9 +48,16 @@ namespace Flarial.Launcher
         private static Stopwatch speed = new Stopwatch();
         public static volatile Action actionOnInject;
 
+        
+        private const int WM_CLOSE = 0x0010;
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += (s, e) =>
+            {
+                var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+                hwndSource.AddHook(new HwndSourceHook(WndProc));
+            };
             CreateDirectoriesAndFiles();
             
             Stopwatch stopwatch = new Stopwatch();
@@ -189,7 +198,7 @@ namespace Flarial.Launcher
             versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"), "Supported.txt");
             
             string[] rawVersions = await File.ReadAllLinesAsync("Supported.txt");
-            string first = "Not Installed";
+            string first = "Not Downloaded";
 
             if (Minecraft.GetVersion().ToString().StartsWith("0"))
             {
@@ -210,7 +219,34 @@ namespace Flarial.Launcher
 
         private void MoveWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void Minimize(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
-        private void Close(object sender, RoutedEventArgs e) => this.Close();
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            if(!isDownloadingVersion)
+            {
+                Trace.Close();
+                this.Close();
+            }
+            else
+            {
+                CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
+            }
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_CLOSE)
+            {
+                if (isDownloadingVersion)
+                {
+                    CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
+                    handled = true;
+                    return IntPtr.Zero;
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+        
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
             SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
         private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
@@ -266,8 +302,16 @@ namespace Flarial.Launcher
         private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            Trace.Close();
-            Environment.Exit(0);
+            if(!isDownloadingVersion)
+            {
+                Trace.Close();
+                Environment.Exit(0);
+            }
+            else
+            {
+                CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
+
+            }
         }
         
         public static void DownloadProgressCallbackOfDLL(object sender, DownloadProgressChangedEventArgs e)
@@ -346,7 +390,7 @@ namespace Flarial.Launcher
             }
             else
                 {
-                CreateMessageBox("Our client does not support this version. If you are using a custom dll, That will be used instead.");
+                CreateMessageBox("Our client does not support this MINECRAFT version. If you are using a custom dll, That will be used instead.");
                     if (Config.UseCustomDLL)
                     {
                        Utils.OpenGame();
