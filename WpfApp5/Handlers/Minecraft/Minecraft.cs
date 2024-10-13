@@ -32,6 +32,7 @@ namespace Flarial.Launcher
             FindPackage();
 
             var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+            
             if (mcIndex.Length > 0)
             {
                 Process1 = mcIndex[0];
@@ -102,7 +103,7 @@ namespace Flarial.Launcher
                     int.Parse(Ok.ToString().Substring(0, 2)));
             }
 
-            return new Version(0, 0);
+            return new Version(0, 0, 0);
         }
 
         public static async Task CustomDLLLoop()
@@ -145,10 +146,11 @@ namespace Flarial.Launcher
                 {
                     //Trace.WriteLine("Trying to find process");
                     var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+                    var filteredProcesses = mcIndex.Where(p => p.PrivateMemorySize64 > 200 * 1024 * 1024);
+
                     if (mcIndex.Length > 0)
                     {
-                        Process1 = mcIndex[0];
-
+                        Process1 = filteredProcesses.OrderByDescending(p => p.StartTime).FirstOrDefault();
                     }
 
                     await Task.Delay(100);
@@ -157,6 +159,10 @@ namespace Flarial.Launcher
                 if (Process1.HasExited)
                 {
                     Trace.WriteLine("Process GONE!");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.StatusLabel.Text = "MC_EXITED_PROCESS";
+                    });
                     modules = 0;
                     Process1 = null;
                 }
@@ -164,7 +170,9 @@ namespace Flarial.Launcher
                 {
                     try
                     {
-                        Process1 = Process.GetProcessesByName("Minecraft.Windows")[0];
+                        var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
+                        var filteredProcesses = mcIndex.Where(p => p.PrivateMemorySize64 > 200 * 1024 * 1024);
+                        Process1 = filteredProcesses.OrderByDescending(p => p.StartTime).FirstOrDefault();
                         //Trace.WriteLine(Process1.ProcessName + " " + Process1.Id);
 
                         try
@@ -184,10 +192,18 @@ namespace Flarial.Launcher
                     catch (IndexOutOfRangeException)
                     {
                         Trace.WriteLine("No processes found with the name 'Minecraft.Windows'.");
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.StatusLabel.Text = "MC_NO_PROCESS";
+                        });
                     }
                     catch (Exception ex)
                     {
                         Trace.WriteLine($"Error finding process: {ex.Message}");
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.StatusLabel.Text = "MC_ERROR_PROCESS";
+                        });
                     }
 
                 }
