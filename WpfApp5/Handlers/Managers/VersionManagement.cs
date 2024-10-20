@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -17,6 +18,7 @@ using Flarial.Launcher.Pages;
 using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
+using System.Xml;
 
 namespace Flarial.Launcher.Managers
 {
@@ -174,6 +176,62 @@ namespace Flarial.Launcher.Managers
                 // Log or process the progress information here
             }
         }
+        
+
+        public static List<string> GetDependenciesFromManifest(string manifestPath)
+        {
+            var dependencies = new List<string>();
+            XmlDocument doc = new XmlDocument();
+            doc.Load(manifestPath);
+
+            XmlNodeList dependencyNodes = doc.GetElementsByTagName("PackageDependency");
+
+            foreach (XmlNode node in dependencyNodes)
+            {
+                var packageName = node.Attributes["Name"]?.Value;
+                if (!string.IsNullOrEmpty(packageName))
+                {
+                    dependencies.Add(packageName);
+                }
+            }
+
+            return dependencies;
+        }
+        
+        
+        public static bool IsDependencyInstalled(string packageName)
+        {
+            PackageManager packageManager = new PackageManager();
+            var installedPackages = packageManager.FindPackagesForUser(string.Empty);
+
+            foreach (var package in installedPackages)
+            {
+                if (package.Id.FullName.Contains(packageName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        public static bool AreDependenciesInstalled(string manifestPath)
+        {
+            var dependencies = GetDependenciesFromManifest(manifestPath);
+
+            foreach (var dependency in dependencies)
+            {
+                if (!IsDependencyInstalled(dependency))
+                {
+                    Trace.WriteLine($"Dependency {dependency} is not installed.");
+                    return false;
+                }
+            }
+
+            Trace.WriteLine("All dependencies are installed.");
+            return true;
+        }
+
         public static async Task<bool> InstallAppBundle(string dir)
         {
             Trace.WriteLine("called installappbundle");
@@ -181,21 +239,22 @@ namespace Flarial.Launcher.Managers
             
            CloseInstances();
            DeleteAppDataFiles();
+           
+           var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
+           Trace.WriteLine(packageUri.ToString());
+
+           File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
+
+           MainWindow.progressPercentage = 100;
+           MainWindow.progressType = "Installing";
+
+           var manifestPath = Path.Combine(dir, "AppxManifest.xml");
+           var escapedPath = manifestPath.Replace("\"", "\\\"");
+           Trace.WriteLine(escapedPath);
 
             try
             {
-                var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
-                Trace.WriteLine(packageUri.ToString());
-
-                File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
-
-                MainWindow.progressPercentage = 100;
-                MainWindow.progressType = "Installing";
-
-                var manifestPath = Path.Combine(dir, "AppxManifest.xml");
-                var escapedPath = manifestPath.Replace("\"", "\\\"");
                 
-                Trace.WriteLine(escapedPath);
                 var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true});
                 var registerPackageTask = registerPackageOperation.AsTask();
                 
@@ -458,6 +517,28 @@ namespace Flarial.Launcher.Managers
                 else
                 {
                     Trace.WriteLine("The folder exists");
+                }
+
+                string pathway = Path.Combine(launcherPath, "Versions", version);
+                var packageUri = new Uri(Path.Combine(pathway, "AppxManifest.xml"));
+                Trace.WriteLine(packageUri.ToString());
+
+                File.Delete(Path.Combine(pathway, "AppxSignature.p7x"));
+
+                MainWindow.progressPercentage = 100;
+                MainWindow.progressType = "Installing";
+
+                var manifestPath = Path.Combine(pathway, "AppxManifest.xml");
+                var escapedPath = manifestPath.Replace("\"", "\\\"");
+                
+                if (!AreDependenciesInstalled(escapedPath))
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                        MainWindow.CreateMessageBox("Proper dependencies not installed.");
+                    });
+                    return false;
                 }
 
                 if (Minecraft.Package != null)
