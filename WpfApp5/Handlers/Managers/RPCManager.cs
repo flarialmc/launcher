@@ -14,6 +14,7 @@ namespace Flarial.Launcher.Managers
         private static DiscordRpcClient client;
         private static string _discordTime = "";
         private static string previousContent = "";
+        private static string previousgamemode = "Hub";
         private static Timer _timer;
 
         public static async Task Initialize()
@@ -37,17 +38,36 @@ namespace Flarial.Launcher.Managers
             if (Utils.IsGameOpen())
             {
                 var ip = readIp();
-                if (ip != previousContent || Utils.IsGameOpen())
-                {
+                var gamemode = readgamemode();
 
-                    var a = GetServerInfo(ip);
-                    previousContent = ip; // Add this line to update previousContent
-                    if (a.largeImageKey == "flarialbig")
+                if (ip.Contains("hive")){
+                    if (ip != previousContent || Utils.IsGameOpen() || gamemode != previousgamemode)
                     {
-                        a.largeImageKey = "mcicon";
-                    }
 
-                    SetPresence(a.Detail, a.largeImageKey, "flarialbig", a.ipAddress);
+                        var a = GetServerInfo(ip);
+                        var b = GetgamemodeInfo(gamemode);
+                        previousgamemode = gamemode; // Add this line to update previousContent
+                        if (a.largeImageKey == "flarialbig")
+                        {
+                            a.largeImageKey = "mcicon";
+                        }
+
+                        SetPresence(a.Detail+": "+b.gamemodetransformed, a.largeImageKey, "flarialbig", a.ipAddress);
+                    }
+                }
+                else{
+                    if (ip != previousContent || Utils.IsGameOpen())
+                    {
+
+                        var a = GetServerInfo(ip);
+                        previousContent = ip; // Add this line to update previousContent
+                        if (a.largeImageKey == "flarialbig")
+                        {
+                            a.largeImageKey = "mcicon";
+                        }
+
+                        SetPresence(a.Detail, a.largeImageKey, "flarialbig", a.ipAddress);
+                    }
                 }
             }
             else
@@ -66,6 +86,23 @@ namespace Flarial.Launcher.Managers
                 "RoamingState",
                 "Flarial",
                 "serverip.txt"
+            );
+
+            if(File.Exists(flarialPath))
+            return File.ReadAllText(flarialPath);
+
+            return "";
+        }
+
+        public static string readgamemode()
+        {
+            var flarialPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Packages",
+                "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+                "RoamingState",
+                "Flarial",
+                "gamemode.txt"
             );
 
             if(File.Exists(flarialPath))
@@ -132,6 +169,13 @@ namespace Flarial.Launcher.Managers
 
             client.SetPresence(currentPresence);
         }
+
+        // private static void SetPresenceTextOnly(string details)
+        // {
+        //     currentPresence.Details = details;
+
+        //     client.SetPresence(currentPresence);
+        // }
 
         private static serverInformation GetServerInfo(string ip)
         {
@@ -203,11 +247,34 @@ namespace Flarial.Launcher.Managers
             }
         }
 
+        private static gamemodeInformation GetgamemodeInfo(string gamemode)
+        {
+            switch (gamemode)
+            {
+                // case string _ when gamemode.Contains("hub"):
+                //     return new gamemodeInformation()
+                //     {
+                //         gamemodetransformed = "Hive Hub"
+                //     };
+                default:
+                    return new gamemodeInformation()
+                    {
+                        gamemodetransformed = gamemode
+                    };
+            }
+        }
+
+
         public class serverInformation
         {
             public string ipAddress { get; set; }
             public string largeImageKey { get; set; }
             public string Detail { get; set; }
+        }
+
+        public class gamemodeInformation
+        {
+            public string gamemodetransformed { get; set; }
         }
     }
 }
