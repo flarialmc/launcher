@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Management.Deployment;
@@ -45,40 +46,58 @@ namespace Flarial.Launcher
         public static bool isInstalled()
         {
             PackageManager = new PackageManager();
-            var Packages = PackageManager.FindPackages(FamilyName);
-            return Packages.Count() != 0;
+            var userSecurityId = WindowsIdentity.GetCurrent().User.Value;
+            var packages = PackageManager.FindPackagesForUser(userSecurityId);
+
+            foreach (var package in packages)
+            {
+                if (package.Id.FamilyName == FamilyName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static void InitManagers()
         {
             PackageManager = new PackageManager();
-            var Packages = PackageManager.FindPackages(FamilyName);
+            var userSecurityId = WindowsIdentity.GetCurrent().User.Value;
+            var packages = PackageManager.FindPackagesForUser(userSecurityId);
 
-            if (Packages.Count() == 0)
+            bool packageFound = false;
+
+            foreach (var package in packages)
             {
-                //Environment.Exit(0);
+                if (package.Id.FamilyName == FamilyName)
+                {
+                    packageFound = true;
+                    ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+                    break;
+                }
             }
-            else
+
+            if (!packageFound)
             {
-                ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
+                Trace.WriteLine($"Package {FamilyName} not found.");
             }
-
-            //  ApplicationData = Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(FamilyName);
-
-
         }
+
+
 
         public static void FindPackage()
         {
-
             if (PackageManager is null) throw new NullReferenceException();
-            var Packages = PackageManager.FindPackages(FamilyName);
+            var userSecurityId = WindowsIdentity.GetCurrent().User.Value;
+            var packages = PackageManager.FindPackagesForUser(userSecurityId);
 
-            if (Packages.Count() != 0)
+            if (packages.Any(package => package.Id.FamilyName == FamilyName))
             {
-                Package = Packages.First();
+                Package = packages.First(package => package.Id.FamilyName == FamilyName);
             }
         }
+
 
         public static double RoundToSignificantDigits(this double d, int digits)
         {

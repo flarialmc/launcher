@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Flarial.Launcher.Animations;
+using Microsoft.VisualBasic.CompilerServices;
+using Utils = Flarial.Launcher.Functions.Utils;
 
 namespace Flarial.Launcher.Pages
 {
@@ -35,12 +37,25 @@ namespace Flarial.Launcher.Pages
 
         private void Navigate_General(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
+
         private void Navigate_Version(object sender, RoutedEventArgs e)
         {
-            SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-            MessageBox.Show("!!! THIS IS A VERSION CHANGER. Not a Flarial Version SELECTOR! Use this when you need to downgrade to a version Flarial Supports. !!!\n To use Flarial, all you have to do is click Launch.", "MUST READ", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-
+            if (Utils.IsAdministrator)
+            {
+                SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
+                MessageBox.Show(
+                    "!!! THIS IS A VERSION CHANGER. Not a Flarial Version SELECTOR! Use this when you need to downgrade to a version Flarial Supports. !!!\n To use Flarial, all you have to do is click Launch.",
+                    "MUST READ", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("Launcher not running as Administrator. Run as Admin!");
+                });
+            }
         }
+
         private void Navigate_Account(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
     }
