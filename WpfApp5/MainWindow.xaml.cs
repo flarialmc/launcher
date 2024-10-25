@@ -38,7 +38,7 @@ namespace Flarial.Launcher
         public static long progressBytesReceived;
         public static long progressBytesTotal;
         public static string progressType; 
-        public bool shouldUseBetaDLL;
+        public static bool shouldUseBetaDLL;
         public static ImageBrush PFP;
         public static bool Reverse;
         public static TextBlock StatusLabel;
@@ -352,14 +352,35 @@ namespace Flarial.Launcher
 
                 return;
             }
-            
-            Trace.WriteLine(speed.Elapsed.Milliseconds);
 
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
-            
-            Trace.WriteLine("did work");
+            if (Config.UseBetaDLL & shouldUseBetaDLL)
+            {
+                string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
+                string pathToExecute = filePath;
+                
+                Utils.OpenGame();
+                
+                isDllDownloadFinished = false;
+                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
+
+                string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/beta.dll";
+
+                WebClient updat = new WebClient();
+                updat.DownloadFileAsync(new Uri(url), filePath);
+                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
+                
+                actionOnInject = () =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Trace.WriteLine("Injected!");
+                        StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
+
+                        if (!File.Exists("dont.delete") || !File.Exists("real.dll")) StatusLabel.Text = "Your antivirus has removed an important file.";
+                    });
+                };
+                
+            } else if (Config.UseBetaDLL & !shouldUseBetaDLL) Config.UseBetaDLL = false;
             
                 if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
@@ -367,23 +388,16 @@ namespace Flarial.Launcher
                 
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
-                
-                if(!Config.UseCustomDLL)
-                {
-                    isDllDownloadFinished = false;
-                    StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
 
-                    string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
+                isDllDownloadFinished = false;
+                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
 
-                    WebClient updat = new WebClient();
-                    updat.DownloadFileAsync(new Uri(url), filePath);
-                    updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
-                }
-                
-                Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
+                string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
 
-                if (Config.UseCustomDLL) pathToExecute = Config.CustomDLLPath;
-                
+                WebClient updat = new WebClient();
+                updat.DownloadFileAsync(new Uri(url), filePath);
+                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
+                    
                 Utils.OpenGame();
 
                 actionOnInject = () =>
@@ -397,31 +411,11 @@ namespace Flarial.Launcher
                     });
                 };
                 
-                Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }
             else
                 {
                     Trace.Write($"Not SUPPORTED {Minecraft.GetVersion()}");
                 CreateMessageBox($"Our client does not support this MINECRAFT version {Minecraft.GetVersion()}. If you are using a custom dll, That will be used instead.");
-                    if (Config.UseCustomDLL)
-                    {
-                       Utils.OpenGame();
-
-                       Dispatcher.InvokeAsync(() =>
-                       {
-                           Trace.WriteLine("Starting loop!");
-
-                           while (true)
-                           {
-                               if (Minecraft.modules >= 150)
-                               {
-                                   Trace.WriteLine("Injected!");
-                                   Insertion.Insert(Config.CustomDLLPath);
-                                   return;
-                               }
-                           }
-                       });
-                    }
                 }
         }
 

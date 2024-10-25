@@ -128,8 +128,11 @@ namespace Flarial.Launcher.Pages
                     guildUser.roles.Contains("1058465209443958816") ||
                     guildUser.roles.Contains("1059109828267606066") ||
                     guildUser.roles.Contains("1059332938774364160") ||
-                    guildUser.roles.Contains("1059408198261551145"))
+                    guildUser.roles.Contains("1059408198261551145") ||
+                    guildUser.roles.Contains("1058465626689118280") ||
+                    guildUser.roles.Contains("1059086166378422352"))
                 {
+                    MainWindow.shouldUseBetaDLL = true;
                     //ifBeta = true;
                     /*BetaDLLButton.Visibility = Visibility.Visible;
                     if (guildUser.roles.Contains("1058465209443958816"))
