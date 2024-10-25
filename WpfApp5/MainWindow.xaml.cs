@@ -333,6 +333,26 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+
+            if (Minecraft.GetVersion().ToString() == "0.0.0")
+            {
+                CreateMessageBox("Minecraft is not installed.");
+                return;
+            }
+            
+            if (Config.UseCustomDLL)
+            {
+                Utils.OpenGame();
+
+                Task.Run(async () =>
+                {
+                    Trace.WriteLine("Starting loop!");
+                    await Minecraft.CustomDLLLoop();
+                });
+
+                return;
+            }
+            
             Trace.WriteLine(speed.Elapsed.Milliseconds);
 
             Stopwatch watch = new Stopwatch();
@@ -376,15 +396,6 @@ namespace Flarial.Launcher
                         if (!File.Exists("dont.delete") || !File.Exists("real.dll")) StatusLabel.Text = "Your antivirus has removed an important file.";
                     });
                 };
-
-                if (Config.UseCustomDLL)
-                {
-                    Task.Run(async () =>
-                    {
-                        Trace.WriteLine("Starting loop!");
-                        await Minecraft.CustomDLLLoop();
-                    });
-                }
                 
                 Trace.WriteLine("SPEED RN " + watch.Elapsed.Milliseconds);
             }

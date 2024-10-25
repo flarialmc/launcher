@@ -32,7 +32,7 @@ namespace Flarial.Launcher.Pages
             tb1.IsChecked = Config.UseCustomDLL;
             tb2.IsChecked = Config.UseBetaDLL;
             tb3.IsChecked = Config.AutoLogin;
-            tb4.IsChecked = Config.CloseToTray;
+            tb4.IsChecked = Config.MCMinimized;
             DLLTextBox.Text = Config.CustomDLLPath;
         }
 
@@ -62,7 +62,7 @@ namespace Flarial.Launcher.Pages
 
         private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
         {
-            Config.CloseToTray = (bool)((ToggleButton)sender).IsChecked;
+            Config.MCMinimized = (bool)((ToggleButton)sender).IsChecked;
             SaveButton.IsChecked = true;
         }
 

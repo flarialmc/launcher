@@ -12,7 +12,7 @@ namespace Flarial.Launcher.Functions
         public static bool UseCustomDLL;
         public static string CustomDLLPath;
         public static bool UseBetaDLL;
-        public static bool CloseToTray;
+        public static bool MCMinimized;
         public static bool AutoLogin;
         public static string CustomThemePath;
 
@@ -40,7 +40,7 @@ namespace Flarial.Launcher.Functions
 
                 shouldUseBetaDll = UseBetaDLL,
 
-                closeToTray = CloseToTray,
+                mcMinimized = MCMinimized,
 
                 autoLogin = AutoLogin,
 
@@ -67,7 +67,7 @@ namespace Flarial.Launcher.Functions
             Version = config.minecraft_version;
             UseBetaDLL = config.shouldUseBetaDll;
             CustomDLLPath = config.custom_dll_path;
-            CloseToTray = config.closeToTray;
+            MCMinimized = config.mcMinimized;
             AutoLogin = config.autoLogin;
             UseCustomDLL = config.shouldUseCustomDLL;
 
@@ -93,18 +93,15 @@ namespace Flarial.Launcher.Functions
             if (!File.Exists(Path))
             {
                 return null;
-
-
             }
 
             if (File.ReadAllText(Path).Length == 0)
             {
                 return new ConfigData()
                 {autoLogin = true,
-                closeToTray = false,
+                mcMinimized = true,
                 shouldUseBetaDll = false,
                 shouldUseCustomDLL = false,
-                
                 }
                 ;
             }
