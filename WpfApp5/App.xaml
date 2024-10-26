@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Styles/CloseButton.xaml"/>
                 <ResourceDictionary Source="Styles/LaunchButton.xaml"/>
                 <ResourceDictionary Source="Styles/SettingsButton.xaml"/>
+                <ResourceDictionary Source="Styles/Slider.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <math:MathConverter x:Key="Math"/>
         </ResourceDictionary>

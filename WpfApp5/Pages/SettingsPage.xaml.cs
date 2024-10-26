@@ -58,5 +58,8 @@ namespace Flarial.Launcher.Pages
 
         private void Navigate_Account(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
+        private void Navigate_Backups(object sender, RoutedEventArgs e)
+        
+            => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
     }
 }

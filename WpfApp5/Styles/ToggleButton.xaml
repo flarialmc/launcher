@@ -6,7 +6,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Label FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="{TemplateBinding Content}" Foreground="White" FontSize="20"/>
+                            <Label IsHitTestVisible="False" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="{TemplateBinding Content}" Foreground="White" FontSize="20"/>
                             <Border x:Name="border" Cursor="Hand" CornerRadius="12.5" HorizontalAlignment="Right" Width="50" Height="25">
                                 <Border.Background>
                                     <SolidColorBrush Color="#363031" x:Name="backgroundbrush"/>

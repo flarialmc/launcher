@@ -22,6 +22,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -35,7 +36,8 @@
                 <RadioButton Grid.Row="1" Checked="Navigate_General" Name="GeneralPageButton" Content="General" Margin="30,0,30,25"/>
                 <RadioButton Grid.Row="2" Checked="Navigate_Version" Content="Version" Margin="30,0,30,25"/>
                 <RadioButton Grid.Row="3" Checked="Navigate_Account" Content="Account" Margin="30,0,30,25"/>
-                <Button Grid.Row="4" Cursor="Hand" Click="ButtonBase_OnClick" Content="Return" VerticalAlignment="Bottom" Margin="30,0,30,32.5">
+                <RadioButton Grid.Row="4" Checked="Navigate_Backups" Content="Backups" Margin="30,0,30,25"/>
+                <Button Grid.Row="5" Cursor="Hand" Click="ButtonBase_OnClick" Content="Return" VerticalAlignment="Bottom" Margin="30,0,30,32.5">
                     <Button.Template>
                         <ControlTemplate>
                             <Grid Height="35" RenderTransformOrigin="0.5,0.5">
@@ -110,8 +112,11 @@
                 <Border Background="#201A1B" CornerRadius="25" Margin="0,0,0,30">
                     <Frame Height="470" Width="555" Source="/Pages/SettingsVersionPage.xaml"/>
                 </Border>
-                <Border Background="#201A1B" CornerRadius="25">
+                <Border Background="#201A1B" CornerRadius="25" Margin="0,0,0,30">
                     <Frame Height="470" Width="555" Source="/Pages/SettingsAccountPage.xaml"/>
+                </Border>
+                <Border Background="#201A1B" CornerRadius="25">
+                    <Frame Height="470" Width="555" Source="/Pages/SettingsBackupPage.xaml"/>
                 </Border>
             </StackPanel>
         </Border>

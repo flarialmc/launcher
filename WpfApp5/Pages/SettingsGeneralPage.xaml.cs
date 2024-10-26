@@ -79,5 +79,10 @@ namespace Flarial.Launcher.Pages
             Config.saveConfig();
             SaveButton.IsChecked = false;
         }
+
+        private void ModulesSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ModulesSlider.Value = double.Round(ModulesSlider.Value);
+        }
     }
 }
