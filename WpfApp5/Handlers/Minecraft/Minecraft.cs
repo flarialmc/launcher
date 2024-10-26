@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -11,7 +9,6 @@ using Windows.Management.Deployment;
 using Windows.Security.Authentication.Web.Core;
 using Windows.Services.Store;
 using Flarial.Launcher.Functions;
-using Flarial.Launcher.Pages;
 using Version = System.Version;
 
 namespace Flarial.Launcher

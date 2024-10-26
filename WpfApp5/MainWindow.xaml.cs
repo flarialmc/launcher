@@ -66,31 +66,31 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            TraceListenerCollection listeners = Trace.Listeners;
 
-        
+            string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+            string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";
 
-                string today = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
-                FileStream outResultsFile = new FileStream(
-                    $"{VersionManagement.launcherPath}\\{today}.txt",
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.Read
-                );
+            var outResultsFile = new FileStream(
+                filePath,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.Read
+            );
 
                 var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
-                listeners.Add(textListener);
+                Trace.Listeners.Add(textListener);
             
-                Trace.WriteLine("\nMC Bought Status: " + Minecraft.StoreHelper.HasBought().Result);
                 Trace.WriteLine("Debug 0.5 " + stopwatch.Elapsed.Milliseconds.ToString());
-                
-            
-            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
-            {
-                Exception ex = (Exception)args.ExceptionObject;
-                Trace.WriteLine($"Unhandled exception: {ex.Message}");
-                Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
-            };
+
+
+
+                    AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+                    {
+                        Exception ex = (Exception)args.ExceptionObject;
+                        Trace.WriteLine($"Unhandled exception: {ex.Message}");
+                        Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
+                    };
+
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
@@ -98,14 +98,12 @@ namespace Flarial.Launcher
 
             Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Dispatcher.InvokeAsync(async () => Minecraft.Init());
+            Dispatcher.InvokeAsync(Minecraft.Init);
             Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Trace.WriteLine("Adding MC Load Loop");
             Task.Run(async () => await Minecraft.MCLoadLoop());
-            Trace.WriteLine("Added!");
 
-            Task.Run(async () =>
+            Dispatcher.InvokeAsync(async () =>
             {
                 await Config.loadConfig();
 
@@ -494,18 +492,19 @@ public class AutoFlushTextWriterTraceListener : TextWriterTraceListener
 {
     public AutoFlushTextWriterTraceListener(Stream stream) : base(stream) { }
 
-    public override void Write(string message)
+    public override async void Write(string message)
     {
-        base.Write(message);
-        Flush();
+        await Writer.WriteAsync(message).ConfigureAwait(false);
+        Writer.Flush();
     }
 
-    public override void WriteLine(string message)
+    public override async void WriteLine(string message)
     {
-        base.WriteLine(message);
-        Flush();
+        await Writer.WriteLineAsync(message).ConfigureAwait(false);
+        Writer.Flush();
     }
 }
+
 
 public class FileTraceListener : TraceListener
 {
@@ -514,22 +513,24 @@ public class FileTraceListener : TraceListener
     public FileTraceListener(string filePath)
     {
         _writer = new StreamWriter(filePath, true);
+        _writer.AutoFlush = true; // Enable AutoFlush if needed
     }
 
-    public override void Write(string message)
+    public override async void Write(string message)
     {
-        _writer.Write(message);
+        await _writer.WriteAsync(message).ConfigureAwait(false);
     }
 
-    public override void WriteLine(string message)
+    public override async void WriteLine(string message)
     {
-        _writer.WriteLine(message);
+        await _writer.WriteLineAsync(message).ConfigureAwait(false);
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
+            _writer?.Flush();
             _writer?.Close();
             _writer?.Dispose();
         }
