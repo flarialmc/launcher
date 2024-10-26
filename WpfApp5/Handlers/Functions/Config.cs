@@ -62,7 +62,7 @@ namespace Flarial.Launcher.Functions
             });
         }
 
-        public static async void loadConfig()
+        public static async Task loadConfig()
         {
             ConfigData config = Config.getConfig();
 

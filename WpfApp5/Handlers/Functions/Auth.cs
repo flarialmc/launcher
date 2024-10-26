@@ -62,7 +62,7 @@ namespace Flarial.Launcher.Functions
                 await Task.Run(async () => await File.WriteAllTextAsync(Path, string.Empty));
             }
 
-            var raw = await Task.Run(() => File.ReadAllText(Path));
+            var raw = await Task.Run(async () => await File.ReadAllTextAsync(Path));
 
             if (string.IsNullOrEmpty(raw))
             {

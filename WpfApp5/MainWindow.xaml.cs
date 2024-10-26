@@ -105,9 +105,9 @@ namespace Flarial.Launcher
             Task.Run(async () => await Minecraft.MCLoadLoop());
             Trace.WriteLine("Added!");
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                Config.loadConfig();
+                await Config.loadConfig();
 
             });
 
