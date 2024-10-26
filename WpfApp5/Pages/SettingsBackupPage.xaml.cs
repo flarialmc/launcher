@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
+using Flarial.Launcher.Managers;
 using Flarial.Launcher.Styles;
 
 namespace Flarial.Launcher.Pages;
@@ -20,9 +23,14 @@ public partial class SettingsBackupPage : Page
     //just placeholder stuff
     private void SettingsBackupPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        for (var i = 0; i < 25; i++)
+        Dispatcher.InvokeAsync(async () =>
         {
-            SettingsBackupPage.AddBackupItem("9/11", "idk");
-        }
+            List<string> backups = await BackupManager.GetAllBackupsAsync();
+    
+            foreach (string backup in backups)
+            {
+                AddBackupItem(backup, "what?");
+            }
+        });
     }
 }

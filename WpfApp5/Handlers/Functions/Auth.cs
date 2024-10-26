@@ -59,7 +59,7 @@ namespace Flarial.Launcher.Functions
         {
             if (!File.Exists(Path))
             {
-                await Task.Run(() => File.WriteAllText(Path, string.Empty));
+                await Task.Run(async () => await File.WriteAllTextAsync(Path, string.Empty));
             }
 
             var raw = await Task.Run(() => File.ReadAllText(Path));
@@ -75,7 +75,7 @@ namespace Flarial.Launcher.Functions
 
                 var tss = JsonConvert.SerializeObject(ts);
 
-                await Task.Run(() => File.WriteAllText(Path, tss));
+                await Task.Run(async () => await File.WriteAllTextAsync(Path, tss));
             }
             else
             {
@@ -103,7 +103,7 @@ namespace Flarial.Launcher.Functions
 
                 var tss = JsonConvert.SerializeObject(ts);
 
-                await Task.Run(() => File.WriteAllText(Path, tss));
+                await Task.Run(async () => await File.WriteAllTextAsync(Path, tss));
             }
         }
 

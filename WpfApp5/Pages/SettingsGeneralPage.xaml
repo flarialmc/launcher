@@ -22,7 +22,7 @@
             </Grid>
             <ToggleButton Click="ToggleButton_Click" Name="tb2" Content="Beta DLL" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Close To Tray" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
             <Label FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Wait for Minecraft modules" Foreground="White" FontSize="20"/>
             <Grid Height="25">
                 <Grid.ColumnDefinitions>
@@ -32,7 +32,7 @@
                 <Border Height="25" Width="50" CornerRadius="5" Background="#363031" Margin="0,0,10,0">
                     <TextBox VerticalAlignment="Center" HorizontalAlignment="Center" BorderThickness="0" Text="{Binding ElementName=ModulesSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" FontFamily="pack://application:,,,/Assets/#Space Grotesk" FontSize="14" Foreground="White" CaretBrush="White"/>
                 </Border>
-                <Slider Grid.Column="1" Interval="1" Name="ModulesSlider" ValueChanged="ModulesSlider_OnValueChanged" Style="{StaticResource Horizontal_Slider}" VerticalAlignment="Center" Minimum="0" Maximum="500" Value="160"/>
+                <Slider Grid.Column="1" Interval="1" Name="ModulesSlider" ValueChanged="ModulesSlider_OnValueChanged" Style="{StaticResource Horizontal_Slider}" VerticalAlignment="Center" Minimum="0" Maximum="190" Value="153"/>
             </Grid>
         </StackPanel>
         <ToggleButton Click="Button_Click" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">

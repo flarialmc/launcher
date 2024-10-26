@@ -94,11 +94,11 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Dispatcher.InvokeAsync((Action)(() => DownloadUtil()));
+            Dispatcher.InvokeAsync(async () => await DownloadUtil());
 
             Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Dispatcher.InvokeAsync((Action)(() => Minecraft.Init()));
+            Dispatcher.InvokeAsync(async () => Minecraft.Init());
             Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             Trace.WriteLine("Adding MC Load Loop");
@@ -159,14 +159,14 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 8 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            Dispatcher.InvokeAsync((Action)(() => RPCManager.Initialize()));
+            Dispatcher.InvokeAsync(async () => await RPCManager.Initialize());
 
             Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
             Application.Current.MainWindow = this;
 
             SetGreetingLabel();
 
-            Dispatcher.InvokeAsync((Action)(() => TryDaVersionz()));
+            Dispatcher.InvokeAsync(async () => await TryDaVersionz());
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using Flarial.Launcher.Structures;
 using Newtonsoft.Json;
 
@@ -15,11 +16,12 @@ namespace Flarial.Launcher.Functions
         public static bool MCMinimized;
         public static bool AutoLogin;
         public static string CustomThemePath;
+        public static double WaitFormodules;
 
 
         public static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
-        public static async Task saveConfig()
+        public static async Task saveConfig(bool shi = true)
         {
             if (!File.Exists(Path))
             {
@@ -29,7 +31,6 @@ namespace Flarial.Launcher.Functions
                 await Task.Delay(1000);
 
             }
-
             var ts = new ConfigData()
             {
                 minecraft_version = Version,
@@ -43,18 +44,25 @@ namespace Flarial.Launcher.Functions
                 mcMinimized = MCMinimized,
 
                 autoLogin = AutoLogin,
+                
+                waitForModules = WaitFormodules,
 
                 custom_theme_path = CustomThemePath
             };
 
             var tss = JsonConvert.SerializeObject(ts);
 
-            File.WriteAllText(Path, tss);
+            await File.WriteAllTextAsync(Path, tss);
 
-            MainWindow.CreateMessageBox("Config saved");
+            if(shi)
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.CreateMessageBox("Config saved"); 
+                
+            });
         }
 
-        public static void loadConfig()
+        public static async void loadConfig()
         {
             ConfigData config = Config.getConfig();
 
@@ -70,9 +78,9 @@ namespace Flarial.Launcher.Functions
             MCMinimized = config.mcMinimized;
             AutoLogin = config.autoLogin;
             UseCustomDLL = config.shouldUseCustomDLL;
+            WaitFormodules = config.waitForModules;
 
-
-            
+            await saveConfig(false);
 
             if (CustomDLLPath != "amongus")
             {
@@ -98,17 +106,19 @@ namespace Flarial.Launcher.Functions
             if (File.ReadAllText(Path).Length == 0)
             {
                 return new ConfigData()
-                {autoLogin = true,
+                {
+                autoLogin = true,
                 mcMinimized = true,
                 shouldUseBetaDll = false,
                 shouldUseCustomDLL = false,
-                }
-                ;
+                waitForModules = 153
+                };
             }
             var s = File.ReadAllText(Path);
 
-
-            return JsonConvert.DeserializeObject<ConfigData>(s);
+            ConfigData lol = JsonConvert.DeserializeObject<ConfigData>(s);
+            if (lol.waitForModules == 0) lol.waitForModules = 153;
+            return lol;
 
         }
     }

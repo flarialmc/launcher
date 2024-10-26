@@ -34,6 +34,7 @@ namespace Flarial.Launcher.Pages
             tb3.IsChecked = Config.AutoLogin;
             tb4.IsChecked = Config.MCMinimized;
             DLLTextBox.Text = Config.CustomDLLPath;
+            ModulesSlider.Value = double.Round(Config.WaitFormodules);
         }
 
         private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
@@ -83,6 +84,9 @@ namespace Flarial.Launcher.Pages
         private void ModulesSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ModulesSlider.Value = double.Round(ModulesSlider.Value);
+            Config.WaitFormodules = ModulesSlider.Value;
+            if(SaveButton != null)
+            SaveButton.IsChecked = true;
         }
     }
 }

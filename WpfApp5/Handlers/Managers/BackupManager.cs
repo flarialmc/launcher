@@ -75,6 +75,13 @@ namespace Flarial.Launcher.Managers
             {
                 MessageBox.Show(ex.Message, "Error");
             }
+            finally
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("Backup loaded.");
+                });
+            }
         }
 
         public static async Task CreateBackup(string backupName)
@@ -217,7 +224,17 @@ namespace Flarial.Launcher.Managers
             await Task.WhenAll(files.Select(async file =>
             {
                 string tempPath = Path.Combine(destDirName, file.Name);
-                await Task.Run(() => file.CopyTo(tempPath, true));
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        file.CopyTo(tempPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(e);
+                    }
+                });
                 Trace.WriteLine("Copying " + file + " to " + tempPath);
             }));
 

@@ -11,6 +11,9 @@ using Windows.Management.Deployment;
 using Windows.Security.Authentication.Web.Core;
 using Windows.Services.Store;
 using Flarial.Launcher.Functions;
+using Flarial.Launcher.Pages;
+using Version = System.Version;
+
 namespace Flarial.Launcher
 {
 
@@ -19,7 +22,7 @@ namespace Flarial.Launcher
 
         public static Process Process1;
         public const string FamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-
+        public static double waitformodules = 153;
         public static PackageManager PackageManager { get; private set; }
         public static Windows.ApplicationModel.Package Package { get; private set; }
         public static Windows.Storage.ApplicationData ApplicationData { get; private set; }
@@ -203,7 +206,7 @@ namespace Flarial.Launcher
         {
             while (true)
             {
-                if (modules >= 153)
+                if (modules >= Config.WaitFormodules)
                 {
                     Trace.WriteLine("Injected!");
                     Application.Current.Dispatcher.Invoke(() =>
@@ -221,7 +224,7 @@ namespace Flarial.Launcher
             Trace.WriteLine("starting RealDLLLoop.");
             while (true)
             {
-                if (modules < 153) continue;
+                if (modules < Config.WaitFormodules) continue;
                 Trace.WriteLine("Injected!");
                 Application.Current.Dispatcher.Invoke(() => { MainWindow.actionOnInject(); });
                 break;

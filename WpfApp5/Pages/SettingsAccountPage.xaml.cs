@@ -17,16 +17,11 @@ namespace Flarial.Launcher.Pages
     public partial class SettingsAccountPage : Page
     {
         public Window1 w = new Window1();
-        
+
         public SettingsAccountPage()
         {
             InitializeComponent();
-
-            Task.Run(() =>
-            {
-                if (Config.AutoLogin)
-                    AttemptLogin();
-            });
+            Dispatcher.InvokeAsync(async () => await AttemptLogin());
         }
 
         private async Task loginner()

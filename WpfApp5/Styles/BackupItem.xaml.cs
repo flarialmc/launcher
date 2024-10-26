@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using Flarial.Launcher.Managers;
 
 namespace Flarial.Launcher.Styles;
 
@@ -19,6 +20,13 @@ public partial class BackupItem : UserControl
 
     private void LoadBackup(object sender, RoutedEventArgs e)
     {
+        Dispatcher.InvokeAsync(async () => await BackupManager.LoadBackup(Time));
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            MainWindow.CreateMessageBox("Loading the backup. This may take some time!");
+            MainWindow.CreateMessageBox("Don't launch Minecraft in the mean time.");
+
+        });
         //add code here
     }
 
@@ -49,5 +57,8 @@ public partial class BackupItem : UserControl
         await Task.Delay(animationX.Duration.TimeSpan);
         
         (this.VisualParent as VirtualizingStackPanel)?.Children.Remove(this);
+        
+        Dispatcher.InvokeAsync(async () => await BackupManager.DeleteBackup(Time));
+
     }
 }

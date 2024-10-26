@@ -9,6 +9,7 @@
         public bool shouldUseBetaDll;
         public bool mcMinimized;
         public bool autoLogin;
+        public double waitForModules;
         public string custom_theme_path;
     }
 }
