@@ -84,12 +84,22 @@ namespace Flarial.Launcher
 
 
 
-                    AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+                AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+                {
+                    Exception ex = (Exception)args.ExceptionObject;
+                    string errorMessage = $"Unhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+
+                    Trace.WriteLine(errorMessage);
+                    try
                     {
-                        Exception ex = (Exception)args.ExceptionObject;
-                        Trace.WriteLine($"Unhandled exception: {ex.Message}");
-                        Trace.WriteLine($"Stack Trace: {ex.StackTrace}");
-                    };
+                        System.Windows.MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    catch
+                    {
+                        Trace.WriteLine("Failed to show error in MessageBox.");
+                    }
+                };
+
 
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());

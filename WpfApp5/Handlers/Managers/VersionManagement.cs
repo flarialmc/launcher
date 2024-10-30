@@ -555,7 +555,6 @@ namespace Flarial.Launcher.Managers
                 }
                 
                 Trace.WriteLine("Uninstalled.");
-
                 
                 element.Dispatcher.Invoke(() =>  VersionItemProperties.SetState(element, 1));
 
@@ -625,7 +624,6 @@ namespace Flarial.Launcher.Managers
 
         static void DeleteAppDataFiles()
         {
-            
             string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
 
             try
@@ -639,14 +637,21 @@ namespace Flarial.Launcher.Managers
                 {
                     Trace.WriteLine("Application data directory does not exist.");
                 }
+
+                if (Minecraft.ApplicationData != null)
+                {
+                    Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
+                }
+                else
+                {
+                    Trace.WriteLine("Minecraft ApplicationData is null.");
+                }
             }
             catch (Exception ex)
             {
                 Trace.WriteLine($"Error deleting application data: {ex.Message}");
             }
-            
-            Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
-
         }
+
     }
 }

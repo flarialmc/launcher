@@ -72,12 +72,13 @@ namespace Flarial.Launcher.Pages
         private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
         {
             Config.MCMinimized = (bool)((ToggleButton)sender).IsChecked;
+            MainWindow.CreateMessageBox("Restart the Launcher to see the changes.");
             SaveButton.IsChecked = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Config.saveConfig();
+            Task.Run(() => Config.saveConfig());
             SaveButton.IsChecked = false;
         }
 
