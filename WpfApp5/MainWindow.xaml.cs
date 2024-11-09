@@ -104,6 +104,12 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await Config.loadConfig();
+
+            });
+            
             Dispatcher.InvokeAsync(async () => await DownloadUtil());
 
             Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -112,12 +118,6 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             Task.Run(async () => await Minecraft.MCLoadLoop());
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await Config.loadConfig();
-
-            });
 
             StatusLabel = statusLabel;
             versionLabel = VersionLabel;

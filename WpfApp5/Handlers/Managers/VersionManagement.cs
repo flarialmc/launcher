@@ -585,7 +585,7 @@ namespace Flarial.Launcher.Managers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
-                    MainWindow.CreateMessageBox("Please restart the launcher for it to be able to utilize new patches");
+                    MainWindow.CreateMessageBox("Installed!");
                 });
 
             }
