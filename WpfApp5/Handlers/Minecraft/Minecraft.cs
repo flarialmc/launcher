@@ -76,10 +76,11 @@ namespace Flarial.Launcher
                 Process1 = mcIndex[0];
 
             }
-
+            
             /* CREDITS @AETOPIA */
             if (isInstalled() & Config.MCMinimized)
             {
+                Trace.WriteLine("Trying minimise fix");
                 IPackageDebugSettings pPackageDebugSettings = (IPackageDebugSettings)Activator.CreateInstance(
                     Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b, 0x4d)));
                 uint count = 0, bufferLength = 0;
