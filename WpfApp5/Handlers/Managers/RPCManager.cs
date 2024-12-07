@@ -111,7 +111,7 @@ namespace Flarial.Launcher.Managers
                 var button = new Button
                 {
                     Label = "Download",
-                    Url = "https://flarial.net/discord"
+                    Url = "https://flarial.xyz/discord"
                     
                 };
 
