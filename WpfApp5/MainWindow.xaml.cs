@@ -297,7 +297,7 @@ namespace Flarial.Launcher
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            bool compatible = await SDK.Catalog.GetAsync().Result.CompatibleAsync();
+            bool compatible = await (await Catalog.GetAsync()).CompatibleAsync();
             if(!compatible) Application.Current.Dispatcher.Invoke(() =>
             {
                 MainWindow.CreateMessageBox("Flarial does not support this version of Minecraft.");
@@ -317,8 +317,8 @@ namespace Flarial.Launcher
             }
             else
             {
-                StatusLabel.Text = "Launched! Enjoy.";
-                SDK.Minecraft.Launch(Config.CustomDLLPath);
+                StatusLabel.Text = "Launched Custom DLL! Enjoy.";
+                await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
             }
         }
         
