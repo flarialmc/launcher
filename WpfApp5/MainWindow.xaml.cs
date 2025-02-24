@@ -313,100 +313,27 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-
-            if (Minecraft.GetVersion().ToString() == "0.0.0")
+            if(!Config.UseCustomDLL)
             {
-                CreateMessageBox("Minecraft is not installed.");
-                return;
+                await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
+                StatusLabel.Text = "Launched! Enjoy.";
+                Injection(1);
             }
-            
-            if (Config.UseCustomDLL)
-            {
-                Utils.OpenGame();
+        }
 
-                Task.Run(async () =>
-                {
-                    Trace.WriteLine("Starting loop!");
-                    await Minecraft.CustomDLLLoop();
-                });
-
-                return;
-            }
-
-            if (Config.UseBetaDLL)
-            {
-                string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
-                string pathToExecute = filePath;
-                
-                Utils.OpenGame();
-                
-                isDllDownloadFinished = false;
-                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
-
-                string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/beta.dll";
-
-                WebClient updat = new WebClient();
-                updat.DownloadFileAsync(new Uri(url), filePath);
-                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
-                
-                actionOnInject = () =>
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Trace.WriteLine("Injected!");
-                        StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
-
-                        if (!File.Exists("dont.delete") || !File.Exists("real.dll")) StatusLabel.Text = "Your antivirus has removed an important file.";
-                    });
-                };
-                
-            }
-            
-                if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
-                {
-                    
-                
-                string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
-                string pathToExecute = filePath;
-
-                isDllDownloadFinished = false;
-                StatusLabel.Text = "DOWNLOADING DLL! This may take some time depending on your internet.";
-
-                string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
-
-                WebClient updat = new WebClient();
-                updat.DownloadFileAsync(new Uri(url), filePath);
-                updat.DownloadProgressChanged += DownloadProgressCallbackOfDLL;
-                    
-                Utils.OpenGame();
-
-                actionOnInject = () =>
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Trace.WriteLine("Injected!");
-                        StatusLabel.Text = Insertion.Insert(pathToExecute).ToString();
-
-                        if (!File.Exists("dont.delete") || !File.Exists("real.dll")) StatusLabel.Text = "Your antivirus has removed an important file.";
-                    });
-                };
-                
-            }
-            else
-                {
-                    Trace.Write($"Not SUPPORTED {Minecraft.GetVersion()}");
-                CreateMessageBox($"Our client does not support this MINECRAFT version {Minecraft.GetVersion()}. If you are using a custom dll, That will be used instead.");
-                }
+        private void Injection(int obj)
+        {
+            Task.Run(async () => await SDK.Client.LaunchAsync(Config.UseBetaDLL));
         }
 
 
-        public void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
-
+        public void DownloadProgressCallback(int value)
         {
 
-            // Displays the operation identifier, and the transfer progress.
-
-            StatusLabel.Text = $" Downloaded {e.ProgressPercentage}% of client";
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                StatusLabel.Text = $"Downloaded {value}% of client";
+            });
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

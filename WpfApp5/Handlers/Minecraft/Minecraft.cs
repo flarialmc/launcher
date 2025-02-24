@@ -175,7 +175,7 @@ namespace Flarial.Launcher
             }
             else
             {
-                
+                Task.Run(() => Flarial.Launcher.SDK.Minecraft.Installed);
             }
         }
 
