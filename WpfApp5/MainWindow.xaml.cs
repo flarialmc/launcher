@@ -31,7 +31,6 @@ namespace Flarial.Launcher
         public static bool isLoggedIn;
         private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
      
-        // PLZ REMBER TO CHECK IF USER IS BETA TOO. DONT GO AROUND USING THIS OR ELS PEOPL CAN HAC BETTA DLL!!
         public static int progressPercentage;
         public static bool isDllDownloadFinished = false;
         public static bool isDownloadingVersion = false;
@@ -47,6 +46,21 @@ namespace Flarial.Launcher
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
         public static volatile Action actionOnInject;
+        public static UnhandledExceptionEventHandler unhandledExceptionHandler = (sender, args) =>
+        {
+            Exception ex = (Exception)args.ExceptionObject;
+            string errorMessage = $"Unhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+
+            Trace.WriteLine(errorMessage);
+            try
+            {
+                System.Windows.MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch
+            {
+                Trace.WriteLine("Failed to show error in MessageBox.");
+            }
+        };
 
         
         private const int WM_CLOSE = 0x0010;
@@ -84,24 +98,8 @@ namespace Flarial.Launcher
 
 
 
-                AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
-                {
-                    Exception ex = (Exception)args.ExceptionObject;
-                    string errorMessage = $"Unhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
-
-                    Trace.WriteLine(errorMessage);
-                    try
-                    {
-                        System.Windows.MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    catch
-                    {
-                        Trace.WriteLine("Failed to show error in MessageBox.");
-                    }
-                };
-
-
-            
+           AppDomain.CurrentDomain.UnhandledException += unhandledExceptionHandler;
+                
             Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             Dispatcher.InvokeAsync(async () =>
@@ -138,30 +136,6 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("It's development time.");
             }
-
-            /*
-            WebClient updat = new WebClient();
-            updat.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/latestVersion.txt"), "latestVersion.txt");
-
-            Trace.WriteLine("Debug 6");
-            string[] updatRial = File.ReadAllLines("latestVersion.txt");
-
-            CultureInfo germanCulture = new CultureInfo("de-DE");
-            if (double.Parse(updatRial.First(), germanCulture) > version)
-            {
-                Trace.WriteLine("I try 2 autoupdate");
-
-                updat.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/installer.exe"), "installer.exe");
-
-                var p = new Process();
-                p.StartInfo.FileName = "installer.exe";
-                p.StartInfo.Arguments = "update";
-                p.Start();
-
-                Trace.Close();
-                Environment.Exit(5);
-            }
-            */
             
             Trace.WriteLine("Debug 7 " + stopwatch.Elapsed.Milliseconds.ToString());
             
@@ -190,10 +164,6 @@ namespace Flarial.Launcher
             
             WebClient updat = new WebClient();
             updat.DownloadFileAsync(new Uri(url), "dont.delete");
-            
-            filePath = "WUTokenHelper.dll";
-            url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/WUTokenHelper.dll";
-
         }
 
         public async Task<bool> TryDaVersionz()
@@ -231,6 +201,7 @@ namespace Flarial.Launcher
         {
             if(!isDownloadingVersion)
             {
+                AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
                 Trace.Close();
                 this.Close();
             }
@@ -312,6 +283,7 @@ namespace Flarial.Launcher
         {
             if(!isDownloadingVersion)
             {
+                AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
                 Trace.Close();
                 Environment.Exit(0);
             }
@@ -361,7 +333,7 @@ namespace Flarial.Launcher
                 return;
             }
 
-            if (Config.UseBetaDLL & shouldUseBetaDLL)
+            if (Config.UseBetaDLL)
             {
                 string filePath = Path.Combine(VersionManagement.launcherPath, "real.dll");
                 string pathToExecute = filePath;
@@ -388,7 +360,7 @@ namespace Flarial.Launcher
                     });
                 };
                 
-            } else if (Config.UseBetaDLL & !shouldUseBetaDLL) Config.UseBetaDLL = false;
+            }
             
                 if (File.ReadAllText("Supported.txt").Contains(Minecraft.GetVersion().ToString()))
                 {
@@ -439,7 +411,9 @@ namespace Flarial.Launcher
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
+            
             Trace.Close();
+            AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }
 

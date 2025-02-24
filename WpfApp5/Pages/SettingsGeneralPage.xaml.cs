@@ -45,16 +45,8 @@ namespace Flarial.Launcher.Pages
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
-            if(MainWindow.shouldUseBetaDLL)
-            {
                 Config.UseBetaDLL = (bool)((ToggleButton)sender).IsChecked;
                 SaveButton.IsChecked = true;
-            }
-            else
-            {
-                MainWindow.CreateMessageBox("You are not eligible for beta.");
-                ((ToggleButton)sender).IsChecked = false;
-            }
         }
 
         private void ToggleButton_Click_1(object sender, RoutedEventArgs e)

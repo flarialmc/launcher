@@ -25,7 +25,7 @@ namespace Flarial.Launcher
         public static Windows.Storage.ApplicationData ApplicationData { get; private set; }
 
         public static volatile int modules;
-        
+
         /* CREDITS @AETOPIA */
         [DllImport("kernel32.dll")]
         static extern long GetPackagesByPackageFamily(
@@ -44,6 +44,7 @@ namespace Flarial.Launcher
                 [MarshalAs(UnmanagedType.LPWStr)] string packageFullName,
                 [MarshalAs(UnmanagedType.LPWStr)] string debuggerCommandLine,
                 [MarshalAs(UnmanagedType.LPWStr)] string environment);
+
             long DisableDebugging([MarshalAs(UnmanagedType.LPWStr)] string packageFullName);
             long Suspend([MarshalAs(UnmanagedType.LPWStr)] string packageFullName);
             long Resume([MarshalAs(UnmanagedType.LPWStr)] string packageFullName);
@@ -53,14 +54,18 @@ namespace Flarial.Launcher
             long StopServicing([MarshalAs(UnmanagedType.LPWStr)] string packageFullName);
             long StartSessionRedirection([MarshalAs(UnmanagedType.LPWStr)] string packageFullName, ulong sessionId);
             long StopSessionRedirection([MarshalAs(UnmanagedType.LPWStr)] string packageFullName);
-            long GetPackageExecutionState([MarshalAs(UnmanagedType.LPWStr)] string packageFullName, IntPtr packageExecutionState);
+
+            long GetPackageExecutionState([MarshalAs(UnmanagedType.LPWStr)] string packageFullName,
+                IntPtr packageExecutionState);
+
             long RegisterForPackageStateChanges(
                 [MarshalAs(UnmanagedType.LPWStr)] string packageFullName,
                 IntPtr pPackageExecutionStateChangeNotification,
                 IntPtr pdwCookie);
+
             long UnregisterForPackageStateChanges(ulong dwCookie);
         }
-        
+
         /* CREDITS @AETOPIA */
 
         public static void Init()
@@ -70,45 +75,56 @@ namespace Flarial.Launcher
             FindPackage();
 
             var mcIndex = Process.GetProcessesByName("Minecraft.Windows");
-            
+
             if (mcIndex.Length > 0)
             {
                 Process1 = mcIndex[0];
 
             }
-            
+
             /* CREDITS @AETOPIA */
             if (isInstalled() & Config.MCMinimized)
             {
                 Trace.WriteLine("Trying minimise fix");
                 IPackageDebugSettings pPackageDebugSettings = (IPackageDebugSettings)Activator.CreateInstance(
-                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b, 0x4d)));
+                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b,
+                        0x4d)));
                 uint count = 0, bufferLength = 0;
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero, ref bufferLength, IntPtr.Zero);
+                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero,
+                    ref bufferLength, IntPtr.Zero);
                 IntPtr packageFullNames = Marshal.AllocHGlobal((int)(count * IntPtr.Size)),
                     buffer = Marshal.AllocHGlobal((int)(bufferLength * 2));
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames, ref bufferLength, buffer);
+                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames,
+                    ref bufferLength, buffer);
                 for (int i = 0; i < count; i++)
                 {
-                    pPackageDebugSettings.EnableDebugging(Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)), null, null);
+                    pPackageDebugSettings.EnableDebugging(Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)),
+                        null, null);
                     packageFullNames += IntPtr.Size;
                 }
+
                 Marshal.FreeHGlobal(packageFullNames);
                 Marshal.FreeHGlobal(buffer);
-            } else if (isInstalled() & !Config.MCMinimized)
+            }
+            else if (isInstalled() & !Config.MCMinimized)
             {
                 IPackageDebugSettings pPackageDebugSettings = (IPackageDebugSettings)Activator.CreateInstance(
-                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b, 0x4d)));
+                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b,
+                        0x4d)));
                 uint count = 0, bufferLength = 0;
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero, ref bufferLength, IntPtr.Zero);
+                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero,
+                    ref bufferLength, IntPtr.Zero);
                 IntPtr packageFullNames = Marshal.AllocHGlobal((int)(count * IntPtr.Size)),
                     buffer = Marshal.AllocHGlobal((int)(bufferLength * 2));
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames, ref bufferLength, buffer);
+                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames,
+                    ref bufferLength, buffer);
                 for (int i = 0; i < count; i++)
                 {
-                    pPackageDebugSettings.DisableDebugging(Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)));
+                    pPackageDebugSettings.DisableDebugging(
+                        Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)));
                     packageFullNames += IntPtr.Size;
                 }
+
                 Marshal.FreeHGlobal(packageFullNames);
                 Marshal.FreeHGlobal(buffer);
             }
@@ -156,6 +172,10 @@ namespace Flarial.Launcher
             if (!packageFound)
             {
                 Trace.WriteLine($"Package {FamilyName} not found.");
+            }
+            else
+            {
+                
             }
         }
 
@@ -253,10 +273,7 @@ namespace Flarial.Launcher
                 if (Process1.HasExited)
                 {
                     Trace.WriteLine("Process GONE!");
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        MainWindow.StatusLabel.Text = "MC_EXITED_PROCESS";
-                    });
+                    Application.Current.Dispatcher.Invoke(() => { MainWindow.StatusLabel.Text = "MC_EXITED_PROCESS"; });
                     modules = 0;
                     Process1 = null;
                 }
@@ -286,10 +303,7 @@ namespace Flarial.Launcher
                     catch (IndexOutOfRangeException)
                     {
                         Trace.WriteLine("No processes found with the name 'Minecraft.Windows'.");
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            MainWindow.StatusLabel.Text = "MC_NO_PROCESS";
-                        });
+                        Application.Current.Dispatcher.Invoke(() => { MainWindow.StatusLabel.Text = "MC_NO_PROCESS"; });
                     }
                     catch (Exception ex)
                     {
@@ -305,89 +319,5 @@ namespace Flarial.Launcher
         }
 
 
-        public class StoreHelper
-        {
-            private static StoreContext context = StoreContext.GetDefault();
-
-            public static async Task<bool> HasBought()
-            {
-                try
-                {
-                    StoreAppLicense appLicense = await context.GetAppLicenseAsync();
-                    string minecraftStoreId = "9NBLGGH2JHXJ";
-                    Trace.WriteLine("TROLLING " + appLicense.IsActive + "\nIs Trial Mode: " + appLicense.IsTrial + "\nTrial time: " + appLicense.TrialTimeRemaining + "\nsmth: " + appLicense.IsTrialOwnedByThisUser + "\nContaints Key: " +  appLicense.AddOnLicenses.ContainsKey(minecraftStoreId));
-                    Trace.WriteLine("Funny Man"+ appLicense.AddOnLicenses.First().Value.SkuStoreId);
-                    return appLicense.IsActive && !appLicense.IsTrial && appLicense.AddOnLicenses.ContainsKey(minecraftStoreId) && appLicense.AddOnLicenses[minecraftStoreId].IsActive;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-        }
-        
-       class WUTokenHelper {
-
-        public static string GetWUToken() {
-            try {
-                string token;
-                int status = WUTokenCaller.GetWUToken(out token);
-                if (status >= WU_ERRORS_START && status <= WU_ERRORS_END)
-                    throw new WUTokenException(status);
-                else if (status != 0)
-                    Marshal.ThrowExceptionForHR(status);
-                return token;
-            } catch (SEHException e) {
-                Marshal.ThrowExceptionForHR(e.HResult);
-                return ""; //ghey
-            }
-        }
-
-        private const int WU_ERRORS_START = unchecked((int) 0x80040200);
-        private const int WU_NO_ACCOUNT = unchecked((int) 0x80040200);
-
-        private const int WU_TOKEN_FETCH_ERROR_BASE = unchecked((int) 0x80040300);
-        private const int WU_TOKEN_FETCH_ERROR_END = unchecked((int) 0x80040400);
-
-        private const int WU_ERRORS_END = unchecked((int) 0x80040400);
-
-        public class WUTokenException : Exception {
-            public WUTokenException(int exception) : base(GetExceptionText(exception)) {
-                HResult = exception;
-            }
-            private static String GetExceptionText(int e) {
-                if (e >= WU_TOKEN_FETCH_ERROR_BASE && e < WU_TOKEN_FETCH_ERROR_END)
-                {
-                    var actualCode = (byte) e & 0xff;
-
-                    if(!Enum.IsDefined(typeof(WebTokenRequestStatus), e))
-                    {
-                        return $"WUTokenHelper returned bogus HRESULT: {e} (THIS IS A BUG)";
-                    }
-                    var status = (WebTokenRequestStatus) Enum.ToObject(typeof(WebTokenRequestStatus), actualCode);
-                    switch (status)
-                    {
-                        case WebTokenRequestStatus.Success:
-                            return "Success (THIS IS A BUG)";
-                        case WebTokenRequestStatus.UserCancel:
-                            return "User cancelled token request (THIS IS A BUG)"; //TODO: should never happen?
-                        case WebTokenRequestStatus.AccountSwitch:
-                            return "User requested account switch (THIS IS A BUG)"; //TODO: should never happen?
-                        case WebTokenRequestStatus.UserInteractionRequired:
-                            return "User interaction required to complete token request (THIS IS A BUG)";
-                        case WebTokenRequestStatus.AccountProviderNotAvailable:
-                            return "Xbox Live account services are currently unavailable";
-                        case WebTokenRequestStatus.ProviderError:
-                            return "Unknown Xbox Live error";
-                    }
-                }
-                switch (e) {
-                    case WU_NO_ACCOUNT: return "No Microsoft account found";
-                    default: return "Unknown " + e;
-                }
-            }
-        }
-
-    }
     }
 }
