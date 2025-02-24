@@ -81,55 +81,10 @@ namespace Flarial.Launcher
                 Process1 = mcIndex[0];
 
             }
-
-            /* CREDITS @AETOPIA */
-            if (isInstalled() & Config.MCMinimized)
-            {
-                Trace.WriteLine("Trying minimise fix");
-                IPackageDebugSettings pPackageDebugSettings = (IPackageDebugSettings)Activator.CreateInstance(
-                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b,
-                        0x4d)));
-                uint count = 0, bufferLength = 0;
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero,
-                    ref bufferLength, IntPtr.Zero);
-                IntPtr packageFullNames = Marshal.AllocHGlobal((int)(count * IntPtr.Size)),
-                    buffer = Marshal.AllocHGlobal((int)(bufferLength * 2));
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames,
-                    ref bufferLength, buffer);
-                for (int i = 0; i < count; i++)
-                {
-                    pPackageDebugSettings.EnableDebugging(Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)),
-                        null, null);
-                    packageFullNames += IntPtr.Size;
-                }
-
-                Marshal.FreeHGlobal(packageFullNames);
-                Marshal.FreeHGlobal(buffer);
-            }
-            else if (isInstalled() & !Config.MCMinimized)
-            {
-                IPackageDebugSettings pPackageDebugSettings = (IPackageDebugSettings)Activator.CreateInstance(
-                    Type.GetTypeFromCLSID(new Guid(0xb1aec16f, 0x2383, 0x4852, 0xb0, 0xe9, 0x8f, 0x0b, 0x1d, 0xc6, 0x6b,
-                        0x4d)));
-                uint count = 0, bufferLength = 0;
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, IntPtr.Zero,
-                    ref bufferLength, IntPtr.Zero);
-                IntPtr packageFullNames = Marshal.AllocHGlobal((int)(count * IntPtr.Size)),
-                    buffer = Marshal.AllocHGlobal((int)(bufferLength * 2));
-                GetPackagesByPackageFamily("Microsoft.MinecraftUWP_8wekyb3d8bbwe", ref count, packageFullNames,
-                    ref bufferLength, buffer);
-                for (int i = 0; i < count; i++)
-                {
-                    pPackageDebugSettings.DisableDebugging(
-                        Marshal.PtrToStringUni(Marshal.ReadIntPtr(packageFullNames)));
-                    packageFullNames += IntPtr.Size;
-                }
-
-                Marshal.FreeHGlobal(packageFullNames);
-                Marshal.FreeHGlobal(buffer);
-            }
-            /* CREDITS @AETOPIA */
-
+            
+            // minimize fix
+            if (Config.MCMinimized) SDK.Minecraft.Debug = true;
+            else SDK.Minecraft.Debug = false;
         }
 
 

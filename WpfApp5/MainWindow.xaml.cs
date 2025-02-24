@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Flarial.Launcher.SDK;
 using Application = System.Windows.Application;
 using RadioButton = System.Windows.Controls.RadioButton;
 using IWshRuntimeLibrary;
@@ -294,37 +295,33 @@ namespace Flarial.Launcher
             }
         }
         
-        public static void DownloadProgressCallbackOfDLL(object sender, DownloadProgressChangedEventArgs e)
-        {
-            isDllDownloadFinished = e.BytesReceived.ToString() == e.TotalBytesToReceive.ToString();
-            
-            if(isDllDownloadFinished)
-            {
-                Trace.WriteLine(isDllDownloadFinished);
-                Trace.WriteLine("DLL Download Finished!");
-            } else StatusLabel.Text = "DOWNLOADING DLL! " + Decimal.Round(e.BytesReceived, 2) + "/" + Decimal.Round(e.TotalBytesToReceive, 2);
-
-            if (isDllDownloadFinished)
-            {
-                Trace.WriteLine("Download UPDATE: " + Minecraft.modules);
-                Task.Run(async () => await Minecraft.RealDLLLoop());
-            }
-        }
-
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            bool compatible = await SDK.Catalog.GetAsync().Result.CompatibleAsync();
+            if(!compatible) Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.CreateMessageBox("Flarial does not support this version of Minecraft.");
+                if(Config.UseCustomDLL) MainWindow.CreateMessageBox("Custom DLL will be used.");
+                
+            });
+            
+            
             if(!Config.UseCustomDLL)
             {
-                await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
+                if(compatible)
+                {
+                    await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
+                    await SDK.Client.LaunchAsync(Config.UseBetaDLL);
+                    StatusLabel.Text = "Launched! Enjoy.";
+                }
+            }
+            else
+            {
                 StatusLabel.Text = "Launched! Enjoy.";
-                Injection(1);
+                SDK.Minecraft.Launch(Config.CustomDLLPath);
             }
         }
-
-        private void Injection(int obj)
-        {
-            Task.Run(async () => await SDK.Client.LaunchAsync(Config.UseBetaDLL));
-        }
+        
 
 
         public void DownloadProgressCallback(int value)
