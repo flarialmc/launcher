@@ -109,15 +109,11 @@ namespace Flarial.Launcher
 
             });
             
-            Dispatcher.InvokeAsync(async () => await DownloadUtil());
-
             Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             Dispatcher.InvokeAsync(Minecraft.Init);
             Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
-
-            Task.Run(async () => await Minecraft.MCLoadLoop());
-
+            
             StatusLabel = statusLabel;
             versionLabel = VersionLabel;
             Username = username;
@@ -156,15 +152,6 @@ namespace Flarial.Launcher
             
             MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
-        }
-
-        public async Task DownloadUtil()
-        {
-            string url = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/DllUtil.dll";
-            string filePath = "dont.delete";
-            
-            WebClient updat = new WebClient();
-            updat.DownloadFileAsync(new Uri(url), "dont.delete");
         }
 
         public async Task<bool> TryDaVersionz()
@@ -352,47 +339,6 @@ namespace Flarial.Launcher
             Environment.Exit(0);
         }
 
-    }
-}
-
-static class WUTokenCaller
-{
-    [DllImport("WUTokenHelper.dll", CallingConvention = CallingConvention.StdCall)]
-    public static extern int GetWUToken([MarshalAs(UnmanagedType.LPWStr)] out string token);
-}
-
-static class DLLImports
-{
-
-    [DllImport("dont.delete", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int AddTheDLLToTheGame(string path);
-}
-
-
-public enum DllReturns
-{
-    SUCCESS = 0,
-    ERROR_PROCESS_NOT_FOUND = 1,
-    ERROR_PROCESS_OPEN = 2,
-    ERROR_ALLOCATE_MEMORY = 3,
-    ERROR_WRITE_MEMORY = 4,
-    ERROR_GET_PROC_ADDRESS = 5,
-    ERROR_CREATE_REMOTE_THREAD = 6,
-    ERROR_WAIT_FOR_SINGLE_OBJECT = 7,
-    ERROR_VIRTUAL_FREE_EX = 8,
-    ERROR_CLOSE_HANDLE = 9,
-    ERROR_UNKNOWN = 10,
-    ERROR_NO_PATH = 11,
-    ERROR_NO_ACCESS = 12,
-    ERROR_NO_FILE = 13
-}
-public class Insertion
-{
-    public static DllReturns Insert(string path)
-    {
-        DllReturns real = (DllReturns)DLLImports.AddTheDLLToTheGame(path);
-        Trace.WriteLine(real.ToString());
-        return real;
     }
 }
 
