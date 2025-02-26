@@ -1,4 +1,4 @@
-﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Functions;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Animations;
@@ -21,6 +21,7 @@ using Application = System.Windows.Application;
 using RadioButton = System.Windows.Controls.RadioButton;
 using IWshRuntimeLibrary;
 using File = System.IO.File;
+using System.Windows.Media.Animation;
 
 namespace Flarial.Launcher
 {
@@ -151,7 +152,15 @@ namespace Flarial.Launcher
             stopwatch.Stop();
             
             MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
+            ContentRendered += MainWindow_ContentRendered;
+        }
 
+        private void MainWindow_ContentRendered(object sender, EventArgs e)
+        {
+            if (Resources["IntroStoryboard"] is Storyboard introStoryboard)
+            {
+                introStoryboard.Begin();
+            }
         }
 
         public async Task<bool> TryDaVersionz()
