@@ -16,69 +16,6 @@ namespace Flarial.Launcher.Functions
             return mc.Length > 0;
         }
 
-        static bool IsAdmin()
-        {
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-      public  static void RestartAsAdmin()
-        {
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = System.Reflection.Assembly.GetEntryAssembly().Location,
-                UseShellExecute = true,
-                Verb = "runas " // Request admin privileges
-            };
-
-            try
-            {
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine("Failed to restart with admin privileges: " + ex.Message);
-            }
-        }
-        public static void disableVsync()
-        {
-            var mcPath = Path.Combine(
-                   Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                   "Packages",
-                   "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
-                   "LocalState",
-                   "games",
-                   "com.mojang"
-               );
-
-            string path = Path.Combine(mcPath, "minecraftpe", "options.txt");
-
-            if (File.Exists(path))
-            {
-            string options =    File.ReadAllText(path);
-             string vsyncdisbaled =
-                     options.Replace("gfx_vsync:1", "gfx_vsync:0");
-                File.WriteAllText(path,vsyncdisbaled);
-
-            }
-
-      
-        }
-        public static void OpenGame()
-        {
-            if (IsGameOpen()) { return; }
-            var process = new Process();
-            var startInfo = new ProcessStartInfo
-            {
-                WindowStyle = ProcessWindowStyle.Normal,
-                FileName = "explorer.exe",
-                Arguments = "shell:appsFolder\\Microsoft.MinecraftUWP_8wekyb3d8bbwe!App",
-            };
-            process.StartInfo = startInfo;
-            process.Start();
-        }
-
   public      static bool IsDeveloperModeEnabled()
         {
             const string developerModeKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock";

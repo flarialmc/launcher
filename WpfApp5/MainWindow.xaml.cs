@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,27 +17,21 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Flarial.Launcher.SDK;
 using Application = System.Windows.Application;
-using RadioButton = System.Windows.Controls.RadioButton;
-using IWshRuntimeLibrary;
 using File = System.IO.File;
 
 namespace Flarial.Launcher
 {
     public partial class MainWindow
     {
-        private static readonly WebClient Client = new WebClient();
-        List<double> data = new List<double>();
-        public int version = 200; // 0.666 will be ignored by the updater, hence it wont update. But for release, it is recommended to use an actual release number.
-        public static bool isLoggedIn;
-        private Dictionary<string, string> TestVersions = new Dictionary<string, string>();
+        public int version = 200; 
      
         public static int progressPercentage;
-        public static bool isDllDownloadFinished = false;
         public static bool isDownloadingVersion = false;
         public static long progressBytesReceived;
         public static long progressBytesTotal;
         public static string progressType; 
         public static bool shouldUseBetaDLL;
+        public static bool isLoggedIn;
         public static ImageBrush PFP;
         public static bool Reverse;
         public static TextBlock StatusLabel;
@@ -46,7 +39,6 @@ namespace Flarial.Launcher
         public static TextBlock Username;
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
-        public static volatile Action actionOnInject;
         public static Catalog VersionCatalog;
         
         public bool IsLaunchEnabled
@@ -238,10 +230,7 @@ namespace Flarial.Launcher
         private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
             NewsPageTransition.Animation(Reverse, MainBorder, NewsBorder, NewsArrow);
 
-        private RadioButton CreateRadioButton(string background)
-        {
-            return new RadioButton { Tag = new ImageBrush { ImageSource = new ImageSourceConverter().ConvertFromString(background) as ImageSource } };
-        }
+
         private void CreateDirectoriesAndFiles()
         {
             Trace.WriteLine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
@@ -273,22 +262,6 @@ namespace Flarial.Launcher
                 GreetingLabel.Text = "Good Afternoon!";
             else if (Time >= 18 && Time <= 24)
                 GreetingLabel.Text = "Good Evening!";
-        }
-
-        private void DragWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
-        private void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            if(!isDownloadingVersion)
-            {
-                AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
-                Trace.Close();
-                Environment.Exit(0);
-            }
-            else
-            {
-                CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
-
-            }
         }
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
