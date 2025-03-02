@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Flarial.Launcher.Animations;
-using Microsoft.VisualBasic.CompilerServices;
 using Utils = Flarial.Launcher.Functions.Utils;
 
 namespace Flarial.Launcher.Pages

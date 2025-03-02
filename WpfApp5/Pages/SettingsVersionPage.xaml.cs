@@ -75,7 +75,7 @@ namespace Flarial.Launcher.Pages
                         VersionItemProperties.SetImageURL(versionItem, bitmapImage);
                     }
 
-                    VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[^1];
+                    VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[VersionItemStackPanel.Children.Count - 1];
                     tempvi.Margin = new Thickness(0);
                 });
             });

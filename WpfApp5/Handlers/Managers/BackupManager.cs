@@ -84,7 +84,7 @@ namespace Flarial.Launcher.Managers
             }
         }
 
-        public static async Task CreateBackup(string backupName)
+        public static async Task<bool> CreateBackup(string backupName)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Flarial.Launcher.Managers
                 if (Directory.Exists(backupDirectoryPath))
                 {
                     MessageBox.Show("Backup with the given name already exists.", "Failed to Create Backup");
-                    return;
+                    return false;
                 }
 
                 var mcPath = Path.Combine(
@@ -112,19 +112,22 @@ namespace Flarial.Launcher.Managers
                 if (!Directory.Exists(mcPath))
                 {
                     MessageBox.Show("Minecraft Data Path is invalid!", "Failed To Backup");
-                    return;
+                    return false;
                 }
 
                 Directory.CreateDirectory(backupDirectoryPath);
 
-                await BackupDirectoryAsync(mcPath, Path.Combine(backupDirectoryPath, "com.mojang"));
+                if(!await BackupDirectoryAsync(mcPath, Path.Combine(backupDirectoryPath, "com.mojang"))) return false;
+                
                 if (Directory.Exists(flarialPath))
                 {
-                    await BackupDirectoryAsync(flarialPath, Path.Combine(backupDirectoryPath, "RoamingState"));
+                    if (!await BackupDirectoryAsync(flarialPath, Path.Combine(backupDirectoryPath, "RoamingState")))
+                        return false;
                 }
                 else
                 {
                     MessageBox.Show("Roaming State Data Path is invalid!", "Failed To Backup");
+                    return false;
                 }
 
                 var text = await CreateConfig();
@@ -133,10 +136,13 @@ namespace Flarial.Launcher.Managers
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
+                return false;
             }
+            
+            return true;
         }
 
-        private static async Task BackupDirectoryAsync(string source, string destination)
+        private static async Task<bool> BackupDirectoryAsync(string source, string destination)
         {
             var sourceDirectory = new DirectoryInfo(source);
             if (!sourceDirectory.Exists)
@@ -148,9 +154,37 @@ namespace Flarial.Launcher.Managers
 
             await Task.WhenAll(sourceDirectory.GetFiles().Select(async file =>
             {
+                
+                try
+                {
+                    FileAttributes attributes = File.GetAttributes(file.FullName);
+    
+                    if ((attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                            MainWindow.CreateMessageBox("Files are encrypted!");
+                        });
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Error checking file attributes: {ex.Message}");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                        MainWindow.CreateMessageBox("Error checking for files.");
+                    });
+                    return false;
+                }
+                
                 var tempPath = Path.Combine(destinationDirectory.FullName, file.Name);
                 await Task.Run(() => file.CopyTo(tempPath, true));
                 Trace.WriteLine($"Copying {file} to {tempPath}");
+
+                return true;
             }));
 
             await Task.WhenAll(sourceDirectory.GetDirectories().Select(subdir =>
@@ -158,6 +192,7 @@ namespace Flarial.Launcher.Managers
                 var tempPath = Path.Combine(destinationDirectory.FullName, subdir.Name);
                 return DirectoryCopyAsync(subdir.FullName, tempPath, true);
             }));
+            return true;
         }
 
         public static async Task DeleteBackup(string backupName)

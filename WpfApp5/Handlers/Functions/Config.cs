@@ -21,6 +21,20 @@ namespace Flarial.Launcher.Functions
 
         public static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
+        public static async Task<string> ReadAllTextAsync(string path)
+        {
+            using (StreamReader reader = new StreamReader(path))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+        public static async Task WriteAllTextAsync(string path, string content)
+        {
+            using (StreamWriter writer = new StreamWriter(path, false))
+            {
+                await writer.WriteAsync(content);
+            }
+        }
         public static async Task saveConfig(bool shi = true)
         {
             if (!File.Exists(Path))
@@ -52,7 +66,7 @@ namespace Flarial.Launcher.Functions
 
             var tss = JsonConvert.SerializeObject(ts);
 
-            await File.WriteAllTextAsync(Path, tss);
+            await WriteAllTextAsync(Path, tss);
 
             if(shi)
             Application.Current.Dispatcher.Invoke(() =>

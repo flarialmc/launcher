@@ -47,6 +47,19 @@ namespace Flarial.Launcher
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
         public static volatile Action actionOnInject;
+        public static Catalog VersionCatalog;
+        
+        public bool IsLaunchEnabled
+        {
+            get { return (bool)GetValue(IsLaunchEnabledProperty); }
+            set { SetValue(IsLaunchEnabledProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsLaunchEnabledProperty =
+            DependencyProperty.Register("IsLaunchEnabled", typeof(bool), 
+                typeof(MainWindow), new PropertyMetadata(true));
+        
+        
         public static UnhandledExceptionEventHandler unhandledExceptionHandler = (sender, args) =>
         {
             Exception ex = (Exception)args.ExceptionObject;
@@ -80,7 +93,7 @@ namespace Flarial.Launcher
             stopwatch.Start();
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
-
+            Dispatcher.InvokeAsync(async () => VersionCatalog = await Catalog.GetAsync());
 
             string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";
@@ -149,7 +162,7 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
-            
+
             MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
         }
@@ -163,16 +176,22 @@ namespace Flarial.Launcher
             WebClient versionsWc = new WebClient();
             versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"), "Supported.txt");
             
-            string[] rawVersions = await File.ReadAllLinesAsync("Supported.txt");
-            string first = "Not Downloaded";
+            using (var stream = new FileStream("Supported.txt", FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
+            using (var reader = new StreamReader(stream))
+            {
+                string fileContent = await reader.ReadToEndAsync();
+                string[] rawVersions = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                
+                string first = "Not Downloaded";
 
-            if (Minecraft.GetVersion().ToString().StartsWith("0"))
-            {
-                CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
-            } else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
-            {
-                CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
-                StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
+                if (Minecraft.GetVersion().ToString().StartsWith("0"))
+                {
+                    CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
+                } else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
+                {
+                    CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
+                    StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
+                }
             }
 
             return true;
@@ -242,17 +261,7 @@ namespace Flarial.Launcher
             if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
                 File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
         }
-
         
-        static private void CreateShortcut(string name, string directory, string targetFile, string iconlocation, string description)
-        {
-            WshShell shell = new WshShell();
-            IWshShortcut shortcut = shell.CreateShortcut(directory + $@"\{name}.lnk");
-            shortcut.TargetPath = targetFile;
-            shortcut.IconLocation = iconlocation;
-            shortcut.Description = description;
-            shortcut.Save();
-        }
 
         private void SetGreetingLabel()
         {
@@ -284,7 +293,8 @@ namespace Flarial.Launcher
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            bool compatible = await (await Catalog.GetAsync()).CompatibleAsync();
+            IsLaunchEnabled = false;
+            bool compatible = await VersionCatalog.CompatibleAsync();
             if(!compatible) Application.Current.Dispatcher.Invoke(() =>
             {
                 MainWindow.CreateMessageBox("Flarial does not support this version of Minecraft.");
@@ -300,12 +310,14 @@ namespace Flarial.Launcher
                     await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
                     await SDK.Client.LaunchAsync(Config.UseBetaDLL);
                     StatusLabel.Text = "Launched! Enjoy.";
+                    IsLaunchEnabled = true;
                 }
             }
             else
             {
                 StatusLabel.Text = "Launched Custom DLL! Enjoy.";
                 await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
+                IsLaunchEnabled = true;
             }
         }
         

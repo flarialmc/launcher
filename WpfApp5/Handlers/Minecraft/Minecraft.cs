@@ -41,8 +41,8 @@ namespace Flarial.Launcher
             }
             
             // minimize fix
-            if (Config.MCMinimized) SDK.Minecraft.Debug = true;
-            else SDK.Minecraft.Debug = false;
+            if (Config.MCMinimized && isInstalled()) SDK.Minecraft.Debug = true;
+            else if(!Config.MCMinimized && isInstalled()) SDK.Minecraft.Debug = false;
         }
 
 

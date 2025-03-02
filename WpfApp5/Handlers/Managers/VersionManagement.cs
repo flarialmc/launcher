@@ -548,7 +548,7 @@ namespace Flarial.Launcher.Managers
                         MainWindow.progressType = "backup";
                         MainWindow.progressPercentage = 100;
                         element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 5));
-                        await BackupManager.CreateBackup(backupname);
+                        if (!await BackupManager.CreateBackup(backupname)) return false;
                     }
                     Trace.WriteLine("Uninstalling current Minecraft version.");
                     await RemoveMinecraftPackage();
