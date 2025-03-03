@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Flarial.Launcher.SDK;
+using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
 using File = System.IO.File;
 
@@ -154,11 +156,17 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
-
             MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
+            this.Loaded += MainWindow_Loaded;
+            
 
         }
-
+        
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await adWebView.EnsureCoreWebView2Async(null);
+            adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+        }
         public async Task<bool> TryDaVersionz()
         {
             
@@ -305,14 +313,6 @@ namespace Flarial.Launcher
             });
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-            Trace.Close();
-            AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
-            Environment.Exit(0);
-        }
-
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
@@ -321,6 +321,9 @@ namespace Flarial.Launcher
 
         private void Window_OnClosing(object sender, CancelEventArgs e)
         {
+            Trace.Close();
+            adWebView.Dispose();
+            AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }
 

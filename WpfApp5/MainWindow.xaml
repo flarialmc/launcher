@@ -6,6 +6,7 @@
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Flarial.Launcher"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
@@ -77,7 +78,6 @@
                         <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                                
                         <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
                     </StackPanel>
                     <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
@@ -110,7 +110,6 @@
                         <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready to inject" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
-
                     <Border Height="40" Background="{fw:AcrylicBrush bggrid}" CornerRadius="10,0,0,10" Margin="0,0,0,90" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -152,6 +151,7 @@
                             </Grid>
                         </Grid>
                     </Border>
+                    <wv2:WebView2 x:Name="adWebView" Width="320" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,20,0,0"/>
                 </Grid>
             </Border>
             <Border Width="0" Name="NewsBorder" Grid.Column="1" Background="#201A1B" CornerRadius="25">
