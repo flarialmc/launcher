@@ -169,6 +169,7 @@ namespace Flarial.Launcher
                 }
 
                 Dispatcher.Invoke(() => IsLaunchEnabled = true);
+                if (!Minecraft.isInstalled()) IsLaunchEnabled = false;
             });
 
         }
