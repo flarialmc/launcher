@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using AdsJumboWinForm;
 using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
@@ -43,7 +44,6 @@ namespace Flarial.Launcher
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
         public static Catalog VersionCatalog;
-        
         public bool IsLaunchEnabled
         {
             get { return (bool)GetValue(IsLaunchEnabledProperty); }
@@ -153,7 +153,6 @@ namespace Flarial.Launcher
 
             SetGreetingLabel();
 
-            Dispatcher.InvokeAsync(async () => await TryDaVersionz());
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
@@ -172,41 +171,16 @@ namespace Flarial.Launcher
                 if (!Minecraft.isInstalled()) IsLaunchEnabled = false;
             });
 
+
         }
         
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await adWebView.EnsureCoreWebView2Async(null);
-            adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
-        }
-        public async Task<bool> TryDaVersionz()
-        {
-            
-            VersionLabel.Text = Minecraft.GetVersion().ToString();
-
-
-            WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"), "Supported.txt");
-            
-            using (var stream = new FileStream("Supported.txt", FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-            using (var reader = new StreamReader(stream))
-            {
-                string fileContent = await reader.ReadToEndAsync();
-                string[] rawVersions = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-                
-                string first = "Not Downloaded";
-
-                if (Minecraft.GetVersion().ToString().StartsWith("0"))
-                {
-                    CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
-                } else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
-                {
-                    CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
-                    StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
-                }
-            }
-
-            return true;
+            BannerAds bannerAdsControl = new BannerAds();
+            BannerAdHost.Child = bannerAdsControl;
+            bannerAdsControl.ShowAd(468, 60, "t4eileqlu3oa");
+            //await adWebView.EnsureCoreWebView2Async(null);
+            //adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
         }
 
         public static void CreateMessageBox(string text)
@@ -334,7 +308,7 @@ namespace Flarial.Launcher
         private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Trace.Close();
-            adWebView.Dispose();
+            //adWebView.Dispose();
             AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }

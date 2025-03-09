@@ -4,9 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-        xmlns:s="clr-namespace:System;assembly=mscorlib"
-        xmlns:local="clr-namespace:Flarial.Launcher"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:ads="clr-namespace:AdsJumboWinForm;assembly=AdsJumboWinForm"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
@@ -151,7 +150,9 @@
                             </Grid>
                         </Grid>
                     </Border>
-                    <wv2:WebView2 x:Name="adWebView" Width="320" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                    <WindowsFormsHost x:Name="BannerAdHost" VerticalAlignment="Top" HorizontalAlignment="Center" 
+                                      Height="468" Width="60" Margin="0,0,20,0"/>
+                    <!-- <wv2:WebView2 x:Name="adWebView" Width="320" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,20,0,0"/> -->
                 </Grid>
             </Border>
             <Border Width="0" Name="NewsBorder" Grid.Column="1" Background="#201A1B" CornerRadius="25">
