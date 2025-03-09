@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -89,6 +90,21 @@ namespace Flarial.Launcher
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
             Dispatcher.InvokeAsync(async () => VersionCatalog = await Catalog.GetAsync());
+            
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string directoryPath = Path.Combine(baseDirectory, "runtimes", "win-x64", "native");
+            Directory.CreateDirectory(directoryPath);
+            string filePath2 = Path.Combine(directoryPath, "WebView2Loader.dll");
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "costura.webview2loader.dll.compressed";
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var decompressStream = new DeflateStream(stream, CompressionMode.Decompress))
+            {
+                using (var fileStream = File.Create(filePath2))
+                {
+                    decompressStream.CopyTo(fileStream);
+                }
+            }
 
             string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";
@@ -152,7 +168,7 @@ namespace Flarial.Launcher
             Application.Current.MainWindow = this;
 
             SetGreetingLabel();
-
+            Dispatcher.InvokeAsync(async () => await TryDaVersionz());
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
             
             stopwatch.Stop();
@@ -170,6 +186,7 @@ namespace Flarial.Launcher
                 Dispatcher.Invoke(() => IsLaunchEnabled = true);
                 if (!Minecraft.isInstalled()) IsLaunchEnabled = false;
             });
+            
 
 
         }
@@ -181,6 +198,40 @@ namespace Flarial.Launcher
             bannerAdsControl.ShowAd(468, 60, "t4eileqlu3oa");
             //await adWebView.EnsureCoreWebView2Async(null);
             //adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+        }
+
+        public async Task<bool> TryDaVersionz()
+        {
+
+            VersionLabel.Text = Minecraft.GetVersion().ToString();
+
+
+            WebClient versionsWc = new WebClient();
+            versionsWc.DownloadFileAsync(
+                new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"),
+                "Supported.txt");
+
+            using (var stream = new FileStream("Supported.txt", FileMode.Open, FileAccess.Read, FileShare.Read,
+                       bufferSize: 4096, useAsync: true))
+            using (var reader = new StreamReader(stream))
+            {
+                string fileContent = await reader.ReadToEndAsync();
+                string[] rawVersions = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                string first = "Not Downloaded";
+
+                if (Minecraft.GetVersion().ToString().StartsWith("0"))
+                {
+                    CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
+                }
+                else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
+                {
+                    CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
+                    StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
+                }
+            }
+
+            return true;
         }
 
         public static void CreateMessageBox(string text)
