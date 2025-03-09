@@ -20,6 +20,7 @@ using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
 using File = System.IO.File;
+using Version = Flarial.Launcher.Pages.Version;
 
 namespace Flarial.Launcher
 {
@@ -158,7 +159,17 @@ namespace Flarial.Launcher
             stopwatch.Stop();
             MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
             this.Loaded += MainWindow_Loaded;
-            
+
+            IsLaunchEnabled = false;
+            Task.Run(() =>
+            {
+                while (VersionCatalog == null)
+                {
+                    Task.Delay(100).Wait();
+                }
+
+                Dispatcher.Invoke(() => IsLaunchEnabled = true);
+            });
 
         }
         
