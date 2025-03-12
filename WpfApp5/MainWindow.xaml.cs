@@ -238,33 +238,6 @@ namespace Flarial.Launcher
         {
 
             VersionLabel.Text = Minecraft.GetVersion().ToString();
-
-
-            WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFileAsync(
-                new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Supported.txt"),
-                "Supported.txt");
-
-            using (var stream = new FileStream("Supported.txt", FileMode.Open, FileAccess.Read, FileShare.Read,
-                       bufferSize: 4096, useAsync: true))
-            using (var reader = new StreamReader(stream))
-            {
-                string fileContent = await reader.ReadToEndAsync();
-                string[] rawVersions = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                string first = "Not Downloaded";
-
-                if (Minecraft.GetVersion().ToString().StartsWith("0"))
-                {
-                    CreateMessageBox("You don't have Minecraft installed. Go to Options and try our Version Changer.");
-                }
-                else if (rawVersions.Contains(Minecraft.GetVersion().ToString()) == false)
-                {
-                    CreateMessageBox("You are currently using a Minecraft version unsupported by Flarial");
-                    StatusLabel.Text = $"{Minecraft.GetVersion()} is unsupported";
-                }
-            }
-
             return true;
         }
 

@@ -12,7 +12,6 @@ public class AutoUpdater
 {
     private readonly string _latestJsonUrl;
     private readonly string _updaterPath;
-    private readonly string currentVersion = "2.1";
 
     public AutoUpdater(string latestJsonUrl, string updaterPath)
     {
@@ -30,8 +29,9 @@ public class AutoUpdater
             var latestInfo = JsonSerializer.Deserialize<LatestInfo>(json);
             Trace.WriteLine($"Latest version: {json}");
             Version latestVersion = new Version(latestInfo.version);
-            Version currVersion = new Version(currentVersion);
-
+            Version currVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            Trace.WriteLine($"Current version: {currVersion}");
+            
             if (latestVersion > currVersion)
             {
                 InitiateUpdate(latestInfo.downloadUrl);

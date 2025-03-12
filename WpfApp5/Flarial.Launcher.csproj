@@ -18,6 +18,10 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Update="WebView2Runtime\WebView2Loader.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
