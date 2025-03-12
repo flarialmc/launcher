@@ -43,8 +43,8 @@ jobs:
       
       run: |
           echo ${{ env.version }}
-          contents="$(jq '._version = "$ {{ env.version }}"' launcher/latestVersion.txt)" && \
-          echo $contents > launcher/latestVersion.txt
+          jq --arg new_version "$ {{ env.version }}" '.version = $new_version' launcher/latestVersion.txt > tmp.json && mv -f latestVersion.txt launcher/latestVersion.txt
+
         
           cat launcher/latestVersion.txt
           git add launcher/latestVersion.txt
