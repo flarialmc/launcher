@@ -43,9 +43,10 @@ jobs:
       
       run: |
           echo ${{ env.version }}
-          export env_version="${{ env.version }}"
-          sed -i "s/\"version\": \"2.1.1\"/\"version\": \"$env_version\"/" launcher/launcherVersion.txt
-
+          export new_version="${{ env.version }}"
+          
+          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          echo -E "${contents}" > launcher/launcherVersion.txt
           cat launcher/launcherVersion.txt
           git add launcher/launcherVersion.txt
           git commit -m "Bump launcher version"
