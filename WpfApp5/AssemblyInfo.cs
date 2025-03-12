@@ -12,3 +12,4 @@ using System.Windows;
 )]
 
 [assembly: AssemblyVersion("2.1.3.0")]
+// test 2
