@@ -32,7 +32,7 @@ jobs:
     - name: checkout cdn
       uses: actions/checkout@v4
       with:
-        repository: 'ttf-fog/newcdn'
+        repository: 'flarialmc/newcdn'
         ref: 'main'
         token:  ${{secrets.ACTIONS_GITHUB_TOKEN}}
     - name: setup git config
