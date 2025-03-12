@@ -187,17 +187,39 @@ namespace Flarial.Launcher
                 if (!Minecraft.isInstalled()) IsLaunchEnabled = false;
             });
             
-
+            StartRefreshTimer();
 
         }
+        private System.Timers.Timer refreshTimer;
+        private void StartRefreshTimer()
+        {
+            refreshTimer = new System.Timers.Timer(3 * 60 * 1000);
+            refreshTimer.Elapsed += (sender, e) => RefreshWebView();
+            refreshTimer.AutoReset = true;
+            refreshTimer.Enabled = true;
+        }
+        
+        private void RefreshWebView()
+        {
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                if (adWebView.CoreWebView2 != null)
+                {
+                    adWebView.CoreWebView2.Reload();
+                }
+                else
+                {
+                    Task.Run(async () => { await adWebView.EnsureCoreWebView2Async(null); adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad"); });
+                    
+                }
+            });
+        }
+
         
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            BannerAds bannerAdsControl = new BannerAds();
-            BannerAdHost.Child = bannerAdsControl;
-            bannerAdsControl.ShowAd(468, 60, "t4eileqlu3oa");
-            //await adWebView.EnsureCoreWebView2Async(null);
-            //adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+
+
         }
 
         public async Task<bool> TryDaVersionz()
@@ -311,6 +333,8 @@ namespace Flarial.Launcher
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            await adWebView.EnsureCoreWebView2Async(null);
+            adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
             IsLaunchEnabled = false;
             bool compatible = await VersionCatalog.CompatibleAsync();
             if(!compatible) Application.Current.Dispatcher.Invoke(() =>
@@ -359,7 +383,7 @@ namespace Flarial.Launcher
         private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Trace.Close();
-            //adWebView.Dispose();
+            adWebView.Dispose();
             AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }
