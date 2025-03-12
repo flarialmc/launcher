@@ -1,0 +1,54 @@
+name: Launcher version bump
+on:
+
+  push:
+    branches: [ "main"]
+
+
+  workflow_dispatch:
+jobs:
+  windows-build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: setup git
+      run: |
+        git config --global user.name "Github Actions"
+        git config --global user.email "actions@github.com"
+    - name: update file version
+      run: | 
+        #parsed string
+        export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("([0-9]+\.[0-9]+\.[0-9]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+        echo $new_version
+        echo "version=$new_version" >> $GITHUB_ENV
+        sed -i "s/\[assembly: AssemblyVersion(\"[0-9]\+\.[0-9]\+\.[0-9]\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
+    - name: push to origin
+      run: | 
+        git add WpfApp5/AssemblyInfo.cs
+        git commit -m "Update file version"
+        git push origin main
+    - name: checkout cdn
+      uses: actions/checkout@v4
+      with:
+        repository: 'flarialmc/newcdn'
+        ref: 'main'
+        token:  ${{secrets.ACTIONS_GITHUB_TOKEN}}
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@example.com"
+    - name: upload to newcdn
+      
+      run: |
+          echo ${{ env.version }}
+          export new_version="${{ env.version }}"
+          
+          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          echo -E "${contents}" > launcher/launcherVersion.txt
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
+          git commit -m "Bump launcher version"
+          git push origin main
+          
