@@ -44,10 +44,10 @@ jobs:
       run: |
           echo ${{ env.version }}
           export env_version="${{ env.version }}"
-          sed -i "s/\"version\": \"2.1.1\"/\"version\": \"$env_version\"/" launcher/latestVersion.txt
+          sed -i "s/\"version\": \"2.1.1\"/\"version\": \"$env_version\"/" launcher/launcherVersion.txt
 
-          cat launcher/latestVersion.txt
-          git add launcher/latestVersion.txt
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
           
