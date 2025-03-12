@@ -87,10 +87,7 @@ namespace Flarial.Launcher
 
             Task.Run(async () =>
             {
-                string latestJsonUrl = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/launcherVersion.txt";
-                string updaterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "updater.exe");
-                var autoUpdater = new AutoUpdater(latestJsonUrl, updaterPath);
-                await autoUpdater.CheckForUpdates();
+                if (await SDK.Launcher.AvailableAsync()) await SDK.Launcher.UpdateAsync(null);
             });
             
             

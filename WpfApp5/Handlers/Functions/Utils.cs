@@ -15,15 +15,6 @@ namespace Flarial.Launcher.Functions
             Process[] mc = Process.GetProcessesByName("Minecraft.Windows");
             return mc.Length > 0;
         }
-
-  public      static bool IsDeveloperModeEnabled()
-        {
-            const string developerModeKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock";
-            const string developerModeValueName = "AllowDevelopmentWithoutDevLicense";
-
-            int value = (int)Registry.GetValue(developerModeKey, developerModeValueName, -1);
-            return value == 1;
-        }
         public static bool IsAdministrator =>
    new WindowsPrincipal(WindowsIdentity.GetCurrent())
        .IsInRole(WindowsBuiltInRole.Administrator);

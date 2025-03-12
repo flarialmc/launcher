@@ -26,16 +26,8 @@ namespace Flarial.Launcher.Managers
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
 
-      
-
-        static void EnableDeveloperMode()
-        {
-            const string developerModeKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock";
             const string developerModeValueName = "AllowDevelopmentWithoutDevLicense";
-
-            // Set the value to 1 to enable Developer Mode
-            Registry.SetValue(developerModeKey, developerModeValueName, 1, RegistryValueKind.DWord);
-        }
+        
         public static string ExtractUrl(string jsonString)
         {
             // Parse the JSON string into a JObject
@@ -457,23 +449,20 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string url, string version, UIElement element)
         {
-            if (!Utils.IsDeveloperModeEnabled())
+            
+            if (!SDK.Developer.Enabled)
             {
                 // Enable Developer Mode
-                EnableDeveloperMode();
-                Trace.WriteLine("Developer Mode has been enabled.");
-            }
-            else
-            {
-                Trace.WriteLine("Developer Mode is already enabled on your system.");
-                // Continue with the rest of your application logic here.
-            }
-
-            if (!Utils.IsDeveloperModeEnabled())
-            {
-                MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                SDK.Developer.Request();
+                MainWindow.CreateMessageBox("Please enable developer mode.");
+                Trace.WriteLine("Developer Mode has been requested.");
                 return false;
             }
+            
+            
+                Trace.WriteLine("Developer Mode is enabled on your system!");
+                // Continue with the rest of your application logic here.
+            
 
 
             MainWindow.progressPercentage = 0;
@@ -487,7 +476,7 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
-                if (!Utils.IsDeveloperModeEnabled())
+                if (!SDK.Developer.Enabled)
                 {
                     MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
                     return false;
