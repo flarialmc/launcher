@@ -46,3 +46,6 @@ jobs:
       run: |
           contents="$(jq '.version = '$parsed'' launcher/latestVersion.txt)" && \echo -E "${contents}" > launcher/latestVersion.txt
           cat latestVersion.txt
+          git add launcher/latestVersion.txt
+          git commit -m "Bump launcher version"
+          git push origin main
