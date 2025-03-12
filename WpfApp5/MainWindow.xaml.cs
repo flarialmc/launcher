@@ -50,10 +50,26 @@ namespace Flarial.Launcher
             get { return (bool)GetValue(IsLaunchEnabledProperty); }
             set { SetValue(IsLaunchEnabledProperty, value); }
         }
-
         public static readonly DependencyProperty IsLaunchEnabledProperty =
             DependencyProperty.Register("IsLaunchEnabled", typeof(bool), 
                 typeof(MainWindow), new PropertyMetadata(true));
+        public bool updateTextEnabled
+        {
+            get { return (bool)GetValue(updateTextEnabledProperty); }
+            set { SetValue(updateTextEnabledProperty, value); }
+        }
+        public static readonly DependencyProperty updateTextEnabledProperty =
+            DependencyProperty.Register("updateTextEnabled", typeof(bool), 
+                typeof(MainWindow), new PropertyMetadata(true));
+        
+        public int updateProgress
+        {
+            get { return (int)GetValue(updateProgressProperty); }
+            set { SetValue(updateProgressProperty, value); }
+        }
+        public static readonly DependencyProperty updateProgressProperty =
+            DependencyProperty.Register("updateProgress", typeof(int), 
+                typeof(MainWindow), new PropertyMetadata(0));
         
         
         public static UnhandledExceptionEventHandler unhandledExceptionHandler = (sender, args) =>
@@ -85,12 +101,8 @@ namespace Flarial.Launcher
 
 
 
-            Task.Run(async () =>
-            {
-                if (await SDK.Launcher.AvailableAsync()) await SDK.Launcher.UpdateAsync(null);
-            });
-            
-            
+
+
             CreateDirectoriesAndFiles();
             
             Stopwatch stopwatch = new Stopwatch();
@@ -227,8 +239,16 @@ namespace Flarial.Launcher
         
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
-
+            if (await SDK.Launcher.AvailableAsync())
+            {
+                Trace.WriteLine("Yeah la ma pahio");
+                updateTextEnabled = true;
+                MainGrid.IsEnabled = false;
+                MainGrid.Visibility = Visibility.Hidden;
+                LolGrid.Visibility = Visibility.Visible;
+                LolGrid.IsEnabled = true;
+                await SDK.Launcher.UpdateAsync((value) => DownloadProgressCallback2(value));
+            }
         }
 
         public async Task<bool> TryDaVersionz()
@@ -355,7 +375,15 @@ namespace Flarial.Launcher
                 StatusLabel.Text = $"Downloaded {value}% of client";
             });
         }
+        
+        public void DownloadProgressCallback2(int value)
+        {
 
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                updateProgress = value;
+            });
+        }
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {

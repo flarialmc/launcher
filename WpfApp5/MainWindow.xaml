@@ -10,10 +10,18 @@
         mc:Ignorable="d"
         Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
         Background="#120e0f" ResizeMode="NoResize" WindowStyle="None">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="25" RadiusY="25"/>
     </Window.Clip>
     <Grid>
+        <Grid Name="LolGrid" Background="#80000000" IsEnabled="{Binding updateTextEnabled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="{Binding updateProgress, RelativeSource={RelativeSource AncestorType=Window}, StringFormat='Updating {0}%'}" 
+                       FontSize="30" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
         <Grid Name="MainGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
