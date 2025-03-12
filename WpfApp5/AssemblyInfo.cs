@@ -10,4 +10,4 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
     
 )]
-[assembly: AssemblyVersion("2.1.1.0")]
+[assembly: AssemblyVersion("2.1.2.0")]
