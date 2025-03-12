@@ -43,7 +43,7 @@ jobs:
       
       run: |
           echo ${{ env.version }}
-          contents="$(jq '.version = "$ {{ env.version }}"' launcher/latestVersion.txt)" && \
+          contents="$(jq '._version = "$ {{ env.version }}"' launcher/latestVersion.txt)" && \
           echo $contents > launcher/latestVersion.txt
         
           cat launcher/latestVersion.txt
