@@ -1,0 +1,21 @@
+name: Launcher version bump
+on:
+
+  push:
+    branches: [ "main"]
+
+
+  workflow_dispatch:
+jobs:
+  windows-build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: setup git
+      run: |
+        git config --global user.name "Github Actions"
+        git config --global user.email "actions@github.com"
+        cat WpfApp5/AssemblyInfo.cs
+        cat WpfApp5/AssemblyInfo.cs | tail
