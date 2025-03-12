@@ -23,10 +23,6 @@ jobs:
         export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("([0-9]+\.[0-9]+\.[0-9]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
         echo $new_version
         sed -i "s/\[assembly: AssemblyVersion(\"[0-9]\+\.[0-9]\+\.[0-9]\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
-        git add WpfApp5/AssemblyInfo.cs
-        git commit -m "Update file version"
-        git push origin main
-        
     - name: push to origin
       run: | 
         git add WpfApp5/AssemblyInfo.cs
