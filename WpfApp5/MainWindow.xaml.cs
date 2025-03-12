@@ -82,6 +82,18 @@ namespace Flarial.Launcher
                 var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
                 hwndSource.AddHook(new HwndSourceHook(WndProc));
             };
+
+
+
+            Task.Run(async () =>
+            {
+                string latestJsonUrl = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/launcherVersion.txt";
+                string updaterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "updater.exe");
+                var autoUpdater = new AutoUpdater(latestJsonUrl, updaterPath);
+                await autoUpdater.CheckForUpdates();
+            });
+            
+            
             CreateDirectoriesAndFiles();
             
             Stopwatch stopwatch = new Stopwatch();
