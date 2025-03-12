@@ -40,8 +40,9 @@ jobs:
         git config user.email "actions@example.com"
     - name: upload to newcdn
       run: |
-          contents="$(jq '.version = '$parsed'' launcher/latestVersion.txt)" && \echo -E "${contents}" > launcher/latestVersion.txt
-          cat latestVersion.txt
+          contents="$(jq '.version = "'$larsed'"' latestVersion.txt)" && \
+          echo -E "${contents}" > latestVersion.txt
+          cat launcher/latestVersion.txt
           git add launcher/latestVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
