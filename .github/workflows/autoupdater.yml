@@ -22,6 +22,7 @@ jobs:
         #parsed string
         export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("([0-9]+\.[0-9]+\.[0-9]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
         echo $new_version
+        echo "version=$new_version" >> $GITHUB_ENV
         sed -i "s/\[assembly: AssemblyVersion(\"[0-9]\+\.[0-9]\+\.[0-9]\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
     - name: push to origin
       run: | 
@@ -39,12 +40,14 @@ jobs:
         git config user.name "GitHub Actions Bot"
         git config user.email "actions@example.com"
     - name: upload to newcdn
+      
       run: |
-          echo $new_version
-          contents="$(jq '.version = ""'$new_version'""' launcher/latestVersion.txt)" && \
+          echo ${{ env.version }}
+          contents="$(jq '.version = "$ {{ env.version }}"' launcher/latestVersion.txt)" && \
           echo $contents > launcher/latestVersion.txt
         
           cat launcher/latestVersion.txt
           git add launcher/latestVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
+          
