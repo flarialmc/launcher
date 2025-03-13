@@ -228,11 +228,19 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("Yeah la ma pahio");
                 updateTextEnabled = true;
-                MainGrid.IsEnabled = false;
-                MainGrid.Visibility = Visibility.Hidden;
-                LolGrid.Visibility = Visibility.Visible;
-                LolGrid.IsEnabled = true;
-                await SDK.Launcher.UpdateAsync((value) => DownloadProgressCallback2(value));
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MainGrid.IsEnabled = false;
+                    MainGrid.Visibility = Visibility.Hidden;
+                    LolGrid.Visibility = Visibility.Visible;
+                    LolGrid.IsEnabled = true;
+                }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+
+                await SDK.Launcher.UpdateAsync(value =>
+                {
+                    DownloadProgressCallback2(value);
+                });
             }
         }
 
