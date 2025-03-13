@@ -35,7 +35,7 @@ namespace Flarial.Launcher
         public static long progressBytesReceived;
         public static long progressBytesTotal;
         public static string progressType; 
-        public static bool shouldUseBetaDLL;
+        public static bool isPremium;
         public static bool isLoggedIn;
         public static ImageBrush PFP;
         public static bool Reverse;
@@ -112,10 +112,8 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
             Dispatcher.InvokeAsync(async () => VersionCatalog = await Catalog.GetAsync());
             
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string directoryPath = Path.Combine(baseDirectory, "runtimes", "win-x64", "native");
-            Directory.CreateDirectory(directoryPath);
-            string filePath2 = Path.Combine(directoryPath, "WebView2Loader.dll");
+            string filePath2 = Path.Combine(VersionManagement.launcherPath, "WebView2Loader.dll");
+            CoreWebView2Environment.SetLoaderDllFolderPath(VersionManagement.launcherPath);
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "costura.webview2loader.dll.compressed";
             using (var stream = assembly.GetManifestResourceStream(resourceName))
@@ -169,20 +167,6 @@ namespace Flarial.Launcher
 
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
-            Trace.WriteLine("Debug 4 " + stopwatch.Elapsed.Milliseconds.ToString());
-
-            Trace.WriteLine("Debug 5 " + stopwatch.Elapsed.Milliseconds.ToString());
-
-
-            if (version == 0.666)
-            {
-                Trace.WriteLine("It's development time.");
-            }
-            
-            Trace.WriteLine("Debug 7 " + stopwatch.Elapsed.Milliseconds.ToString());
-            
-            Trace.WriteLine("Debug 8 " + stopwatch.Elapsed.Milliseconds.ToString());
-
             Dispatcher.InvokeAsync(async () => await RPCManager.Initialize());
 
             Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -222,6 +206,7 @@ namespace Flarial.Launcher
         
         private void RefreshWebView()
         {
+            if(!isPremium)
             Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 if (adWebView.CoreWebView2 != null)
@@ -335,8 +320,12 @@ namespace Flarial.Launcher
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            await adWebView.EnsureCoreWebView2Async(null);
-            adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+            if(!isPremium)
+            {
+                await adWebView.EnsureCoreWebView2Async(null);
+                adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+            }
+            
             IsLaunchEnabled = false;
             bool compatible = await VersionCatalog.CompatibleAsync();
             if(!compatible) Application.Current.Dispatcher.Invoke(() =>
@@ -393,7 +382,7 @@ namespace Flarial.Launcher
         private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Trace.Close();
-            adWebView.Dispose();
+            if(!isPremium) adWebView.Dispose();
             AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }
