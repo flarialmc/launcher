@@ -18,7 +18,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using AdsJumboWinForm;
 using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;

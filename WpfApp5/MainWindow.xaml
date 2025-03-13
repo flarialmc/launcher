@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:ads="clr-namespace:AdsJumboWinForm;assembly=AdsJumboWinForm"
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
