@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using AdsJumboWinForm;
 using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
@@ -99,7 +100,7 @@ namespace Flarial.Launcher
                 hwndSource.AddHook(new HwndSourceHook(WndProc));
             };
 
-
+            ContentRendered += MainWindow_ContentRendered;
 
 
 
@@ -221,7 +222,10 @@ namespace Flarial.Launcher
             });
         }
 
-        
+        private void MainWindow_ContentRendered(object sender, EventArgs e)
+        {
+
+        }
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (await SDK.Launcher.AvailableAsync())
@@ -233,6 +237,7 @@ namespace Flarial.Launcher
                 {
                     MainGrid.IsEnabled = false;
                     MainGrid.Visibility = Visibility.Hidden;
+                    mbGrid.Visibility = Visibility.Hidden;
                     LolGrid.Visibility = Visibility.Visible;
                     LolGrid.IsEnabled = true;
                 }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
