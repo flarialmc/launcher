@@ -329,8 +329,20 @@ namespace Flarial.Launcher
         {
             if(!isPremium)
             {
-                await adWebView.EnsureCoreWebView2Async(null);
-                adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+                if(adWebView != null)
+                {
+                    await adWebView.EnsureCoreWebView2Async(null);
+                    adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
+                }
+            }
+
+            if (VersionCatalog == null)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("VersionCatalog is null, report his in the discord.");
+                });
+                return;
             }
             
             IsLaunchEnabled = false;
