@@ -3,13 +3,10 @@ using Flarial.Launcher.Managers;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Animations;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,12 +14,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
 using File = System.IO.File;
-using Version = Flarial.Launcher.Pages.Version;
 
 namespace Flarial.Launcher
 {
@@ -198,7 +193,7 @@ namespace Flarial.Launcher
         private System.Timers.Timer refreshTimer;
         private void StartRefreshTimer()
         {
-            refreshTimer = new System.Timers.Timer(3 * 60 * 1000);
+            refreshTimer = new System.Timers.Timer(1.5 * 60 * 1000);
             refreshTimer.Elapsed += (sender, e) => RefreshWebView();
             refreshTimer.AutoReset = true;
             refreshTimer.Enabled = true;
