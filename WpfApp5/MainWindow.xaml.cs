@@ -346,9 +346,12 @@ namespace Flarial.Launcher
             }
             else
             {
-                StatusLabel.Text = "Launched Custom DLL! Enjoy.";
-                await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
-                IsLaunchEnabled = true;
+                if(Config.CustomDLLPath.Length > 5)
+                {
+                    StatusLabel.Text = "Launched Custom DLL! Enjoy.";
+                    await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
+                    IsLaunchEnabled = true;
+                }
             }
         }
         
