@@ -1,81 +1,54 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-
+  <!-- Common settings for all configurations -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <PlatformTarget>x64</PlatformTarget>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net481</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>1058433624430612640.ico</ApplicationIcon>
-    <PlatformTarget>x64</PlatformTarget>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <LangVersion>10</LangVersion>
-    <SelfContained>true</SelfContained>
     <RootNamespace>Flarial.Launcher</RootNamespace>
-    <CsWinRTEnabled>false</CsWinRTEnabled>
     <AssemblyName>Flarial.Launcher</AssemblyName>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup>
+    <Optimize>true</Optimize>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
+  <!-- Release-specific settings -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Ensure WebView2Loader.dll is always copied -->
   <ItemGroup>
     <None Update="WebView2Runtime\WebView2Loader.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <Optimize>true</Optimize>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>link</TrimMode>
-    <PublishSingleFile>true</PublishSingleFile>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
+  <!-- Exclude unnecessary files/folders -->
   <ItemGroup>
-    <Content Include="1058433624430612640.ico" />
-  </ItemGroup>
-
- <ItemGroup>
     <Compile Remove="Handlers\UI\**" />
     <EmbeddedResource Remove="Handlers\UI\**" />
     <None Remove="Handlers\UI\**" />
     <Page Remove="Handlers\UI\**" />
+    <None Remove="Assets\guest.png;Assets\icon.png;Assets\share.png;Assets\SpaceGrotesk.ttf;Assets\v2bg.png" />
   </ItemGroup>
 
- <ItemGroup>
-   <None Remove="Assets\guest.png" />
-   <None Remove="Assets\icon.png" />
-   <None Remove="Assets\share.png" />
-   <None Remove="Assets\SpaceGrotesk.ttf" />
-   <None Remove="Assets\v2bg.png" />
- </ItemGroup>
-
+  <!-- Include application icon -->
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <Content Include="1058433624430612640.ico" />
+  </ItemGroup>
+
+  <!-- Package references -->
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="all" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="Flarial.Launcher.SDK" Version="1.3.1.1" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
@@ -88,10 +61,7 @@
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>
-
+  <!-- COM and assembly references with explicit version metadata -->
   <ItemGroup>
     <COMReference Include="Shell32">
       <WrapperTool>tlbimp</WrapperTool>
@@ -128,6 +98,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
+  <!-- Additional folders and resources -->
   <ItemGroup>
     <Folder Include="Generated Files\" />
   </ItemGroup>

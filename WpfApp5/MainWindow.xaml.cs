@@ -183,8 +183,7 @@ namespace Flarial.Launcher
                     Task.Delay(100).Wait();
                 }
 
-                Dispatcher.Invoke(() => IsLaunchEnabled = true);
-                if (!Minecraft.isInstalled()) IsLaunchEnabled = false;
+                Dispatcher.Invoke(() => IsLaunchEnabled = Minecraft.isInstalled());
             });
             
             StartRefreshTimer();
