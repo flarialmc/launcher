@@ -6,136 +6,108 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: windows-latest
-    permissions:
-      packages: write
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: check commit type
-        shell: bash
-        run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
-            echo "Continuing to build as release"
-          else
-            echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
-            gh run cancel ${{ github.run_id }}
-            gh run watch ${{ github.run_id }}
-          fi
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: WpfApp5/global.json
-
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Find and Bump Version
-        id: bump_version
-        run: |
-          cd WpfApp5
-          $assemblyInfoPath = Get-ChildItem -Path . -Filter AssemblyInfo.cs -Recurse | Select-Object -First 1 | Select-Object -ExpandProperty FullName
-          if (-not $assemblyInfoPath) {
-            Write-Error "AssemblyInfo.cs not found."
-            exit 1
-          }
-          $content = Get-Content $assemblyInfoPath
-          $versionLine = $content | Where-Object { $_ -like '*AssemblyVersion*' }
-          if (-not $versionLine) {
-            Write-Error "AssemblyVersion line not found in AssemblyInfo.cs"
-            exit 1
-          }
-          $versionRegex = [regex]::Matches($versionLine, '"(+)\.(+)\.(+)"')
-          if ($versionRegex.Count -ne 1 -or $versionRegex[0].Groups.Count -ne 4) {
-            Write-Error "Could not parse AssemblyVersion."
-            exit 1
-          }
-          $major = [int]$versionRegex[0].Groups[1].Value
-          $minor = [int]$versionRegex[0].Groups[2].Value
-          $patch = [int]$versionRegex[0].Groups[3].Value
-
-          $patch += 1
-
-          $newVersion = "$major.$minor.$patch"
-          echo "New version: $newVersion"
-          echo "NEW_VERSION=$newVersion" >> $env:GITHUB_OUTPUT
-
-          $newContent = $content | ForEach-Object {
-            if ($_ -like '*AssemblyVersion*') {
-              $_ -replace '"(+)\.(+)\.(+)"', "`"$newVersion`""
-            } else {
-              $_
-            }
-          }
-          Set-Content -Path $assemblyInfoPath -Value $newContent
-
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@example.com"
-          git add $assemblyInfoPath
-          git commit -m "Bump version to $newVersion"
-          git push origin main
-
-      - name: Build
-        run: |
-          cd WpfApp5
-          msbuild -t:Restore Flarial.Launcher.csproj
-          msbuild /m Flarial.Launcher.csproj
-          cd D:\a\launcher\launcher\WpfApp5\bin\Debug\net481\win-x64
-          ls
-
-      - name: Checkout cdn repository
-        uses: actions/checkout@v4
-        with:
-          repository: 'flarialmc/newcdn'
-          ref: 'main'
-          path: 'cdn'
-          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
-
-      - name: Setup git config for CDN
-        run: |
-          cd cdn
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@example.com"
-
-      - name: Upload to newcdn
-        run: |
-          cd cdn
-          cp D:/a/launcher/launcher/WpfApp5/bin/Debug/net481/win-x64/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
-          git add Launcher/Flarial.Launcher.exe
-          git commit -a -m "Update launcher"
-          git push origin main
-
   bump-version-number:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout cdn repository
-        uses: actions/checkout@v4
-        with:
-          repository: 'flarialmc/newcdn'
-          ref: 'main'
-          path: 'cdn'
-          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
 
-      - name: Setup git config for CDN version update
-        run: |
-          cd cdn
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@example.com"
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+        - name: setup git
+          run: |
+            git config --global user.name "Github Actions"
+            git config --global user.email "actions@github.com"
+        - name: update file version
+          run: |
+            #parsed string
+            
+            export old_version=$(cat WpfApp5/AssemblyInfo.cs|sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+            export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' |  awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+            echo $new_version
+            echo "version=$new_version" >> $GITHUB_ENV
+            sed -i "s/$old_version/$new_version/g" WpfApp5/AssemblyInfo.cs 
 
-      - name: Update version file on CDN
-        run: |
-          cd cdn
-          echo "${{ needs.deploy.outputs.NEW_VERSION }}"
-          export new_version="${{ needs.deploy.outputs.NEW_VERSION }}"
+        - name: push to origin
+          run: |
+            git add WpfApp5/AssemblyInfo.cs
+            git commit -m "Update file version"
+            git push origin main
+        - name: checkout cdn
+          uses: actions/checkout@v4
+          with:
+            repository: 'flarialmc/newcdn'
+            ref: 'main'
+            token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+        - name: setup git config
+          run: |
+            git config user.name "GitHub Actions Bot"
+            git config user.email "actions@example.com"
+        - name: upload to newcdn
 
-          contents=$(jq ".version = \"$new_version\"" launcher/launcherVersion.txt) && \
-          echo -E "${contents}" > launcher/launcherVersion.txt
-          cat launcher/launcherVersion.txt
-          git add launcher/launcherVersion.txt
-          git commit -m "Bump launcher version to $new_version"
-          git push origin main
+          run: |
+            echo ${{ env.version }}
+            export new_version="${{ env.version }}"
+
+            contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+            echo -E "${contents}" > launcher/launcherVersion.txt
+            cat launcher/launcherVersion.txt
+            git add launcher/launcherVersion.txt
+            git commit -m "Bump launcher version"
+            git push origin main
+
+  deploy:
+        needs: bump-version-number
+        runs-on: windows-latest
+        permissions:
+          packages: write
+          contents: read
+
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: check commit type
+            shell: bash
+            run: |
+              if [[ "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
+                  echo "Continuing to build as release"
+              else
+                  echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
+                  gh run cancel ${{ github.run_id }}
+                  gh run watch ${{ github.run_id }}
+              fi
+
+          - name: Setup dotnet
+            uses: actions/setup-dotnet@v4
+            with:
+              global-json-file: WpfApp5/global.json
+
+          - name: Add MSBuild to PATH
+            uses: microsoft/setup-msbuild@v2
+
+          - name: Build
+            run: |
+              cd WpfApp5
+              msbuild -t:Restore Flarial.Launcher.csproj
+              msbuild /m Flarial.Launcher.csproj
+              cd D:\a\launcher\launcher\WpfApp5\bin\Debug\net481\win-x64
+              ls
+
+          - name: Checkout cdn repository
+            uses: actions/checkout@v4
+            with:
+              repository: 'flarialmc/newcdn'
+              ref: 'main'
+              path: 'cdn'
+              token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+
+          - name: Setup git config
+            run: |
+              git config --global user.name "GitHub Actions Bot"
+              git config --global user.email "actions@example.com"
+
+          - name: Upload to newcdn
+            run: |
+              cd cdn
+              cp D:/a/launcher/launcher/WpfApp5/bin/Debug/net481/win-x64/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
+              git add Launcher/Flarial.Launcher.exe
+              git commit -a -m "Update launcher"
+              git push origin main
