@@ -543,7 +543,7 @@ namespace Flarial.Launcher.Managers
                 else
                 {
                     Trace.WriteLine("Minecraft ApplicationData is null.");
-                }
+                }//
             }
             catch (Exception ex)
             {
