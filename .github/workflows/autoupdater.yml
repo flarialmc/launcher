@@ -1,37 +1,12 @@
 name: Build release launcher and bump version
+
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  bump-version:
-    runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.update_version.outputs.new_version }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: setup git
-        run: |
-          git config --global user.name "Github Actions"
-          git config --global user.email "actions@github.com"
-      - name: update file version
-        id: update_version
-        run: |
-          #parsed string
-          export new_version=$(cat WpfApp5/AssemblyInfo.cs | grep "\[assembly: AssemblyVersion" | sed -E 's/.*AssemblyVersion\("\([^\"]+\)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
-          echo "new_version=$new_version" >> $GITHUB_OUTPUT
-          echo $new_version
-          sed -i "s/AssemblyVersion(\"[^"]\+\")/AssemblyVersion(\"$new_version\")/" WpfApp5/AssemblyInfo.cs
-      - name: push version bump to origin
-        run: |
-          git add WpfApp5/AssemblyInfo.cs
-          git commit -m "Bump launcher version to ${{ steps.update_version.outputs.new_version }}"
-          git push origin main
-
   deploy:
-    needs: bump-version
     runs-on: windows-latest
     permissions:
       packages: write
@@ -43,13 +18,14 @@ jobs:
       - name: check commit type
         shell: bash
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == "release: "* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
             echo "Continuing to build as release"
           else
             echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
             gh run cancel ${{ github.run_id }}
             gh run watch ${{ github.run_id }}
           fi
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
@@ -58,6 +34,51 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      - name: Find and Bump Version
+        id: bump_version
+        run: |
+          cd WpfApp5
+          $assemblyInfoPath = Get-ChildItem -Path . -Filter AssemblyInfo.cs -Recurse | Select-Object -First 1 | Select-Object -ExpandProperty FullName
+          if (-not $assemblyInfoPath) {
+            Write-Error "AssemblyInfo.cs not found."
+            exit 1
+          }
+          $content = Get-Content $assemblyInfoPath
+          $versionLine = $content | Where-Object { $_ -like '*AssemblyVersion*' }
+          if (-not $versionLine) {
+            Write-Error "AssemblyVersion line not found in AssemblyInfo.cs"
+            exit 1
+          }
+          $versionRegex = [regex]::Matches($versionLine, '"(+)\.(+)\.(+)"')
+          if ($versionRegex.Count -ne 1 -or $versionRegex[0].Groups.Count -ne 4) {
+            Write-Error "Could not parse AssemblyVersion."
+            exit 1
+          }
+          $major = [int]$versionRegex[0].Groups[1].Value
+          $minor = [int]$versionRegex[0].Groups[2].Value
+          $patch = [int]$versionRegex[0].Groups[3].Value
+
+          $patch += 1
+
+          $newVersion = "$major.$minor.$patch"
+          echo "New version: $newVersion"
+          echo "NEW_VERSION=$newVersion" >> $env:GITHUB_OUTPUT
+
+          $newContent = $content | ForEach-Object {
+            if ($_ -like '*AssemblyVersion*') {
+              $_ -replace '"(+)\.(+)\.(+)"', "`"$newVersion`""
+            } else {
+              $_
+            }
+          }
+          Set-Content -Path $assemblyInfoPath -Value $newContent
+
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@example.com"
+          git add $assemblyInfoPath
+          git commit -m "Bump version to $newVersion"
+          git push origin main
+
       - name: Build
         run: |
           cd WpfApp5
@@ -65,6 +86,7 @@ jobs:
           msbuild /m Flarial.Launcher.csproj
           cd D:\a\launcher\launcher\WpfApp5\bin\Debug\net481\win-x64
           ls
+
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
@@ -73,40 +95,47 @@ jobs:
           path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
 
-      - name: Setup git config for cdn
+      - name: Setup git config for CDN
         run: |
           cd cdn
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
+
       - name: Upload to newcdn
         run: |
           cd cdn
           cp D:/a/launcher/launcher/WpfApp5/bin/Debug/net481/win-x64/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add Launcher/Flarial.Launcher.exe
-          git commit -m "Update launcher to version ${{ needs.bump-version.outputs.new_version }}"
+          git commit -a -m "Update launcher"
           git push origin main
 
-  bump-cdn-version:
+  bump-version-number:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
-          repository: 'ttf-fog/newcdn'
+          repository: 'flarialmc/newcdn'
           ref: 'main'
+          path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
-      - name: setup git config for cdn
+
+      - name: Setup git config for CDN version update
         run: |
+          cd cdn
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@example.com"
-      - name: update cdn launcher version
+
+      - name: Update version file on CDN
         run: |
-          echo "${{ needs.deploy.outputs.new_version }}"
-          export new_version="${{ needs.deploy.outputs.new_version }}"
-          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          cd cdn
+          echo "${{ needs.deploy.outputs.NEW_VERSION }}"
+          export new_version="${{ needs.deploy.outputs.NEW_VERSION }}"
+
+          contents=$(jq ".version = \"$new_version\"" launcher/launcherVersion.txt) && \
           echo -E "${contents}" > launcher/launcherVersion.txt
           cat launcher/launcherVersion.txt
           git add launcher/launcherVersion.txt
-          git commit -m "Bump launcher version to ${{ needs.deploy.outputs.new_version }}"
+          git commit -m "Bump launcher version to $new_version"
           git push origin main
