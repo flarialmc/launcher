@@ -549,7 +549,7 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine($"Error deleting application data: {ex.Message}");
             }
-        }
+        }//
 
     }
 }
