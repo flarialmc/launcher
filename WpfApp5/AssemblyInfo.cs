@@ -25,3 +25,4 @@ using System.Windows;
 
 [assembly: AssemblyVersion("2.0.0.0")]
 
+// man
