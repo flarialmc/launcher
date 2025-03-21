@@ -196,19 +196,6 @@ namespace Flarial.Launcher
         
         private void RefreshWebView()
         {
-            if(!isPremium)
-            Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                if (adWebView.CoreWebView2 != null)
-                {
-                    adWebView.CoreWebView2.Reload();
-                }
-                else
-                {
-                    Task.Run(async () => { await adWebView.EnsureCoreWebView2Async(null); adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad"); });
-                    
-                }
-            });
         }
 
         private void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -309,14 +296,6 @@ namespace Flarial.Launcher
         
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
-            if(!isPremium)
-            {
-                if(adWebView != null)
-                {
-                    await adWebView.EnsureCoreWebView2Async(null);
-                    adWebView.CoreWebView2.Navigate("https://website-ebo.pages.dev/ad");
-                }
-            }
 
             if (VersionCatalog == null)
             {
@@ -386,7 +365,6 @@ namespace Flarial.Launcher
         private void Window_OnClosing(object sender, CancelEventArgs e)
         {
             Trace.Close();
-            if(!isPremium) adWebView.Dispose();
             AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Environment.Exit(0);
         }
