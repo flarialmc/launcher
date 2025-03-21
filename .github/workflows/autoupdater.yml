@@ -6,7 +6,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.update_version.outputs.new_version }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: setup git
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "actions@github.com"
+      - name: update file version
+        id: update_version
+        run: |
+          #parsed string
+          export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("(+\.+\.+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          echo $new_version
+          sed -i "s/\[assembly: AssemblyVersion(\"\+\.\+\.\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
+      - name: push version bump to origin
+        run: |
+          git add WpfApp5/AssemblyInfo.cs
+          git commit -m "Bump launcher version to ${{ steps.update_version.outputs.new_version }}"
+          git push origin main
+
   deploy:
+    needs: bump-version
     runs-on: windows-latest
     permissions:
       packages: write
@@ -19,11 +45,11 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
-              echo "Continuing to build as release"
+            echo "Continuing to build as release"
           else
-              echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
-              gh run cancel ${{ github.run_id }}
-              gh run watch ${{ github.run_id }}
+            echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
+            gh run cancel ${{ github.run_id }}
+            gh run watch ${{ github.run_id }}
           fi
 
       - name: Setup dotnet
@@ -50,8 +76,9 @@ jobs:
           path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
 
-      - name: Setup git config
+      - name: Setup git config for cdn
         run: |
+          cd cdn
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
 
@@ -60,51 +87,31 @@ jobs:
           cd cdn
           cp D:/a/launcher/launcher/WpfApp5/bin/Debug/net481/win-x64/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add Launcher/Flarial.Launcher.exe
-          git commit -a -m "Update launcher"
+          git commit -m "Update launcher to version ${{ needs.bump-version.outputs.new_version }}"
           git push origin main
 
-  bump-version-number:
-      needs: deploy
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v4
-        - name: setup git
-          run: |
-            git config --global user.name "Github Actions"
-            git config --global user.email "actions@github.com"
-        - name: update file version
-          run: |
-            #parsed string
-            export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("([0-9]+\.[0-9]+\.[0-9]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
-            echo $new_version
-            echo "version=$new_version" >> $GITHUB_ENV
-            sed -i "s/\[assembly: AssemblyVersion(\"[0-9]\+\.[0-9]\+\.[0-9]\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
-        - name: push to origin
-          run: |
-            git add WpfApp5/AssemblyInfo.cs
-            git commit -m "Update file version"
-            git push origin main
-        - name: checkout cdn
-          uses: actions/checkout@v4
-          with:
-            repository: 'ttf-fog/newcdn'
-            ref: 'main'
-            token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
-        - name: setup git config
-          run: |
-            git config user.name "GitHub Actions Bot"
-            git config user.email "actions@example.com"
-        - name: upload to newcdn
+  bump-cdn-version:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cdn repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'flarialmc/newcdn'
+          ref: 'main'
+          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+      - name: setup git config for cdn
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@example.com"
+      - name: update cdn launcher version
+        run: |
+          echo "${{ needs.deploy.outputs.new_version }}"
+          export new_version="${{ needs.deploy.outputs.new_version }}"
 
-          run: |
-            echo ${{ env.version }}
-            export new_version="${{ env.version }}"
-
-            contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
-            echo -E "${contents}" > launcher/launcherVersion.txt
-            cat launcher/launcherVersion.txt
-            git add launcher/launcherVersion.txt
-            git commit -m "Bump launcher version"
-            git push origin main
-
+          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          echo -E "${contents}" > launcher/launcherVersion.txt
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
+          git commit -m "Bump launcher version to ${{ needs.deploy.outputs.new_version }}"
+          git push origin main
