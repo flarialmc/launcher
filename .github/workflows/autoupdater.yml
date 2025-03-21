@@ -1,5 +1,4 @@
 name: Build release launcher and bump version
-
 on:
   push:
     branches: ["main"]
@@ -21,10 +20,10 @@ jobs:
         id: update_version
         run: |
           #parsed string
-          export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 2 | head -n 1 | sed -E 's/.*AssemblyVersion\("(+\.+\.+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          export new_version=$(cat WpfApp5/AssemblyInfo.cs | grep "\[assembly: AssemblyVersion" | sed -E 's/.*AssemblyVersion\("([^"]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
           echo $new_version
-          sed -i "s/\[assembly: AssemblyVersion(\"\+\.\+\.\+\")\]/[assembly: AssemblyVersion(\"$new_version\")]/" WpfApp5/AssemblyInfo.cs
+          sed -i "s/AssemblyVersion(\"[^"]\+\")/AssemblyVersion(\"$new_version\")/" WpfApp5/AssemblyInfo.cs
       - name: push version bump to origin
         run: |
           git add WpfApp5/AssemblyInfo.cs
@@ -51,7 +50,6 @@ jobs:
             gh run cancel ${{ github.run_id }}
             gh run watch ${{ github.run_id }}
           fi
-
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
@@ -67,7 +65,6 @@ jobs:
           msbuild /m Flarial.Launcher.csproj
           cd D:\a\launcher\launcher\WpfApp5\bin\Debug\net481\win-x64
           ls
-
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
@@ -81,7 +78,6 @@ jobs:
           cd cdn
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
-
       - name: Upload to newcdn
         run: |
           cd cdn
@@ -97,7 +93,7 @@ jobs:
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
-          repository: 'flarialmc/newcdn'
+          repository: 'ttf-fog/newcdn'
           ref: 'main'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
       - name: setup git config for cdn
@@ -108,7 +104,6 @@ jobs:
         run: |
           echo "${{ needs.deploy.outputs.new_version }}"
           export new_version="${{ needs.deploy.outputs.new_version }}"
-
           contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
           echo -E "${contents}" > launcher/launcherVersion.txt
           cat launcher/launcherVersion.txt
