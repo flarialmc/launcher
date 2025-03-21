@@ -8,6 +8,7 @@ using System.Windows;
 using Windows.Management.Deployment;
 using Windows.Security.Authentication.Web.Core;
 using Windows.Services.Store;
+using Bedrockix.Minecraft;
 using Flarial.Launcher.Functions;
 using Version = System.Version;
 
@@ -49,19 +50,7 @@ namespace Flarial.Launcher
 
         public static bool isInstalled()
         {
-            PackageManager = new PackageManager();
-            var userSecurityId = WindowsIdentity.GetCurrent().User.Value;
-            var packages = PackageManager.FindPackagesForUser(userSecurityId);
-
-            foreach (var package in packages)
-            {
-                if (package.Id.FamilyName == FamilyName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Game.Installed;
         }
 
         public static void InitManagers()

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 [assembly: ThemeInfo(
@@ -11,5 +12,16 @@ using System.Windows;
     
 )]
 
+
+[assembly: AssemblyTitle("Flarial Launcher")]
+[assembly: AssemblyDescription("The official Launcher for Flarial Client.")]
+[assembly: AssemblyCompany("Flarial")]
+[assembly: AssemblyProduct("Launcher")]
+[assembly: AssemblyCopyright("Copyright © Flarial 2025")]
+[assembly: AssemblyTrademark("Flarial")]
+[assembly: ComVisible(false)]
+
+[assembly: Guid("c68ed574-e6d9-4558-909f-82ec97711f64")] 
+
 [assembly: AssemblyVersion("2.1.10.0")]
-// test 2
+

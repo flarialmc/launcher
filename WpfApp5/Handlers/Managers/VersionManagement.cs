@@ -25,8 +25,6 @@ namespace Flarial.Launcher.Managers
     public class VersionManagement
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
-
-            const string developerModeValueName = "AllowDevelopmentWithoutDevLicense";
         
         public static string ExtractUrl(string jsonString)
         {
@@ -38,31 +36,7 @@ namespace Flarial.Launcher.Managers
 
             return url;
         }
-
-        public static async Task<string> GetVersionLinkAsync(string version)
-        {
-            string result = "";
-            WebClient webClient = new WebClient();
-            WebClient versionsWc = new WebClient();
-            versionsWc.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/VersionDl.txt"), "VersionDl.txt");
-
-
-            string[] rawVersions = File.ReadAllLines("VersionDl.txt");
-            
-            foreach (string combined in rawVersions)
-            {
-                string[] split = combined.Split(' ');
-                if (split[0].Contains(version))
-                {
-                    result = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri(split[1])).Result);
-                }
-            }
-            
-            Trace.WriteLine(version);
-
-            return result;
-        }
-
+        
         public static async Task<bool> DownloadApplication(string url, string version)
         {
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
@@ -99,74 +73,6 @@ namespace Flarial.Launcher.Managers
             }
 
             return true;
-        }
-
-        static async Task<bool> RunPowerShellAsAdminAsync(string command)
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            bool success = false;
-            
-            Trace.WriteLine($"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"");
-
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = "powershell",
-                Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"",
-                Verb = "runas", // This is what triggers running as admin
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            Process process = new Process
-            {
-                StartInfo = psi
-            };
-
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (e.Data != null)
-                {
-                    Trace.WriteLine(e.Data); // Log to Trace
-                    Trace.WriteLine(e.Data); // Print to console
-                    LogProgress(e.Data); // Check and log progress if found
-                }
-            };
-
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (e.Data != null)
-                {
-                    Trace.WriteLine(e.Data); // Log error to Trace
-                    Trace.WriteLine(e.Data); // Print error to console
-                }
-            };
-
-            process.EnableRaisingEvents = true;
-            process.Exited += (sender, e) =>
-            {
-                success = process.ExitCode == 0; // Check if the process succeeded
-                taskCompletionSource.SetResult(success); // Complete the task with success status
-                process.Dispose(); // Clean up the process resources
-            };
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            await taskCompletionSource.Task; // Await the task completion
-            return success; // Return the success status
-        }
-
-        static void LogProgress(string output)
-        {
-            // Example: Assuming progress indicators start with "Progress:"
-            if (output.StartsWith("Progress:", StringComparison.OrdinalIgnoreCase))
-            {
-                Trace.WriteLine($"Progress: {output.Substring("Progress:".Length)}");
-                // Log or process the progress information here
-            }
         }
         
 
@@ -335,8 +241,10 @@ namespace Flarial.Launcher.Managers
             try
             {
                 
-                var removePackageOperation = Minecraft.PackageManager.RemovePackageAsync(Minecraft.Package.Id.FullName, RemovalOptions.RemoveForAllUsers);
-
+                var removePackageOperation = Minecraft.PackageManager.RemovePackageAsync(
+                    Minecraft.Package.Id.FullName,
+                    RemovalOptions.RemoveForAllUsers
+                );
                 await removePackageOperation;
                 Trace.WriteLine("Yea it removed");
                 if (removePackageOperation.Status == AsyncStatus.Completed)
@@ -365,6 +273,7 @@ namespace Flarial.Launcher.Managers
                     //MessageBox.ShowDialog();
                     MainWindow.CreateMessageBox($"RemovePackageAsync failed, {ex.Message}");
                 });
+                MessageBox.Show($"Failed to remove package, {ex.Message}", "ERROR!");
                 return false;
             }
         }
