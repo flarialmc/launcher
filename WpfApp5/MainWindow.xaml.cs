@@ -105,13 +105,16 @@ namespace Flarial.Launcher
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "costura.webview2loader.dll.compressed";
             using (var stream = assembly.GetManifestResourceStream(resourceName))
-            using (var decompressStream = new DeflateStream(stream, CompressionMode.Decompress))
-            {
-                using (var fileStream = File.Create(filePath2))
+                if(stream != null)
                 {
-                    decompressStream.CopyTo(fileStream);
+                    using (var decompressStream = new DeflateStream(stream, CompressionMode.Decompress))
+                    {
+                        using (var fileStream = File.Create(filePath2))
+                        {
+                            decompressStream.CopyTo(fileStream);
+                        }
+                    }
                 }
-            }
 
             string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";

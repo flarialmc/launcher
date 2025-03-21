@@ -15,6 +15,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <ErrorReport>prompt</ErrorReport>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
