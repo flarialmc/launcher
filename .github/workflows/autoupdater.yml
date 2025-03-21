@@ -16,11 +16,11 @@ jobs:
         run: |
           git config --global user.name "Github Actions"
           git config --global user.email "actions@github.com"
-      - name: update file version
+- name: update file version
         id: update_version
         run: |
           #parsed string
-          export new_version=$(cat WpfApp5/AssemblyInfo.cs | grep "\[assembly: AssemblyVersion" | sed -E 's/.*AssemblyVersion\("([^"]+)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          export new_version=$(cat WpfApp5/AssemblyInfo.cs | grep "\[assembly: AssemblyVersion" | sed -E 's/.*AssemblyVersion\("\([^\"]+\)"\).*/\1/' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
           echo $new_version
           sed -i "s/AssemblyVersion(\"[^"]\+\")/AssemblyVersion(\"$new_version\")/" WpfApp5/AssemblyInfo.cs
@@ -43,7 +43,7 @@ jobs:
       - name: check commit type
         shell: bash
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == "release: "* ]]; then
             echo "Continuing to build as release"
           else
             echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
