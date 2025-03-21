@@ -88,15 +88,8 @@ namespace Flarial.Launcher
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += (s, e) =>
-            {
-                var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-                hwndSource.AddHook(new HwndSourceHook(WndProc));
-            };
 
             ContentRendered += MainWindow_ContentRendered;
-
-
 
             CreateDirectoriesAndFiles();
             
@@ -270,20 +263,7 @@ namespace Flarial.Launcher
             }
         }
 
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == WM_CLOSE)
-            {
-                if (isDownloadingVersion)
-                {
-                    CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
-                    handled = true;
-                    return IntPtr.Zero;
-                }
-            }
 
-            return IntPtr.Zero;
-        }
         
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
             SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
