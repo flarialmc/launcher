@@ -46,19 +46,18 @@ jobs:
       - name: checkout cdn
         uses: actions/checkout@v4
         with:
-          repository: 'flarialmc/newcdn'
+          repository: '/newcdn'
           ref: 'main'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
       - name: setup git config
         run: |
+          ls
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@example.com"
       - name: upload to newcdn
 
         run: |
-          echo ${{ env.version }}
           export new_version="${{ env.version }}"
-          
           contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
           echo -E "${contents}" > launcher/launcherVersion.txt
           cat launcher/launcherVersion.txt
@@ -75,11 +74,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.ref }}
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
-          repository: 'flarialmc/newcdn'
+          repository: '/newcdn'
           ref: 'main'
           path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
@@ -94,6 +94,7 @@ jobs:
       - name: Build
         run: |
           cd WpfApp5
+          cat AssemblyInfo.cs
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       - name: Revert if failed
