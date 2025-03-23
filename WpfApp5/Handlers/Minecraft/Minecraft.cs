@@ -42,8 +42,8 @@ namespace Flarial.Launcher
             }
             
             // minimize fix
-            if (Config.MCMinimized && isInstalled()) SDK.Minecraft.Debug = true;
-            else if(!Config.MCMinimized && isInstalled()) SDK.Minecraft.Debug = false;
+            if (Config.MCMinimized && isInstalled()) Game.Debug = true;
+            else if(!Config.MCMinimized && isInstalled()) Game.Debug = false;
         }
 
 
@@ -74,10 +74,6 @@ namespace Flarial.Launcher
             if (!packageFound)
             {
                 Trace.WriteLine($"Package {FamilyName} not found.");
-            }
-            else
-            {
-                Task.Run(() => Flarial.Launcher.SDK.Minecraft.Installed);
             }
         }
 

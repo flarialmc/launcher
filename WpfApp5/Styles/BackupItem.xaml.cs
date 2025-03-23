@@ -58,7 +58,7 @@ public partial class BackupItem : UserControl
         
         (this.VisualParent as VirtualizingStackPanel)?.Children.Remove(this);
         
-        Dispatcher.InvokeAsync(async () => await BackupManager.DeleteBackup(Time));
+        await Dispatcher.InvokeAsync(async () => await BackupManager.DeleteBackup(Time));
 
     }
 }

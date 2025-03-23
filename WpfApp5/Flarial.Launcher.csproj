@@ -25,13 +25,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-
-  <!-- Ensure WebView2Loader.dll is always copied -->
-  <ItemGroup>
-    <None Update="WebView2Runtime\WebView2Loader.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  
 
   <!-- Exclude unnecessary files/folders -->
   <ItemGroup>
@@ -55,10 +49,9 @@
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="MathConverter" Version="2.2.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1742" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
-    <PackageReference Include="System.Management" Version="9.0.0-preview.6.24327.7" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
+    <PackageReference Include="System.Management" Version="9.0.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
   </ItemGroup>
 
