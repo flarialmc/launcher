@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Flarial.Launcher.SDK;
 using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
@@ -38,7 +39,7 @@ namespace Flarial.Launcher
         public static TextBlock Username;
         private static StackPanel mbGrid;
         private static Stopwatch speed = new Stopwatch();
-        public static Catalog VersionCatalog;
+        public static Catalog? VersionCatalog;
         public bool IsLaunchEnabled
         {
             get { return (bool)GetValue(IsLaunchEnabledProperty); }
@@ -97,7 +98,6 @@ namespace Flarial.Launcher
             stopwatch.Start();
             
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
-            Dispatcher.InvokeAsync(async () => VersionCatalog = await Catalog.GetAsync());
             
             string filePath2 = Path.Combine(VersionManagement.launcherPath, "WebView2Loader.dll");
             CoreWebView2Environment.SetLoaderDllFolderPath(VersionManagement.launcherPath);
@@ -171,15 +171,6 @@ namespace Flarial.Launcher
             this.Loaded += MainWindow_Loaded;
 
             IsLaunchEnabled = false;
-            Task.Run(() =>
-            {
-                while (VersionCatalog == null)
-                {
-                    Task.Delay(100).Wait();
-                }
-
-                Dispatcher.Invoke(() => IsLaunchEnabled = Minecraft.isInstalled());
-            });
             
             StartRefreshTimer();
 
@@ -203,25 +194,38 @@ namespace Flarial.Launcher
         }
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            
+            VersionCatalog = await Catalog.GetAsync();
+            Task.Run(() =>
+            {
+                while (VersionCatalog == null)
+                {
+                    Task.Delay(100).Wait();
+                }
+
+                IsLaunchEnabled = Minecraft.isInstalled();
+            });
+
             if (await SDK.Launcher.AvailableAsync())
             {
-                Trace.WriteLine("Yeah la ma pahio");
-                updateTextEnabled = true;
+                    updateTextEnabled = true;
 
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    MainGrid.IsEnabled = false;
-                    MainGrid.Visibility = Visibility.Hidden;
-                    mbGrid.Visibility = Visibility.Hidden;
-                    LolGrid.Visibility = Visibility.Visible;
-                    LolGrid.IsEnabled = true;
-                }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainGrid.IsEnabled = false;
+                        MainGrid.Visibility = Visibility.Hidden;
+                        mbGrid.Visibility = Visibility.Hidden;
+                        LolGrid.Visibility = Visibility.Visible;
+                        LolGrid.IsEnabled = true;
+                    }, DispatcherPriority.ApplicationIdle);
+            }
 
                 await SDK.Launcher.UpdateAsync(value =>
                 {
+
                     DownloadProgressCallback2(value);
                 });
-            }
+            
         }
 
         public async Task<bool> TryDaVersionz()
