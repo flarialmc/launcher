@@ -196,14 +196,15 @@ namespace Flarial.Launcher
         {
             
             VersionCatalog = await Catalog.GetAsync();
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 while (VersionCatalog == null)
                 {
                     Task.Delay(100).Wait();
                 }
 
-                IsLaunchEnabled = Minecraft.isInstalled();
+                Dispatcher.Invoke(() => IsLaunchEnabled = Minecraft.isInstalled());
+
             });
 
             if (await SDK.Launcher.AvailableAsync())
