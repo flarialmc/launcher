@@ -495,7 +495,7 @@ namespace Flarial.Launcher.Managers
                 }
 
                 Trace.WriteLine("Installation complete.");
-                
+                //
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
