@@ -166,6 +166,7 @@ namespace Flarial.Launcher.Styles
                 else
                 {
                     MainWindow.progressPercentage = 100;
+                    VersionItemProperties.SetState(this, 3);
                 }
             }
         }

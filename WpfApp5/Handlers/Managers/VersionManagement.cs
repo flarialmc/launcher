@@ -135,8 +135,19 @@ namespace Flarial.Launcher.Managers
             Trace.WriteLine("called installappbundle");
             Trace.WriteLine(dir);
             
+            
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {   
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                mainWindow.IsLaunchEnabled = false;
+            });
+            
+            
            CloseInstances();
            DeleteAppDataFiles();
+           
+
            
            var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
            Trace.WriteLine(packageUri.ToString());
@@ -162,6 +173,11 @@ namespace Flarial.Launcher.Managers
                 {
 
                     Trace.WriteLine("Package installation succeeded!");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {   
+                        var mainWindow = Application.Current.MainWindow as MainWindow;
+                        mainWindow.IsLaunchEnabled = true;
+                    });
                     return true;
                 } 
                 
