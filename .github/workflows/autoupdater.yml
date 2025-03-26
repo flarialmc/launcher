@@ -1,4 +1,4 @@
-name: Build launcher and bump version number (cdn)
+name: Build launcher and bump version number
 on:
   push:
     branches: ["main"]
@@ -6,7 +6,8 @@ on:
 
 jobs:
   bump-version-number:
-
+    outputs:
+      version_number: ${{ steps.get_new_version.outputs.version_no }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -28,6 +29,7 @@ jobs:
           git config --global user.name "Github Actions"
           git config --global user.email "actions@github.com"
       - name: update file version
+        id: get_new_version
         run: |
           #parsed string
           
@@ -36,33 +38,13 @@ jobs:
           echo $old_version
           echo $new_version
           echo "version=$new_version" >> $GITHUB_ENV
+          echo "version_no=$new_version" >> "$GITHUB_OUTPUT"
           sed -i "s/$old_version/$new_version/g" WpfApp5/AssemblyInfo.cs 
 
       - name: push to origin
         run: |
           git add WpfApp5/AssemblyInfo.cs
           git commit -m "Update file version"
-          git push origin main
-      - name: checkout cdn
-        uses: actions/checkout@v4
-        with:
-          repository: '/newcdn'
-          ref: 'main'
-          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
-      - name: setup git config
-        run: |
-          ls
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@example.com"
-      - name: upload to newcdn
-
-        run: |
-          export new_version="${{ env.version }}"
-          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
-          echo -E "${contents}" > launcher/launcherVersion.txt
-          cat launcher/launcherVersion.txt
-          git add launcher/launcherVersion.txt
-          git commit -m "Bump launcher version"
           git push origin main
 
   deploy:
@@ -73,13 +55,18 @@ jobs:
       contents: read
 
     steps:
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+      - name: Output commit type
+        run: echo " ${{env.OUTPUT1}} $OUTPUT1"
+        env:
+            OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
-          repository: '/newcdn'
+          repository: 'flarialmc/newcdn'
           ref: 'main'
           path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
@@ -93,31 +80,28 @@ jobs:
 
       - name: Build
         run: |
+          ls
           cd WpfApp5
           cat AssemblyInfo.cs
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
-      - name: Revert if failed
-        if: failure()
+      - name: update new version
+        if: success()
         run: |
           cd cdn
-          git config --global user.name "Github Actions"
-          git config --global user.email "actions@github.com"
-          export hash=$(git log --grep="Bump launcher version" --oneline | head -n 1 | cut -d ' ' -f1)
-          git revert $hash 
-          git push origin main
-        shell: bash
-
-
-      - name: Setup git config
-        run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
-
-      - name: Upload to newcdn
-        run: |
-          cd cdn
+          export new_version="${{ env.OUTPUT1 }}"
+          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          echo -E "${contents}" > launcher/launcherVersion.txt
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
+          git commit -m "Bump launcher version"
+          git push origin main
           cp D:/a/launcher/launcher/WpfApp5/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
-          git add Launcher/Flarial.Launcher.exe
+          git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
           git push origin main
+        env:
+          OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
+        shell: bash
