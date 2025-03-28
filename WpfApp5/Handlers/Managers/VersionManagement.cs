@@ -379,7 +379,10 @@ namespace Flarial.Launcher.Managers
             {
                 // Enable Developer Mode
                 SDK.Developer.Request();
-                MainWindow.CreateMessageBox("Please enable developer mode.");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("Please enable developer mode.");
+                });
                 Trace.WriteLine("Developer Mode has been requested.");
                 return false;
             }
@@ -403,7 +406,11 @@ namespace Flarial.Launcher.Managers
 
                 if (!SDK.Developer.Enabled)
                 {
-                    MainWindow.CreateMessageBox("FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MainWindow.CreateMessageBox(
+                            "FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                    });
                     return false;
                 }
 
