@@ -410,7 +410,7 @@ namespace Flarial.Launcher.Managers
                     {
                         MainWindow.CreateMessageBox(
                             "FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
-                    });
+                    });//
                     return false;
                 }
 
