@@ -3,6 +3,7 @@ using Flarial.Launcher.Styles;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,70 +18,75 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Flarial.Launcher.SDK;
 
 namespace Flarial.Launcher.Pages
 {
     /// <summary>
     /// Interaction logic for SettingsVersionPage.xaml
     /// </summary>
-    public partial class SettingsVersionPage : Page
+public partial class SettingsVersionPage : Page
+{
+    public static StackPanel sp;
+
+    public SettingsVersionPage()
     {
-        public static StackPanel sp;
+        InitializeComponent();
+        sp = VersionItemStackPanel;
 
-        public SettingsVersionPage()
+        Task.Run(async () =>
         {
-            InitializeComponent();
+            var catalog = await Catalog.GetAsync();
 
-            Task.Run(() =>
+            Dispatcher.Invoke(async () =>
             {
-                // Fetch the data on a background thread
-                string fileContent =
-                    new WebClient().DownloadString(
-                        "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/versions.json");
 
-                Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(fileContent);
-
-                // Use the Dispatcher to marshal the UI updates to the main thread
-                Dispatcher.Invoke(() =>
+                string[] dir = Directory.GetFiles(VersionManagement.launcherPath + "\\Versions");
+                foreach (var name in catalog.Reverse())
                 {
-                    sp = VersionItemStackPanel;
+                    Trace.WriteLine("Vers: " + name);
+                    Uri uri = await catalog.UriAsync(name);
+                    VersionItem versionItem = new VersionItem();
+                    VersionItemStackPanel.Children.Add(versionItem);
+                    VersionItemProperties.SetVersion(versionItem, name);
+                    VersionItemProperties.SetVersionLink(versionItem, uri.ToString());
+                    VersionItemProperties.SetState(versionItem, 0);
 
-                    foreach (var version in myDeserializedClass.Versions)
+                    foreach (string file in dir)
                     {
-                        VersionItem versionItem = new VersionItem();
-                        VersionItemStackPanel.Children.Add(versionItem);
-                        VersionItemProperties.SetVersion(versionItem, version.Name);
-                        VersionItemProperties.SetVersionLink(versionItem, version.verlink);
-                        VersionItemProperties.SetState(versionItem, 0);
-
-                        foreach (string file in Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"))
+                        if (file.Contains(name))
                         {
-                            if (file.Contains(version.Name))
-                            {
-                                VersionItemProperties.SetState(versionItem, 2);
-                            }
+                            VersionItemProperties.SetState(versionItem, 2);
                         }
-
-                        if (Minecraft.GetVersion().ToString() == version.Name)
-                        {
-                            VersionItemProperties.SetState(versionItem, 3);
-                            versionItem.IsChecked = true;
-                        }
-
-                        var bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.UriSource = new Uri(version.ImgURL);
-                        bitmapImage.EndInit();
-
-                        VersionItemProperties.SetImageURL(versionItem, bitmapImage);
                     }
 
+                    if (Minecraft.GetVersion().ToString() == name)
+                    {
+                        VersionItemProperties.SetState(versionItem, 3);
+                        versionItem.IsChecked = true;
+                    }
+                    
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.UriSource = new Uri("https://github.com/megahendick/Flarial.Laucher.Testing/blob/main/versionbg1.png?raw=true");
+                    bitmapImage.EndInit();
+
+                    VersionItemProperties.SetImageURL(versionItem, bitmapImage);
+                    
+                }
+                
+                
+
+                if (VersionItemStackPanel.Children.Count > 0)
+                {
+                    Trace.WriteLine("Heya");
                     VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[VersionItemStackPanel.Children.Count - 1];
                     tempvi.Margin = new Thickness(0);
-                });
+                }
             });
-        }
+        });
     }
+}
 
 
     public class Root
