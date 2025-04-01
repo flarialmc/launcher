@@ -43,8 +43,6 @@ namespace Flarial.Launcher.Managers
 
             
             WebClient webClient = new WebClient();
-            url = ExtractUrl(webClient.DownloadStringTaskAsync(new Uri(url)).Result);
-            Trace.Write(url);
 
             if (File.Exists(path))
             {
@@ -397,7 +395,7 @@ namespace Flarial.Launcher.Managers
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
             element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 4));
-
+            Trace.WriteLine(url);
             bool ello = await DownloadApplication(url, version);
 
             if (ello)

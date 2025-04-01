@@ -44,7 +44,6 @@ public partial class SettingsVersionPage : Page
                 string[] dir = Directory.GetFiles(VersionManagement.launcherPath + "\\Versions");
                 foreach (var name in catalog.Reverse())
                 {
-                    Trace.WriteLine("Vers: " + name);
                     Uri uri = await catalog.UriAsync(name);
                     VersionItem versionItem = new VersionItem();
                     VersionItemStackPanel.Children.Add(versionItem);
