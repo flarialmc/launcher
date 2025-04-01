@@ -69,7 +69,7 @@
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <ThicknessAnimation To="0,0,0,0" Duration="0:0:0.6" Storyboard.TargetProperty="Margin">
+                                        <ThicknessAnimation To="380,0,0,0" Duration="0:0:0.6" Storyboard.TargetProperty="Margin">
                                             <ThicknessAnimation.EasingFunction>
                                                 <ElasticEase Springiness="5" Oscillations="2" EasingMode="EaseOut"/>
                                             </ThicknessAnimation.EasingFunction>
