@@ -34,6 +34,7 @@ namespace Flarial.Launcher.Styles
 
         private async void VersionItem_OnClick(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.isDownloadingVersion) return;
             /*
             if(!Minecraft.StoreHelper.HasBought().Result)
             {

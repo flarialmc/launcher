@@ -51,11 +51,18 @@ public partial class SettingsVersionPage : Page
                     VersionItemProperties.SetVersionLink(versionItem, uri.ToString());
                     VersionItemProperties.SetState(versionItem, 0);
 
-                    foreach (string file in dir)
+                    bool unpackaged;
+                    if (SDK.Minecraft.Installed) unpackaged = SDK.Minecraft.Unpackaged;
+                    else unpackaged = false;
+                    
+                    if(unpackaged)
                     {
-                        if (file.Contains(name))
+                        foreach (string file in dir)
                         {
-                            VersionItemProperties.SetState(versionItem, 2);
+                            if (file.Contains(name))
+                            {
+                                VersionItemProperties.SetState(versionItem, 2);
+                            }
                         }
                     }
 
@@ -73,7 +80,6 @@ public partial class SettingsVersionPage : Page
                     VersionItemProperties.SetImageURL(versionItem, bitmapImage);
                     
                 }
-                
                 
 
                 if (VersionItemStackPanel.Children.Count > 0)

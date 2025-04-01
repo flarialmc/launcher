@@ -372,143 +372,172 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string url, string version, UIElement element)
         {
-            
-            if (!SDK.Developer.Enabled)
+
+            bool unpackaged;
+            if (SDK.Minecraft.Installed) unpackaged = SDK.Minecraft.Unpackaged;
+            else unpackaged = false;
+            if (!unpackaged)
             {
-                // Enable Developer Mode
-                SDK.Developer.Request();
-                Application.Current.Dispatcher.Invoke(() =>
+                MainWindow.isDownloadingVersion = true;
+                SDK.Request req = await MainWindow.VersionCatalog.InstallAsync(version, i =>
                 {
-                    MainWindow.CreateMessageBox("Please enable developer mode.");
+                    MainWindow.progressType = "Installing";
+                    MainWindow.progressPercentage = i;
+                    if(MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
+
                 });
-                Trace.WriteLine("Developer Mode has been requested.");
-                return false;
+
+                await req;
             }
-            
-            
-                Trace.WriteLine("Developer Mode is enabled on your system!");
-                // Continue with the rest of your application logic here.
-            
-
-
-            MainWindow.progressPercentage = 0;
-            string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
-
-            element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 4));
-            Trace.WriteLine(url);
-            bool ello = await DownloadApplication(url, version);
-
-            if (ello)
+            else
             {
-                Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
                 if (!SDK.Developer.Enabled)
                 {
+                    // Enable Developer Mode
+                    SDK.Developer.Request();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        MainWindow.CreateMessageBox(
-                            "FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
-                    });//
+                        MainWindow.CreateMessageBox("Please enable developer mode.");
+                    });
+                    Trace.WriteLine("Developer Mode has been requested.");
                     return false;
                 }
 
-                string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
-                
-                if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
+
+                Trace.WriteLine("Developer Mode is enabled on your system!");
+                // Continue with the rest of your application logic here.
+
+
+
+                MainWindow.progressPercentage = 0;
+                string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
+
+                element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 4));
+                Trace.WriteLine(url);
+                bool ello = await DownloadApplication(url, version);
+
+                if (ello)
                 {
-                    Trace.WriteLine("Starting extract.");
-                    bool result = await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version), version);
+                    Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
-                    if (!result)
+                    if (!SDK.Developer.Enabled)
                     {
-
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            MainWindow.CreateMessageBox("The Downloaded APPX is corrupted.");
-                            MainWindow.CreateMessageBox("Restart the Launcher and click your desired version again.");
-                        });
-
-                        File.Delete(path);
-                        
+                            MainWindow.CreateMessageBox(
+                                "FAILED TO TURN ON DEVELOPER MODE! Turn it on yourself, we cannot continue with Version Changer.");
+                        }); //
                         return false;
                     }
-                }
-                else
-                {
-                    Trace.WriteLine("The folder exists");
-                }
 
-                string pathway = Path.Combine(launcherPath, "Versions", version);
-                var packageUri = new Uri(Path.Combine(pathway, "AppxManifest.xml"));
-                Trace.WriteLine(packageUri.ToString());
+                    string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
 
-                File.Delete(Path.Combine(pathway, "AppxSignature.p7x"));
-
-                MainWindow.progressPercentage = 100;
-                MainWindow.progressType = "Installing";
-
-                var manifestPath = Path.Combine(pathway, "AppxManifest.xml");
-                var escapedPath = manifestPath.Replace("\"", "\\\"");
-                
-                if (!AreDependenciesInstalled(escapedPath))
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (!Directory.Exists(Path.Combine(launcherPath, "Versions", version)))
                     {
-                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
-                        MainWindow.CreateMessageBox("Proper dependencies not installed.");
-                    });
-                    return false;
-                }
+                        Trace.WriteLine("Starting extract.");
+                        bool result = await ExtractAppxAsync(path, Path.Combine(launcherPath, "Versions", version),
+                            version);
 
-                if (Minecraft.Package != null)
-                {
-                    if (await BackupManager.GetConfig(backupname) == null)
-                    {
-                        MainWindow.progressType = "backup";
-                        MainWindow.progressPercentage = 100;
-                        element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 5));
-                        if (!await BackupManager.CreateBackup(backupname)) return false;
+                        if (!result)
+                        {
+
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                MainWindow.CreateMessageBox("The Downloaded APPX is corrupted.");
+                                MainWindow.CreateMessageBox(
+                                    "Restart the Launcher and click your desired version again.");
+                            });
+
+                            File.Delete(path);
+
+                            return false;
+                        }
                     }
-                    Trace.WriteLine("Uninstalling current Minecraft version.");
-                    await RemoveMinecraftPackage();
-                }
-                
-                Trace.WriteLine("Uninstalled.");
-                
-                element.Dispatcher.Invoke(() =>  VersionItemProperties.SetState(element, 1));
+                    else
+                    {
+                        Trace.WriteLine("The folder exists");
+                    }
+
+                    string pathway = Path.Combine(launcherPath, "Versions", version);
+                    var packageUri = new Uri(Path.Combine(pathway, "AppxManifest.xml"));
+                    Trace.WriteLine(packageUri.ToString());
+
+                    File.Delete(Path.Combine(pathway, "AppxSignature.p7x"));
+
+                    MainWindow.progressPercentage = 100;
+                    MainWindow.progressType = "Installing";
+
+                    var manifestPath = Path.Combine(pathway, "AppxManifest.xml");
+                    var escapedPath = manifestPath.Replace("\"", "\\\"");
+
+                    if (!AreDependenciesInstalled(escapedPath))
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.CreateMessageBox(
+                                "Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                            MainWindow.CreateMessageBox("Proper dependencies not installed.");
+                        });
+                        return false;
+                    }
+
+                    if (Minecraft.Package != null)
+                    {
+                        if (await BackupManager.GetConfig(backupname) == null)
+                        {
+                            MainWindow.progressType = "backup";
+                            MainWindow.progressPercentage = 100;
+                            element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 5));
+                            if (!await BackupManager.CreateBackup(backupname)) return false;
+                        }
+
+                        Trace.WriteLine("Uninstalling current Minecraft version.");
+                        await RemoveMinecraftPackage();
+                    }
+
+                    Trace.WriteLine("Uninstalled.");
+
+                    element.Dispatcher.Invoke(() => VersionItemProperties.SetState(element, 1));
 
 
-                Trace.WriteLine("Deploying Minecraft's Application Bundle.");
+                    Trace.WriteLine("Deploying Minecraft's Application Bundle.");
 
-                if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
-                {
+                    if (await InstallAppBundle(Path.Combine(launcherPath, "Versions", version)) == false)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.CreateMessageBox(
+                                "Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                            MainWindow.CreateMessageBox(
+                                "Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
+                        });
+
+                        return false;
+                    }
+
+                    await Task.Delay(1);
+
+                    if (await BackupManager.GetConfig(backupname) != null)
+                    {
+                        Trace.WriteLine("Temporary backup found, now loading.");
+                        await BackupManager.LoadBackup(backupname);
+                    }
+
+                    Trace.WriteLine("Installation complete.");
+                    //
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
-                        MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
+                        //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
+                        MainWindow.CreateMessageBox("Installed!");
                     });
-                    
-                    return false;
+
                 }
 
-                await Task.Delay(1);
-
-                if (await BackupManager.GetConfig(backupname) != null)
-                {
-                    Trace.WriteLine("Temporary backup found, now loading.");
-                    await BackupManager.LoadBackup(backupname);
-                }
-
-                Trace.WriteLine("Installation complete.");
-                //
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    //new CustomDialogBox("Restart the Launcher", "Please restart the launcher for it to be able to install new patches.", "MessageBox").ShowDialog();
-                    MainWindow.CreateMessageBox("Installed!");
-                });
-
+                return ello;
             }
-            return ello;
+
+            return false;
         }
 
         static void CloseInstances()
