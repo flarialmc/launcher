@@ -139,8 +139,11 @@ namespace Flarial.Launcher
             Dispatcher.InvokeAsync(async () =>
             {
                 await Config.loadConfig();
+                VersionCatalog = await Catalog.GetAsync();
 
             });
+            
+            LauncherVersion.Text = "v" + Assembly.GetExecutingAssembly().GetName().Version;
             
             Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
@@ -195,7 +198,6 @@ namespace Flarial.Launcher
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             
-            VersionCatalog = await Catalog.GetAsync();
             await Task.Run(() =>
             {
                 while (VersionCatalog == null)
