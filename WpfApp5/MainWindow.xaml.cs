@@ -307,12 +307,15 @@ namespace Flarial.Launcher
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MainWindow.CreateMessageBox("VersionCatalog is null, report his in the discord.");
+                    MainWindow.CreateMessageBox("VersionCatalog is null, report this in the discord.");
                 });
                 return;
             }
             
-            IsLaunchEnabled = false;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsLaunchEnabled = false;
+            });
             bool compatible = await VersionCatalog.CompatibleAsync();
             if(!compatible) Application.Current.Dispatcher.Invoke(() =>
             {
@@ -328,17 +331,25 @@ namespace Flarial.Launcher
                 {
                     await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
                     await SDK.Client.LaunchAsync(Config.UseBetaDLL);
-                    StatusLabel.Text = "Launched! Enjoy.";
-                    IsLaunchEnabled = true;
+                    
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        StatusLabel.Text = "Launched! Enjoy.";
+                        IsLaunchEnabled = true;
+                    });
+
                 }
             }
             else
             {
                 if(Config.CustomDLLPath.Length > 5)
                 {
-                    StatusLabel.Text = "Launched Custom DLL! Enjoy.";
                     await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
-                    IsLaunchEnabled = true;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        StatusLabel.Text = "Launched Custom DLL! Enjoy.";
+                        IsLaunchEnabled = true;
+                    });
                 }
             }
         }
