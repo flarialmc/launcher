@@ -378,6 +378,10 @@ namespace Flarial.Launcher.Managers
             else unpackaged = false;
             if (!unpackaged)
             {
+                
+                string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
+                if (!await BackupManager.CreateBackup(backupname)) return false;
+
                 MainWindow.isDownloadingVersion = true;
                 SDK.Request req = await MainWindow.VersionCatalog.InstallAsync(version, i =>
                 {
