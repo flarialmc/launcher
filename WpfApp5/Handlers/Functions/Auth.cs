@@ -86,8 +86,8 @@ namespace Flarial.Launcher.Functions
                     {
                         return;
                     }
-                }//
-                catch (Exception ex)
+                }
+                catch
                 {
                     return;
                 }

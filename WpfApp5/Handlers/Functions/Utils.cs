@@ -10,13 +10,8 @@ namespace Flarial.Launcher.Functions
 {
     public class Utils
     {
-        public static bool IsGameOpen()
-        {
-            Process[] mc = Process.GetProcessesByName("Minecraft.Windows");
-            return mc.Length > 0;
-        }
-        public static bool IsAdministrator =>
-   new WindowsPrincipal(WindowsIdentity.GetCurrent())
-       .IsInRole(WindowsBuiltInRole.Administrator);
+        public static bool IsGameOpen() => SDK.Minecraft.Installed;
+
+        public static bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
     }
 }

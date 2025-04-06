@@ -1,20 +1,8 @@
 ﻿using Flarial.Launcher.Functions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Flarial.Launcher.Pages
 {
@@ -34,7 +22,6 @@ namespace Flarial.Launcher.Pages
             tb3.IsChecked = Config.AutoLogin;
             tb4.IsChecked = Config.MCMinimized;
             DLLTextBox.Text = Config.CustomDLLPath;
-            ModulesSlider.Value = Math.Round(Config.WaitFormodules);
         }
 
         private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
@@ -68,18 +55,10 @@ namespace Flarial.Launcher.Pages
             SaveButton.IsChecked = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Config.saveConfig());
+            await Task.Run(() => Config.saveConfig());
             SaveButton.IsChecked = false;
-        }
-
-        private void ModulesSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            ModulesSlider.Value = Math.Round(ModulesSlider.Value);
-            Config.WaitFormodules = ModulesSlider.Value;
-            if(SaveButton != null)
-            SaveButton.IsChecked = true;
         }
     }
 }

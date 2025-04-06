@@ -7,8 +7,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net481</TargetFramework>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>1058433624430612640.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>Assets\app.manifest</ApplicationManifest>
     <RootNamespace>Flarial.Launcher</RootNamespace>
     <AssemblyName>Flarial.Launcher</AssemblyName>
     <Optimize>true</Optimize>
@@ -17,7 +17,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <ErrorReport>prompt</ErrorReport>
-    <LangVersion>10</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>IDE1006</NoWarn>
   </PropertyGroup>
 
   <!-- Release-specific settings -->
@@ -38,7 +39,7 @@
 
   <!-- Include application icon -->
   <ItemGroup>
-    <Content Include="1058433624430612640.ico" />
+    <Content Include="app.ico" />
   </ItemGroup>
 
   <!-- Package references -->
@@ -53,48 +54,6 @@
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
     <PackageReference Include="System.Management" Version="9.0.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
-  </ItemGroup>
-
-  <!-- COM and assembly references with explicit version metadata -->
-  <ItemGroup>
-    <COMReference Include="Shell32">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>50a7e9b0-70ef-11d1-b75a-00a0c90564fe</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="IWshRuntimeLibrary">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>4</VersionMinor>
-      <VersionMajor>2</VersionMajor>
-      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
-    </COMReference>
-    <Reference Include="System.Drawing.Common">
-      <HintPath>C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\7.0.9\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <!-- Additional folders and resources -->
-  <ItemGroup>
-    <Folder Include="Generated Files\" />
   </ItemGroup>
 
   <ItemGroup>

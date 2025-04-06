@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Flarial.Launcher.Animations;
 using Utils = Flarial.Launcher.Functions.Utils;
 
@@ -28,8 +16,8 @@ namespace Flarial.Launcher.Pages
             GeneralPageButton.IsChecked = true;
         }
 
-        public static Border? b1;
-        public static Grid? MainGrid;
+        public static Border b1;
+        public static Grid MainGrid;
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsLeaveAnimation(b1, MainGrid);
@@ -42,9 +30,10 @@ namespace Flarial.Launcher.Pages
             if (Utils.IsAdministrator)
             {
                 SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-                MessageBox.Show(
-                    "!!! THIS IS A VERSION CHANGER. Not a Flarial Version SELECTOR! Use this when you need to downgrade to a version Flarial Supports. !!!\n To use Flarial, all you have to do is click Launch.",
-                    "MUST READ", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+               Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+                });
             }
             else
             {

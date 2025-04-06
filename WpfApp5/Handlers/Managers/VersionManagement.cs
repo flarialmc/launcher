@@ -25,7 +25,7 @@ namespace Flarial.Launcher.Managers
     public class VersionManagement
     {
         public static string launcherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial", "Launcher");
-        
+
         public static string ExtractUrl(string jsonString)
         {
             // Parse the JSON string into a JObject
@@ -36,12 +36,12 @@ namespace Flarial.Launcher.Managers
 
             return url;
         }
-        
+
         public static async Task<bool> DownloadApplication(string url, string version)
         {
             string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
-            
+
             WebClient webClient = new WebClient();
 
             if (File.Exists(path))
@@ -54,8 +54,8 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine($"Got downloadable URL for Minecraft version {version}: {url}");
                 webClient.DownloadProgressChanged += DownloadProgressCallback;
-                    await webClient.DownloadFileTaskAsync(new Uri(url), path);
-                    Trace.WriteLine("Download succeeded!");
+                await webClient.DownloadFileTaskAsync(new Uri(url), path);
+                Trace.WriteLine("Download succeeded!");
             }
             else
             {
@@ -72,7 +72,7 @@ namespace Flarial.Launcher.Managers
 
             return true;
         }
-        
+
 
         public static List<string> GetDependenciesFromManifest(string manifestPath)
         {
@@ -93,8 +93,8 @@ namespace Flarial.Launcher.Managers
 
             return dependencies;
         }
-        
-        
+
+
         public static bool IsDependencyInstalled(string packageName)
         {
             PackageManager packageManager = new PackageManager();
@@ -110,7 +110,7 @@ namespace Flarial.Launcher.Managers
 
             return false;
         }
-        
+
         public static bool AreDependenciesInstalled(string manifestPath)
         {
             var dependencies = GetDependenciesFromManifest(manifestPath);
@@ -132,39 +132,39 @@ namespace Flarial.Launcher.Managers
         {
             Trace.WriteLine("called installappbundle");
             Trace.WriteLine(dir);
-            
-            
+
+
 
             Application.Current.Dispatcher.Invoke(() =>
-            {   
+            {
                 var mainWindow = Application.Current.MainWindow as MainWindow;
                 mainWindow.IsLaunchEnabled = false;
             });
-            
-            
-           CloseInstances();
-           DeleteAppDataFiles();
-           
 
-           
-           var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
-           Trace.WriteLine(packageUri.ToString());
 
-           File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
+            CloseInstances();
+            await DeleteAppDataFiles();
 
-           MainWindow.progressPercentage = 100;
-           MainWindow.progressType = "Installing";
 
-           var manifestPath = Path.Combine(dir, "AppxManifest.xml");
-           var escapedPath = manifestPath.Replace("\"", "\\\"");
-           Trace.WriteLine(escapedPath);
+
+            var packageUri = new Uri(Path.Combine(dir, "AppxManifest.xml"));
+            Trace.WriteLine(packageUri.ToString());
+
+            File.Delete(Path.Combine(dir, "AppxSignature.p7x"));
+
+            MainWindow.progressPercentage = 100;
+            MainWindow.progressType = "Installing";
+
+            var manifestPath = Path.Combine(dir, "AppxManifest.xml");
+            var escapedPath = manifestPath.Replace("\"", "\\\"");
+            Trace.WriteLine(escapedPath);
 
             try
             {
-                
-                var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true});
+
+                var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true });
                 var registerPackageTask = registerPackageOperation.AsTask();
-                
+
                 await registerPackageTask;
 
                 if (registerPackageTask.Status == TaskStatus.RanToCompletion)
@@ -172,21 +172,21 @@ namespace Flarial.Launcher.Managers
 
                     Trace.WriteLine("Package installation succeeded!");
                     Application.Current.Dispatcher.Invoke(() =>
-                    {   
+                    {
                         var mainWindow = Application.Current.MainWindow as MainWindow;
                         mainWindow.IsLaunchEnabled = true;
                     });
                     return true;
-                } 
-                
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
-                        MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
-                        Trace.WriteLine($"RegisterPackageAsync failed, {registerPackageOperation.GetResults().ExtendedErrorCode.Message}");
-                    });
-                    return false;
-                
+                }
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("Failed to install. Join our discord for help: https://flarial.xyz/discord");
+                    MainWindow.CreateMessageBox("Your data and worlds are saved at %localappdata%/Flarial/Launcher.");
+                    Trace.WriteLine($"RegisterPackageAsync failed, {registerPackageOperation.GetResults().ExtendedErrorCode.Message}");
+                });
+                return false;
+
                 //    var progress = new Progress<DeploymentProgress>(ReportProgress);
 
                 //    
@@ -204,19 +204,19 @@ namespace Flarial.Launcher.Managers
                 //    }
             }
             catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                        //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                        //    "MessageBox");
-                        //MessageBox.ShowDialog();
-                        Trace.WriteLine($"RegisterPackageAsync failed, {ex.Message}");
-                        MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}", "ERROR!");
-                    });
-                    return false;
-                }
+                    //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
+                    //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
+                    //    "MessageBox");
+                    //MessageBox.ShowDialog();
+                    Trace.WriteLine($"RegisterPackageAsync failed, {ex.Message}");
+                    MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}", "ERROR!");
+                });
+                return false;
             }
+        }
         private static void ReportProgress(DeploymentProgress progress)
         {
             // Report the progress of the deployment
@@ -229,7 +229,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine(progress.percentage + "% yas");
             }
         }
-        
+
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -249,12 +249,12 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> RemoveMinecraftPackage()
         {
-            
+
             CloseInstances();
-            
+
             try
             {
-                
+
                 var removePackageOperation = Minecraft.PackageManager.RemovePackageAsync(
                     Minecraft.Package.Id.FullName,
                     RemovalOptions.RemoveForAllUsers
@@ -265,17 +265,17 @@ namespace Flarial.Launcher.Managers
                 {
 
                     Trace.WriteLine("Package removal succeeded!");
-                    DeleteAppDataFiles();
+                    await DeleteAppDataFiles();
                     return true;
                 }
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        //CustomDialogBox MessageBox =
-                        //    new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
-                        //MessageBox.ShowDialog();
-                        MainWindow.CreateMessageBox("Failed to remove package");
-                    });
-                    return false;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    //CustomDialogBox MessageBox =
+                    //    new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
+                    //MessageBox.ShowDialog();
+                    MainWindow.CreateMessageBox("Failed to remove package");
+                });
+                return false;
             }
             catch (Exception ex)
             {
@@ -361,7 +361,7 @@ namespace Flarial.Launcher.Managers
 
                 if (File.Exists(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png")))
                     File.Delete(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
-                
+
                 await webClient.DownloadFileTaskAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/assets/flarial_mogang.png"),
                     Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
             }
@@ -378,7 +378,7 @@ namespace Flarial.Launcher.Managers
             else unpackaged = false;
             if (!unpackaged)
             {
-                
+
                 string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
                 if (!await BackupManager.CreateBackup(backupname)) return false;
 
@@ -387,7 +387,7 @@ namespace Flarial.Launcher.Managers
                 {
                     MainWindow.progressType = "Installing";
                     MainWindow.progressPercentage = i;
-                    if(MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
+                    if (MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
 
                 });
 
@@ -546,7 +546,7 @@ namespace Flarial.Launcher.Managers
 
         static void CloseInstances()
         {
-            
+
             string[] processesToClose = { "Minecraft.Windows.exe", "Minecraft.Windows" };
 
             foreach (var processName in processesToClose)
@@ -574,7 +574,7 @@ namespace Flarial.Launcher.Managers
             }
         }
 
-        static void DeleteAppDataFiles()
+        static async Task DeleteAppDataFiles()
         {
             string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Packages", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
 
@@ -592,7 +592,7 @@ namespace Flarial.Launcher.Managers
 
                 if (Minecraft.ApplicationData != null)
                 {
-                    Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
+                    await Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
                 }
                 else
                 {

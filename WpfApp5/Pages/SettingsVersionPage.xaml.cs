@@ -25,37 +25,31 @@ namespace Flarial.Launcher.Pages
     /// <summary>
     /// Interaction logic for SettingsVersionPage.xaml
     /// </summary>
-public partial class SettingsVersionPage : Page
-{
-    public static StackPanel sp;
-
-    public SettingsVersionPage()
+    public partial class SettingsVersionPage : Page
     {
-        InitializeComponent();
-        sp = VersionItemStackPanel;
+        public static StackPanel sp;
 
-        Task.Run(async () =>
+        public SettingsVersionPage()
         {
-            var catalog = await Catalog.GetAsync();
+            InitializeComponent();
+            sp = VersionItemStackPanel;
+            var window = (MainWindow)Application.Current.MainWindow;
 
-            Dispatcher.Invoke(async () =>
+            window.HomePage.IsEnabledChanged +=  (_, _) =>
             {
-
                 string[] dir = Directory.GetFiles(VersionManagement.launcherPath + "\\Versions");
-                foreach (var name in catalog.Reverse())
+                foreach (var name in MainWindow.VersionCatalog.Reverse())
                 {
-                    Uri uri = await catalog.UriAsync(name);
                     VersionItem versionItem = new VersionItem();
                     VersionItemStackPanel.Children.Add(versionItem);
                     VersionItemProperties.SetVersion(versionItem, name);
-                    VersionItemProperties.SetVersionLink(versionItem, uri.ToString());
                     VersionItemProperties.SetState(versionItem, 0);
 
                     bool unpackaged;
                     if (SDK.Minecraft.Installed) unpackaged = SDK.Minecraft.Unpackaged;
                     else unpackaged = false;
-                    
-                    if(unpackaged)
+
+                    if (unpackaged)
                     {
                         foreach (string file in dir)
                         {
@@ -71,16 +65,16 @@ public partial class SettingsVersionPage : Page
                         VersionItemProperties.SetState(versionItem, 3);
                         versionItem.IsChecked = true;
                     }
-                    
+
                     var bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
                     bitmapImage.UriSource = new Uri("https://github.com/megahendick/Flarial.Laucher.Testing/blob/main/versionbg1.png?raw=true");
                     bitmapImage.EndInit();
 
                     VersionItemProperties.SetImageURL(versionItem, bitmapImage);
-                    
+
                 }
-                
+
 
                 if (VersionItemStackPanel.Children.Count > 0)
                 {
@@ -88,10 +82,9 @@ public partial class SettingsVersionPage : Page
                     VersionItem tempvi = (VersionItem)VersionItemStackPanel.Children[VersionItemStackPanel.Children.Count - 1];
                     tempvi.Margin = new Thickness(0);
                 }
-            });
-        });
+            };
+        }
     }
-}
 
 
     public class Root
@@ -103,7 +96,7 @@ public partial class SettingsVersionPage : Page
     {
         public string Name { get; set; }
         public string ImgURL { get; set; }
-        
+
         public string verlink { get; set; }
     }
 }

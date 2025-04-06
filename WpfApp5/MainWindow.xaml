@@ -73,18 +73,18 @@
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="temp" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="0.0.0" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
-                    <Grid Background="Transparent" MouseLeftButtonDown="MoveWindow"/>
+                    <Grid Background="Transparent"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
                         <Button Click="Minimize" Cursor="Hand" Height="20" Width="20" Margin="0,0,15,0" Template="{StaticResource MinimizeButtonTemplate}"/>
                         <Button Click="Close" Cursor="Hand" Height="20" Width="20" Template="{StaticResource CloseButtonTemplate}"/>
                     </StackPanel>
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Name="HomePage" IsEnabled="false" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-                        <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                        <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
+                            <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
                     </StackPanel>
                     <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
                         <Grid.RowDefinitions>

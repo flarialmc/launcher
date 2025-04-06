@@ -25,7 +25,7 @@ namespace Flarial.Launcher.Styles
     public partial class VersionItem : RadioButton
     {
         public string verlink = "";
-        
+
         public VersionItem()
         {
             DataContext = new VersionItemProperties();
@@ -43,7 +43,7 @@ namespace Flarial.Launcher.Styles
             }*/
             if (VersionItemProperties.GetState(this) == 0)
             {
-                foreach(VersionItem item in SettingsVersionPage.sp.Children)
+                foreach (VersionItem item in SettingsVersionPage.sp.Children)
                 {
                     item.IsEnabled = false;
                 }
@@ -66,7 +66,7 @@ namespace Flarial.Launcher.Styles
                         acc = 90;*/
 
                     VersionItemProperties.SetInstallPercentage(this, MainWindow.progressPercentage.ToString());
-                        
+
 
                     time += 50;
 
@@ -157,7 +157,7 @@ namespace Flarial.Launcher.Styles
                 timer.Start();
 
                 VersionItemProperties.SetState(this, 1);
-                string link = VersionItemProperties.GetVersionLink(this);
+                string link = (await MainWindow.VersionCatalog.UriAsync(version)).OriginalString;
                 bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(link, version, this));
                 if (!succeeded)
                 {
@@ -325,17 +325,17 @@ namespace Flarial.Launcher.Styles
         {
             element.SetValue(VersionProperty, value);
         }
-        
+
         public static void SetVersionLink(System.Windows.UIElement element, string value)
         {
-            element.SetValue(VersionLinkProperty, value);        
+            element.SetValue(VersionLinkProperty, value);
         }
 
         public static string GetVersion(System.Windows.UIElement element)
         {
             return (string)element.GetValue(VersionProperty);
         }
-        
+
         public static string GetVersionLink(System.Windows.UIElement element)
         {
             return (string)element.GetValue(VersionLinkProperty);
