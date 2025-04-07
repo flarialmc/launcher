@@ -30,10 +30,10 @@ namespace Flarial.Launcher.Pages
             if (Utils.IsAdministrator)
             {
                 SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-               Application.Current.Dispatcher.Invoke(() =>
-                {
-                    MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
-                });
+                Application.Current.Dispatcher.Invoke(() =>
+                 {
+                     MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+                 });
             }
             else
             {
@@ -47,7 +47,7 @@ namespace Flarial.Launcher.Pages
         private void Navigate_Account(object sender, RoutedEventArgs e)
             => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
         private void Navigate_Backups(object sender, RoutedEventArgs e)
-        
+
             => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
     }
 }

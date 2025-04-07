@@ -54,16 +54,13 @@ namespace Flarial.Launcher.Managers
             {
                 Trace.WriteLine($"Got downloadable URL for Minecraft version {version}: {url}");
                 webClient.DownloadProgressChanged += DownloadProgressCallback;
-                await webClient.DownloadFileTaskAsync(new Uri(url), path);
+                await webClient.DownloadFileTaskAsync(url, path);
                 Trace.WriteLine("Download succeeded!");
             }
             else
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    //CustomDialogBox MessageBox = new CustomDialogBox("Download failed",
-                    //    $"{url} issue with the URL. Please report this in our discord.", "MessageBox");
-                    //MessageBox.ShowDialog();
                     MainWindow.CreateMessageBox($"Download failed: {url} issue with the URL");
                 });
 
@@ -186,50 +183,17 @@ namespace Flarial.Launcher.Managers
                     Trace.WriteLine($"RegisterPackageAsync failed, {registerPackageOperation.GetResults().ExtendedErrorCode.Message}");
                 });
                 return false;
-
-                //    var progress = new Progress<DeploymentProgress>(ReportProgress);
-
-                //    
-
-
-                //    else
-                //    {
-                //        Application.Current.Dispatcher.Invoke(() =>
-                //        {
-                //            CustomDialogBox MessageBox =
-                //                new CustomDialogBox("Failed", "Failed to install package.", "MessageBox");
-                //            MessageBox.ShowDialog();
-                //        });
-                //        return false;
-                //    }
             }
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                    //    $"RegisterPackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                    //    "MessageBox");
-                    //MessageBox.ShowDialog();
                     Trace.WriteLine($"RegisterPackageAsync failed, {ex.Message}");
                     MessageBox.Show($"RegisterPackageAsync failed, {ex.Message}", "ERROR!");
                 });
                 return false;
             }
         }
-        private static void ReportProgress(DeploymentProgress progress)
-        {
-            // Report the progress of the deployment
-            if (progress.percentage < 100)
-            {
-                MainWindow.progressPercentage = (int)progress.percentage;
-
-                MainWindow.progressType = "Installing";
-
-                Trace.WriteLine(progress.percentage + "% yas");
-            }
-        }
-
 
         private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -270,10 +234,7 @@ namespace Flarial.Launcher.Managers
                 }
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    //CustomDialogBox MessageBox =
-                    //    new CustomDialogBox("Failed", "Failed to remove package.", "MessageBox");
-                    //MessageBox.ShowDialog();
-                    MainWindow.CreateMessageBox("Failed to remove package");
+                    MainWindow.CreateMessageBox("Failed to remove package.");
                 });
                 return false;
             }
@@ -281,10 +242,6 @@ namespace Flarial.Launcher.Managers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    //CustomDialogBox MessageBox = new CustomDialogBox("Failed",
-                    //    $"RemovePackageAsync failed, error message: {ex.Message}\nFull Stacktrace: {ex.ToString()}",
-                    //    "MessageBox");
-                    //MessageBox.ShowDialog();
                     MainWindow.CreateMessageBox($"RemovePackageAsync failed, {ex.Message}");
                 });
                 MessageBox.Show($"Failed to remove package, {ex.Message}", "ERROR!");
@@ -370,32 +327,25 @@ namespace Flarial.Launcher.Managers
         }
 
 
-        public static async Task<bool> InstallMinecraft(string url, string version, UIElement element)
+        public static async Task<bool> InstallMinecraft(string version, UIElement element)
         {
-
-            bool unpackaged;
-            if (SDK.Minecraft.Installed) unpackaged = SDK.Minecraft.Unpackaged;
-            else unpackaged = false;
-            if (!unpackaged)
+            if (SDK.Minecraft.Installed && SDK.Minecraft.Unpackaged)
             {
-
                 string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
                 if (!await BackupManager.CreateBackup(backupname)) return false;
 
                 MainWindow.isDownloadingVersion = true;
-                SDK.Request req = await MainWindow.VersionCatalog.InstallAsync(version, i =>
+
+                await await MainWindow.VersionCatalog.InstallAsync(version, i =>
                 {
                     MainWindow.progressType = "Installing";
                     MainWindow.progressPercentage = i;
                     if (MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
 
                 });
-
-                await req;
             }
             else
             {
-
                 if (!SDK.Developer.Enabled)
                 {
                     // Enable Developer Mode
@@ -412,7 +362,7 @@ namespace Flarial.Launcher.Managers
                 Trace.WriteLine("Developer Mode is enabled on your system!");
                 // Continue with the rest of your application logic here.
 
-
+                string url = (await MainWindow.VersionCatalog.UriAsync(version)).OriginalString;
 
                 MainWindow.progressPercentage = 0;
                 string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");

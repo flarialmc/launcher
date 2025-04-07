@@ -32,8 +32,8 @@ namespace Flarial.Launcher.Pages
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
-                Config.UseBetaDLL = (bool)((ToggleButton)sender).IsChecked;
-                SaveButton.IsChecked = true;
+            Config.UseBetaDLL = (bool)((ToggleButton)sender).IsChecked;
+            SaveButton.IsChecked = true;
         }
 
         private void ToggleButton_Click_1(object sender, RoutedEventArgs e)

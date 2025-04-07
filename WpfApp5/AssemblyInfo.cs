@@ -9,7 +9,7 @@ using System.Windows;
     ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
                                               //(used if a resource is not found in the page,
                                               // app, or any theme specific resource dictionaries)
-    
+
 )]
 
 
@@ -21,6 +21,6 @@ using System.Windows;
 [assembly: AssemblyTrademark("Flarial")]
 [assembly: ComVisible(false)]
 
-[assembly: Guid("c68ed574-e6d9-4558-909f-82ec97711f64")] 
+[assembly: Guid("c68ed574-e6d9-4558-909f-82ec97711f64")]
 
 [assembly: AssemblyVersion("2.1.11.1")]

@@ -18,6 +18,7 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <ErrorReport>prompt</ErrorReport>
     <LangVersion>latest</LangVersion>
+    <PublishRelease>true</PublishRelease>
     <NoWarn>IDE1006</NoWarn>
   </PropertyGroup>
 
@@ -49,10 +50,8 @@
     <PackageReference Include="Flarial.Launcher.SDK" Version="1.5.2" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="MathConverter" Version="2.2.1" />
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1742" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
-    <PackageReference Include="System.Management" Version="9.0.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3124.44" />
   </ItemGroup>
 
@@ -62,6 +61,7 @@
     <Resource Include="Assets\share.png" />
     <Resource Include="Assets\SpaceGrotesk.ttf" />
     <Resource Include="Assets\v2bg.png" />
+    <Resource Include="Assets\versionbg1.jpg" />
   </ItemGroup>
 
 </Project>

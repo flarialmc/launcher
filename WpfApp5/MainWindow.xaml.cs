@@ -6,7 +6,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,8 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using SDK = Flarial.Launcher.SDK;
-using Microsoft.Web.WebView2.Core;
 using Application = System.Windows.Application;
 using File = System.IO.File;
 
@@ -107,6 +104,8 @@ namespace Flarial.Launcher
         public MainWindow()
         {
             InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            SnapsToDevicePixels = UseLayoutRounding = true;
 
             MouseLeftButtonDown += (_, _) => DragMove();
             ContentRendered += MainWindow_ContentRendered;
@@ -118,22 +117,6 @@ namespace Flarial.Launcher
             stopwatch.Start();
 
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
-
-            string filePath2 = Path.Combine(VersionManagement.launcherPath, "WebView2Loader.dll");
-            CoreWebView2Environment.SetLoaderDllFolderPath(VersionManagement.launcherPath);
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "costura.webview2loader.dll.compressed";
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-                if (stream != null)
-                {
-                    using (var decompressStream = new DeflateStream(stream, CompressionMode.Decompress))
-                    {
-                        using (var fileStream = File.Create(filePath2))
-                        {
-                            decompressStream.CopyTo(fileStream);
-                        }
-                    }
-                }
 
             string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";
@@ -171,7 +154,7 @@ namespace Flarial.Launcher
 
             Environment.CurrentDirectory = VersionManagement.launcherPath;
 
-            Dispatcher.InvokeAsync(async () => await RPCManager.Initialize());
+            Dispatcher.InvokeAsync(RPCManager.Initialize);
 
             Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
             Application.Current.MainWindow = this;
@@ -180,8 +163,7 @@ namespace Flarial.Launcher
             Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             stopwatch.Stop();
-            MainWindow.CreateMessageBox("Join our discord! https://flarial.xyz/discord");
-            this.Loaded += MainWindow_Loaded;
+            CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
             IsLaunchEnabled = false;
 
@@ -203,14 +185,6 @@ namespace Flarial.Launcher
 
         private async void MainWindow_ContentRendered(object sender, EventArgs e)
         {
-            await Config.loadConfig();
-            await Task.Run(() => Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version));
-            VersionCatalog = await SDK.Catalog.GetAsync();
-            IsLaunchEnabled = HomePage.IsEnabled = true;
-        }
-
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
             if (await SDK.Launcher.AvailableAsync())
             {
                 updateTextEnabled = true;
@@ -223,31 +197,31 @@ namespace Flarial.Launcher
                     LolGrid.Visibility = Visibility.Visible;
                     LolGrid.IsEnabled = true;
                 }, DispatcherPriority.ApplicationIdle);
+
+                await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
             }
 
-            await SDK.Launcher.UpdateAsync(value =>
-            {
-
-                DownloadProgressCallback2(value);
-            });
-
+            await Config.loadConfig();
+            await Task.Run(() => Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version));
+            VersionCatalog = await SDK.Catalog.GetAsync();
+            IsLaunchEnabled = HomePage.IsEnabled = true;
         }
-
 
         public static void CreateMessageBox(string text)
         {
             mbGrid.Children.Add(new Flarial.Launcher.Styles.MessageBox { Text = text });
         }
 
-        private void MoveWindow(object sender, MouseButtonEventArgs e) => this.DragMove();
-        private void Minimize(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
+        private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
+        private void Minimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+     
         private void Close(object sender, RoutedEventArgs e)
         {
             if (!isDownloadingVersion)
             {
                 AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
                 Trace.Close();
-                this.Close();
+                Close();
             }
             else
             {
@@ -377,10 +351,8 @@ namespace Flarial.Launcher
     }
 }
 
-public class AutoFlushTextWriterTraceListener : TextWriterTraceListener
+public class AutoFlushTextWriterTraceListener(Stream stream) : TextWriterTraceListener(stream)
 {
-    public AutoFlushTextWriterTraceListener(Stream stream) : base(stream) { }
-
     public override async void Write(string message)
     {
         await Writer.WriteAsync(message).ConfigureAwait(false);
@@ -401,8 +373,10 @@ public class FileTraceListener : TraceListener
 
     public FileTraceListener(string filePath)
     {
-        _writer = new StreamWriter(filePath, true);
-        _writer.AutoFlush = true; // Enable AutoFlush if needed
+        _writer = new StreamWriter(filePath, true)
+        {
+            AutoFlush = true // Enable AutoFlush if needed
+        };
     }
 
     public override async void Write(string message)

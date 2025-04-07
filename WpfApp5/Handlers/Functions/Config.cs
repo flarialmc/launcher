@@ -58,7 +58,7 @@ namespace Flarial.Launcher.Functions
                 mcMinimized = MCMinimized,
 
                 autoLogin = AutoLogin,
-                
+
                 waitForModules = WaitFormodules,
 
                 custom_theme_path = CustomThemePath
@@ -68,12 +68,12 @@ namespace Flarial.Launcher.Functions
 
             await WriteAllTextAsync(Path, tss);
 
-            if(shi)
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MainWindow.CreateMessageBox("Config saved"); 
-                
-            });
+            if (shi)
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.CreateMessageBox("Config saved");
+
+                });
         }
 
         public static async Task loadConfig()
@@ -121,11 +121,11 @@ namespace Flarial.Launcher.Functions
             {
                 return new ConfigData()
                 {
-                autoLogin = true,
-                mcMinimized = true,
-                shouldUseBetaDll = false,
-                shouldUseCustomDLL = false,
-                waitForModules = 153
+                    autoLogin = true,
+                    mcMinimized = true,
+                    shouldUseBetaDll = false,
+                    shouldUseCustomDLL = false,
+                    waitForModules = 153
                 };
             }
             var s = File.ReadAllText(Path);

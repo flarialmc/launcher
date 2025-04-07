@@ -1,24 +1,12 @@
 ﻿using Flarial.Launcher.Managers;
 using Flarial.Launcher.Styles;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Flarial.Launcher.SDK;
 
 namespace Flarial.Launcher.Pages
 {
@@ -35,12 +23,12 @@ namespace Flarial.Launcher.Pages
             sp = VersionItemStackPanel;
             var window = (MainWindow)Application.Current.MainWindow;
 
-            window.HomePage.IsEnabledChanged +=  (_, _) =>
+            window.HomePage.IsEnabledChanged += (_, _) =>
             {
                 string[] dir = Directory.GetFiles(VersionManagement.launcherPath + "\\Versions");
                 foreach (var name in MainWindow.VersionCatalog.Reverse())
                 {
-                    VersionItem versionItem = new VersionItem();
+                    VersionItem versionItem = new();
                     VersionItemStackPanel.Children.Add(versionItem);
                     VersionItemProperties.SetVersion(versionItem, name);
                     VersionItemProperties.SetState(versionItem, 0);
@@ -65,14 +53,6 @@ namespace Flarial.Launcher.Pages
                         VersionItemProperties.SetState(versionItem, 3);
                         versionItem.IsChecked = true;
                     }
-
-                    var bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.UriSource = new Uri("https://github.com/megahendick/Flarial.Laucher.Testing/blob/main/versionbg1.png?raw=true");
-                    bitmapImage.EndInit();
-
-                    VersionItemProperties.SetImageURL(versionItem, bitmapImage);
-
                 }
 
 
@@ -96,7 +76,6 @@ namespace Flarial.Launcher.Pages
     {
         public string Name { get; set; }
         public string ImgURL { get; set; }
-
         public string verlink { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace Flarial.Launcher.Pages;
 public partial class SettingsBackupPage : Page
 {
     private static VirtualizingStackPanel _stackPanel;
-    
+
     public SettingsBackupPage()
     {
         InitializeComponent();
@@ -18,7 +18,7 @@ public partial class SettingsBackupPage : Page
         _stackPanel = BackupStackPanel;
     }
 
-    public static void AddBackupItem(string time, string path) => _stackPanel.Children.Add(new BackupItem{Time = time, Path = path});
+    public static void AddBackupItem(string time, string path) => _stackPanel.Children.Add(new BackupItem { Time = time, Path = path });
 
     //just placeholder stuff
     private void SettingsBackupPage_OnLoaded(object sender, RoutedEventArgs e)
@@ -26,7 +26,7 @@ public partial class SettingsBackupPage : Page
         Dispatcher.InvokeAsync(async () =>
         {
             List<string> backups = await BackupManager.GetAllBackupsAsync();
-    
+
             foreach (string backup in backups)
             {
                 AddBackupItem(backup, "what?");

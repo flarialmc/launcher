@@ -68,8 +68,8 @@ namespace Flarial.Launcher.Managers
                 "serverip.txt"
             );
 
-            if(File.Exists(flarialPath))
-            return File.ReadAllText(flarialPath);
+            if (File.Exists(flarialPath))
+                return File.ReadAllText(flarialPath);
 
             return "";
         }
@@ -112,7 +112,7 @@ namespace Flarial.Launcher.Managers
                 {
                     Label = "Download",
                     Url = "https://flarial.xyz/discord"
-                    
+
                 };
 
                 currentPresence = new RichPresence();
@@ -123,7 +123,7 @@ namespace Flarial.Launcher.Managers
                         : DateTime.UtcNow,
                     End = dateTimestampEnd
                 };
-                
+
                 currentPresence.Buttons = new Button[] { button };
             }
 

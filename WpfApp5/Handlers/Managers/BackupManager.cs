@@ -117,8 +117,8 @@ namespace Flarial.Launcher.Managers
 
                 Directory.CreateDirectory(backupDirectoryPath);
 
-                if(!await BackupDirectoryAsync(mcPath, Path.Combine(backupDirectoryPath, "com.mojang"))) return false;
-                
+                if (!await BackupDirectoryAsync(mcPath, Path.Combine(backupDirectoryPath, "com.mojang"))) return false;
+
                 if (Directory.Exists(flarialPath))
                 {
                     if (!await BackupDirectoryAsync(flarialPath, Path.Combine(backupDirectoryPath, "RoamingState")))
@@ -138,7 +138,7 @@ namespace Flarial.Launcher.Managers
                 MessageBox.Show(ex.Message, "Error");
                 return false;
             }
-            
+
             return true;
         }
 
@@ -154,11 +154,11 @@ namespace Flarial.Launcher.Managers
 
             await Task.WhenAll(sourceDirectory.GetFiles().Select(async file =>
             {
-                
+
                 try
                 {
                     FileAttributes attributes = File.GetAttributes(file.FullName);
-    
+
                     if ((attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -179,7 +179,7 @@ namespace Flarial.Launcher.Managers
                     });
                     return false;
                 }
-                
+
                 var tempPath = Path.Combine(destinationDirectory.FullName, file.Name);
                 await Task.Run(() => file.CopyTo(tempPath, true));
                 Trace.WriteLine($"Copying {file} to {tempPath}");

@@ -18,7 +18,7 @@
                         <Grid.Clip>
                             <RectangleGeometry Rect="0,0,505,215" RadiusX="5" RadiusY="5" x:Name="RectangleGeometry"/>
                         </Grid.Clip>
-                        <Image Stretch="UniformToFill" Name="Image" Source="{TemplateBinding Property=local:VersionItemProperties.ImageURL}" RenderTransformOrigin="0.5,0.5">
+                        <Image Stretch="UniformToFill" Name="Image" Source="/Assets/versionbg1.jpg" RenderTransformOrigin="0.5,0.5">
                             <Image.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="ScaleTransform"/>
                             </Image.RenderTransform>

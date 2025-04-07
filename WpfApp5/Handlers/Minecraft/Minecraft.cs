@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Windows;
 using Windows.Management.Deployment;
-using Windows.Security.Authentication.Web.Core;
-using Windows.Services.Store;
 using Bedrockix.Minecraft;
 using Flarial.Launcher.Functions;
 using Version = System.Version;
@@ -40,10 +35,10 @@ namespace Flarial.Launcher
                 Process1 = mcIndex[0];
 
             }
-            
+
             // minimize fix
             if (Config.MCMinimized && isInstalled()) Game.Debug = true;
-            else if(!Config.MCMinimized && isInstalled()) Game.Debug = false;
+            else if (!Config.MCMinimized && isInstalled()) Game.Debug = false;
         }
 
 
