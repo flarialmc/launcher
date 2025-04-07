@@ -37,6 +37,9 @@ namespace Flarial.Launcher.Functions
         }
         public static async Task saveConfig(bool shi = true)
         {
+            if (SDK.Minecraft.Installed)
+                SDK.Minecraft.Debug = MCMinimized;
+
             if (!File.Exists(Path))
             {
                 File.Create(Path);
@@ -94,20 +97,8 @@ namespace Flarial.Launcher.Functions
             UseCustomDLL = config.shouldUseCustomDLL;
             WaitFormodules = config.waitForModules;
 
+            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
             await saveConfig(false);
-
-            if (CustomDLLPath != "amongus")
-            {
-                //CustomDllButton.IsChecked = true;
-                //dllTextBox.Visibility = Visibility.Visible;
-                //dllTextBox.Text = custom_dll_path;
-            }
-
-
-            //TrayButton.IsChecked = closeToTray;
-
-            //BetaDLLButton.IsChecked = shouldUseBetaDLL;
-            //AutoLoginButton.IsChecked = autoLogin;
         }
 
         public static ConfigData getConfig()

@@ -1,4 +1,5 @@
-﻿using Flarial.Launcher.Functions;
+﻿using Bedrockix.Minecraft;
+using Flarial.Launcher.Functions;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,7 +56,6 @@ namespace Flarial.Launcher.Pages
         private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
         {
             Config.MCMinimized = (bool)((ToggleButton)sender).IsChecked;
-            MainWindow.CreateMessageBox("Restart the Launcher to see the changes.");
             SaveButton.IsChecked = true;
         }
 
