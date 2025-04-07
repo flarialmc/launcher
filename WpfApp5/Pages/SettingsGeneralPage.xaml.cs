@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Functions;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,11 +18,14 @@ namespace Flarial.Launcher.Pages
         {
             InitializeComponent();
             saveButton = SaveButton;
-            tb1.IsChecked = Config.UseCustomDLL;
-            tb2.IsChecked = Config.UseBetaDLL;
-            tb3.IsChecked = Config.AutoLogin;
-            tb4.IsChecked = Config.MCMinimized;
-            DLLTextBox.Text = Config.CustomDLLPath;
+            ((MainWindow)Application.Current.MainWindow).HomePage.IsEnabledChanged += (_, _) =>
+            {
+                tb1.IsChecked = Config.UseCustomDLL;
+                tb2.IsChecked = Config.UseBetaDLL;
+                tb3.IsChecked = Config.AutoLogin;
+                tb4.IsChecked = Config.MCMinimized;
+                DLLTextBox.Value = Config.CustomDLLPath;
+            };
         }
 
         private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)

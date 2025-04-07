@@ -214,7 +214,7 @@ namespace Flarial.Launcher
 
         private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
         private void Minimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-     
+
         private void Close(object sender, RoutedEventArgs e)
         {
             if (!isDownloadingVersion)
@@ -272,6 +272,8 @@ namespace Flarial.Launcher
 
         private async void Inject_Click(object sender, RoutedEventArgs e)
         {
+            IsLaunchEnabled = false;
+
             if (!SDK.Minecraft.Installed)
             {
                 CreateMessageBox("Minecraft isn't installed, please install it!");
@@ -283,7 +285,6 @@ namespace Flarial.Launcher
             {
                 CreateMessageBox("Flarial does not support this version of Minecraft.");
                 if (Config.UseCustomDLL) CreateMessageBox("Custom DLL will be used.");
-
             });
 
 
@@ -314,6 +315,8 @@ namespace Flarial.Launcher
                     });
                 }
             }
+          
+           IsLaunchEnabled = true;
         }
 
 

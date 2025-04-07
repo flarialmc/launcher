@@ -17,11 +17,11 @@ namespace Flarial.Launcher.Styles
             this.DataContext = this;
         }
 
-        public string Text { get; set; }
+        public string Value { get => textbox.Text; set => textbox.Text = value; }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            OpenFileDialog dialog = new();
             dialog.InitialDirectory = @"C:\";
             dialog.CheckFileExists = true;
             dialog.CheckPathExists = true;

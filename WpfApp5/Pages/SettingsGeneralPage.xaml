@@ -18,7 +18,7 @@
         <StackPanel>
             <ToggleButton Click="ToggleButton_Click_2" Name="tb1" Content="Custom DLL" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnUnchecked" Style="{StaticResource ToggleButton}"/>
             <Grid Height="0" Name="DllGrid">
-                <styles:TextBox x:Name="DLLTextBox" Text="Custom DLL Path"/>
+                <styles:TextBox x:Name="DLLTextBox"/>
             </Grid>
             <ToggleButton Click="ToggleButton_Click" Name="tb2" Content="Beta DLL" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
