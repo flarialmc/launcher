@@ -277,15 +277,19 @@ namespace Flarial.Launcher
             if (!SDK.Minecraft.Installed)
             {
                 CreateMessageBox("Minecraft isn't installed, please install it!");
-                return;
+                IsLaunchEnabled = true; return;
             }
 
             bool compatible = await VersionCatalog.CompatibleAsync();
-            if (!compatible) Application.Current.Dispatcher.Invoke(() =>
+            if (!compatible)
             {
-                CreateMessageBox("Flarial does not support this version of Minecraft.");
-                if (Config.UseCustomDLL) CreateMessageBox("Custom DLL will be used.");
-            });
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CreateMessageBox("Flarial does not support this version of Minecraft.");
+                    if (Config.UseCustomDLL) CreateMessageBox("Custom DLL will be used.");
+                });
+                IsLaunchEnabled = true; return;
+            }
 
 
             if (!Config.UseCustomDLL)
@@ -305,7 +309,7 @@ namespace Flarial.Launcher
             }
             else
             {
-                if (Config.CustomDLLPath.Length > 5)
+                if (!string.IsNullOrEmpty(Config.CustomDLLPath))
                 {
                     await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
                     Application.Current.Dispatcher.Invoke(() =>
@@ -315,8 +319,8 @@ namespace Flarial.Launcher
                     });
                 }
             }
-          
-           IsLaunchEnabled = true;
+
+            IsLaunchEnabled = true;
         }
 
 
