@@ -281,13 +281,9 @@ namespace Flarial.Launcher
             }
 
             bool compatible = await VersionCatalog.CompatibleAsync();
-            if (!compatible)
+            if (!Config.UseCustomDLL && !compatible)
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CreateMessageBox("Flarial does not support this version of Minecraft.");
-                    if (Config.UseCustomDLL) CreateMessageBox("Custom DLL will be used.");
-                });
+                CreateMessageBox("Flarial does not support this version of Minecraft.");
                 IsLaunchEnabled = true; return;
             }
 
@@ -296,7 +292,7 @@ namespace Flarial.Launcher
             {
                 if (compatible)
                 {
-                    await SDK.Client.DownloadAsync(Config.UseBetaDLL, (value) => DownloadProgressCallback(value));
+                    await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
                     await SDK.Client.LaunchAsync(Config.UseBetaDLL);
 
                     Application.Current.Dispatcher.Invoke(() =>
@@ -311,6 +307,7 @@ namespace Flarial.Launcher
             {
                 if (!string.IsNullOrEmpty(Config.CustomDLLPath))
                 {
+                    CreateMessageBox("Custom DLL is being used.");
                     await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -318,6 +315,7 @@ namespace Flarial.Launcher
                         IsLaunchEnabled = true;
                     });
                 }
+                else CreateMessageBox("Please specify a Custom DLL.");
             }
 
             IsLaunchEnabled = true;

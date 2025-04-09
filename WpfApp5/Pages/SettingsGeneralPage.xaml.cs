@@ -19,8 +19,30 @@ namespace Flarial.Launcher.Pages
         {
             InitializeComponent();
             saveButton = SaveButton;
+
+            tb1.Checked += (_, _) =>
+            {
+                if ((bool)tb2.IsChecked)
+                {
+                    tb2.IsChecked = false;
+                    Config.UseBetaDLL= false;
+                }
+            };
+
+            tb2.Checked += (_, _) =>
+            {
+                if ((bool)tb1.IsChecked)
+                {
+                    tb1.IsChecked = false;
+                    Config.UseCustomDLL = false;
+                }
+            };
+
             ((MainWindow)Application.Current.MainWindow).HomePage.IsEnabledChanged += (_, _) =>
             {
+                if (Config.UseCustomDLL && Config.UseBetaDLL)
+                    Config.UseCustomDLL = Config.UseBetaDLL = false;
+
                 tb1.IsChecked = Config.UseCustomDLL;
                 tb2.IsChecked = Config.UseBetaDLL;
                 tb3.IsChecked = Config.AutoLogin;
