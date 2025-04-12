@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 
@@ -12,6 +13,7 @@ public partial class App : Application
 
     static App()
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
         Mutex = new(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value);
         if (!value) Environment.Exit(default);
     }
