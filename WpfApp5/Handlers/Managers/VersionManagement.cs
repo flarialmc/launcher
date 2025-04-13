@@ -342,13 +342,13 @@ namespace Flarial.Launcher.Managers
 
                 MainWindow.isDownloadingVersion = true;
 
-                await await MainWindow.VersionCatalog.InstallAsync(version, i =>
+                using var request = await MainWindow.VersionCatalog.InstallAsync(version, i =>
                 {
                     MainWindow.progressType = "Installing";
                     MainWindow.progressPercentage = i;
                     if (MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
 
-                });
+                }); await request;
             }
             else
             {

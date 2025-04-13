@@ -45,14 +45,14 @@
 
   <!-- Package references -->
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="all" />
+    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
-    <PackageReference Include="Flarial.Launcher.SDK" Version="1.5.2" />
+    <PackageReference Include="Flarial.Launcher.SDK" Version="1.6.0" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="MathConverter" Version="2.2.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3124.44" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3179.45" />
   </ItemGroup>
 
   <ItemGroup>
