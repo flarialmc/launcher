@@ -329,7 +329,13 @@ namespace Flarial.Launcher.Managers
 
         public static async Task<bool> InstallMinecraft(string version, UIElement element)
         {
-            if (SDK.Minecraft.Installed && SDK.Minecraft.Unpackaged)
+            if (!SDK.Minecraft.Installed)
+            {
+                Application.Current.MainWindow.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Minecraft isn't installed, please install it."));
+                return false;
+            }
+
+            if (!SDK.Minecraft.Unpackaged)
             {
                 string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
                 if (!await BackupManager.CreateBackup(backupname)) return false;
