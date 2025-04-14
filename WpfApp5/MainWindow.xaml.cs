@@ -212,7 +212,7 @@ namespace Flarial.Launcher
 
         public static void CreateMessageBox(string text)
         {
-            mbGrid.Children.Add(new Flarial.Launcher.Styles.MessageBox { Text = text });
+            mbGrid.Children.Add(new Styles.MessageBox { Text = text });
         }
 
         private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
