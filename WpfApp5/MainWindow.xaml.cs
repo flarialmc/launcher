@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 using File = System.IO.File;
+using System.Windows.Media.Imaging;
 
 namespace Flarial.Launcher
 {
@@ -99,11 +100,13 @@ namespace Flarial.Launcher
             }
         };
 
-
-        private const int WM_CLOSE = 0x0010;
         public MainWindow()
         {
             InitializeComponent();
+
+            using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("app.ico"))
+                Icon = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             SnapsToDevicePixels = UseLayoutRounding = true;
 

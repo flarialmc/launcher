@@ -28,21 +28,6 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   
-
-  <!-- Exclude unnecessary files/folders -->
-  <ItemGroup>
-    <Compile Remove="Handlers\UI\**" />
-    <EmbeddedResource Remove="Handlers\UI\**" />
-    <None Remove="Handlers\UI\**" />
-    <Page Remove="Handlers\UI\**" />
-    <None Remove="Assets\guest.png;Assets\icon.png;Assets\share.png;Assets\SpaceGrotesk.ttf;Assets\v2bg.png" />
-  </ItemGroup>
-
-  <!-- Include application icon -->
-  <ItemGroup>
-    <Content Include="app.ico" />
-  </ItemGroup>
-
   <!-- Package references -->
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
@@ -62,6 +47,7 @@
     <Resource Include="Assets\SpaceGrotesk.ttf" />
     <Resource Include="Assets\v2bg.png" />
     <Resource Include="Assets\versionbg1.jpg" />
+    <EmbeddedResource Include="Assets\app.ico" LogicalName="app.ico" />
   </ItemGroup>
 
 </Project>
