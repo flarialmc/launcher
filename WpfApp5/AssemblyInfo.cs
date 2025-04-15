@@ -12,7 +12,7 @@ using System.Windows;
 
 )]
 
-
+[assembly: DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 [assembly: AssemblyTitle("Flarial Launcher")]
 [assembly: AssemblyDescription("The official Launcher for Flarial Client.")]
 [assembly: AssemblyCompany("Flarial")]

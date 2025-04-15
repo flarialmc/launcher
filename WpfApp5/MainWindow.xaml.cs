@@ -16,11 +16,16 @@ using System.Windows.Threading;
 using Application = System.Windows.Application;
 using File = System.IO.File;
 using System.Windows.Media.Imaging;
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace Flarial.Launcher
 {
     public partial class MainWindow
     {
+        [DllImport("Shell32", PreserveSig = true, ExactSpelling = true, CharSet = CharSet.Unicode, EntryPoint = "ShellExecuteW")]
+        static extern nint ShellExecute(nint hwnd = default, string lpOperation = default, string lpFile = default, string lpParameters = default, string lpDirectory = default, int nShowCmd = default);
+
         public int version = 200;
 
         public static int progressPercentage;
@@ -50,6 +55,8 @@ namespace Flarial.Launcher
         private static StackPanel mbGrid;
 
         private static readonly Stopwatch speed = new();
+
+        readonly WindowInteropHelper WindowInteropHelper;
 
         public static SDK.Catalog VersionCatalog;
 
@@ -104,6 +111,8 @@ namespace Flarial.Launcher
         {
             InitializeComponent();
 
+            WindowInteropHelper = new(this);
+
             using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("app.ico"))
                 Icon = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
 
@@ -115,7 +124,7 @@ namespace Flarial.Launcher
 
             CreateDirectoriesAndFiles();
 
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = new();
             speed.Start();
             stopwatch.Start();
 
@@ -356,17 +365,8 @@ namespace Flarial.Launcher
             Environment.Exit(0);
         }
 
-        private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var url = "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
-            
-            try { Process.Start(url); }
-            catch
-            {
-                url = url.Replace("&", "^&");
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }
-        }
+        private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
+        ShellExecute(hwnd: WindowInteropHelper.EnsureHandle(), lpFile: "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch");
     }
 }
 
