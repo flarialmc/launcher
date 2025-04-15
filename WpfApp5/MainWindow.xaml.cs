@@ -356,6 +356,17 @@ namespace Flarial.Launcher
             Environment.Exit(0);
         }
 
+        private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var url = "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
+            
+            try { Process.Start(url); }
+            catch
+            {
+                url = url.Replace("&", "^&");
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }
+        }
     }
 }
 

@@ -48,6 +48,8 @@
     <Resource Include="Assets\v2bg.png" />
     <Resource Include="Assets\versionbg1.jpg" />
     <EmbeddedResource Include="Assets\app.ico" LogicalName="app.ico" />
+    <None Remove="Assets\litebyte.png" />
+    <Resource Include="Assets\litebyte.png" />
   </ItemGroup>
 
 </Project>
