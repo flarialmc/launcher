@@ -83,7 +83,7 @@ namespace Flarial.Launcher.Pages
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Run(() => Config.saveConfig());
+            await Task.Run(() => Config.SaveConfigAsync());
             SaveButton.IsChecked = false;
         }
     }

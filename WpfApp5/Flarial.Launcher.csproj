@@ -19,7 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <LangVersion>latest</LangVersion>
     <PublishRelease>true</PublishRelease>
-    <NoWarn>IDE1006</NoWarn>
+    <NoWarn>IDE1006,IDE0130</NoWarn>
   </PropertyGroup>
 
   <!-- Release-specific settings -->

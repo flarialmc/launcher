@@ -130,19 +130,6 @@ namespace Flarial.Launcher
 
             Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-            string today = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
-            string filePath = $"{VersionManagement.launcherPath}\\{today}.txt";
-
-            var outResultsFile = new FileStream(
-                filePath,
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.Read
-            );
-
-            var textListener = new AutoFlushTextWriterTraceListener(outResultsFile);
-            Trace.Listeners.Add(textListener);
-
             Trace.WriteLine("Debug 0.5 " + stopwatch.Elapsed.Milliseconds.ToString());
 
             AppDomain.CurrentDomain.UnhandledException += unhandledExceptionHandler;
@@ -213,7 +200,7 @@ namespace Flarial.Launcher
                 await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
             }
 
-            await Config.loadConfig();
+            await Config.LoadConfigAsync();
             await Task.Run(() => Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version));
             VersionCatalog = await SDK.Catalog.GetAsync();
             IsLaunchEnabled = HomePage.IsEnabled = true;
@@ -355,7 +342,7 @@ namespace Flarial.Launcher
 
         private async void SaveConfig(object sender, RoutedEventArgs e)
         {
-            await Config.saveConfig();
+            await Config.SaveConfigAsync();
         }
 
         private void Window_OnClosing(object sender, CancelEventArgs e)
@@ -370,7 +357,7 @@ namespace Flarial.Launcher
     }
 }
 
-public class AutoFlushTextWriterTraceListener(Stream stream) : TextWriterTraceListener(stream)
+public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTraceListener(stream)
 {
     public override async void Write(string message)
     {
