@@ -18,6 +18,8 @@ using File = System.IO.File;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
+using Bedrockix.Windows;
+using Bedrockix.Minecraft;
 
 namespace Flarial.Launcher
 {
@@ -306,13 +308,19 @@ namespace Flarial.Launcher
             {
                 if (!string.IsNullOrEmpty(Config.CustomDLLPath))
                 {
-                    CreateMessageBox("Custom DLL is being used.");
-                    await SDK.Minecraft.LaunchAsync(Config.CustomDLLPath);
-                    Application.Current.Dispatcher.Invoke(() =>
+                    Library value = new(Config.CustomDLLPath);
+
+                    if (value.Valid)
                     {
-                        StatusLabel.Text = "Launched Custom DLL! Enjoy.";
-                        IsLaunchEnabled = true;
-                    });
+                        await Task.Run(() => Loader.Launch(value));
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            StatusLabel.Text = "Launched Custom DLL! Enjoy.";
+                            IsLaunchEnabled = true;
+                        });
+                    }
+                    else
+                        CreateMessageBox("The specified Custom DLL is potentially invalid or doesn't exist.");
                 }
                 else CreateMessageBox("Please specify a Custom DLL.");
             }
