@@ -33,17 +33,17 @@ jobs:
         run: |
           #parsed string
           
-          export old_version=$(cat WpfApp5/AssemblyInfo.cs|sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
-          export new_version=$(cat WpfApp5/AssemblyInfo.cs | tail -n 1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' |  awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          export old_version=$(cat src/AssemblyInfo.cs|sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+          export new_version=$(cat src/AssemblyInfo.cs | tail -n 1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' |  awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
           echo $old_version
           echo $new_version
           echo "version=$new_version" >> $GITHUB_ENV
           echo "version_no=$new_version" >> "$GITHUB_OUTPUT"
-          sed -i "s/$old_version/$new_version/g" WpfApp5/AssemblyInfo.cs 
+          sed -i "s/$old_version/$new_version/g" src/AssemblyInfo.cs 
 
       - name: push to origin
         run: |
-          git add WpfApp5/AssemblyInfo.cs
+          git add src/AssemblyInfo.cs
           git commit -m "Update file version"
           git push origin main
 
@@ -73,7 +73,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: WpfApp5/global.json
+          global-json-file: src/global.json
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -81,7 +81,7 @@ jobs:
       - name: Build
         run: |
           ls
-          cd WpfApp5
+          cd src
           cat AssemblyInfo.cs
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
@@ -98,7 +98,7 @@ jobs:
           git add launcher/launcherVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
-          cp D:/a/launcher/launcher/WpfApp5/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
+          cp D:/a/launcher/launcher/src/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
           git push origin main
