@@ -42,9 +42,8 @@ namespace Flarial.Launcher.Functions
 
         public static async Task LoadConfigAsync()
         {
-            ConfigData config;
-            try { config = JsonConvert.DeserializeObject<ConfigData>(await ReadAllTextAsync(Path)); }
-            catch { config = new(); }
+            ConfigData config = new();
+            try { config = JsonConvert.DeserializeObject<ConfigData>(await ReadAllTextAsync(Path)); } catch { }
 
             UseBetaDLL = config.shouldUseBetaDll;
             CustomDLLPath = config.custom_dll_path;

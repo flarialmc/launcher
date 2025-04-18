@@ -20,6 +20,8 @@
     <LangVersion>latest</LangVersion>
     <PublishRelease>true</PublishRelease>
     <NoWarn>IDE1006,IDE0130</NoWarn>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <!-- Release-specific settings -->
@@ -27,7 +29,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-  
+
   <!-- Package references -->
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />

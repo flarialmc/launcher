@@ -107,6 +107,7 @@ namespace Flarial.Launcher
             {
                 Trace.WriteLine("Failed to show error in MessageBox.");
             }
+            Environment.Exit(default);
         };
 
         public MainWindow()
