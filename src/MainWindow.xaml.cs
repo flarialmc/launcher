@@ -121,7 +121,7 @@ namespace Flarial.Launcher
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             SnapsToDevicePixels = UseLayoutRounding = true;
 
-            MouseLeftButtonDown += (_, _) => DragMove();
+            MouseLeftButtonDown += (_, _) => { try { DragMove(); } catch { } };
             ContentRendered += MainWindow_ContentRendered;
 
             CreateDirectoriesAndFiles();
