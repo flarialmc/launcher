@@ -96,7 +96,7 @@ namespace Flarial.Launcher
         public static UnhandledExceptionEventHandler unhandledExceptionHandler = (sender, args) =>
         {
             Exception ex = (Exception)args.ExceptionObject;
-            string errorMessage = $"Unhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            string errorMessage = $"Version: {Assembly.GetEntryAssembly().GetName().Version}\nUnhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
 
             Trace.WriteLine(errorMessage);
             try
