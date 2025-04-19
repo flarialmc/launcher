@@ -20,6 +20,7 @@ using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using Bedrockix.Windows;
 using Bedrockix.Minecraft;
+using Windows.ApplicationModel;
 
 namespace Flarial.Launcher
 {
@@ -59,6 +60,8 @@ namespace Flarial.Launcher
         private static readonly Stopwatch speed = new();
 
         readonly WindowInteropHelper WindowInteropHelper;
+
+        readonly PackageCatalog PackageCatalog = PackageCatalog.OpenForCurrentUser();
 
         public static SDK.Catalog VersionCatalog;
 
@@ -185,6 +188,19 @@ namespace Flarial.Launcher
         {
         }
 
+        async Task UpdateVersionLabel(bool completed, Package package, bool uninstalling)
+        {
+            if (completed && package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", StringComparison.OrdinalIgnoreCase))
+            {
+                if (uninstalling) Dispatcher.Invoke(() => VersionLabel.Text = "0.0.0");
+                else await Task.Run(() =>
+                {
+                    var text = SDK.Minecraft.Version;
+                    Dispatcher.Invoke(() => VersionLabel.Text = text);
+                });
+            }
+        }
+
         private async void MainWindow_ContentRendered(object sender, EventArgs e)
         {
             if (await SDK.Launcher.AvailableAsync())
@@ -203,8 +219,16 @@ namespace Flarial.Launcher
                 await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
             }
 
+            PackageCatalog.PackageInstalling += async (_, args) => await UpdateVersionLabel(args.IsComplete, args.Package, false);
+            PackageCatalog.PackageUpdating += async (_, args) => await UpdateVersionLabel(args.IsComplete, args.TargetPackage, false);
+            PackageCatalog.PackageUninstalling += async (_, args) => await UpdateVersionLabel(args.IsComplete, args.Package, true);
+
+            if (Game.Installed) await Task.Run(() =>
+            {
+                var text = SDK.Minecraft.Version;
+                Dispatcher.Invoke(() => VersionLabel.Text = text);
+            });
             await Config.LoadConfigAsync();
-            await Task.Run(() => Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version));
             VersionCatalog = await SDK.Catalog.GetAsync();
             IsLaunchEnabled = HomePage.IsEnabled = true;
         }
