@@ -282,6 +282,12 @@ namespace Flarial.Launcher
                 IsLaunchEnabled = true; return;
             }
 
+            if (await Task.Run(() => Metadata.Instancing))
+            {
+                CreateMessageBox("Flarial Client doesn't support multi-instancing, please disable it!");
+                IsLaunchEnabled = true; return;
+            }
+
             bool compatible = await VersionCatalog.CompatibleAsync();
             if (!Config.UseCustomDLL && !compatible)
             {
