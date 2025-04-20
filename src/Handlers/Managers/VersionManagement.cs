@@ -19,6 +19,7 @@ using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using System.Xml;
+using System.Windows.Threading;
 
 namespace Flarial.Launcher.Managers
 {
@@ -342,13 +343,13 @@ namespace Flarial.Launcher.Managers
 
                 MainWindow.isDownloadingVersion = true;
 
-                using var request = await MainWindow.VersionCatalog.InstallAsync(version, i =>
+                using var request = await MainWindow.VersionCatalog.InstallAsync(version, i => Application.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow.progressType = "Installing";
                     MainWindow.progressPercentage = i;
                     if (MainWindow.progressPercentage == 100) MainWindow.isDownloadingVersion = false;
 
-                }); await request;
+                })); await request;
             }
             else
             {
@@ -431,7 +432,7 @@ namespace Flarial.Launcher.Managers
                     var manifestPath = Path.Combine(pathway, "AppxManifest.xml");
                     var escapedPath = manifestPath.Replace("\"", "\\\"");
 
-                    if (!AreDependenciesInstalled(escapedPath))
+                    if (!await Task.Run(() => AreDependenciesInstalled(escapedPath)))
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {

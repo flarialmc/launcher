@@ -65,7 +65,7 @@ namespace Flarial.Launcher.Styles
 
                 VersionItemProperties.SetState(this, 1);
 
-                bool succeeded = await Task.Run(() => VersionManagement.InstallMinecraft(version, this));
+                bool succeeded = await VersionManagement.InstallMinecraft(version, this);
                 if (!succeeded)
                 {
                     IsChecked = false;
