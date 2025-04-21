@@ -20,6 +20,7 @@ using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using Bedrockix.Windows;
 using Bedrockix.Minecraft;
+using Windows.ApplicationModel;
 
 namespace Flarial.Launcher
 {
@@ -185,6 +186,18 @@ namespace Flarial.Launcher
         {
         }
 
+        readonly PackageCatalog Catalog = PackageCatalog.OpenForCurrentUser();
+
+        async Task UpdateVersionLabel(Package source, bool value)
+        {
+            if (source.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", StringComparison.OrdinalIgnoreCase))
+                await Task.Run(() =>
+                {
+                    var text = value ? SDK.Minecraft.Version : "0.0.0";
+                    Dispatcher.Invoke(() => VersionLabel.Text = text);
+                });
+        }
+
         private async void MainWindow_ContentRendered(object sender, EventArgs e)
         {
             if (await SDK.Launcher.AvailableAsync())
@@ -203,8 +216,12 @@ namespace Flarial.Launcher
                 await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
             }
 
+            Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
+            Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
+            Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
+
+            if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
             await Config.LoadConfigAsync();
-            await Task.Run(() => Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version));
             VersionCatalog = await SDK.Catalog.GetAsync();
             IsLaunchEnabled = HomePage.IsEnabled = true;
         }
