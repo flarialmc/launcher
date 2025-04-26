@@ -9,8 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace Flarial.Launcher.Pages
-{
+namespace Flarial.Launcher.Pages;
+
     /// <summary>
     /// Interaction logic for SettingsAccountPage.xaml
     /// </summary>
@@ -163,4 +163,3 @@ namespace Flarial.Launcher.Pages
             await loginner();
         }
     }
-}

@@ -1,59 +1,62 @@
 ﻿using System.IO;
+using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Flarial.Launcher.Structures;
-using Newtonsoft.Json;
 
-namespace Flarial.Launcher.Functions
+namespace Flarial.Launcher.Functions;
+
+public static class Config
 {
-    public class Config
+    static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
+
+    public static string CustomDLLPath;
+
+    public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL;
+
+    public readonly static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
+
+    public static async Task<string> ReadAllTextAsync(string path)
     {
-        public static string CustomDLLPath;
+        using var reader = File.OpenText(path);
+        return await reader.ReadToEndAsync();
+    }
 
-        public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL;
+    public static async Task WriteAllTextAsync(string path, string content)
+    {
+        using var writer = File.CreateText(path);
+        await writer.WriteAsync(content);
+    }
 
-        public readonly static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
+    public static void SaveConfig(bool value = true)
+    {
+        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
 
-        public static async Task<string> ReadAllTextAsync(string path)
+        using var stream = File.Create(Path);
+        Serializer.WriteObject(stream, new ConfigData
         {
-            using StreamReader reader = new(path);
-            return await reader.ReadToEndAsync();
-        }
+            shouldUseCustomDLL = UseCustomDLL,
+            custom_dll_path = CustomDLLPath,
+            shouldUseBetaDll = UseBetaDLL,
+            mcMinimized = MCMinimized,
+            autoLogin = AutoLogin,
+        });
 
-        public static async Task WriteAllTextAsync(string path, string content)
-        {
-            using StreamWriter writer = new(path, false);
-            await writer.WriteAsync(content);
-        }
+        if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
+    }
 
-        public static async Task SaveConfigAsync(bool value = true)
-        {
-            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
-            await WriteAllTextAsync(Path, JsonConvert.SerializeObject(new ConfigData()
-            {
-                shouldUseCustomDLL = UseCustomDLL,
-                custom_dll_path = CustomDLLPath,
-                shouldUseBetaDll = UseBetaDLL,
-                mcMinimized = MCMinimized,
-                autoLogin = AutoLogin,
-            }));
-            if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
-        }
+    public static void LoadConfig()
+    {
+        ConfigData config = new();
+        try { using var stream = File.OpenRead(Path); config = (ConfigData)Serializer.ReadObject(stream); } catch { }
 
-        public static async Task LoadConfigAsync()
-        {
-            ConfigData config = new();
-            try { config = JsonConvert.DeserializeObject<ConfigData>(await ReadAllTextAsync(Path)); } catch { }
+        UseBetaDLL = config.shouldUseBetaDll;
+        CustomDLLPath = config.custom_dll_path;
+        MCMinimized = config.mcMinimized;
+        AutoLogin = config.autoLogin;
+        UseCustomDLL = config.shouldUseCustomDLL;
 
-            UseBetaDLL = config.shouldUseBetaDll;
-            CustomDLLPath = config.custom_dll_path;
-            MCMinimized = config.mcMinimized;
-            AutoLogin = config.autoLogin;
-            UseCustomDLL = config.shouldUseCustomDLL;
-
-            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
-            await SaveConfigAsync(false);
-        }
-
+        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
+        SaveConfig(false);
     }
 }

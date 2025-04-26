@@ -6,8 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace Flarial.Launcher.Pages
-{
+namespace Flarial.Launcher.Pages;
+
     /// <summary>
     /// Interaction logic for SettingsGeneralPage.xaml
     /// </summary>
@@ -83,8 +83,7 @@ namespace Flarial.Launcher.Pages
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Run(() => Config.SaveConfigAsync());
+            await Task.Run(() => Config.SaveConfig());
             SaveButton.IsChecked = false;
         }
     }
-}

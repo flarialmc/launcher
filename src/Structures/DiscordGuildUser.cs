@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Flarial.Launcher.Structures
+namespace Flarial.Launcher.Structures;
+
+public class DiscordGuildUser
 {
-
-    public class DiscordGuildUser
-    {
-        public List<string> roles;
-    }
+    public List<string> roles;
 }

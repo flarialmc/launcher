@@ -1,9 +1,8 @@
-﻿namespace Flarial.Launcher.Structures
+﻿namespace Flarial.Launcher.Structures;
+
+public struct ConfigData
 {
-    public struct ConfigData
-    {
-        public ConfigData() { }
-        public string custom_dll_path;
-        public bool shouldUseCustomDLL, shouldUseBetaDll, mcMinimized = true, autoLogin = true;
-    }
+    public ConfigData() { }
+    public string custom_dll_path;
+    public bool shouldUseCustomDLL, shouldUseBetaDll, mcMinimized = true, autoLogin = true;
 }
