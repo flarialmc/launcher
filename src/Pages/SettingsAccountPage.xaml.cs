@@ -16,7 +16,7 @@ namespace Flarial.Launcher.Pages;
     /// </summary>
     public partial class SettingsAccountPage : Page
     {
-        public Window1 w = new Window1();
+        public Window1 w = new();
 
         public SettingsAccountPage()
         {

@@ -6,60 +6,64 @@ using System.Windows.Media.Animation;
 
 namespace Flarial.Launcher.Styles
 {
-    /// <summary>
-    /// Interaction logic for MessageBox.xaml
-    /// </summary>
     public partial class MessageBox : UserControl
     {
-        public string Text { get; set; }
+        private readonly int _lifetime;
 
-        public MessageBox()
+        public MessageBox(string text, int lifetime = 0, bool autoCalculateLifetime = false)
         {
             InitializeComponent();
-            this.DataContext = this;
-            Text = "temp";
+
+            ((TextBlock)this.FindName("MessageText")).Text = text;
+
+            // Calculate Lifetime
+            if (autoCalculateLifetime && !string.IsNullOrEmpty(text))
+            {
+                _lifetime = 1000 + text.Length * 50;
+            }
+            else
+            {
+                _lifetime = lifetime;
+            }
+
+            // Start the lifetime timer
+            if (_lifetime > 0)
+            {
+                Task.Run(async () =>
+                {
+                    await Task.Delay(_lifetime);
+                    Dispatcher.Invoke(() => TriggerHideAnimation());
+                });
+            }
         }
 
-        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var sb = new Storyboard();
-
-            var an1 = new DoubleAnimation
+            if (sender is Button button)
             {
-                Duration = TimeSpan.FromMilliseconds(200),
-                To = 0,
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
+                button.IsEnabled = false;
+            }
 
-            var an2 = new DoubleAnimation
+            TriggerHideAnimation();
+        }
+
+        private void TriggerHideAnimation()
+        {
+            var hideAnimation = (Storyboard)FindResource("HideAnimation");
+
+            // Add an event handler to remove the MessageBox after the animation completes
+            void onAnimationCompleted(object s, EventArgs args)
             {
-                Duration = TimeSpan.FromMilliseconds(200),
-                To = 0,
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
+                hideAnimation.Completed -= onAnimationCompleted; // Unsubscribe to avoid memory leaks
+                if (this.Parent is Panel parent)
+                {
+                    parent.Children.Remove(this);
+                }
+            }
 
-            var an3 = new ThicknessAnimation()
-            {
-                Duration = TimeSpan.FromMilliseconds(200),
-                To = new Thickness(0, 0, 0, 0),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
+            hideAnimation.Completed += onAnimationCompleted;
 
-            Storyboard.SetTarget(an1, this);
-            Storyboard.SetTargetProperty(an1, new PropertyPath("RenderTransform.ScaleX"));
-            Storyboard.SetTarget(an2, this);
-            Storyboard.SetTargetProperty(an2, new PropertyPath("RenderTransform.ScaleY"));
-            Storyboard.SetTarget(an3, this);
-            Storyboard.SetTargetProperty(an3, new PropertyPath(MarginProperty));
-
-            sb.Children.Add(an1);
-            sb.Children.Add(an2);
-            sb.Children.Add(an3);
-
-            sb.Begin(this);
-
-            await Task.Delay(200);
-            ((StackPanel)this.Parent).Children.Remove(this);
+            hideAnimation.Begin(this);
         }
     }
 }

@@ -11,6 +11,7 @@
                 <!--  FluentWPF Controls  -->
                 <ResourceDictionary Source="pack://application:,,,/FluentWPF;component/Styles/Controls.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBar.xaml"/>
+                <ResourceDictionary Source="Styles/LinkButton.xaml"/>
                 <ResourceDictionary Source="Styles/RadioButton.xaml"/>
                 <ResourceDictionary Source="Styles/ToggleButton.xaml"/>
                 <ResourceDictionary Source="Styles/MinimizeButton.xaml"/>

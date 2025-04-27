@@ -21,20 +21,22 @@ namespace Flarial.Launcher.Styles
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new();
-            dialog.InitialDirectory = @"C:\";
-            dialog.CheckFileExists = true;
-            dialog.CheckPathExists = true;
-            dialog.Multiselect = false;
+            OpenFileDialog dialog = new()
+            {
+                InitialDirectory = @"C:\",
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Multiselect = false,
 
-            dialog.DefaultExt = "dll";
-            dialog.Filter = "DLL Files|*.dll;";
-            dialog.Title = "Select Custom DLL";
+                DefaultExt = "dll",
+                Filter = "DLL Files|*.dll;",
+                Title = "Select Custom DLL"
+            };
             if (dialog.ShowDialog() == true)
             {
                 textbox.Text = dialog.FileName;
-                Config.CustomDLLPath = dialog.FileName;
-                SettingsGeneralPage.saveButton.IsChecked = true;
+                Config.CustomDllPath = dialog.FileName;
+                SettingsGeneralPage.SaveConfigButton.IsChecked = true;
             }
         }
     }

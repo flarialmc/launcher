@@ -6,28 +6,77 @@
       xmlns:styles="clr-namespace:Flarial.Launcher.Styles"
       mc:Ignorable="d" 
       Title="SettingsGeneralPage" Height="470" Width="555">
-    
     <Page.Clip>
         <RectangleGeometry Rect="0,0,555,470"/>
     </Page.Clip>
     <Grid Margin="20" Background="#201A1B">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <ToggleButton Click="ToggleButton_Click_2" Name="tb1" Content="Custom DLL" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnUnchecked" Style="{StaticResource ToggleButton}"/>
-            <Grid Height="0" Name="DllGrid">
-                <styles:TextBox x:Name="DLLTextBox"/>
+
+        <!-- ScrollViewer -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <!-- Custom DLL Toggle -->
+                    <ToggleButton Click="OnCustomDllToggleClicked" Name="CustomDllToggle" 
+                            Content="Custom DLL" 
+                            Tag="Inject a custom DLL file. Use with caution." 
+                            Checked="OnCustomDllToggleChecked" Unchecked="OnCustomDllToggleUnchecked" 
+                            Style="{StaticResource ToggleButton}"/>
+                    <Grid Height="0" Name="CustomDllInputGrid">
+                        <styles:TextBox x:Name="CustomDllPathTextBox"/>
+                    </Grid>
+                    <!-- Beta DLL Toggle -->
+                    <ToggleButton Click="OnBetaDllToggleClicked" Name="BetaDllToggle" 
+                            Content="Beta DLL" 
+                            Tag="Enable beta features by injecting the beta DLL file." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Auto Login Toggle -->
+                    <ToggleButton Click="OnAutoLoginToggleClicked" Name="AutoLoginToggle" 
+                            Content="Auto Login" 
+                            Tag="Automatically log in to the Discord account." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Fix Minecraft Minimizing Toggle -->
+                    <ToggleButton Click="OnFixMinecraftMinimizingToggleClicked" Name="FixMinecraftMinimizingToggle" 
+                            Content="Fix Minecraft Minimizing" 
+                            Tag="Prevent Minecraft from reloading when minimizing or switching windows." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Enable Discord RPC Toggle -->
+                    <ToggleButton Click="OnEnableDiscordRpcToggleClicked" Name="EnableDiscordRpcToggle" 
+                            Content="Enable Discord RPC" 
+                            Tag="Allows Discord to show your status and activity." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Show Welcome Message Toggle -->
+                    <ToggleButton Click="OnShowWelcomeMessageToggleClicked" Name="ShowWelcomeMessageToggle" 
+                            Content="Show Welcome Message" 
+                            Tag="Displays a welcome message when the launcher is opened." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <ToggleButton Click="OnParallaxEffectToggleClicked" Name="ParallaxEffectToggle" 
+                            Content="Background Parallax Effect" 
+                            Tag="Smoothly move the background image relative to the cursor." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <Border Background="#363031" CornerRadius="15" Padding="8.5" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,16,0,0" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Content="Open Launcher Folder" Click="OnOpenLauncherFolderClicked" Template="{StaticResource Button}" Margin="0,0,8.5,0" />
+                        <Button Content="Open Client Folder" Click="OnOpenClientFolderClicked" Template="{StaticResource Button}" />
+                    </StackPanel>
+                </Border>
             </Grid>
-            <ToggleButton Click="ToggleButton_Click" Name="tb2" Content="Beta DLL" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
-        </StackPanel>
-        <ToggleButton Click="Button_Click" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">
+        </ScrollViewer>
+
+        <!-- Save Config Button -->
+        <ToggleButton Click="OnSaveButtonClicked" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="Hand" Height="0">
             <ToggleButton.Template>
                 <ControlTemplate>
-                    <Border Name="b" Height="45" Background="#FF2438" CornerRadius="10" RenderTransformOrigin="0.5,0.5">
+                    <Border Name="b" Background="#FF2438" CornerRadius="10" RenderTransformOrigin="0.5,0.5">
                         <Grid>
                             <Border CornerRadius="10">
                                 <Border.Background>
@@ -35,7 +84,7 @@
                                 </Border.Background>
                             </Border>
                             <StackPanel Margin="15,0,15,0" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Name="tb" Text="Save Config" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                                <TextBlock Name="tb" Text="Save Changes" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Foreground="#ffffff" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                             </StackPanel>
                         </Grid>
                         <Border.RenderTransform>
@@ -43,30 +92,25 @@
                         </Border.RenderTransform>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="ToggleButton.IsChecked" Value="False">
+                        <!-- Hover Animation -->
+                        <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <ThicknessAnimation To="-180,0,0,0" Duration="0:0:0.2" Storyboard.TargetProperty="Margin">
-                                            <ThicknessAnimation.EasingFunction>
-                                                <QuadraticEase EasingMode="EaseOut"/>
-                                            </ThicknessAnimation.EasingFunction>
-                                        </ThicknessAnimation>
+                                        <DoubleAnimation Duration="0:0:0.1" To="0.1" Storyboard.TargetName="Brush" Storyboard.TargetProperty="Opacity"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <ThicknessAnimation To="380,0,0,0" Duration="0:0:0.6" Storyboard.TargetProperty="Margin">
-                                            <ThicknessAnimation.EasingFunction>
-                                                <ElasticEase Springiness="5" Oscillations="2" EasingMode="EaseOut"/>
-                                            </ThicknessAnimation.EasingFunction>
-                                        </ThicknessAnimation>
+                                        <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="Brush" Storyboard.TargetProperty="Opacity"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
+
+                        <!-- Press Animation -->
                         <Trigger Property="ToggleButton.IsPressed" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
@@ -85,18 +129,42 @@
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
-                        <Trigger Property="ToggleButton.IsMouseOver" Value="True">
+
+                        <!-- Height Animation -->
+                        <Trigger Property="ToggleButton.IsChecked" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0:0:0.1" To="0.1" Storyboard.TargetName="Brush" Storyboard.TargetProperty="Opacity"/>
+                                        <!-- Animate ToggleButton Height -->
+                                        <DoubleAnimation Duration="0:0:0.8" To="45" Storyboard.TargetProperty="Height">
+                                            <DoubleAnimation.EasingFunction>
+                                                <ElasticEase Oscillations="2" Springiness="8" EasingMode="EaseOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <!-- Animate ToggleButton Margin -->
+                                        <ThicknessAnimation Duration="0:0:0.8" To="0,8,0,0" Storyboard.TargetProperty="Margin">
+                                            <ThicknessAnimation.EasingFunction>
+                                                <ElasticEase Oscillations="2" Springiness="8" EasingMode="EaseOut"/>
+                                            </ThicknessAnimation.EasingFunction>
+                                        </ThicknessAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0:0:0.1" To="0.0" Storyboard.TargetName="Brush" Storyboard.TargetProperty="Opacity"/>
+                                        <!-- Animate ToggleButton Height -->
+                                        <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="Height">
+                                            <DoubleAnimation.EasingFunction>
+                                                <QuadraticEase EasingMode="EaseIn"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <!-- Animate ToggleButton Margin -->
+                                        <ThicknessAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="Margin">
+                                            <ThicknessAnimation.EasingFunction>
+                                                <QuadraticEase EasingMode="EaseIn"/>
+                                            </ThicknessAnimation.EasingFunction>
+                                        </ThicknessAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>

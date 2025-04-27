@@ -8,13 +8,14 @@ namespace Flarial.Launcher.Functions;
 
 public static class Config
 {
-    static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
+    static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), 
+        new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
-    public static string CustomDLLPath;
+    public static string CustomDllPath;
+    public static bool CustomDll, BetaDll, AutoLogin, FixMinimizing, Rpc, WelcomeMessage, BackgroundParallaxEffect;
+    
 
-    public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL;
-
-    public readonly static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
+    public readonly static string ConfigFilePath = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
     public static async Task<string> ReadAllTextAsync(string path)
     {
@@ -28,35 +29,46 @@ public static class Config
         await writer.WriteAsync(content);
     }
 
-    public static void SaveConfig(bool value = true)
+    public static void SaveConfig(bool showNotification = true)
     {
-        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
+        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = FixMinimizing;
 
-        using var stream = File.Create(Path);
+        using var stream = File.Create(ConfigFilePath);
         Serializer.WriteObject(stream, new ConfigData
         {
-            shouldUseCustomDLL = UseCustomDLL,
-            custom_dll_path = CustomDLLPath,
-            shouldUseBetaDll = UseBetaDLL,
-            mcMinimized = MCMinimized,
+            customDll = CustomDll,
+            customDllPath = CustomDllPath,
+            betaDll = BetaDll,
             autoLogin = AutoLogin,
+            fixMinimizing = FixMinimizing,
+            rpc = Rpc,
+            welcomeMessage = WelcomeMessage,
+            backgroundParallaxEffect = BackgroundParallaxEffect,
         });
 
-        if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
+        if (showNotification) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!", true));
     }
 
     public static void LoadConfig()
     {
         ConfigData config = new();
-        try { using var stream = File.OpenRead(Path); config = (ConfigData)Serializer.ReadObject(stream); } catch { }
+        try
+        {
+            using var stream = File.OpenRead(ConfigFilePath);
+            config = (ConfigData)Serializer.ReadObject(stream);
+        }
+        catch { }
 
-        UseBetaDLL = config.shouldUseBetaDll;
-        CustomDLLPath = config.custom_dll_path;
-        MCMinimized = config.mcMinimized;
+        CustomDll = config.customDll;
+        CustomDllPath = config.customDllPath;
+        BetaDll = config.betaDll;
         AutoLogin = config.autoLogin;
-        UseCustomDLL = config.shouldUseCustomDLL;
+        FixMinimizing = config.fixMinimizing;
+        Rpc = config.rpc;
+        WelcomeMessage = config.welcomeMessage;
+        BackgroundParallaxEffect = config.backgroundParallaxEffect;
 
-        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
+        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = FixMinimizing;
         SaveConfig(false);
     }
 }

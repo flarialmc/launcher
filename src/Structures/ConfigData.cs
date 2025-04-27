@@ -3,6 +3,7 @@
 public struct ConfigData
 {
     public ConfigData() { }
-    public string custom_dll_path;
-    public bool shouldUseCustomDLL, shouldUseBetaDll, mcMinimized = true, autoLogin = true;
+
+    public string customDllPath;
+    public bool customDll, betaDll, autoLogin = true, fixMinimizing = true, rpc = true, welcomeMessage = true, backgroundParallaxEffect = true;
 }

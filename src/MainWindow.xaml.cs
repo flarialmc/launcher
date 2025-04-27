@@ -111,9 +111,43 @@ public partial class MainWindow
         Environment.Exit(default);
     };
 
+    // Parralax background image
+    private const double Smoothness = 0.1;
+    private const double Strength = 0.04;
+    private double _targetX = 0;
+    private double _targetY = 0;
+
+    private void OnRenderFrame(object sender, EventArgs e)
+    {
+        if (!Config.BackgroundParallaxEffect) return;
+
+        CursorFollowTransform.X += (_targetX - CursorFollowTransform.X) * Smoothness;
+        CursorFollowTransform.Y += (_targetY - CursorFollowTransform.Y) * Smoothness;
+    }
+
+    private void Window_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!Config.BackgroundParallaxEffect) return;
+
+        var position = e.GetPosition(this);
+        _targetX = (position.X - BackgroundImage.ActualWidth / 2) * Strength;
+        _targetY = (position.Y - BackgroundImage.ActualHeight / 2) * Strength;
+    }
+
+    public void CenterParrallaxImage()
+    {
+        _targetX = 0;
+        _targetY = 0;
+        CursorFollowTransform.X = 0;
+        CursorFollowTransform.Y = 0;
+    }
+
     public MainWindow()
     {
+        Config.LoadConfig();
+
         InitializeComponent();
+        CompositionTarget.Rendering += OnRenderFrame;
 
         WindowInteropHelper = new(this);
 
@@ -157,7 +191,10 @@ public partial class MainWindow
 
         Environment.CurrentDirectory = VersionManagement.launcherPath;
 
-        Dispatcher.InvokeAsync(RPCManager.Initialize);
+        if (Config.Rpc)
+        {
+            RPCManager.InitializeRPC();
+        }
 
         Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
         Application.Current.MainWindow = this;
@@ -166,7 +203,11 @@ public partial class MainWindow
         Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
 
         stopwatch.Stop();
-        CreateMessageBox("Join our discord! https://flarial.xyz/discord");
+
+        if (Config.WelcomeMessage)
+        {
+            CreateMessageBox("Join our discord! https://flarial.xyz/discord");
+        }
 
         IsLaunchEnabled = false;
 
@@ -221,15 +262,19 @@ public partial class MainWindow
         Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
         if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
-        await Task.Run(Config.LoadConfig);
+
         VersionCatalog = await SDK.Catalog.GetAsync();
         IsLaunchEnabled = HomePage.IsEnabled = true;
     }
 
     public static void CreateMessageBox(string text)
-    {
-        mbGrid.Children.Add(new Styles.MessageBox { Text = text });
-    }
+        => mbGrid.Children.Add(new Styles.MessageBox(text));
+
+    public static void CreateMessageBox(string text, int lifetime)
+        => mbGrid.Children.Add(new Styles.MessageBox(text, lifetime));
+
+    public static void CreateMessageBox(string text, bool autoCalculateLifetime)
+        => mbGrid.Children.Add(new Styles.MessageBox(text, autoCalculateLifetime: autoCalculateLifetime));
 
     private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
     private void Minimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -306,19 +351,30 @@ public partial class MainWindow
         }
 
         bool compatible = await VersionCatalog.CompatibleAsync();
-        if (!Config.UseCustomDLL && !compatible)
+        if (!Config.CustomDll && !compatible)
         {
             CreateMessageBox("Flarial does not support this version of Minecraft.");
             IsLaunchEnabled = true; return;
         }
 
 
-        if (!Config.UseCustomDLL)
+        if (!Config.CustomDll)
         {
             if (compatible)
             {
-                await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
-                await SDK.Client.LaunchAsync(Config.UseBetaDLL);
+                
+                // Make sure everything is handled
+                try
+                {
+                    await SDK.Client.DownloadAsync(Config.BetaDll, DownloadProgressCallback);
+                    await SDK.Client.LaunchAsync(Config.BetaDll);
+                }
+                catch (Exception ex)
+                {
+                    CreateMessageBox($"Error: {ex.Message}");
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                }
+
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -330,9 +386,9 @@ public partial class MainWindow
         }
         else
         {
-            if (!string.IsNullOrEmpty(Config.CustomDLLPath))
+            if (!string.IsNullOrEmpty(Config.CustomDllPath))
             {
-                Library value = new(Config.CustomDLLPath);
+                Library value = new(Config.CustomDllPath);
 
                 if (value.Valid)
                 {

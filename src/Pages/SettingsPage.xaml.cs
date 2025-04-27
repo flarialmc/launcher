@@ -32,21 +32,23 @@ public partial class SettingsPage : Page
             SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
             Application.Current.Dispatcher.Invoke(() =>
              {
-                 MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+                 MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.", true);
              });
         }
         else
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("Launcher not running as Administrator. Run as Admin!");
+                MainWindow.CreateMessageBox("Launcher not running as Administrator. Run as Admin!", true);
             });
+
+            e.Handled = true;
         }
     }
 
     private void Navigate_Account(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
-    private void Navigate_Backups(object sender, RoutedEventArgs e)
 
+    private void Navigate_Backups(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
 }
