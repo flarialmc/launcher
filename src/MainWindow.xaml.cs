@@ -203,11 +203,11 @@ public partial class MainWindow
             });
     }
 
-    protected override async void OnSourceInitialized(EventArgs e)
+    protected override async void OnInitialized(EventArgs e)
     {
         await Task.Run(Config.LoadConfig);
         if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
-        base.OnSourceInitialized(e);
+        base.OnInitialized(e);
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
