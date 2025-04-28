@@ -52,6 +52,7 @@ public partial class SettingsGeneralPage : Page
             EnableDiscordRpcToggle.IsChecked = Config.Rpc;
             ShowWelcomeMessageToggle.IsChecked = Config.WelcomeMessage;
             ParallaxEffectToggle.IsChecked = Config.BackgroundParallaxEffect;
+            HardwareAccelerationToggle.IsChecked = Config.HardwareAcceleration;
         };
     }
 
@@ -115,6 +116,13 @@ public partial class SettingsGeneralPage : Page
             var mainWindow = Window.GetWindow(this) as MainWindow;
             mainWindow?.CenterParrallaxImage();
         }
+        SaveConfigButton.IsChecked = true;
+    }
+    
+    private void OnHardwareAccelerationToggleClicked(object sender, RoutedEventArgs e)
+    {
+        if (Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked) MainWindow.CreateMessageBox("Faster UI, possible graphical issues.");
+        else MainWindow.CreateMessageBox("Slower UI, graphical issues possibly resolved.");
         SaveConfigButton.IsChecked = true;
     }
 

@@ -57,9 +57,15 @@
                             Content="Show Welcome Message" 
                             Tag="Displays a welcome message when the launcher is opened." 
                             Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Parallax Effect Toggle -->
                     <ToggleButton Click="OnParallaxEffectToggleClicked" Name="ParallaxEffectToggle" 
                             Content="Background Parallax Effect" 
                             Tag="Smoothly move the background image relative to the cursor." 
+                            Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
+                    <!-- Hardware Acceleration Toggle -->
+                    <ToggleButton Click="OnHardwareAccelerationToggleClicked" Name="HardwareAccelerationToggle" 
+                            Content="Hardware Acceleration" 
+                            Tag="Enable hardware acceleration for improved performance." 
                             Style="{StaticResource ToggleButton}" Margin="0,8,0,0"/>
                 </StackPanel>
 
@@ -70,6 +76,7 @@
                     </StackPanel>
                 </Border>
             </Grid>
+
         </ScrollViewer>
 
         <!-- Save Config Button -->
