@@ -203,11 +203,15 @@ public partial class MainWindow
             });
     }
 
-    private async void MainWindow_ContentRendered(object sender, EventArgs e)
+    protected override async void OnSourceInitialized(EventArgs e)
     {
         await Task.Run(Config.LoadConfig);
         if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
+        base.OnSourceInitialized(e);
+    }
 
+    private async void MainWindow_ContentRendered(object sender, EventArgs e)
+    {
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -223,7 +227,7 @@ public partial class MainWindow
 
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
-      
+
         VersionCatalog = await SDK.Catalog.GetAsync();
         IsLaunchEnabled = HomePage.IsEnabled = true;
     }
@@ -254,7 +258,7 @@ public partial class MainWindow
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
         SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
-   
+
     private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
         NewsPageTransition.Animation(Reverse, MainBorder, NewsBorder, NewsArrow);
 
