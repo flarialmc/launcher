@@ -375,26 +375,14 @@ public partial class MainWindow
         {
             if (compatible)
             {
-                
-                // Make sure everything is handled
-                try
-                {
-                    await SDK.Client.DownloadAsync(Config.BetaDll, DownloadProgressCallback);
-                    await SDK.Client.LaunchAsync(Config.BetaDll);
-                }
-                catch (Exception ex)
-                {
-                    CreateMessageBox($"Error: {ex.Message}");
-                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                }
-
+                await SDK.Client.DownloadAsync(Config.BetaDll, DownloadProgressCallback);
+                await SDK.Client.LaunchAsync(Config.BetaDll);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     StatusLabel.Text = "Launched! Enjoy.";
                     IsLaunchEnabled = true;
                 });
-
             }
         }
         else
