@@ -4,5 +4,9 @@ public struct ConfigData
 {
     public ConfigData() { }
     public string custom_dll_path;
-    public bool shouldUseCustomDLL, shouldUseBetaDll, mcMinimized = true, autoLogin = true;
+    public bool shouldUseCustomDLL;
+    public bool shouldUseBetaDll;
+    public bool mcMinimized = true;
+    public bool autoLogin = true;
+    public bool hardwareAcceleration = true;
 }

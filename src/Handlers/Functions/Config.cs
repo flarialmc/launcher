@@ -2,6 +2,8 @@
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
 using Flarial.Launcher.Structures;
 
 namespace Flarial.Launcher.Functions;
@@ -12,7 +14,7 @@ public static class Config
 
     public static string CustomDLLPath;
 
-    public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL;
+    public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL, HardwareAcceleration;
 
     public readonly static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
@@ -31,6 +33,7 @@ public static class Config
     public static void SaveConfig(bool value = true)
     {
         if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
+        RenderOptions.ProcessRenderMode = HardwareAcceleration ? RenderMode.Default : RenderMode.SoftwareOnly;
 
         using var stream = File.Create(Path);
         Serializer.WriteObject(stream, new ConfigData
@@ -40,6 +43,7 @@ public static class Config
             shouldUseBetaDll = UseBetaDLL,
             mcMinimized = MCMinimized,
             autoLogin = AutoLogin,
+            hardwareAcceleration = HardwareAcceleration
         });
 
         if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
@@ -55,6 +59,7 @@ public static class Config
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         UseCustomDLL = config.shouldUseCustomDLL;
+        HardwareAcceleration = config.hardwareAcceleration;
 
         if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
         SaveConfig(false);

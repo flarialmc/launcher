@@ -23,6 +23,7 @@
             <ToggleButton Click="ToggleButton_Click" Name="tb2" Content="Beta DLL" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
         </StackPanel>
         <ToggleButton Click="Button_Click" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">
             <ToggleButton.Template>

@@ -172,8 +172,13 @@ public partial class MainWindow
 
         StartRefreshTimer();
 
+        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
+        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
+        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
     }
+
     private System.Timers.Timer refreshTimer;
+
     private void StartRefreshTimer()
     {
         refreshTimer = new System.Timers.Timer(1.5 * 60 * 1000);
@@ -200,6 +205,9 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
+        await Task.Run(Config.LoadConfig);
+        if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
+
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -215,13 +223,7 @@ public partial class MainWindow
 
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
-
-        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
-        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
-        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
-
-        if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
-        await Task.Run(Config.LoadConfig);
+      
         VersionCatalog = await SDK.Catalog.GetAsync();
         IsLaunchEnabled = HomePage.IsEnabled = true;
     }
@@ -252,6 +254,7 @@ public partial class MainWindow
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
         SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
+   
     private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
         NewsPageTransition.Animation(Reverse, MainBorder, NewsBorder, NewsArrow);
 
