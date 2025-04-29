@@ -13,8 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Application = System.Windows.Application;
-using File = System.IO.File;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
@@ -93,24 +91,6 @@ public partial class MainWindow
         DependencyProperty.Register("updateProgress", typeof(int),
             typeof(MainWindow), new PropertyMetadata(0));
 
-
-    public static UnhandledExceptionEventHandler unhandledExceptionHandler = (sender, args) =>
-    {
-        Exception ex = (Exception)args.ExceptionObject;
-        string errorMessage = $"Version: {Assembly.GetEntryAssembly().GetName().Version}\nUnhandled exception: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
-
-        Trace.WriteLine(errorMessage);
-        try
-        {
-            MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        catch
-        {
-            Trace.WriteLine("Failed to show error in MessageBox.");
-        }
-        Environment.Exit(default);
-    };
-
     public MainWindow()
     {
         InitializeComponent();
@@ -126,8 +106,6 @@ public partial class MainWindow
         MouseLeftButtonDown += (_, _) => { try { DragMove(); } catch { } };
         ContentRendered += MainWindow_ContentRendered;
 
-        CreateDirectoriesAndFiles();
-
         Stopwatch stopwatch = new();
         speed.Start();
         stopwatch.Start();
@@ -135,8 +113,6 @@ public partial class MainWindow
         Trace.WriteLine("Debug 0 " + stopwatch.Elapsed.Milliseconds.ToString());
 
         Trace.WriteLine("Debug 0.5 " + stopwatch.Elapsed.Milliseconds.ToString());
-
-        AppDomain.CurrentDomain.UnhandledException += unhandledExceptionHandler;
 
         Trace.WriteLine("Debug 1 " + stopwatch.Elapsed.Milliseconds.ToString());
 
@@ -155,8 +131,6 @@ public partial class MainWindow
         SettingsPage.MainGrid = MainGrid;
         SettingsPage.b1 = MainBorder;
 
-        Environment.CurrentDirectory = VersionManagement.launcherPath;
-
         Dispatcher.InvokeAsync(RPCManager.Initialize);
 
         Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -170,10 +144,6 @@ public partial class MainWindow
         IsLaunchEnabled = false;
 
         StartRefreshTimer();
-
-        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
-        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
-        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
     }
 
     private System.Timers.Timer refreshTimer;
@@ -202,18 +172,18 @@ public partial class MainWindow
             });
     }
 
-    protected override async void OnInitialized(EventArgs e)
+    protected override void OnSourceInitialized(EventArgs e)
     {
-        await Task.Run(() =>
-        {
-            Config.LoadConfig();
-            if (Game.Installed)
-                Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version);
-        });
+        Config.LoadConfig();
+        if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
+
+        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
+        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
+        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
         if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, UI might be laggy.");
-        base.OnInitialized(e);
+        base.OnSourceInitialized(e);
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -250,7 +220,6 @@ public partial class MainWindow
     {
         if (!isDownloadingVersion)
         {
-            AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
             Trace.Close();
             Close();
         }
@@ -267,31 +236,6 @@ public partial class MainWindow
 
     private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
         NewsPageTransition.Animation(Reverse, MainBorder, NewsBorder, NewsArrow);
-
-
-    private void CreateDirectoriesAndFiles()
-    {
-        Trace.WriteLine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
-
-        if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial")))
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flarial"));
-
-        if (!Directory.Exists(VersionManagement.launcherPath))
-            Directory.CreateDirectory(VersionManagement.launcherPath);
-
-        if (!Directory.Exists(BackupManager.backupDirectory))
-            Directory.CreateDirectory(BackupManager.backupDirectory);
-
-        if (!Directory.Exists(VersionManagement.launcherPath + "\\Versions\\"))
-            Directory.CreateDirectory(VersionManagement.launcherPath + "\\Versions\\");
-
-        if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
-            File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
-
-        var info = Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
-        Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
-    }
-
 
     private void SetGreetingLabel()
     {
@@ -393,8 +337,7 @@ public partial class MainWindow
     private void Window_OnClosing(object sender, CancelEventArgs e)
     {
         Trace.Close();
-        AppDomain.CurrentDomain.UnhandledException -= unhandledExceptionHandler;
-        Environment.Exit(0);
+        Environment.Exit(default);
     }
 
     private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
