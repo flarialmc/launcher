@@ -1,8 +1,7 @@
 ﻿namespace Flarial.Launcher.Structures;
 
-public struct ConfigData
+public sealed class ConfigData
 {
-    public ConfigData() { }
     public string custom_dll_path;
     public bool shouldUseCustomDLL;
     public bool shouldUseBetaDll;

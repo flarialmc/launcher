@@ -60,8 +60,8 @@ public partial class SettingsGeneralPage : Page
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
     {
-        if (Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked) MainWindow.CreateMessageBox("Faster UI, possible graphical issues.");
-        else MainWindow.CreateMessageBox("Slower UI, graphical issues possibly resolved.");
+        if (Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked) MainWindow.CreateMessageBox("Smoother UI, possible graphical issues.");
+        else MainWindow.CreateMessageBox("Laggier UI, graphical issues possibly resolved.");
         SaveButton.IsChecked = true;
     }
 

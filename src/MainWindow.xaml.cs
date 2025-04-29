@@ -207,6 +207,7 @@ public partial class MainWindow
     {
         await Task.Run(Config.LoadConfig);
         if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
+        if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, UI might be laggy.");
         base.OnInitialized(e);
     }
 

@@ -59,7 +59,7 @@ public static class Config
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         UseCustomDLL = config.shouldUseCustomDLL;
-        HardwareAcceleration = config.hardwareAcceleration;
+        HardwareAcceleration = true; //config.hardwareAcceleration;
 
         if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
         SaveConfig(false);
