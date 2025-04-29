@@ -281,6 +281,9 @@ public partial class MainWindow
 
         if (!File.Exists($"{VersionManagement.launcherPath}\\cachedToken.txt"))
             File.Create($"{VersionManagement.launcherPath}\\cachedToken.txt");
+
+        var info = Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
+        Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
     }
 
 
