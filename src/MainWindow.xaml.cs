@@ -204,8 +204,12 @@ public partial class MainWindow
 
     protected override async void OnInitialized(EventArgs e)
     {
-        await Task.Run(Config.LoadConfig);
-        if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
+        await Task.Run(() =>
+        {
+            Config.LoadConfig();
+            if (Game.Installed)
+                Dispatcher.Invoke(() => VersionLabel.Text = SDK.Minecraft.Version);
+        });
 
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
         if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, UI might be laggy.");
