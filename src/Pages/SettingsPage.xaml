@@ -34,7 +34,7 @@
                     <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Settings" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                 </Grid>
                 <RadioButton Grid.Row="1" Checked="Navigate_General" Name="GeneralPageButton" Content="General" Margin="30,0,30,25"/>
-                <RadioButton Grid.Row="2" Checked="Navigate_Version" Content="Version" Margin="30,0,30,25"/>
+                <RadioButton Grid.Row="2" PreviewMouseDown="Navigate_Version" Content="Version" Margin="30,0,30,25"/>
                 <RadioButton Grid.Row="3" Checked="Navigate_Account" Content="Account" Margin="30,0,30,25"/>
                 <RadioButton Grid.Row="4" Checked="Navigate_Backups" Content="Backups" Margin="30,0,30,25"/>
                 <Button Grid.Row="5" Cursor="Hand" Click="ButtonBase_OnClick" Content="Return" VerticalAlignment="Bottom" Margin="30,0,30,32.5">

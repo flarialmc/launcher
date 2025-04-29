@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using Flarial.Launcher.Functions;
 
 namespace Flarial.Launcher.Managers;
@@ -16,20 +17,35 @@ public static class RPCManager
     private static string previousContent = "";
     private static Timer _timer;
 
-    public static async Task Initialize()
+    public static void InitializeRPC()
     {
-        await Task.Run(() =>
+        if (client != null) return; // Already initialized
+
+        Application.Current.Dispatcher.InvokeAsync(async () =>
         {
-            InitializeDiscordClient();
+            await Task.Run(() => InitializeDiscordClient());
+            _discordTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+
+            _timer = new Timer(100); // 100 milliseconds
+            _timer.Elapsed += TimerElapsed;
+            _timer.Enabled = true;
+            InLauncher();
         });
+    }
 
-        _discordTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+    public static void StopRPC()
+    {
+        if (client == null) return; // Already stopped
 
-        _timer = new Timer(100); // 100 milliseconds
-        _timer.Elapsed += TimerElapsed;
-        _timer.Enabled = true;
+        Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+            _timer = null;
 
-        InLauncher();
+            client?.Dispose();
+            client = null;
+        });
     }
 
     private static void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -115,16 +131,18 @@ public static class RPCManager
 
             };
 
-            currentPresence = new RichPresence();
-            currentPresence.Timestamps = new Timestamps
+            currentPresence = new RichPresence
             {
-                Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
-                    ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampStart)
-                    : DateTime.UtcNow,
-                End = dateTimestampEnd
-            };
+                Timestamps = new Timestamps
+                {
+                    Start = _discordTime != "" && int.TryParse(_discordTime, out int timestampStart)
+                        ? new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestampStart)
+                        : DateTime.UtcNow,
+                    End = dateTimestampEnd
+                },
 
-            currentPresence.Buttons = new Button[] { button };
+                Buttons = [button]
+            };
         }
 
         currentPresence.Details = details;

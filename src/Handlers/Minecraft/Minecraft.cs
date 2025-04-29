@@ -36,8 +36,8 @@ public static partial class Minecraft
         }
 
         // minimize fix
-        if (Config.MCMinimized && isInstalled()) Game.Debug = true;
-        else if (!Config.MCMinimized && isInstalled()) Game.Debug = false;
+        if (Config.FixMinimizing && isInstalled()) Game.Debug = true;
+        else if (!Config.FixMinimizing && isInstalled()) Game.Debug = false;
     }
 
 

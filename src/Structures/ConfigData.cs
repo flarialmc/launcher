@@ -3,10 +3,14 @@
 public struct ConfigData
 {
     public ConfigData() { }
-    public string custom_dll_path;
-    public bool shouldUseCustomDLL;
-    public bool shouldUseBetaDll;
-    public bool mcMinimized = true;
+
+    public string customDllPath;
+    public bool customDll;
+    public bool betaDll;
     public bool autoLogin = true;
+    public bool fixMinimizing = true;
+    public bool rpc = true;
+    public bool welcomeMessage = true;
+    public bool backgroundParallaxEffect = true;
     public bool hardwareAcceleration = true;
 }

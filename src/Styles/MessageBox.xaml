@@ -8,6 +8,27 @@
              RenderTransformOrigin="0.5,1.0"
              Margin="0,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center"
              d:DesignHeight="35" d:DesignWidth="150">
+    <UserControl.Resources>
+        <!-- Hide Animation Storyboard -->
+        <Storyboard x:Key="HideAnimation">
+            <DoubleAnimation To="0" Duration="0:0:0.2" Storyboard.TargetProperty="(UserControl.RenderTransform).(ScaleTransform.ScaleX)">
+                <DoubleAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation To="0" Duration="0:0:0.2" Storyboard.TargetProperty="(UserControl.RenderTransform).(ScaleTransform.ScaleY)">
+                <DoubleAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <ThicknessAnimation To="0,0,0,0" Duration="0:0:0.2" Storyboard.TargetProperty="Margin">
+                <ThicknessAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseIn"/>
+                </ThicknessAnimation.EasingFunction>
+            </ThicknessAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+
     <UserControl.Effect>
         <DropShadowEffect Direction="0" BlurRadius="15" Color="Black" ShadowDepth="0"/>
     </UserControl.Effect>
@@ -15,6 +36,7 @@
         <ScaleTransform ScaleX="0" ScaleY="0"/>
     </UserControl.RenderTransform>
     <UserControl.Triggers>
+        <!-- Show Animation Trigger -->
         <EventTrigger RoutedEvent="UserControl.Loaded">
             <BeginStoryboard>
                 <Storyboard>
@@ -43,8 +65,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="5,0,5,0" Text="{Binding Text}" VerticalAlignment="Center" FontSize="14" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-            <Button Grid.Column="1" Height="25" Click="ButtonBase_OnClick">
+            <TextBlock x:Name="MessageText" Margin="5,0,5,0" VerticalAlignment="Center" FontSize="14" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+            <Button Cursor="Hand" Grid.Column="1" Height="25" Click="ButtonBase_OnClick">
                 <Button.Template>
                     <ControlTemplate>
                         <Border CornerRadius="5" Padding="5">

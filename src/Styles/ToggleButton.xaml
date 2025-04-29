@@ -6,8 +6,24 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Label IsHitTestVisible="False" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="{TemplateBinding Content}" Foreground="White" FontSize="20"/>
-                            <Border x:Name="border" Cursor="Hand" CornerRadius="12.5" HorizontalAlignment="Right" Width="50" Height="25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Labels -->
+                            <StackPanel Grid.Column="0" IsHitTestVisible="False" VerticalAlignment="Center">
+                                <!-- Main Label -->
+                                <TextBlock FontFamily="pack://application:,,,/Assets/#Space Grotesk" 
+                                        Text="{TemplateBinding Content}" Foreground="White" FontSize="20" TextWrapping="Wrap" />
+
+                                <!-- Description Label -->
+                                <TextBlock FontFamily="pack://application:,,,/Assets/#Space Grotesk"
+                                        Text="{TemplateBinding Tag}" Foreground="Gray" FontSize="16" TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!-- Toggle Switch -->
+                            <Border Grid.Column="1" x:Name="border" Cursor="Hand" CornerRadius="12.5" Width="50" Height="25">
                                 <Border.Background>
                                     <SolidColorBrush Color="#363031" x:Name="backgroundbrush"/>
                                 </Border.Background>

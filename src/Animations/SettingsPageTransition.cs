@@ -19,16 +19,15 @@ namespace Flarial.Launcher.Animations
             var setBorderMargin = new ThicknessAnimation
             {
                 To = new Thickness(15, 15, 15, 15),
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseOut }
             };
 
             var moveGrid = new ThicknessAnimation
             {
                 To = new Thickness(0, -500, 0, 0),
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                BeginTime = new TimeSpan(0, 0, 0, 0, 200),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut }
             };
 
             borderStoryboard.Children.Add(setBorderMargin);
@@ -51,9 +50,9 @@ namespace Flarial.Launcher.Animations
                 var borderMarginAnimation = new ThicknessAnimation
                 {
                     To = new Thickness(0, 0, 0, 0),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                    BeginTime = new TimeSpan(0, 0, 0, 0, 250),
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+                    BeginTime = new TimeSpan(0, 0, 0, 0, 350),
+                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                    EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseOut }
                 };
 
                 var borderStoryboard = new Storyboard();
@@ -67,8 +66,8 @@ namespace Flarial.Launcher.Animations
             var gridMarginAnimation = new ThicknessAnimation
             {
                 To = new Thickness(0, 0, 0, 0),
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut }
             };
             var gridStoryboard = new Storyboard();
 
@@ -87,8 +86,8 @@ namespace Flarial.Launcher.Animations
             {
                 To = 0.9,
                 From = 1.0,
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseOut }
             };
 
             var zoomOutYDoubleAnimation = zoomOutXDoubleAnimation.Clone();
@@ -106,9 +105,8 @@ namespace Flarial.Launcher.Animations
             var moveThicknessAnimation = new ThicknessAnimation
             {
                 To = new Thickness(0, position, 0, 0),
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
-                BeginTime = new TimeSpan(0, 0, 0, 0, 250)
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut }
             };
 
             moveStoryBoard.Children.Add(moveThicknessAnimation);
@@ -121,9 +119,9 @@ namespace Flarial.Launcher.Animations
             {
                 To = 1.0,
                 From = 0.9,
-                Duration = new Duration(TimeSpan.FromSeconds(0.2)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn },
-                BeginTime = new TimeSpan(0, 0, 0, 0, 500)
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseOut },
+                BeginTime = new TimeSpan(0, 0, 0, 0, 350)
             };
 
             var zoomInYDoubleAnimation = zoomInXDoubleAnimation.Clone();

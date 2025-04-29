@@ -1,6 +1,8 @@
-﻿using Bedrockix.Minecraft;
-using Flarial.Launcher.Functions;
+﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Managers;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,85 +15,153 @@ namespace Flarial.Launcher.Pages;
 /// </summary>
 public partial class SettingsGeneralPage : Page
 {
-    public static ToggleButton saveButton;
+    public static ToggleButton SaveConfigButton;
 
     public SettingsGeneralPage()
     {
         InitializeComponent();
-        saveButton = SaveButton;
+        SaveConfigButton = SaveButton;
 
-        tb1.Checked += (_, _) =>
+        CustomDllToggle.Checked += (_, _) =>
         {
-            if ((bool)tb2.IsChecked)
+            if ((bool)BetaDllToggle.IsChecked)
             {
-                tb2.IsChecked = false;
-                Config.UseBetaDLL = false;
+                BetaDllToggle.IsChecked = false;
+                Config.BetaDll = false;
             }
         };
 
-        tb2.Checked += (_, _) =>
+        BetaDllToggle.Checked += (_, _) =>
         {
-            if ((bool)tb1.IsChecked)
+            if ((bool)CustomDllToggle.IsChecked)
             {
-                tb1.IsChecked = false;
-                Config.UseCustomDLL = false;
+                CustomDllToggle.IsChecked = false;
+                Config.CustomDll = false;
             }
         };
 
         ((MainWindow)Application.Current.MainWindow).HomePage.IsEnabledChanged += (_, _) =>
         {
-            if (Config.UseCustomDLL && Config.UseBetaDLL)
-                Config.UseCustomDLL = Config.UseBetaDLL = false;
+            if (Config.CustomDll && Config.BetaDll) Config.CustomDll = Config.BetaDll = false;
 
-            tb1.IsChecked = Config.UseCustomDLL;
-            tb2.IsChecked = Config.UseBetaDLL;
-            tb3.IsChecked = Config.AutoLogin;
-            tb4.IsChecked = Config.MCMinimized;
-            HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
-            DLLTextBox.Value = Config.CustomDLLPath;
+            CustomDllToggle.IsChecked = Config.CustomDll;
+            CustomDllPathTextBox.Value = Config.CustomDllPath;
+            BetaDllToggle.IsChecked = Config.BetaDll;
+            AutoLoginToggle.IsChecked = Config.AutoLogin;
+            FixMinecraftMinimizingToggle.IsChecked = Config.FixMinimizing;
+            EnableDiscordRpcToggle.IsChecked = Config.Rpc;
+            ShowWelcomeMessageToggle.IsChecked = Config.WelcomeMessage;
+            ParallaxEffectToggle.IsChecked = Config.BackgroundParallaxEffect;
+            HardwareAccelerationToggle.IsChecked = Config.HardwareAcceleration;
         };
     }
 
-    private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
-    => Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
+    private void OnCustomDllToggleChecked(object sender, RoutedEventArgs e)
+        => Animations.ToggleButtonTransitions.CheckedAnimation(CustomDllInputGrid);
 
-    private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        => Animations.ToggleButtonTransitions.UnCheckedAnimation(DllGrid);
+    private void OnCustomDllToggleUnchecked(object sender, RoutedEventArgs e)
+        => Animations.ToggleButtonTransitions.UnCheckedAnimation(CustomDllInputGrid);
 
-    void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
+    private void OnBetaDllToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.BetaDll = (bool)((ToggleButton)sender).IsChecked;
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnAutoLoginToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.AutoLogin = (bool)((ToggleButton)sender).IsChecked;
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnCustomDllToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.CustomDll = (bool)((ToggleButton)sender).IsChecked;
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnFixMinecraftMinimizingToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.FixMinimizing = (bool)((ToggleButton)sender).IsChecked;
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnEnableDiscordRpcToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.Rpc = (bool)((ToggleButton)sender).IsChecked;
+
+        if (Config.Rpc)
+        {
+            RPCManager.InitializeRPC();
+        }
+        else
+        {
+            RPCManager.StopRPC();
+        }
+
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnShowWelcomeMessageToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.WelcomeMessage = (bool)((ToggleButton)sender).IsChecked;
+        SaveConfigButton.IsChecked = true;
+    }
+
+    private void OnParallaxEffectToggleClicked(object sender, RoutedEventArgs e)
+    {
+        Config.BackgroundParallaxEffect = (bool)((ToggleButton)sender).IsChecked;
+        if (!Config.BackgroundParallaxEffect)
+        {
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow?.CenterParrallaxImage();
+        }
+        SaveConfigButton.IsChecked = true;
+    }
+    
+    private void OnHardwareAccelerationToggleClicked(object sender, RoutedEventArgs e)
     {
         if (Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked) MainWindow.CreateMessageBox("Faster UI, possible graphical issues.");
         else MainWindow.CreateMessageBox("Slower UI, graphical issues possibly resolved.");
-        SaveButton.IsChecked = true;
+        SaveConfigButton.IsChecked = true;
     }
 
-    private void ToggleButton_Click(object sender, RoutedEventArgs e)
+    private void OnOpenLauncherFolderClicked(object sender, RoutedEventArgs e)
     {
-        Config.UseBetaDLL = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
+        string launcherFolderPath = Managers.VersionManagement.launcherPath;
+        if (Directory.Exists(launcherFolderPath))
+        {
+            Process.Start("explorer.exe", launcherFolderPath);
+        }
+        else
+        {
+            MainWindow.CreateMessageBox("Launcher folder not found!");
+        }
     }
 
-    private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
+    private void OnOpenClientFolderClicked(object sender, RoutedEventArgs e)
     {
-        Config.AutoLogin = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
+        string clientFolderPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Packages",
+            "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+            "RoamingState",
+            "Flarial"
+        );
+
+        if (Directory.Exists(clientFolderPath))
+        {
+            Process.Start("explorer.exe", clientFolderPath);
+        }
+        else
+        {
+            MainWindow.CreateMessageBox("Client folder not found!");
+        }
     }
 
-    private void ToggleButton_Click_2(object sender, RoutedEventArgs e)
-    {
-        Config.UseCustomDLL = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
-    }
-
-    private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
-    {
-        Config.MCMinimized = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
-    }
-
-    private async void Button_Click(object sender, RoutedEventArgs e)
+    private async void OnSaveButtonClicked(object sender, RoutedEventArgs e)
     {
         await Task.Run(() => Config.SaveConfig());
-        SaveButton.IsChecked = false;
+        SaveConfigButton.IsChecked = false;
     }
 }

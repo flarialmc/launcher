@@ -8,7 +8,7 @@
         x:Class="Flarial.Launcher.MainWindow"
         mc:Ignorable="d"
         Title="Flarial Launcher" Height="500" Width="800" AllowsTransparency="True"
-        Background="#120e0f" ResizeMode="NoResize" WindowStyle="None">
+        Background="#201A1B" ResizeMode="NoResize" WindowStyle="None" MouseMove="Window_MouseMove">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
@@ -33,13 +33,20 @@
             <Border Name="MainBorder" Background="#201A1B" CornerRadius="25">
                 <Grid>
                     <Grid>
-                        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,75,0,75">
+                        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True" Margin="0,75,0,75">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Image HorizontalAlignment="Center" Stretch="UniformToFill" Grid.RowSpan="3" Source="Assets/v2bg.png"/>
+                            <Image x:Name="BackgroundImage" HorizontalAlignment="Center" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" Source="Assets/v2bg.png">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform x:Name="ZoomTransform" CenterX="0.5" CenterY="0.5" ScaleX="1.05" ScaleY="1.05"/>
+                                        <TranslateTransform x:Name="CursorFollowTransform" X="0" Y="0"/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
                             <Rectangle Margin="-1">
                                 <Rectangle.Fill>
                                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
