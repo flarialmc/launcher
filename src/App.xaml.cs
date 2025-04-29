@@ -35,7 +35,7 @@ public partial class App : Application
         Mutex = new(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value);
         if (!value) Environment.Exit(default);
 
-        Directory.CreateDirectory(VersionManagement.launcherPath);
+        Environment.CurrentDirectory = Directory.CreateDirectory(VersionManagement.launcherPath).FullName;
         Directory.CreateDirectory(BackupManager.backupDirectory);
         Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Versions");
 
