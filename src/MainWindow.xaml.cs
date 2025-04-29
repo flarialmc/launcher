@@ -166,7 +166,6 @@ public partial class MainWindow
         Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
 
         stopwatch.Stop();
-        CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
         IsLaunchEnabled = false;
 
@@ -207,6 +206,8 @@ public partial class MainWindow
     {
         await Task.Run(Config.LoadConfig);
         if (Game.Installed) await Task.Run(() => { var text = SDK.Minecraft.Version; Dispatcher.Invoke(() => VersionLabel.Text = text); });
+
+        CreateMessageBox("Join our discord! https://flarial.xyz/discord");
         if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, UI might be laggy.");
         base.OnInitialized(e);
     }
