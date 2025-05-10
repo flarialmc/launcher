@@ -34,10 +34,10 @@ public static class RPCManager
 
     private static void TimerElapsed(object sender, ElapsedEventArgs e)
     {
-        if (Utils.IsGameOpen())
+        if (SDK.Minecraft.Running)
         {
             var ip = readIp();
-            if (ip != previousContent || Utils.IsGameOpen())
+            if (ip != previousContent)
             {
 
                 var a = GetServerInfo(ip);

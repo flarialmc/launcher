@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Animations;
-using Utils = Flarial.Launcher.Functions.Utils;
 
 namespace Flarial.Launcher.Pages;
 
@@ -27,21 +26,11 @@ public partial class SettingsPage : Page
 
     private void Navigate_Version(object sender, RoutedEventArgs e)
     {
-        if (Utils.IsAdministrator)
-        {
-            SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-            Application.Current.Dispatcher.Invoke(() =>
-             {
-                 MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
-             });
-        }
-        else
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MainWindow.CreateMessageBox("Launcher not running as Administrator. Run as Admin!");
-            });
-        }
+        SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
+        Application.Current.Dispatcher.Invoke(() =>
+         {
+             MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+         });
     }
 
     private void Navigate_Account(object sender, RoutedEventArgs e)
