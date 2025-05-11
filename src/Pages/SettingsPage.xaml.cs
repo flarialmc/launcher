@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Animations;
+using Flarial.Launcher.Functions;
 
 namespace Flarial.Launcher.Pages;
 
@@ -26,6 +27,15 @@ public partial class SettingsPage : Page
 
     private void Navigate_Version(object sender, RoutedEventArgs e)
     {
+        if (SDK.Minecraft.Unpackaged && !Utils.IsAdministrator)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.CreateMessageBox("Run the launcher as Administrator!");
+            });
+            return;
+        }
+
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
         Application.Current.Dispatcher.Invoke(() =>
          {
