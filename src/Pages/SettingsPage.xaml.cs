@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Security.Principal;
+using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Animations;
 using Flarial.Launcher.Functions;
@@ -27,11 +28,20 @@ public partial class SettingsPage : Page
 
     private void Navigate_Version(object sender, RoutedEventArgs e)
     {
+        if (!SDK.Minecraft.Installed)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.CreateMessageBox("Minecraft isn't installed, please it!");
+            });
+            return;
+        }
+
         if (SDK.Minecraft.Unpackaged && !Utils.IsAdministrator)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("Run the launcher as Administrator!");
+                MainWindow.CreateMessageBox("Please restart & run the launcher as an adminstrator to change versions!");
             });
             return;
         }

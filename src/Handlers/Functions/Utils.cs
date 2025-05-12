@@ -1,12 +1,15 @@
-﻿using System.Security.Principal;
+using System.Security.Principal;
 
 namespace Flarial.Launcher.Functions;
 
-public class Utils
+static class Utils
 {
-    static readonly WindowsPrincipal principal = new(WindowsIdentity.GetCurrent());
+    static Utils()
+    {
+        using var identity = WindowsIdentity.GetCurrent();
+        WindowsPrincipal principal = new(identity);
+        IsAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
 
-    public static bool IsGameOpen() => SDK.Minecraft.Installed;
-
-    public static bool IsAdministrator => principal.IsInRole(WindowsBuiltInRole.Administrator);
+    internal static readonly bool IsAdministrator;
 }
