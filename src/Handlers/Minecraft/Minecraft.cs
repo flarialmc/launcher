@@ -95,20 +95,5 @@ public static partial class Minecraft
         return scale * Math.Round(d / scale, digits);
     }
 
-    public static Version GetVersion()
-    {
-
-        if (Package != null)
-        {
-            var v = Package.Id.Version;
-
-            double buildVersion = (double)v.Build;
-            var Ok = (int)buildVersion.RoundToSignificantDigits(2);
-            ;
-            return new Version(v.Major, v.Minor,
-                int.Parse(Ok.ToString().Substring(0, 2)));
-        }
-
-        return new Version(0, 0, 0);
-    }
+    public static Version GetVersion()=> new(SDK.Minecraft.Installed ? SDK.Minecraft.Version : "0.0.0");
 }
