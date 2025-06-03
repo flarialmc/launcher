@@ -4,7 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using Bedrockix.Minecraft;
 using Flarial.Launcher.Managers;
 
 namespace Flarial.Launcher;
@@ -17,6 +19,18 @@ public partial class App : Application
 
     static App()
     {
+
+        if (Environment.GetCommandLineArgs().Length > 1)
+        {
+            string arg = Environment.GetCommandLineArgs()[1];
+            if (arg == "inject")
+            {
+                string arg2 = Environment.GetCommandLineArgs()[2];
+                Loader.Launch(arg2);
+            }
+            Environment.Exit(1);
+        }
+        
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
             var exception = (Exception)args.ExceptionObject;
@@ -44,5 +58,7 @@ public partial class App : Application
 
         if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
         Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
+        
+        
     }
 }
