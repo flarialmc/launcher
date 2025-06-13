@@ -9,6 +9,7 @@ namespace Flarial.Launcher.Pages;
 
 /// <summary>
 /// Interaction logic for NewsPage.xaml
+/// This should never fire since News is broken for some reason, goofy ah ah launcher.
 /// </summary>
 public partial class NewsPage : Page
 {
@@ -17,8 +18,6 @@ public partial class NewsPage : Page
     public NewsPage()
     {
         InitializeComponent();
-
-        // This should never fire since News is broken for some reason, goofy ah ah Launcher.
 
         /*
         Task.Run(() =>
