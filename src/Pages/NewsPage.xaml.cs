@@ -12,12 +12,15 @@ namespace Flarial.Launcher.Pages;
 /// </summary>
 public partial class NewsPage : Page
 {
-    NewsRoot deserializedNews;
+    // readonly NewsRoot deserializedNews;
 
     public NewsPage()
     {
         InitializeComponent();
 
+        // This should never fire since News is broken for some reason, goofy ah ah Launcher.
+
+        /*
         Task.Run(() =>
         {
             string newsUrl = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/news.json";
@@ -49,6 +52,7 @@ public partial class NewsPage : Page
                 }
             });
         });
+        */
     }
 }
 
