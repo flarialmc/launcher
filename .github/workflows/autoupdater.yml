@@ -23,7 +23,7 @@ jobs:
               gh run watch ${{ github.run_id }}
           fi
         env:
-          GITHUB_TOKEN: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: setup git
         run: |
           git config --global user.name "Github Actions"
