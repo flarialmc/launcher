@@ -69,7 +69,7 @@ jobs:
           repository: 'flarialmc/newcdn'
           ref: 'main'
           path: 'cdn'
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
