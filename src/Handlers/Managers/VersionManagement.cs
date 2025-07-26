@@ -37,7 +37,7 @@ public static class VersionManagement
         string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
 
-        WebClient webClient = new WebClient();
+        WebClient webClient = new();
 
         if (File.Exists(path))
         {
@@ -89,7 +89,7 @@ public static class VersionManagement
 
     public static bool IsDependencyInstalled(string packageName)
     {
-        PackageManager packageManager = new PackageManager();
+        PackageManager packageManager = new();
         var installedPackages = packageManager.FindPackagesForUser(string.Empty);
 
         foreach (var package in installedPackages)
