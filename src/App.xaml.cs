@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,7 +25,8 @@ public partial class App : Application
             - Start writing code below this handler to ensure exceptions are handled.
         */
 
-        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        AppDomain.CurrentDomain.UnhandledException +=
+        [SecurityCritical, HandleProcessCorruptedStateExceptions] (sender, args) =>
         {
             var exception = (Exception)args.ExceptionObject;
 
