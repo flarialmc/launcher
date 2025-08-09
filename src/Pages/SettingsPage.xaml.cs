@@ -32,7 +32,7 @@ public partial class SettingsPage : Page
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("Minecraft isn't installed, please it!");
+                MainWindow.CreateMessageBox("Minecraft isn't installed, please install it!");
             });
             return;
         }
