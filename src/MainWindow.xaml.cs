@@ -19,6 +19,8 @@ using System.Runtime.InteropServices;
 using Bedrockix.Windows;
 using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
+using System.Net.Http;
+using System.Threading;
 
 namespace Flarial.Launcher;
 
@@ -31,27 +33,15 @@ public partial class MainWindow
 
     public static int progressPercentage;
 
-    public static bool isDownloadingVersion = false;
-
-    public static long progressBytesReceived;
-
-    public static long progressBytesTotal;
+    public static long progressBytesReceived, progressBytesTotal;
 
     public static string progressType;
 
-    public static bool isPremium;
-
-    public static bool isLoggedIn;
+    public static bool isPremium, isLoggedIn, Reverse, isDownloadingVersion;
 
     public static ImageBrush PFP;
 
-    public static bool Reverse;
-
-    public static TextBlock StatusLabel;
-
-    public static TextBlock versionLabel;
-
-    public static TextBlock Username;
+    public static TextBlock StatusLabel, versionLabel, Username;
 
     private static StackPanel mbGrid;
 
@@ -144,6 +134,8 @@ public partial class MainWindow
         IsLaunchEnabled = false;
 
         StartRefreshTimer();
+
+
     }
 
     private System.Timers.Timer refreshTimer;
@@ -174,7 +166,6 @@ public partial class MainWindow
 
     protected override void OnSourceInitialized(EventArgs e)
     {
-        Config.LoadConfig();
         if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
 
         Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
@@ -182,12 +173,22 @@ public partial class MainWindow
         Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
-        if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, UI might be laggy.");
+        if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
         base.OnSourceInitialized(e);
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
+        _ = Sponsors.GetLiteByteCampaignBanner().ContinueWith(_ =>
+        {
+            if (_.Status is TaskStatus.RanToCompletion && _.Result is not null)
+                Dispatcher.Invoke(() => AdBorder.Background = new ImageBrush()
+                {
+                    ImageSource = _.Result,
+                    Stretch = Stretch.UniformToFill
+                });
+        });
+
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -214,22 +215,8 @@ public partial class MainWindow
     }
 
     private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
-    private void Minimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-
-    private void Close(object sender, RoutedEventArgs e)
-    {
-        if (!isDownloadingVersion)
-        {
-            Trace.Close();
-            Close();
-        }
-        else
-        {
-            CreateMessageBox("Flarial is currently downloading a version. You cannot close.");
-        }
-    }
-
-
+    private void WindowMinimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void WindowClose(object sender, RoutedEventArgs e) => Close();
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
         SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
@@ -239,7 +226,7 @@ public partial class MainWindow
 
     private void SetGreetingLabel()
     {
-        int Time = Int32.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
+        int Time = int.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
         if (Time >= 0 && Time < 12)
             GreetingLabel.Text = "Good Morning!";
@@ -336,12 +323,21 @@ public partial class MainWindow
 
     private void Window_OnClosing(object sender, CancelEventArgs e)
     {
-        Trace.Close();
-        Environment.Exit(default);
+        if (isDownloadingVersion)
+        {
+            e.Cancel = true;
+            CreateMessageBox("The launcher cannot be closed due a version of Minecraft being downloaded.");
+        }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        Trace.Close(); Config.SaveConfig();
+        base.OnClosed(e); Environment.Exit(default);
     }
 
     private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
-    ShellExecute(hwnd: WindowInteropHelper.EnsureHandle(), lpFile: "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch");
+    ShellExecute(hwnd: WindowInteropHelper.EnsureHandle(), lpFile: Sponsors.LiteByteCampaignUri);
 }
 
 public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTraceListener(stream)
@@ -358,7 +354,6 @@ public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTra
         Writer.Flush();
     }
 }
-
 
 public class FileTraceListener : TraceListener
 {

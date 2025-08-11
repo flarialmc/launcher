@@ -60,8 +60,8 @@ public partial class SettingsGeneralPage : Page
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
     {
-        if (Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked) MainWindow.CreateMessageBox("Smoother UI, possible graphical issues.");
-        else MainWindow.CreateMessageBox("Laggier UI, graphical issues possibly resolved.");
+        if (!(Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked))
+            MainWindow.CreateMessageBox("Only disable hardware acceleration if you are having graphical issues in the launcher.");
         SaveButton.IsChecked = true;
     }
 
