@@ -41,7 +41,7 @@ public partial class SettingsPage : Page
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("Please restart & run the launcher as an adminstrator to change versions!");
+                MainWindow.CreateMessageBox("Please restart & run the launcher as an administrator to change versions!");
             });
             return;
         }
