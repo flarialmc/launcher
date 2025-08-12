@@ -14,7 +14,31 @@ public static class Config
 
     public static string CustomDLLPath;
 
-    public static bool UseBetaDLL, MCMinimized, AutoLogin, UseCustomDLL, HardwareAcceleration;
+    public static bool UseBetaDLL, AutoLogin, UseCustomDLL;
+
+    static bool _mcMinimized;
+
+    public static bool MCMinimized
+    {
+        get => _mcMinimized;
+        set
+        {
+            _mcMinimized = value;
+            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = value;
+        }
+    }
+
+    static bool _hardwareAcceleration;
+
+    public static bool HardwareAcceleration
+    {
+        get => _hardwareAcceleration;
+        set
+        {
+            _hardwareAcceleration = value;
+            RenderOptions.ProcessRenderMode = value ? RenderMode.Default : RenderMode.SoftwareOnly;
+        }
+    }
 
     public readonly static string Path = $"{Managers.VersionManagement.launcherPath}\\config.txt";
 
@@ -32,18 +56,15 @@ public static class Config
 
     public static void SaveConfig(bool value = true)
     {
-        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
-        RenderOptions.ProcessRenderMode = HardwareAcceleration ? RenderMode.Default : RenderMode.SoftwareOnly;
-
         using var stream = File.Create(Path);
         Serializer.WriteObject(stream, new ConfigData
         {
             shouldUseCustomDLL = UseCustomDLL,
             custom_dll_path = CustomDLLPath,
             shouldUseBetaDll = UseBetaDLL,
-            mcMinimized = MCMinimized,
+            mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
-            hardwareAcceleration = HardwareAcceleration
+            hardwareAcceleration = _hardwareAcceleration
         });
 
         if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
@@ -61,7 +82,6 @@ public static class Config
         UseCustomDLL = config.shouldUseCustomDLL;
         HardwareAcceleration = config.hardwareAcceleration;
 
-        if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = MCMinimized;
         SaveConfig(false);
     }
 }
