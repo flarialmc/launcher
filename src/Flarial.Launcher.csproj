@@ -34,7 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
-    <PackageReference Include="Flarial.Launcher.SDK" Version="1.7.1" />
+    <PackageReference Include="Flarial.Launcher.SDK" Version="1.7.2" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="MathConverter" Version="2.2.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
