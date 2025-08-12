@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,11 +24,14 @@ public partial class SettingsVersionPage : Page
         sp = VersionItemStackPanel;
         var window = (MainWindow)Application.Current.MainWindow;
 
-        window.HomePage.IsEnabledChanged += (_, _) =>
+        window.HomePage.IsEnabledChanged += async (_, _) =>
         {
-            string[] dir = Directory.GetFiles(VersionManagement.launcherPath + "\\Versions");
+            string[] dir = await Task.Run(() => Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"));
+
             foreach (var name in MainWindow.VersionCatalog.Reverse())
             {
+                await Task.Yield();
+
                 VersionItem versionItem = new();
                 VersionItemStackPanel.Children.Add(versionItem);
                 VersionItemProperties.SetVersion(versionItem, name);
@@ -41,6 +45,7 @@ public partial class SettingsVersionPage : Page
                 {
                     foreach (string file in dir)
                     {
+                        await Task.Yield();
                         if (file.Contains(name))
                         {
                             VersionItemProperties.SetState(versionItem, 2);
