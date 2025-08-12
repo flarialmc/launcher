@@ -214,7 +214,8 @@ public partial class MainWindow
         }
 
         VersionCatalog = await catalogTask;
-        IsLaunchEnabled = HomePage.IsEnabled = true;
+        IsLaunchEnabled = true;
+        HomePage.IsEnabled = true;
     }
 
     public static void CreateMessageBox(string text)
