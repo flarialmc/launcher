@@ -177,19 +177,27 @@ public partial class MainWindow
         base.OnSourceInitialized(e);
     }
 
+    async Task SetCampaignBannerAsync()
+    {
+        try
+        {
+            var imageSource = await Sponsors.GetLiteByteCampaignBanner();
+            AdBorder.Background = new ImageBrush()
+            {
+                ImageSource = imageSource,
+                Stretch = Stretch.UniformToFill
+            };
+        }
+        catch { }
+    }
+
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        _ = Sponsors.GetLiteByteCampaignBanner().ContinueWith(_ =>
-        {
-            if (_.Status is TaskStatus.RanToCompletion && _.Result is not null)
-                Dispatcher.Invoke(() => AdBorder.Background = new ImageBrush()
-                {
-                    ImageSource = _.Result,
-                    Stretch = Stretch.UniformToFill
-                });
-        });
+        var catalogTask = SDK.Catalog.GetAsync();
+        var availableTask = SDK.Launcher.AvailableAsync();
+        await Task.WhenAll(SetCampaignBannerAsync(), availableTask, catalogTask);
 
-        if (await SDK.Launcher.AvailableAsync())
+        if (await availableTask)
         {
             updateTextEnabled = true;
 
@@ -205,7 +213,7 @@ public partial class MainWindow
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
 
-        VersionCatalog = await SDK.Catalog.GetAsync();
+        VersionCatalog = await catalogTask;
         IsLaunchEnabled = HomePage.IsEnabled = true;
     }
 
@@ -242,7 +250,7 @@ public partial class MainWindow
 
         if (!SDK.Minecraft.Installed)
         {
-            CreateMessageBox("Minecraft isn't installed, please install it!");
+            CreateMessageBox("Flarial Client requires Minecraft to be installed, please install it!");
             IsLaunchEnabled = true; return;
         }
 
@@ -255,7 +263,7 @@ public partial class MainWindow
         bool compatible = await VersionCatalog.CompatibleAsync();
         if (!Config.UseCustomDLL && !compatible)
         {
-            CreateMessageBox("Flarial does not support this version of Minecraft.");
+            CreateMessageBox("Flarial Client does not support this version of Minecraft.");
             IsLaunchEnabled = true; return;
         }
 
