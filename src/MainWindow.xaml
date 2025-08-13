@@ -86,7 +86,7 @@
                             <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
                     </StackPanel>
-                    <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
+                    <Grid Visibility="Collapsed" Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
