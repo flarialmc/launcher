@@ -32,7 +32,7 @@ public partial class SettingsPage : Page
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("To change versions, you must have Minecraft installed, please it!");
+                MainWindow.CreateMessageBox("To change versions, you must have Minecraft installed, please install it!");
             });
             return;
         }
@@ -48,14 +48,16 @@ public partial class SettingsPage : Page
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
         Application.Current.Dispatcher.Invoke(() =>
-         {
-             MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
-         });
+        {
+            MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+        });
     }
 
     private void Navigate_Account(object sender, RoutedEventArgs e)
-        => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
-    private void Navigate_Backups(object sender, RoutedEventArgs e)
+    {
+        MainWindow.CreateMessageBox("The ability to link your Discord account has been removed as it is not being actively used.");
+        SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
+    }
 
-        => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
+    private void Navigate_Backups(object sender, RoutedEventArgs e) => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
 }
