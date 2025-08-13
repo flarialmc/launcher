@@ -49,7 +49,7 @@ public partial class SettingsPage : Page
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
         Application.Current.Dispatcher.Invoke(() =>
         {
-            MainWindow.CreateMessageBox("This a version changer not a version switcher or selector.");
+            MainWindow.CreateMessageBox("This is a version changer not a version switcher or selector.");
         });
     }
 
