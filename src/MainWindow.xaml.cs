@@ -182,7 +182,7 @@ public partial class MainWindow
         try
         {
             var imageSource = await Sponsors.GetLiteByteCampaignBanner();
-            AdBorder.Background = new ImageBrush()
+            if (imageSource is not null) AdBorder.Background = new ImageBrush()
             {
                 ImageSource = imageSource,
                 Stretch = Stretch.UniformToFill
@@ -247,63 +247,64 @@ public partial class MainWindow
     {
         IsLaunchEnabled = false;
 
-        if (!SDK.Minecraft.Installed)
+        try
         {
-            CreateMessageBox("Flarial Client requires Minecraft to be installed, please install it!");
-            IsLaunchEnabled = true; return;
-        }
-
-        if (await Task.Run(() => Metadata.Instancing))
-        {
-            CreateMessageBox("Flarial Client doesn't support multi-instancing, please disable it!");
-            IsLaunchEnabled = true; return;
-        }
-
-        bool compatible = await VersionCatalog.CompatibleAsync();
-        if (!Config.UseCustomDLL && !compatible)
-        {
-            CreateMessageBox("Flarial Client does not support this version of Minecraft.");
-            IsLaunchEnabled = true; return;
-        }
-
-
-        if (!Config.UseCustomDLL)
-        {
-            if (compatible)
+            if (!SDK.Minecraft.Installed)
             {
-                await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
-                await SDK.Client.LaunchAsync(Config.UseBetaDLL);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    StatusLabel.Text = "Launched! Enjoy.";
-                    IsLaunchEnabled = true;
-                });
-
+                CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
+                return;
             }
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(Config.CustomDLLPath))
-            {
-                Library value = new(Config.CustomDLLPath);
 
-                if (value.Valid)
+            if (await Task.Run(() => Metadata.Instancing))
+            {
+                CreateMessageBox("Multi-instancing is not supported, please disable it.");
+                return;
+            }
+
+            bool compatible = await VersionCatalog.CompatibleAsync();
+            if (!Config.UseCustomDLL && !compatible)
+            {
+                SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
+                ((SettingsPage)SettingsFrame.Content).VersionsRadioButton.IsChecked = true;
+                return;
+            }
+
+
+            if (!Config.UseCustomDLL)
+            {
+                if (compatible)
                 {
-                    await Task.Run(() => Loader.Launch(value));
+                    await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
+                    await SDK.Client.LaunchAsync(Config.UseBetaDLL);
+
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        StatusLabel.Text = "Launched Custom DLL! Enjoy.";
-                        IsLaunchEnabled = true;
+                        StatusLabel.Text = "Launched! Enjoy.";
                     });
-                }
-                else
-                    CreateMessageBox("The specified Custom DLL is potentially invalid or doesn't exist.");
-            }
-            else CreateMessageBox("Please specify a Custom DLL.");
-        }
 
-        IsLaunchEnabled = true;
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(Config.CustomDLLPath))
+                {
+                    Library value = new(Config.CustomDLLPath);
+
+                    if (value.Valid)
+                    {
+                        await Task.Run(() => Loader.Launch(value));
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            StatusLabel.Text = "Launched Custom DLL! Enjoy.";
+                        });
+                    }
+                    else
+                        CreateMessageBox("The specified Custom DLL is potentially invalid or doesn't exist.");
+                }
+                else CreateMessageBox("Please specify a Custom DLL.");
+            }
+        }
+        finally { IsLaunchEnabled = true; }
     }
 
 

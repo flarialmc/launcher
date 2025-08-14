@@ -26,22 +26,22 @@ public partial class SettingsPage : Page
     private void Navigate_General(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
 
-    private void Navigate_Versions(object sender, RoutedEventArgs e)
+    internal void Navigate_Versions(object sender, RoutedEventArgs e)
     {
         if (!SDK.Minecraft.Installed)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("To change versions, you must have Minecraft installed, please install it!");
+                MainWindow.CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
             });
             return;
         }
 
-        if (!Utils.IsAdministrator)
+        if (SDK.Minecraft.Unpackaged && !Utils.IsAdministrator)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MainWindow.CreateMessageBox("Please restart & run the launcher as an administrator to change versions!");
+                MainWindow.CreateMessageBox("Run the launcher as an administrator to downgrade or update versions.");
             });
             return;
         }
@@ -49,7 +49,7 @@ public partial class SettingsPage : Page
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
         Application.Current.Dispatcher.Invoke(() =>
         {
-            MainWindow.CreateMessageBox("This is a version changer not a version switcher or selector.");
+            MainWindow.CreateMessageBox("Downgrade or update to a supported version.");
         });
     }
 

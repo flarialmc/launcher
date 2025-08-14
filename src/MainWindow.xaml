@@ -164,7 +164,7 @@
                 <Frame Source="Pages/NewsPage.xaml"/>
             </Border>
             <Border Grid.Row="1" Grid.ColumnSpan="2" Width="800" Name="SettingsBorder" Background="#120e0f" CornerRadius="25">
-                <Frame Source="Pages/SettingsPage.xaml"/>
+                <Frame Name="SettingsFrame" Source="Pages/SettingsPage.xaml"/>
             </Border>
         </Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Name="MbGrid"/>
