@@ -26,7 +26,7 @@ public partial class SettingsPage : Page
     private void Navigate_General(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
 
-    private void Navigate_Version(object sender, RoutedEventArgs e)
+    private void Navigate_Versions(object sender, RoutedEventArgs e)
     {
         if (!SDK.Minecraft.Installed)
         {
@@ -53,11 +53,7 @@ public partial class SettingsPage : Page
         });
     }
 
-    private void Navigate_Account(object sender, RoutedEventArgs e)
-    {
-        MainWindow.CreateMessageBox("The ability to link your Discord account has been removed as it is not being actively used.");
-        SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
-    }
+    private void Navigate_Account(object sender, RoutedEventArgs e) => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
 
     private void Navigate_Backups(object sender, RoutedEventArgs e) => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
 }

@@ -193,11 +193,9 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        var catalogTask = SDK.Catalog.GetAsync();
-        var availableTask = SDK.Launcher.AvailableAsync();
-        await Task.WhenAll(SetCampaignBannerAsync(), availableTask, catalogTask);
+        _ = SetCampaignBannerAsync();
 
-        if (await availableTask)
+        if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
 
@@ -213,7 +211,7 @@ public partial class MainWindow
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
 
-        VersionCatalog = await catalogTask;
+        VersionCatalog = await SDK.Catalog.GetAsync();
         IsLaunchEnabled = true;
         HomePage.IsEnabled = true;
     }
