@@ -15,20 +15,14 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
-using System.Runtime.InteropServices;
 using Bedrockix.Windows;
 using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
-using System.Net.Http;
-using System.Threading;
 
 namespace Flarial.Launcher;
 
 public partial class MainWindow
 {
-    [DllImport("Shell32", PreserveSig = true, ExactSpelling = true, CharSet = CharSet.Unicode, EntryPoint = "ShellExecuteW")]
-    static extern nint ShellExecute(nint hwnd = default, string lpOperation = default, string lpFile = default, string lpParameters = default, string lpDirectory = default, int nShowCmd = default);
-
     public int version = 200;
 
     public static int progressPercentage;
@@ -47,7 +41,7 @@ public partial class MainWindow
 
     private static readonly Stopwatch speed = new();
 
-    readonly WindowInteropHelper WindowInteropHelper;
+    internal readonly WindowInteropHelper WindowInteropHelper;
 
     public static SDK.Catalog VersionCatalog;
 
@@ -89,7 +83,7 @@ public partial class MainWindow
 
         LaunchButton.ApplyTemplate();
         _launchButtonTextBlock = (TextBlock)LaunchButton.Template.FindName("LaunchText", LaunchButton);
-        _launchButtonTextBlock.Text = "Preparing...";
+        _launchButtonTextBlock.Text = "Updating...";
 
         WindowInteropHelper = new(this);
 
@@ -218,9 +212,12 @@ public partial class MainWindow
 
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
-
+        
+        _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
-        _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true;
+
+        _launchButtonTextBlock.Text = "Launch";
+         IsLaunchEnabled = true;
     }
 
     public static void CreateMessageBox(string text)
@@ -351,8 +348,16 @@ public partial class MainWindow
         base.OnClosed(e); Environment.Exit(default);
     }
 
-    private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
-    ShellExecute(hwnd: WindowInteropHelper.EnsureHandle(), lpFile: Sponsors.LiteByteCampaignUri);
+    static readonly ProcessStartInfo _startInfo = new()
+    {
+        UseShellExecute = true,
+        FileName = Sponsors.LiteByteCampaignUri
+    };
+
+    private void AdBorder_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        using (Process.Start(_startInfo)) { }
+    }
 }
 
 public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTraceListener(stream)

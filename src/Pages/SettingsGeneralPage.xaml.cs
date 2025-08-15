@@ -1,10 +1,15 @@
-﻿using Bedrockix.Minecraft;
-using Flarial.Launcher.Functions;
+﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.SDK;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using static System.Environment;
 
 namespace Flarial.Launcher.Pages;
 
@@ -15,9 +20,58 @@ public partial class SettingsGeneralPage : Page
 {
     public static ToggleButton saveButton;
 
+    //    readonly TextBlock _launcherFolderButtonTextBlock, _clientFolderButtonTextBlock;
+
+    // readonly Border _launcherFolderButtonBorder, _clientFolderButtonBorder;
+
+    static readonly string _clientPath;
+
+    static readonly ProcessStartInfo _startInfo;
+
+    static SettingsGeneralPage()
+    {
+        var localAppDataPath = GetFolderPath(SpecialFolder.LocalApplicationData);
+        const string packagePath = @"Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\RoamingState\Flarial";
+
+        _clientPath = System.IO.Path.Combine(localAppDataPath, packagePath);
+        _startInfo = new()
+        {
+            UseShellExecute = true,
+            FileName = _clientPath
+        };
+    }
+
     public SettingsGeneralPage()
     {
         InitializeComponent();
+
+        BrushConverter brushConverter = new();
+
+        LauncherFolderButton.ApplyTemplate();
+
+        var launcherFolderButtonTextBlock = (TextBlock)LauncherFolderButton.Template.FindName("LaunchText", LauncherFolderButton);
+        launcherFolderButtonTextBlock.Margin = new();
+        launcherFolderButtonTextBlock.Text = "📁 Launcher";
+
+        var launcherFolderButtonBorder = (Border)LauncherFolderButton.Template.FindName("MainBorder", LauncherFolderButton);
+        launcherFolderButtonBorder.Background = (Brush)brushConverter.ConvertFromString("#3F2A2D");
+
+        var launcherFolderButtonIcon = (System.Windows.Shapes.Path)LauncherFolderButton.Template.FindName("LaunchIcon", LauncherFolderButton);
+        launcherFolderButtonIcon.Data = null;
+
+        ClientFolderButton.ApplyTemplate();
+
+        var clientFolderButtonTextBlock = (TextBlock)ClientFolderButton.Template.FindName("LaunchText", ClientFolderButton);
+        clientFolderButtonTextBlock.Margin = new();
+        clientFolderButtonTextBlock.Text = "📁 Client";
+
+        var clientFolderButtonIcon = (System.Windows.Shapes.Path)ClientFolderButton.Template.FindName("LaunchIcon", ClientFolderButton);
+        clientFolderButtonIcon.Data = null;
+
+        var clientFolderButtonBorder = (Border)ClientFolderButton.Template.FindName("MainBorder", ClientFolderButton);
+        clientFolderButtonBorder.Background = (Brush)brushConverter.ConvertFromString("#3F2A2D");
+
+
         saveButton = SaveButton;
 
         tb1.Checked += (_, _) =>
@@ -37,8 +91,29 @@ public partial class SettingsGeneralPage : Page
                 Config.UseCustomDLL = false;
             }
         };
-        
+
         var window = (MainWindow)Application.Current.MainWindow;
+
+        LauncherFolderButton.Click += (_, _) =>
+        {
+            using (Process.Start(new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                FileName = CurrentDirectory
+            })) { }
+        };
+
+        ClientFolderButton.Click += (_, _) =>
+        {
+            if (!Directory.Exists(_clientPath))
+            {
+                MainWindow.CreateMessageBox("Please launch the client at least once to generate its folder.");
+                return;
+            }
+
+            using (Process.Start(_startInfo)) { }
+        };
+
         window.LaunchButton.IsEnabledChanged += LaunchButtonIsEnabledChanged;
     }
 
