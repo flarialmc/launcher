@@ -66,7 +66,7 @@
                         <Image Source="Assets/icon.png" Height="40" Margin="0" />
                         <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
-                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Black" Opacity="0.4" VerticalAlignment="Bottom" Margin="20,0,0,80">
+                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Black" Opacity="0.4" VerticalAlignment="Bottom" Margin="20,0,0,25">
                         <Border.CornerRadius>
                             <MultiBinding ConverterParameter="Min(x,y)/2" Converter="{StaticResource Math}">
                                 <Binding ElementName="VersionTextBorder" Path="ActualHeight" />
