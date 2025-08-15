@@ -272,7 +272,7 @@ public partial class MainWindow
             if (!Config.UseCustomDLL && !compatible)
             {
                 SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
-                ((SettingsPage)SettingsFrame.Content).VersionsRadioButton.IsChecked = true;
+                ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
                 return;
             }
 

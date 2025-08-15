@@ -24,7 +24,9 @@ public partial class SettingsPage : Page
         => SettingsPageTransition.SettingsLeaveAnimation(b1, MainGrid);
 
     private void Navigate_General(object sender, RoutedEventArgs e)
-        => SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
+    {
+        SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
+    }
 
     internal void Navigate_Versions(object sender, RoutedEventArgs e)
     {
@@ -53,7 +55,13 @@ public partial class SettingsPage : Page
         });
     }
 
-    private void Navigate_Account(object sender, RoutedEventArgs e) => SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
+    private void Navigate_Account(object sender, RoutedEventArgs e)
+    {
+        SettingsPageTransition.SettingsNavigateAnimation(-1000, PageBorder, PageStackPanel);
+    }
 
-    private void Navigate_Backups(object sender, RoutedEventArgs e) => SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
+    private void Navigate_Backups(object sender, RoutedEventArgs e)
+    {
+        SettingsPageTransition.SettingsNavigateAnimation(-1500, PageBorder, PageStackPanel);
+    }
 }

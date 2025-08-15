@@ -80,6 +80,9 @@ namespace Flarial.Launcher.Animations
 
         public static void SettingsNavigateAnimation(double position, Border border, StackPanel stackPanel)
         {
+            border.IsEnabled = false;
+            stackPanel.IsEnabled = false;
+
             // Does a zoom out type effect by making the borer for the pages smaller
             var zoomInOutStoryboard = new Storyboard();
 
@@ -138,6 +141,9 @@ namespace Flarial.Launcher.Animations
             // Starts the storyboards
             moveStoryBoard.Begin(stackPanel);
             zoomInOutStoryboard.Begin();
+
+            border.IsEnabled = true;
+            stackPanel.IsEnabled = true;
         }
     }
 }

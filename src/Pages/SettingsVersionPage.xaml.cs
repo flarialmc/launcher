@@ -65,7 +65,7 @@ public partial class SettingsVersionPage : Page
         window.LaunchButton.IsEnabledChanged -= LaunchButtonIsEnabledChanged;
 
         var settingsPage = (SettingsPage)window.SettingsFrame.Content;
-        settingsPage.VersionsRadioButton.IsEnabled = true;
+        settingsPage.VersionsPageButton.IsEnabled = true;
     }
 
     public SettingsVersionPage()

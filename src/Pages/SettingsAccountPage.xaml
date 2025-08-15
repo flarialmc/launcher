@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Flarial.Launcher.Pages"
       mc:Ignorable="d" 
-      Title="SettingsAccountPage" Height="470" Width="555">
+      Title="SettingsAccountPage" Height="470" Width="555" Visibility="Collapsed">
     <Grid Margin="0">
         <Grid Height="45" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="20">
             <Grid.RowDefinitions>
