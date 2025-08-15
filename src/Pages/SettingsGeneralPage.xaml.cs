@@ -37,19 +37,25 @@ public partial class SettingsGeneralPage : Page
                 Config.UseCustomDLL = false;
             }
         };
+        
+        var window = (MainWindow)Application.Current.MainWindow;
+        window.LaunchButton.IsEnabledChanged += LaunchButtonIsEnabledChanged;
+    }
 
-        ((MainWindow)Application.Current.MainWindow).HomePage.IsEnabledChanged += (_, _) =>
-        {
-            if (Config.UseCustomDLL && Config.UseBetaDLL)
-                Config.UseCustomDLL = Config.UseBetaDLL = false;
+    void LaunchButtonIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
+    {
+        if (Config.UseCustomDLL && Config.UseBetaDLL)
+            Config.UseCustomDLL = Config.UseBetaDLL = false;
 
-            tb1.IsChecked = Config.UseCustomDLL;
-            tb2.IsChecked = Config.UseBetaDLL;
-            tb3.IsChecked = Config.AutoLogin;
-            tb4.IsChecked = Config.MCMinimized;
-            HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
-            DLLTextBox.Value = Config.CustomDLLPath;
-        };
+        tb1.IsChecked = Config.UseCustomDLL;
+        tb2.IsChecked = Config.UseBetaDLL;
+        tb3.IsChecked = Config.AutoLogin;
+        tb4.IsChecked = Config.MCMinimized;
+        HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
+        DLLTextBox.Value = Config.CustomDLLPath;
+
+        var window = (MainWindow)Application.Current.MainWindow;
+        window.LaunchButton.IsEnabledChanged -= LaunchButtonIsEnabledChanged;
     }
 
     private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)

@@ -80,11 +80,11 @@
                         <Button Click="WindowMinimize" Cursor="Hand" Height="20" Width="20" Margin="0,0,15,0" Template="{StaticResource MinimizeButtonTemplate}"/>
                         <Button Click="WindowClose" Name="CloseButton" Cursor="Hand" Height="20" Width="20" Template="{StaticResource CloseButtonTemplate}"/>
                     </StackPanel>
-                    <StackPanel Name="HomePage" IsEnabled="false" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Name="HomePage" IsEnabled="true" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" FontWeight="Medium" HorizontalAlignment="Center" FontSize="28" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Margin="0,0,0,0" Text="Ready to play?" FontWeight="Medium" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-                            <Button Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                            <Button Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
+                        <Button Name="LaunchButton" Margin="0,12.5,0,0" Click="Inject_Click" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}" IsEnabled="{Binding IsLaunchEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                        <Button Name="SettingsButton" Margin="0,5,0,0" Cursor="Hand" Click="ButtonBase_OnClick" Template="{StaticResource SettingsButtonTemplate}"/>
                     </StackPanel>
                     <Grid Visibility="Collapsed" Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
                         <Grid.RowDefinitions>

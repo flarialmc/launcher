@@ -81,9 +81,15 @@ public partial class MainWindow
         DependencyProperty.Register("updateProgress", typeof(int),
             typeof(MainWindow), new PropertyMetadata(0));
 
+    readonly TextBlock _launchButtonTextBlock;
+
     public MainWindow()
     {
         InitializeComponent();
+
+        LaunchButton.ApplyTemplate();
+        _launchButtonTextBlock = (TextBlock)LaunchButton.Template.FindName("LaunchText", LaunchButton);
+        _launchButtonTextBlock.Text = "Preparing...";
 
         WindowInteropHelper = new(this);
 
@@ -172,8 +178,12 @@ public partial class MainWindow
         Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
         Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
+        _ = SetCampaignBannerAsync();
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
-        if (!Config.HardwareAcceleration) CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
+
+        if (!Config.HardwareAcceleration)
+            CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
+
         base.OnSourceInitialized(e);
     }
 
@@ -193,8 +203,6 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        _ = SetCampaignBannerAsync();
-
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -212,8 +220,7 @@ public partial class MainWindow
         }
 
         VersionCatalog = await SDK.Catalog.GetAsync();
-        IsLaunchEnabled = true;
-        HomePage.IsEnabled = true;
+        _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true;
     }
 
     public static void CreateMessageBox(string text)
@@ -245,7 +252,7 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        IsLaunchEnabled = false;
+        _launchButtonTextBlock.Text = "Launching..."; IsLaunchEnabled = false;
 
         try
         {
@@ -304,7 +311,7 @@ public partial class MainWindow
                 else CreateMessageBox("Please specify a Custom DLL.");
             }
         }
-        finally { IsLaunchEnabled = true; }
+        finally { _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true; }
     }
 
 
