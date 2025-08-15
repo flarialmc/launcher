@@ -45,6 +45,8 @@ public partial class SettingsGeneralPage : Page
     {
         InitializeComponent();
 
+        // Start - Overrides some stuff from the Launch Buttom template.
+
         BrushConverter brushConverter = new();
         var brush = (Brush)brushConverter.ConvertFromString("#3F2A2D");
 
@@ -72,6 +74,7 @@ public partial class SettingsGeneralPage : Page
         var clientFolderButtonBorder = (Border)ClientFolderButton.Template.FindName("MainBorder", ClientFolderButton);
         clientFolderButtonBorder.Background = brush;
 
+        // End - Overrides some stuff from the Launch Button template.
 
         saveButton = SaveButton;
 
