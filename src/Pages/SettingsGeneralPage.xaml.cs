@@ -46,6 +46,7 @@ public partial class SettingsGeneralPage : Page
         InitializeComponent();
 
         BrushConverter brushConverter = new();
+        var brush = (Brush)brushConverter.ConvertFromString("#3F2A2D");
 
         LauncherFolderButton.ApplyTemplate();
 
@@ -54,7 +55,7 @@ public partial class SettingsGeneralPage : Page
         launcherFolderButtonTextBlock.Text = "📁 Launcher";
 
         var launcherFolderButtonBorder = (Border)LauncherFolderButton.Template.FindName("MainBorder", LauncherFolderButton);
-        launcherFolderButtonBorder.Background = (Brush)brushConverter.ConvertFromString("#3F2A2D");
+        launcherFolderButtonBorder.Background = brush;
 
         var launcherFolderButtonIcon = (System.Windows.Shapes.Path)LauncherFolderButton.Template.FindName("LaunchIcon", LauncherFolderButton);
         launcherFolderButtonIcon.Data = null;
@@ -69,7 +70,7 @@ public partial class SettingsGeneralPage : Page
         clientFolderButtonIcon.Data = null;
 
         var clientFolderButtonBorder = (Border)ClientFolderButton.Template.FindName("MainBorder", ClientFolderButton);
-        clientFolderButtonBorder.Background = (Brush)brushConverter.ConvertFromString("#3F2A2D");
+        clientFolderButtonBorder.Background = brush;
 
 
         saveButton = SaveButton;
