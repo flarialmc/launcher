@@ -28,6 +28,7 @@ jobs:
         run: |
           git config --global user.name "Github Actions"
           git config --global user.email "actions@github.com"
+          
       - name: update file version
         id: get_new_version
         run: |
@@ -52,10 +53,9 @@ jobs:
     runs-on: windows-latest
     permissions:
       packages: write
-      contents: read
+      contents: write
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -63,6 +63,7 @@ jobs:
         run: echo " ${{env.OUTPUT1}} $OUTPUT1"
         env:
             OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
+            
       - name: Checkout cdn repository
         uses: actions/checkout@v4
         with:
@@ -70,6 +71,7 @@ jobs:
           ref: 'main'
           path: 'cdn'
           token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+          
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
@@ -85,6 +87,7 @@ jobs:
           cat AssemblyInfo.cs
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
+          
       - name: update new version
         if: success()
         run: |
@@ -105,3 +108,22 @@ jobs:
         env:
           OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
         shell: bash
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ needs.bump-version-number.outputs.version_number }}
+          release_name: Release ${{ needs.bump-version-number.outputs.version_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Launcher to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: D:/a/launcher/launcher/src/bin/Release/net481/Flarial.Launcher.exe
+          asset_name: Flarial.Launcher.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
