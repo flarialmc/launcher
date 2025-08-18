@@ -17,7 +17,7 @@ namespace Flarial.Launcher;
 
 public partial class App : Application
 {
-    static readonly Mutex Mutex;
+    static readonly Mutex _mutex;
 
     static App()
     {
@@ -26,20 +26,32 @@ public partial class App : Application
             - Start writing code below this handler to ensure exceptions are handled.
         */
 
-        AppDomain.CurrentDomain.UnhandledException +=
-        [SecurityCritical, HandleProcessCorruptedStateExceptions] (sender, args) =>
+        AppDomain.CurrentDomain.UnhandledException += [SecurityCritical, HandleProcessCorruptedStateExceptions] (sender, args) =>
         {
+            const string format = "Version: {0}\nException: {1}\n\n{2}\n\n{3}";
+            var version = $"{Assembly.GetEntryAssembly().GetName().Version}";
+
             var exception = (Exception)args.ExceptionObject;
+            var trace = $"{exception.StackTrace}".Trim();
 
-            var @this = exception;
-            while (@this.InnerException is not null) @this = @this.InnerException;
+            while (exception.InnerException is not null)
+                exception = exception.InnerException;
 
-            string message = $"Version: {Assembly.GetEntryAssembly().GetName().Version}\nException: {@this.GetType().Name}\n\n{@this.Message}\n\n{exception.StackTrace.Trim()}";
+            var name = exception.GetType().Name;
+            var message = exception.Message;
 
-            Trace.WriteLine(message);
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            var caption = Current?.MainWindow is null ? "Flarial Launcher" : "Error";
+            var text = string.Format(format, version, name, message, trace);
+
+            MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
             Environment.Exit(default);
         };
+
+        _mutex = new(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value);
+        if (!value) Environment.Exit(0);
+
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         var args = Environment.GetCommandLineArgs();
         for (var index = 0; index + 1 < args.Length; index++)
@@ -50,10 +62,6 @@ public partial class App : Application
                     Environment.Exit(default);
                     break;
             }
-
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-        Mutex = new(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value);
-        if (!value) Environment.Exit(default);
 
         Environment.CurrentDirectory = Directory.CreateDirectory(VersionManagement.launcherPath).FullName;
         Directory.CreateDirectory(BackupManager.backupDirectory);
