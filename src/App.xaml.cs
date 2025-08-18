@@ -17,41 +17,47 @@ namespace Flarial.Launcher;
 
 public partial class App : Application
 {
+    // ↓ Do not modify this initialization code. ↓
+
     static readonly Mutex _mutex;
+
+    [SecurityCritical, HandleProcessCorruptedStateExceptions]
+    static void UnhandledException(object sender, UnhandledExceptionEventArgs args)
+    {
+        const string format = "Version: {0}\nException: {1}\n\n{2}\n\n{3}";
+        var version = $"{Assembly.GetEntryAssembly().GetName().Version}";
+
+        var exception = (Exception)args.ExceptionObject;
+        var trace = $"{exception.StackTrace}".Trim();
+
+        while (exception.InnerException is not null)
+            exception = exception.InnerException;
+
+        var name = exception.GetType().Name;
+        var message = exception.Message;
+
+        var caption = Current?.MainWindow is null ? "Flarial Launcher" : "Error";
+        var text = string.Format(format, version, name, message, trace);
+
+        MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
+        Environment.Exit(0);
+    }
+
+    // ↓ Start writing code from here. ↓
 
     static App()
     {
-        /*
-            - Do not shift or alter this handler since it catches, handles & displays errors.
-            - Start writing code below this handler to ensure exceptions are handled.
-        */
+        // ↓ Do not modify this initialization code. ↓
 
-        AppDomain.CurrentDomain.UnhandledException += [SecurityCritical, HandleProcessCorruptedStateExceptions] (sender, args) =>
-        {
-            const string format = "Version: {0}\nException: {1}\n\n{2}\n\n{3}";
-            var version = $"{Assembly.GetEntryAssembly().GetName().Version}";
+        AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            var exception = (Exception)args.ExceptionObject;
-            var trace = $"{exception.StackTrace}".Trim();
-
-            while (exception.InnerException is not null)
-                exception = exception.InnerException;
-
-            var name = exception.GetType().Name;
-            var message = exception.Message;
-
-            var caption = Current?.MainWindow is null ? "Flarial Launcher" : "Error";
-            var text = string.Format(format, version, name, message, trace);
-
-            MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
-            Environment.Exit(default);
-        };
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         _mutex = new(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value);
         if (!value) Environment.Exit(0);
 
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        // ↓ Start writing code from here. ↓
 
         var args = Environment.GetCommandLineArgs();
         for (var index = 0; index + 1 < args.Length; index++)
