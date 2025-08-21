@@ -166,6 +166,8 @@ public partial class MainWindow
 
     protected override void OnSourceInitialized(EventArgs e)
     {
+        base.OnSourceInitialized(e);
+
         if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
 
         Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
@@ -177,8 +179,6 @@ public partial class MainWindow
 
         if (!Config.HardwareAcceleration)
             CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
-
-        base.OnSourceInitialized(e);
     }
 
     async Task SetCampaignBannerAsync()
@@ -212,12 +212,30 @@ public partial class MainWindow
 
             await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
         }
-        
+
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
+        GameEvents.Launched += () => Dispatcher.BeginInvoke(async () =>
+        {
+            if (!Game.Installed) return;
+            if (!IsLaunchEnabled) return;
+            if (!Config.AutoInject) return;
+
+            IsLaunchEnabled = false;
+            _launchButtonTextBlock.Text = "Launching...";
+
+            var result = await Task.Run(() => Game.Launch());
+            if (result is not null) Inject_Click(null, null);
+            else
+            {
+                IsLaunchEnabled = true;
+                _launchButtonTextBlock.Text = "Launch";
+            }
+        });
+
         _launchButtonTextBlock.Text = "Launch";
-         IsLaunchEnabled = true;
+        IsLaunchEnabled = true;
     }
 
     public static void CreateMessageBox(string text)
@@ -249,10 +267,11 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        _launchButtonTextBlock.Text = "Launching..."; IsLaunchEnabled = false;
-
         try
         {
+            IsLaunchEnabled = false;
+            _launchButtonTextBlock.Text = "Launching...";
+
             if (!SDK.Minecraft.Installed)
             {
                 CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");

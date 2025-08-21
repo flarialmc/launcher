@@ -121,6 +121,12 @@ public partial class SettingsGeneralPage : Page
         window.LaunchButton.IsEnabledChanged += LaunchButtonIsEnabledChanged;
     }
 
+    void AutoInject_Click(object sender, EventArgs args)
+    {
+        var button = (ToggleButton)sender;
+        Config.AutoInject = (bool)button.IsChecked;
+    }
+
     void LaunchButtonIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
     {
         if (Config.UseCustomDLL && Config.UseBetaDLL)
@@ -131,6 +137,7 @@ public partial class SettingsGeneralPage : Page
         tb3.IsChecked = Config.AutoLogin;
         tb4.IsChecked = Config.MCMinimized;
         HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
+        AutoInject.IsChecked = Config.AutoInject;
         DLLTextBox.Value = Config.CustomDLLPath;
 
         var window = (MainWindow)Application.Current.MainWindow;

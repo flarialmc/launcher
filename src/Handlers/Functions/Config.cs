@@ -14,7 +14,7 @@ public static class Config
 
     public static string CustomDLLPath;
 
-    public static bool UseBetaDLL, AutoLogin, UseCustomDLL;
+    public static bool UseBetaDLL, AutoLogin, UseCustomDLL, AutoInject;
 
     static bool _mcMinimized;
 
@@ -64,6 +64,7 @@ public static class Config
             shouldUseBetaDll = UseBetaDLL,
             mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
+            autoInject = AutoInject,
             hardwareAcceleration = _hardwareAcceleration
         });
 
@@ -73,12 +74,18 @@ public static class Config
     public static void LoadConfig()
     {
         ConfigData config = new();
-        try { using var stream = File.OpenRead(Path); config = (ConfigData)Serializer.ReadObject(stream); } catch { }
+        try
+        {
+            using var stream = File.OpenRead(Path);
+            config = (ConfigData)Serializer.ReadObject(stream);
+        }
+        catch { }
 
         UseBetaDLL = config.shouldUseBetaDll;
         CustomDLLPath = config.custom_dll_path;
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
+        AutoInject = config.autoInject;
         UseCustomDLL = config.shouldUseCustomDLL;
         HardwareAcceleration = config.hardwareAcceleration;
 
