@@ -6,6 +6,7 @@ public sealed class ConfigData
     public bool shouldUseCustomDLL;
     public bool shouldUseBetaDll;
     public bool autoInject;
+    public bool minimizeToTray;
     public bool mcMinimized = true;
     public bool autoLogin = true;
     public bool hardwareAcceleration = true;

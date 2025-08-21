@@ -127,6 +127,11 @@ public partial class SettingsGeneralPage : Page
         Config.AutoInject = (bool)button.IsChecked;
     }
 
+    void MinimizeToTray_Click(object sender, EventArgs args)
+    {
+        var button = (ToggleButton)sender;
+    }
+
     void LaunchButtonIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
     {
         if (Config.UseCustomDLL && Config.UseBetaDLL)

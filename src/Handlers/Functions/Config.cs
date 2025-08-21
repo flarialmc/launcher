@@ -14,7 +14,7 @@ public static class Config
 
     public static string CustomDLLPath;
 
-    public static bool UseBetaDLL, AutoLogin, UseCustomDLL, AutoInject;
+    public static bool UseBetaDLL, AutoLogin, UseCustomDLL, AutoInject, MinimizeToTray;
 
     static bool _mcMinimized;
 
@@ -64,6 +64,7 @@ public static class Config
             shouldUseBetaDll = UseBetaDLL,
             mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
+            minimizeToTray=  MinimizeToTray,
             autoInject = AutoInject,
             hardwareAcceleration = _hardwareAcceleration
         });
@@ -86,6 +87,7 @@ public static class Config
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         AutoInject = config.autoInject;
+        MinimizeToTray = config.minimizeToTray;
         UseCustomDLL = config.shouldUseCustomDLL;
         HardwareAcceleration = config.hardwareAcceleration;
 
