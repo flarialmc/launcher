@@ -218,9 +218,9 @@ public partial class MainWindow
 
         GameEvents.Launched += () => Dispatcher.BeginInvoke(async () =>
         {
+            if (!Config.AutoInject) return;
             if (!Game.Installed) return;
             if (!IsLaunchEnabled) return;
-            if (!Config.AutoInject) return;
 
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Launching...";
