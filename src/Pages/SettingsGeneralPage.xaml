@@ -26,7 +26,7 @@
             </Grid>
             
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Launcher: Auto Inject" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Visibility="Collapsed" Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Experimental ~ Launcher: Minimize To Tray" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Experimental ~ Launcher: Minimize To Tray" Style="{StaticResource ToggleButton}"/>
 
             <UniformGrid Margin="0,6.25,0,0">
                 <Button Margin="0,0,3.125,0" Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>

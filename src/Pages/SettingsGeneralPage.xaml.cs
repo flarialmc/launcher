@@ -118,7 +118,7 @@ public partial class SettingsGeneralPage : Page
             using (Process.Start(_startInfo)) { }
         };
 
-        window.LaunchButton.IsEnabledChanged += LaunchButtonIsEnabledChanged;
+        window.ContentRendered += Window_ContentRendered;
     }
 
     void AutoInject_Click(object sender, EventArgs args)
@@ -130,9 +130,10 @@ public partial class SettingsGeneralPage : Page
     void MinimizeToTray_Click(object sender, EventArgs args)
     {
         var button = (ToggleButton)sender;
+        Config.MinimizeToTray = (bool)button.IsChecked;
     }
 
-    void LaunchButtonIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
+    void Window_ContentRendered(object sender, EventArgs args)
     {
         if (Config.UseCustomDLL && Config.UseBetaDLL)
             Config.UseCustomDLL = Config.UseBetaDLL = false;
@@ -143,10 +144,11 @@ public partial class SettingsGeneralPage : Page
         tb4.IsChecked = Config.MCMinimized;
         HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
         AutoInject.IsChecked = Config.AutoInject;
+        MinimizeToTray.IsChecked = Config.MinimizeToTray;
         DLLTextBox.Value = Config.CustomDLLPath;
 
         var window = (MainWindow)Application.Current.MainWindow;
-        window.LaunchButton.IsEnabledChanged -= LaunchButtonIsEnabledChanged;
+        window.ContentRendered -= Window_ContentRendered;
     }
 
     private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)

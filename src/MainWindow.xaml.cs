@@ -13,11 +13,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using Bedrockix.Windows;
 using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace Flarial.Launcher;
 
@@ -38,6 +39,8 @@ public partial class MainWindow
     public static TextBlock StatusLabel, versionLabel, Username;
 
     private static StackPanel mbGrid;
+
+    readonly NotifyIcon _notifyIcon = new() { Text = "Flarial Launcher", Visible = false };
 
     private static readonly Stopwatch speed = new();
 
@@ -87,9 +90,10 @@ public partial class MainWindow
 
         WindowInteropHelper = new(this);
 
-        using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("app.ico"))
-            Icon = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+        _notifyIcon.Icon = EmbeddedResources.GetIcon("app.ico");
+        _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
+        Icon = EmbeddedResources.GetImageSource("app.ico");
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         SnapsToDevicePixels = UseLayoutRounding = true;
 
@@ -124,7 +128,7 @@ public partial class MainWindow
         Dispatcher.InvokeAsync(RPCManager.Initialize);
 
         Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
-        Application.Current.MainWindow = this;
+        System.Windows.Application.Current.MainWindow = this;
 
         SetGreetingLabel();
         Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -243,8 +247,24 @@ public partial class MainWindow
         mbGrid.Children.Add(new Styles.MessageBox { Text = text });
     }
 
+    void NotifyIcon_DoubleClick(object sender, EventArgs args)
+    {
+        _notifyIcon.Visible = false;
+        Visibility = Visibility.Visible;
+    }
+
     private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
-    private void WindowMinimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void WindowMinimize(object sender, RoutedEventArgs e)
+    {
+        if (Config.MinimizeToTray)
+        {
+            _notifyIcon.Visible = true;
+            Visibility = Visibility.Hidden;
+        }
+        else WindowState = WindowState.Minimized;
+    }
+
     private void WindowClose(object sender, RoutedEventArgs e) => Close();
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e) =>
@@ -300,7 +320,7 @@ public partial class MainWindow
                     await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
                     await SDK.Client.LaunchAsync(Config.UseBetaDLL);
 
-                    Application.Current.Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(() =>
                     {
                         StatusLabel.Text = "Launched! Enjoy.";
                     });
@@ -316,7 +336,7 @@ public partial class MainWindow
                     if (value.Valid)
                     {
                         await Task.Run(() => Loader.Launch(value));
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Dispatcher.Invoke(() =>
                         {
                             StatusLabel.Text = "Launched Custom DLL! Enjoy.";
                         });
@@ -335,16 +355,15 @@ public partial class MainWindow
     public void DownloadProgressCallback(int value)
     {
 
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            StatusLabel.Text = $"Downloaded {value}% of client";
-        });
+        Dispatcher.Invoke(() =>
+                {
+                    StatusLabel.Text = $"Downloaded {value}% of client";
+                });
     }
 
     public void DownloadProgressCallback2(int value)
     {
-
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.Invoke(() =>
         {
             updateProgress = value;
         });
@@ -363,8 +382,9 @@ public partial class MainWindow
 
     protected override void OnClosed(EventArgs e)
     {
+        base.OnClosed(e); _notifyIcon.Dispose();
         Trace.Close(); Config.SaveConfig();
-        base.OnClosed(e); Environment.Exit(default);
+        Environment.Exit(default);
     }
 
     static readonly ProcessStartInfo _startInfo = new()

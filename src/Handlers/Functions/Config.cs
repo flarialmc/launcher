@@ -64,7 +64,7 @@ public static class Config
             shouldUseBetaDll = UseBetaDLL,
             mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
-            minimizeToTray=  MinimizeToTray,
+            minimizeToTray = MinimizeToTray,
             autoInject = AutoInject,
             hardwareAcceleration = _hardwareAcceleration
         });
