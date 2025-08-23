@@ -289,6 +289,10 @@ public partial class MainWindow
     {
         try
         {
+            var beta = Config.UseBetaDLL;
+            var path = Config.CustomDLLPath;
+            var custom = Config.UseCustomDLL;
+            
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Launching...";
 
@@ -305,7 +309,7 @@ public partial class MainWindow
             }
 
             bool compatible = await VersionCatalog.CompatibleAsync();
-            if (!Config.UseCustomDLL && !compatible)
+            if (!custom && !compatible)
             {
                 SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
                 ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
@@ -313,12 +317,12 @@ public partial class MainWindow
             }
 
 
-            if (!Config.UseCustomDLL)
+            if (!custom)
             {
                 if (compatible)
                 {
-                    await SDK.Client.DownloadAsync(Config.UseBetaDLL, DownloadProgressCallback);
-                    await SDK.Client.LaunchAsync(Config.UseBetaDLL);
+                    await SDK.Client.DownloadAsync(beta, DownloadProgressCallback);
+                    await SDK.Client.LaunchAsync(beta);
 
                     Dispatcher.Invoke(() =>
                     {
@@ -329,9 +333,9 @@ public partial class MainWindow
             }
             else
             {
-                if (!string.IsNullOrEmpty(Config.CustomDLLPath))
+                if (!string.IsNullOrEmpty(path))
                 {
-                    Library value = new(Config.CustomDLLPath);
+                    Library value = new(path);
 
                     if (value.Valid)
                     {
