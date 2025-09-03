@@ -25,7 +25,6 @@ public partial class App : Application
 
     static readonly Mutex _mutex;
 
-    [SecurityCritical, HandleProcessCorruptedStateExceptions]
     static void UnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
         var version = $"{Assembly.GetEntryAssembly().GetName().Version}";
@@ -46,51 +45,39 @@ public partial class App : Application
         Environment.Exit(1);
     }
 
-    // ↓ Start writing code from here. ↓
-
     static App()
     {
-        // ↓ Do not modify this initialization code. ↓
-
         AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         _mutex = new(false, Name, out var value);
-        if (!value) Environment.Exit(0);
+        if (!value) using (_mutex) Environment.Exit(0);
+    }
 
-        // ↓ Start writing code from here. ↓
+    // ↓ Start writing code from here. ↓
 
-
-        /*  for (var index = 0; index + 1 < args.Length; index++)
-              switch (args[index])
-              {
-                  case "--inject":
-                      Loader.Launch(new ArraySegment<string>(args, ++index, args.Length - index));
-                      Environment.Exit(0);
-                      break;
-              }*/
-
-        var args = Environment.GetCommandLineArgs();
-        var length = args.Length;
+    void ApplicationStartup(object sender, StartupEventArgs args)
+    {
+        var arguments = args.Args;
+        var length = arguments.Length;
 
         var hardwareAcceleration = true;
-        var minimizeToTray = false;
 
         for (var index = 0; index < length; index++)
         {
-            var arg = args[index];
-            switch (arg)
+            var argument = arguments[index];
+            switch (argument)
             {
                 case "--inject":
-                    if (index + 1 >= length)
+                    if (!(index + 1 < length))
                         continue;
 
                     var offset = index + 1;
                     var count = length - offset;
 
-                    ArraySegment<string> segment = new(args, offset, count);
+                    ArraySegment<string> segment = new(arguments, offset, count);
                     Loader.Launch(segment);
 
                     Environment.Exit(0);
