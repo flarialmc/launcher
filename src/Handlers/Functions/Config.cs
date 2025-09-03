@@ -70,7 +70,7 @@ public static class Config
         });
     }
 
-    public static void LoadConfig(bool hardwareAcceleration, bool minimizeToTray)
+    public static void LoadConfig(bool hardwareAcceleration)
     {
         ConfigData config = new();
         try
@@ -85,7 +85,7 @@ public static class Config
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         AutoInject = config.autoInject;
-        MinimizeToTray = minimizeToTray || config.minimizeToTray;
+        MinimizeToTray =  config.minimizeToTray;
         UseCustomDLL = config.shouldUseCustomDLL;
         HardwareAcceleration = hardwareAcceleration && config.hardwareAcceleration;
     }

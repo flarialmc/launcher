@@ -99,10 +99,6 @@ public partial class App : Application
                 case "--no-hardware-acceleration":
                     hardwareAcceleration = false;
                     break;
-
-                case "--minimize-to-tray":
-                    minimizeToTray = true;
-                    break;
             }
         }
 
@@ -116,6 +112,6 @@ public partial class App : Application
         if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
         Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
 
-        Config.LoadConfig(hardwareAcceleration, minimizeToTray);
+        Config.LoadConfig(hardwareAcceleration);
     }
 }
