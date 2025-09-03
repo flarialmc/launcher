@@ -54,7 +54,7 @@ public static class Config
         await writer.WriteAsync(content);
     }
 
-    public static void SaveConfig(bool value = true)
+    public static void SaveConfig()
     {
         using var stream = File.Create(Path);
         Serializer.WriteObject(stream, new ConfigData
@@ -68,11 +68,9 @@ public static class Config
             autoInject = AutoInject,
             hardwareAcceleration = _hardwareAcceleration
         });
-
-        if (value) Application.Current.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Config saved!"));
     }
 
-    public static void LoadConfig()
+    public static void LoadConfig(bool hardwareAcceleration, bool minimizeToTray)
     {
         ConfigData config = new();
         try
@@ -87,10 +85,8 @@ public static class Config
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         AutoInject = config.autoInject;
-        MinimizeToTray = config.minimizeToTray;
+        MinimizeToTray = minimizeToTray || config.minimizeToTray;
         UseCustomDLL = config.shouldUseCustomDLL;
-        HardwareAcceleration = config.hardwareAcceleration;
-
-        SaveConfig(false);
+        HardwareAcceleration = hardwareAcceleration && config.hardwareAcceleration;
     }
 }

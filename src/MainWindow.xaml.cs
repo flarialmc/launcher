@@ -220,27 +220,30 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
-        GameEvents.Launched += () => Dispatcher.BeginInvoke(async () =>
-        {
-            if (!Config.AutoInject) return;
-            if (!Game.Installed) return;
-            if (!IsLaunchEnabled) return;
-
-            IsLaunchEnabled = false;
-            _launchButtonTextBlock.Text = "Launching...";
-
-            var result = await Task.Run(() => Game.Launch());
-            if (result is not null) Inject_Click(null, null);
-            else
-            {
-                IsLaunchEnabled = true;
-                _launchButtonTextBlock.Text = "Launch";
-            }
-        });
-
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;
+
+        if (Config.MinimizeToTray) WindowMinimize(null, null);
+        GameEvents.Launched += GameEventsLaunched;
     }
+
+    void GameEventsLaunched() => Dispatcher.BeginInvoke(async () =>
+    {
+        if (!Config.AutoInject) return;
+        if (!Game.Installed) return;
+        if (!IsLaunchEnabled) return;
+
+        IsLaunchEnabled = false;
+        _launchButtonTextBlock.Text = "Launching...";
+
+        var result = await Task.Run(() => Game.Launch());
+        if (result is not null) Inject_Click(null, null);
+        else
+        {
+            IsLaunchEnabled = true;
+            _launchButtonTextBlock.Text = "Launch";
+        }
+    });
 
     public static void CreateMessageBox(string text)
     {
@@ -292,7 +295,7 @@ public partial class MainWindow
             var beta = Config.UseBetaDLL;
             var path = Config.CustomDLLPath;
             var custom = Config.UseCustomDLL;
-            
+
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Launching...";
 
