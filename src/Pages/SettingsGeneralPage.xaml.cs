@@ -136,7 +136,16 @@ public partial class SettingsGeneralPage : Page
         Config.MinimizeToTray = (bool)button.IsChecked;
 
         if (Config.MinimizeToTray)
-            MainWindow.CreateMessageBox("The launcher will now start minimized & minimize to tray.");
+            MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
+    }
+
+    void StartMinimized_Click(object sender, EventArgs args)
+    {
+        var button = (ToggleButton)sender;
+        Config.MinimizeToTray = (bool)button.IsChecked;
+
+        if (Config.MinimizeToTray)
+            MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
     }
 
     void Window_ContentRendered(object sender, EventArgs args)

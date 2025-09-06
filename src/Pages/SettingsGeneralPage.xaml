@@ -21,6 +21,7 @@
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="tb3" Content="Launcher: Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Launcher: Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Launcher: Minimize To Tray" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="StartMinimized_Click" Name="StartMinimized" Content="Launcher: Start Minimized" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_2" Name="tb1" Content="Launcher: Custom DLL" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnUnchecked" Style="{StaticResource ToggleButton}"/>
             <Grid Height="0" Name="DllGrid">
                 <styles:TextBox x:Name="DLLTextBox"/>
