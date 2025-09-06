@@ -2,12 +2,8 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
-using System.Security;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using Bedrockix.Minecraft;
 using Flarial.Launcher.Functions;
@@ -38,10 +34,9 @@ public partial class App : Application
         var name = exception.GetType().Name;
         var message = exception.Message;
 
-        var caption = Current?.MainWindow is null ? "Flarial Launcher" : "Error";
         var text = string.Format(Format, version, name, message, trace);
+        MessageBox.Show(text, "Flarial Launcher", MessageBoxButton.OK, MessageBoxImage.Error);
 
-        MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
         Environment.Exit(1);
     }
 
