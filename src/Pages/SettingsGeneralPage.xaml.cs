@@ -127,7 +127,7 @@ public partial class SettingsGeneralPage : Page
         Config.AutoInject = (bool)button.IsChecked;
 
         if (Config.AutoInject)
-            MainWindow.CreateMessageBox("The launcher will now auto-inject the client when Minecraft is launched.");
+            MainWindow.CreateMessageBox("The launcher will now auto-inject the client whenever Minecraft is launched.");
     }
 
     void MinimizeToTray_Click(object sender, EventArgs args)
