@@ -135,28 +135,43 @@ public partial class SettingsGeneralPage : Page
         var button = (ToggleButton)sender;
         Config.MinimizeToTray = (bool)button.IsChecked;
 
-        if (Config.MinimizeToTray)
-            MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
+        if (!Config.MinimizeToTray)
+        {
+            Config.StartMinimized = false;
+            StartMinimized.IsChecked = false;
+        }
+        else MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
     }
 
     void StartMinimized_Click(object sender, EventArgs args)
     {
         var button = (ToggleButton)sender;
-        Config.MinimizeToTray = (bool)button.IsChecked;
+        Config.StartMinimized = (bool)button.IsChecked;
 
-        if (Config.MinimizeToTray)
-            MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
+        if (Config.StartMinimized)
+        {
+            Config.MinimizeToTray = true;
+            MinimizeToTray.IsChecked = true;
+            MainWindow.CreateMessageBox("The launcher will now start minimized.");
+        }
     }
 
     void Window_ContentRendered(object sender, EventArgs args)
     {
         if (Config.UseCustomDLL && Config.UseBetaDLL)
-            Config.UseCustomDLL = Config.UseBetaDLL = false;
+        {
+            Config.UseCustomDLL = false;
+            Config.UseBetaDLL = false;
+        }
+
+        if (Config.StartMinimized && !Config.MinimizeToTray)
+            Config.StartMinimized = false;
 
         tb1.IsChecked = Config.UseCustomDLL;
         tb2.IsChecked = Config.UseBetaDLL;
         tb3.IsChecked = Config.AutoLogin;
         tb4.IsChecked = Config.MCMinimized;
+        StartMinimized.IsChecked = Config.StartMinimized;
         HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
         AutoInject.IsChecked = Config.AutoInject;
         MinimizeToTray.IsChecked = Config.MinimizeToTray;

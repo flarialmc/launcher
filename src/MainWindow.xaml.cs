@@ -91,7 +91,7 @@ public partial class MainWindow
         WindowInteropHelper = new(this);
 
         _notifyIcon.Icon = EmbeddedResources.GetIcon("app.ico");
-        _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+        _notifyIcon.Click += NotifyIcon_Click;
 
         Icon = EmbeddedResources.GetImageSource("app.ico");
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -226,7 +226,7 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;
 
-        if (Config.MinimizeToTray) WindowMinimize(null, null);
+        if (Config.StartMinimized) WindowMinimize(null, null);
         GameEvents.Launched += GameEventsLaunched;
     }
 
@@ -253,7 +253,7 @@ public partial class MainWindow
         mbGrid.Children.Add(new Styles.MessageBox { Text = text });
     }
 
-    void NotifyIcon_DoubleClick(object sender, EventArgs args)
+    void NotifyIcon_Click(object sender, EventArgs args)
     {
         _notifyIcon.Visible = false;
         Visibility = Visibility.Visible;
