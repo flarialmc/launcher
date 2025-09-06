@@ -20,13 +20,13 @@
             <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Client: Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="tb3" Content="Launcher: Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Launcher: Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Launcher: Minimize To Tray" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="ToggleButton_Click_2" Name="tb1" Content="Launcher: Custom DLL" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnUnchecked" Style="{StaticResource ToggleButton}"/>
             <Grid Height="0" Name="DllGrid">
                 <styles:TextBox x:Name="DLLTextBox"/>
             </Grid>
             
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Launcher: Auto Inject" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Experimental ~ Launcher: Minimize To Tray" Style="{StaticResource ToggleButton}"/>
 
             <UniformGrid Margin="0,6.25,0,0">
                 <Button Margin="0,0,3.125,0" Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>

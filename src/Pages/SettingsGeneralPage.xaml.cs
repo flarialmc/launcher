@@ -125,12 +125,18 @@ public partial class SettingsGeneralPage : Page
     {
         var button = (ToggleButton)sender;
         Config.AutoInject = (bool)button.IsChecked;
+
+        if (Config.AutoInject)
+            MainWindow.CreateMessageBox("The launcher will now auto-inject the client when Minecraft is launched.");
     }
 
     void MinimizeToTray_Click(object sender, EventArgs args)
     {
         var button = (ToggleButton)sender;
         Config.MinimizeToTray = (bool)button.IsChecked;
+
+        if (Config.MinimizeToTray)
+            MainWindow.CreateMessageBox("The launcher will now start minimized & minimize to tray.");
     }
 
     void Window_ContentRendered(object sender, EventArgs args)
