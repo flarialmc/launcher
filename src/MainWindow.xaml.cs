@@ -356,6 +356,9 @@ public partial class MainWindow
                 }
                 else CreateMessageBox("Please specify a Custom DLL.");
             }
+
+            if (Config.MCMinimized)
+                SDK.Minecraft.Debug = true;
         }
         finally { _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true; }
     }
