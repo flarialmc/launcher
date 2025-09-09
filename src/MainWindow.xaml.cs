@@ -184,7 +184,7 @@ public partial class MainWindow
         if (!Config.HardwareAcceleration)
             CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
 
-        if (!Config.UseBetaDLL)
+        if (Config.UseDLLBuild == 0)
             CreateMessageBox("Use Flarial Client's beta for the latest features & updates!");
     }
 
@@ -295,7 +295,7 @@ public partial class MainWindow
     {
         try
         {
-            var beta = Config.UseBetaDLL;
+            var beta = Config.UseDLLBuild != 0; //change this in the future to add nightly dlls 
             var path = Config.CustomDLLPath;
             var custom = Config.UseCustomDLL;
 

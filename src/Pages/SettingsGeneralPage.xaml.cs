@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using static System.Environment;
 
@@ -78,7 +79,7 @@ public partial class SettingsGeneralPage : Page
 
         saveButton = SaveButton;
 
-        tb1.Checked += (_, _) =>
+        /*tb1.Checked += (_, _) =>
         {
             if ((bool)tb2.IsChecked)
             {
@@ -94,7 +95,7 @@ public partial class SettingsGeneralPage : Page
                 tb1.IsChecked = false;
                 Config.UseCustomDLL = false;
             }
-        };
+        };*/
 
         var window = (MainWindow)Application.Current.MainWindow;
 
@@ -158,17 +159,29 @@ public partial class SettingsGeneralPage : Page
 
     void Window_ContentRendered(object sender, EventArgs args)
     {
-        if (Config.UseCustomDLL && Config.UseBetaDLL)
+        /*if (Config.UseCustomDLL && Config.UseDLLBuild != 0)
         {
             Config.UseCustomDLL = false;
-            Config.UseBetaDLL = false;
-        }
+            Config.UseDLLBuild = 0;
+        }*/
 
         if (Config.StartMinimized && !Config.MinimizeToTray)
             Config.StartMinimized = false;
 
+        switch (Config.UseDLLBuild)
+        {
+            case 0:
+                StableRadioButton.IsChecked = true;
+                break;
+            case 1:
+                BetaRadioButton.IsChecked = true;
+                break;
+            case 2:
+                NightlyRadioButton.IsChecked = true;
+                break;
+        }
+        
         tb1.IsChecked = Config.UseCustomDLL;
-        tb2.IsChecked = Config.UseBetaDLL;
         tb3.IsChecked = Config.AutoLogin;
         tb4.IsChecked = Config.MCMinimized;
         StartMinimized.IsChecked = Config.StartMinimized;
@@ -194,12 +207,6 @@ public partial class SettingsGeneralPage : Page
         SaveButton.IsChecked = true;
     }
 
-    private void ToggleButton_Click(object sender, RoutedEventArgs e)
-    {
-        Config.UseBetaDLL = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
-    }
-
     private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
     {
         Config.AutoLogin = (bool)((ToggleButton)sender).IsChecked;
@@ -222,5 +229,20 @@ public partial class SettingsGeneralPage : Page
     {
         await Task.Run(() => Config.SaveConfig());
         SaveButton.IsChecked = false;
+    }
+
+    private void BuildChanged(object sender, RoutedEventArgs e)
+    {
+        int.TryParse((sender as RadioButton)?.Tag.ToString(), out var num);
+        var animation = new ThicknessAnimation
+        {
+            Duration = TimeSpan.FromMilliseconds(250),
+            To = new Thickness(num * 110, 0, 0, 0),
+            EasingFunction = new QuadraticEase{ EasingMode = EasingMode.EaseInOut}
+        };
+
+        BuildSelectedBorder.BeginAnimation(MarginProperty, animation);
+
+        Config.UseDLLBuild = num;
     }
 }

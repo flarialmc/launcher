@@ -2,9 +2,9 @@
 
 public sealed class ConfigData
 {
+    public int dllBuild = 0;
     public string custom_dll_path = null;
     public bool shouldUseCustomDLL = false;
-    public bool shouldUseBetaDll = true;
     public bool autoInject = false;
     public bool minimizeToTray = false;
     public bool startMinimized = false;

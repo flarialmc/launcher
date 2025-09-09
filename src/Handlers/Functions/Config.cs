@@ -12,10 +12,10 @@ public static class Config
 {
     static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
+    public static int UseDLLBuild; // 0 = stable, 1 = beta, 2 = nightly
+    
     public static string CustomDLLPath;
-
-    public static bool UseBetaDLL;
-   
+    
     public static bool AutoLogin;
    
     public static bool UseCustomDLL;
@@ -71,7 +71,7 @@ public static class Config
         {
             shouldUseCustomDLL = UseCustomDLL,
             custom_dll_path = CustomDLLPath,
-            shouldUseBetaDll = UseBetaDLL,
+            dllBuild = UseDLLBuild,
             mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
             minimizeToTray = MinimizeToTray,
@@ -91,7 +91,7 @@ public static class Config
         }
         catch { }
 
-        UseBetaDLL = config.shouldUseBetaDll;
+        UseDLLBuild = config.dllBuild;
         CustomDLLPath = config.custom_dll_path;
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;

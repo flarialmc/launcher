@@ -12,6 +12,7 @@ namespace Flarial.Launcher.Styles
     public partial class MessageBox : UserControl
     {
         public string Text { get; set; }
+        public bool ShowFlarialLogo { get; set; }
 
         public MessageBox()
         {
