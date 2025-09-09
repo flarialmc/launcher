@@ -60,7 +60,14 @@ namespace Flarial.Launcher.Styles
             sb.Begin(this);
 
             await Task.Delay(200);
-            ((StackPanel)this.Parent).Children.Remove(this);
+            try
+            {
+                ((StackPanel)this.Parent).Children.Remove(this);
+            }
+            catch (Exception)
+            {
+                // im dogshit at coding lmao
+            }
         }
     }
 }
