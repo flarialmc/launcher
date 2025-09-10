@@ -2,7 +2,7 @@
 
 public sealed class ConfigData
 {
-    public int dllBuild = 0;
+    public int dllBuild = 1;
     public string custom_dll_path = null;
     public bool shouldUseCustomDLL = false;
     public bool autoInject = false;
