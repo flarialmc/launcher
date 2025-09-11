@@ -10,6 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Flarial.Launcher.Structures;
 using static System.Environment;
 
 namespace Flarial.Launcher.Pages;
@@ -19,6 +20,11 @@ namespace Flarial.Launcher.Pages;
 /// </summary>
 public partial class SettingsGeneralPage : Page
 {
+    // ReSharper disable once MemberCanBePrivate.Global
+    public double DllSelectionItemWidth { get; } = 120;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public double DllSelectionItemMargin { get; } = 10;
+
     public static ToggleButton saveButton;
 
     //    readonly TextBlock _launcherFolderButtonTextBlock, _clientFolderButtonTextBlock;
@@ -46,6 +52,8 @@ public partial class SettingsGeneralPage : Page
     {
         InitializeComponent();
 
+        DataContext = this;
+        
         // Start - Overrides some stuff from the Launch Buttom template.
 
         BrushConverter brushConverter = new();
@@ -168,20 +176,24 @@ public partial class SettingsGeneralPage : Page
         if (Config.StartMinimized && !Config.MinimizeToTray)
             Config.StartMinimized = false;
 
-        switch (Config.UseDLLBuild)
+        switch (Config.DllSelected)
         {
-            case 0:
+            case DllSelection.Stable:
                 StableRadioButton.IsChecked = true;
                 break;
-            case 1:
+            case DllSelection.Beta:
                 BetaRadioButton.IsChecked = true;
                 break;
-            case 2:
+            case DllSelection.Nightly:
                 NightlyRadioButton.IsChecked = true;
                 break;
+            case DllSelection.Custom:
+                CustomRadioButton.IsChecked = true;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
         
-        tb1.IsChecked = Config.UseCustomDLL;
         tb3.IsChecked = Config.AutoLogin;
         tb4.IsChecked = Config.MCMinimized;
         StartMinimized.IsChecked = Config.StartMinimized;
@@ -191,18 +203,13 @@ public partial class SettingsGeneralPage : Page
         DLLTextBox.Value = Config.CustomDLLPath;
 
         var window = (MainWindow)Application.Current.MainWindow;
-        window.ContentRendered -= Window_ContentRendered;
+        if (window != null) window.ContentRendered -= Window_ContentRendered;
     }
-
-    private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
-    => Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
-
-    private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        => Animations.ToggleButtonTransitions.UnCheckedAnimation(DllGrid);
-
+    
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
     {
-        if (!(Config.HardwareAcceleration = (bool)((ToggleButton)sender).IsChecked))
+        var isChecked = ((ToggleButton)sender).IsChecked;
+        if (isChecked != null && !(Config.HardwareAcceleration = (bool)isChecked))
             MainWindow.CreateMessageBox("Only disable hardware acceleration if you are having graphical issues in the launcher.");
         SaveButton.IsChecked = true;
     }
@@ -210,12 +217,6 @@ public partial class SettingsGeneralPage : Page
     private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
     {
         Config.AutoLogin = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
-    }
-
-    private void ToggleButton_Click_2(object sender, RoutedEventArgs e)
-    {
-        Config.UseCustomDLL = (bool)((ToggleButton)sender).IsChecked;
         SaveButton.IsChecked = true;
     }
 
@@ -237,12 +238,17 @@ public partial class SettingsGeneralPage : Page
         var animation = new ThicknessAnimation
         {
             Duration = TimeSpan.FromMilliseconds(250),
-            To = new Thickness(num * 110, 0, 0, 0),
+            To = new Thickness(num * DllSelectionItemWidth + num * DllSelectionItemMargin, 0, 0, 0),
             EasingFunction = new QuadraticEase{ EasingMode = EasingMode.EaseInOut}
         };
 
         BuildSelectedBorder.BeginAnimation(MarginProperty, animation);
 
-        Config.UseDLLBuild = num;
+        if (Enum.TryParse((sender as RadioButton)?.Content.ToString(), out DllSelection dllSelection)) Config.DllSelected = dllSelection;
+
+        if (dllSelection == DllSelection.Custom) Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
     }
+    
+    private void CustomRadioButton_OnUnchecked(object sender, RoutedEventArgs e)
+        => Animations.ToggleButtonTransitions.UnCheckedAnimation(DllGrid);
 }

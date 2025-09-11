@@ -19,64 +19,65 @@
             <Grid HorizontalAlignment="Left">
                 <Label HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Client" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-            </Grid>            
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label IsHitTestVisible="False" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Build" Foreground="White" FontSize="20"/>
-                <Border Grid.Column="1" Width="330" HorizontalAlignment="Right" Background="#363031" Height="35" CornerRadius="12.5" Padding="2.5">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.Resources>
-                            <Style TargetType="RadioButton">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="RadioButton">
-                                            <Border CornerRadius="10" Cursor="Hand">
-                                                <Border.Background>
-                                                    <SolidColorBrush x:Name="hoverbrush" Color="White" Opacity="0.00"/>
-                                                </Border.Background>
-                                                <Label FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="{TemplateBinding Content}" Foreground="White" FontWeight="Medium" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Trigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation To="0.1" Duration="0:0:0.1" Storyboard.TargetName="hoverbrush" Storyboard.TargetProperty="Opacity"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </Trigger.EnterActions>
-                                                    <Trigger.ExitActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation To="0.0" Duration="0:0:0.1" Storyboard.TargetName="hoverbrush" Storyboard.TargetProperty="Opacity"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </Trigger.ExitActions>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Grid.Resources>
-                        <Border Name="BuildSelectedBorder" Grid.ColumnSpan="3" HorizontalAlignment="Left" Background="#FF2438" CornerRadius="10" Width="105">
-                            <Border.Effect>
-                                <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
-                            </Border.Effect>
-                        </Border>
-                        <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Margin="0,0,5,0" Tag="0"/>
-                        <RadioButton Grid.Column="1" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Margin="2.5,0,2.5,0" Tag="1"/>
-                        <RadioButton Grid.Column="2" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Margin="5,0,0,0" Tag="2"/>
-                    </Grid>
-                </Border>
+            </Grid>
+            <Border Width="515" HorizontalAlignment="Right" Background="#363031" Height="35" CornerRadius="12.5" Padding="2.5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{Binding DllSelectionItemWidth}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemMargin}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemWidth}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemMargin}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemWidth}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemMargin}"/>
+                        <ColumnDefinition Width="{Binding DllSelectionItemWidth}"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="RadioButton">
+                                        <Border CornerRadius="10" Cursor="Hand">
+                                            <Border.Background>
+                                                <SolidColorBrush x:Name="hoverbrush" Color="White" Opacity="0.00"/>
+                                            </Border.Background>
+                                            <Label FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="{TemplateBinding Content}" Foreground="White" FontWeight="Medium" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation To="0.1" Duration="0:0:0.1" Storyboard.TargetName="hoverbrush" Storyboard.TargetProperty="Opacity"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation To="0.0" Duration="0:0:0.1" Storyboard.TargetName="hoverbrush" Storyboard.TargetProperty="Opacity"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Resources>
+                    <Border Name="BuildSelectedBorder" Grid.ColumnSpan="7" HorizontalAlignment="Left" Background="#FF2438" CornerRadius="10" Width="{Binding DllSelectionItemWidth}">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
+                        </Border.Effect>
+                    </Border>
+                    <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Tag="0"/>
+                    <RadioButton Grid.Column="2" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
+                    <RadioButton Grid.Column="4" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Tag="2"/>
+                    <RadioButton Grid.Column="6" Name="CustomRadioButton" Checked="BuildChanged" Unchecked="CustomRadioButton_OnUnchecked" Content="Custom" Tag="3"/>
+                </Grid>
+            </Border>
+            <Grid Height="0" Name="DllGrid">
+                <styles:TextBox x:Name="DLLTextBox"/>
             </Grid>
             <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
             <Grid HorizontalAlignment="Left">
@@ -87,10 +88,6 @@
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Minimize To Tray" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="StartMinimized_Click" Name="StartMinimized" Content="Start Minimized" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="ToggleButton_Click_2" Name="tb1" Content="Custom DLL" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnUnchecked" Style="{StaticResource ToggleButton}"/>
-            <Grid Height="0" Name="DllGrid">
-                <styles:TextBox x:Name="DLLTextBox"/>
-            </Grid>
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Auto Inject" Style="{StaticResource ToggleButton}"/>
 
             <UniformGrid Margin="0,6.25,0,0">

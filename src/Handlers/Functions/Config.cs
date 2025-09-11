@@ -12,13 +12,11 @@ public static class Config
 {
     static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
-    public static int UseDLLBuild; // 0 = stable, 1 = beta, 2 = nightly
+    public static DllSelection DllSelected;
     
     public static string CustomDLLPath;
     
     public static bool AutoLogin;
-   
-    public static bool UseCustomDLL;
    
     public static bool AutoInject;
    
@@ -69,9 +67,8 @@ public static class Config
         using var stream = File.Create(Path);
         Serializer.WriteObject(stream, new ConfigData
         {
-            shouldUseCustomDLL = UseCustomDLL,
             custom_dll_path = CustomDLLPath,
-            dllBuild = UseDLLBuild,
+            dllBuild = DllSelected,
             mcMinimized = _mcMinimized,
             autoLogin = AutoLogin,
             minimizeToTray = MinimizeToTray,
@@ -91,14 +88,13 @@ public static class Config
         }
         catch { }
 
-        UseDLLBuild = config.dllBuild;
+        DllSelected = config.dllBuild;
         CustomDLLPath = config.custom_dll_path;
         MCMinimized = config.mcMinimized;
         AutoLogin = config.autoLogin;
         AutoInject = config.autoInject;
         MinimizeToTray = config.minimizeToTray;
         StartMinimized = config.startMinimized;
-        UseCustomDLL = config.shouldUseCustomDLL;
         HardwareAcceleration = hardwareAcceleration && config.hardwareAcceleration;
     }
 }

@@ -19,6 +19,7 @@ using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
 using System.Windows.Forms;
 using System.Threading;
+using Flarial.Launcher.Structures;
 
 namespace Flarial.Launcher;
 
@@ -184,7 +185,7 @@ public partial class MainWindow
         if (!Config.HardwareAcceleration)
             CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
 
-        if (Config.UseDLLBuild == 0)
+        if (Config.DllSelected == DllSelection.Stable)
             CreateMessageBox("Use Flarial Client's beta for the latest features & updates!");
     }
 
@@ -295,9 +296,9 @@ public partial class MainWindow
     {
         try
         {
-            var beta = Config.UseDLLBuild != 0; //change this in the future to add nightly dlls 
+            var beta = Config.DllSelected == DllSelection.Beta || Config.DllSelected == DllSelection.Nightly; //change this in the future to add nightly dlls 
             var path = Config.CustomDLLPath;
-            var custom = Config.UseCustomDLL;
+            var custom = Config.DllSelected == DllSelection.Custom;
 
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Launching...";
