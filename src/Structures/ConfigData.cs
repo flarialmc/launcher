@@ -1,5 +1,8 @@
-﻿namespace Flarial.Launcher.Structures;
+﻿using System;
 
+namespace Flarial.Launcher.Structures;
+
+[Obsolete("Use Flarial.Launcher.Settings instead.")]
 public sealed class ConfigData
 {
     public DllSelection dllBuild = DllSelection.Beta;

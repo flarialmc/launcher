@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,18 +9,19 @@ using Flarial.Launcher.Structures;
 
 namespace Flarial.Launcher.Functions;
 
+[Obsolete("Use Flarial.Launcher.Settings instead.", true)]
 public static class Config
 {
     static readonly DataContractJsonSerializer Serializer = new(typeof(ConfigData), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
     public static DllSelection DllSelected;
-    
+
     public static string CustomDLLPath;
-    
+
     public static bool AutoLogin;
-   
+
     public static bool AutoInject;
-   
+
     public static bool MinimizeToTray;
 
     public static bool StartMinimized;

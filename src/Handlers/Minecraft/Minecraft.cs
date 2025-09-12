@@ -36,8 +36,10 @@ public static partial class Minecraft
         }
 
         // minimize fix
-        if (Config.MCMinimized && isInstalled()) Game.Debug = true;
-        else if (!Config.MCMinimized && isInstalled()) Game.Debug = false;
+        var settings = Settings.Current;
+        var fixMinecraftMinimizing = settings.FixMinecraftMinimizing;
+        if (fixMinecraftMinimizing && isInstalled()) Game.Debug = true;
+        else if (!fixMinecraftMinimizing && isInstalled()) Game.Debug = false;
     }
 
 
@@ -95,5 +97,5 @@ public static partial class Minecraft
         return scale * Math.Round(d / scale, digits);
     }
 
-    public static Version GetVersion()=> new(SDK.Minecraft.Installed ? SDK.Minecraft.Version : "0.0.0");
+    public static Version GetVersion() => new(SDK.Minecraft.Installed ? SDK.Minecraft.Version : "0.0.0");
 }

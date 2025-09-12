@@ -81,6 +81,8 @@ public partial class MainWindow
 
     readonly TextBlock _launchButtonTextBlock;
 
+    readonly Settings _settings = Settings.Current;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -182,10 +184,10 @@ public partial class MainWindow
         _ = SetCampaignBannerAsync();
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
-        if (!Config.HardwareAcceleration)
+        if (!_settings.HardwareAcceleration)
             CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
 
-        if (Config.DllSelected == DllSelection.Stable)
+        if (_settings.DllBuild is Settings.DllSelection.Stable)
             CreateMessageBox("Use Flarial Client's beta for the latest features & updates!");
     }
 
@@ -227,13 +229,13 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;
 
-        if (Config.StartMinimized) WindowMinimize(null, null);
+        if (_settings.StartMinimized) WindowMinimize(null, null);
         GameEvents.Launched += GameEventsLaunched;
     }
 
     void GameEventsLaunched() => Dispatcher.BeginInvoke(async () =>
     {
-        if (!Config.AutoInject) return;
+        if (!_settings.AutoInject) return;
         if (!Game.Installed) return;
         if (!IsLaunchEnabled) return;
 
@@ -264,7 +266,7 @@ public partial class MainWindow
 
     private void WindowMinimize(object sender, RoutedEventArgs e)
     {
-        if (Config.MinimizeToTray)
+        if (_settings.MinimizeToTray)
         {
             _notifyIcon.Visible = true;
             Visibility = Visibility.Hidden;
@@ -296,9 +298,12 @@ public partial class MainWindow
     {
         try
         {
-            var beta = Config.DllSelected == DllSelection.Beta || Config.DllSelected == DllSelection.Nightly; //change this in the future to add nightly dlls 
-            var path = Config.CustomDLLPath;
-            var custom = Config.DllSelected == DllSelection.Custom;
+            var build = _settings.DllBuild;
+            var path = _settings.CustomDllPath;
+            var custom = build is Settings.DllSelection.Custom;
+
+            // change this in the future to add nightly dlls 
+            var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
 
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Launching...";
@@ -358,7 +363,7 @@ public partial class MainWindow
                 else CreateMessageBox("Please specify a Custom DLL.");
             }
 
-            if (Config.MCMinimized)
+            if (_settings.FixMinecraftMinimizing)
                 SDK.Minecraft.Debug = true;
         }
         finally { _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true; }
@@ -383,7 +388,8 @@ public partial class MainWindow
         });
     }
 
-    private async void SaveConfig(object sender, RoutedEventArgs e) => await Task.Run(() => Config.SaveConfig());
+    [Obsolete("The launcher saves settings automatically when closed.")]
+    private async void SaveConfig(object sender, RoutedEventArgs e) => await Task.Run(Settings.Save);
 
     private void Window_OnClosing(object sender, CancelEventArgs e)
     {
@@ -394,11 +400,14 @@ public partial class MainWindow
         }
     }
 
-    protected override void OnClosed(EventArgs e)
+    protected override void OnClosed(EventArgs args)
     {
-        base.OnClosed(e); _notifyIcon.Dispose();
-        Trace.Close(); Config.SaveConfig();
-        Environment.Exit(default);
+        base.OnClosed(args);
+        _notifyIcon.Dispose();
+
+        Trace.Close();
+        Settings.Save();
+        Environment.Exit(0);
     }
 
     static readonly ProcessStartInfo _startInfo = new()

@@ -94,6 +94,7 @@ public partial class App : Application
         if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
         Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
 
-        Config.LoadConfig(hardwareAcceleration);
+        var settings = Settings.Current;
+        if (!hardwareAcceleration) settings.HardwareAcceleration = false;
     }
 }

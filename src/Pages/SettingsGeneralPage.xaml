@@ -96,7 +96,7 @@
             </UniformGrid>
             
         </StackPanel>
-        <ToggleButton Visibility="Hidden" Click="Button_Click" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">
+        <ToggleButton Visibility="Hidden" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">
             <ToggleButton.Template>
                 <ControlTemplate>
                     <Border Name="b" Height="45" Background="#FF2438" CornerRadius="10" RenderTransformOrigin="0.5,0.5">

@@ -53,7 +53,7 @@ public partial class SettingsGeneralPage : Page
         InitializeComponent();
 
         DataContext = this;
-        
+
         // Start - Overrides some stuff from the Launch Buttom template.
 
         BrushConverter brushConverter = new();
@@ -132,21 +132,29 @@ public partial class SettingsGeneralPage : Page
 
     void AutoInject_Click(object sender, EventArgs args)
     {
+        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        Config.AutoInject = (bool)button.IsChecked;
+        if (button.IsChecked is not bool @checked)
+            return;
 
-        if (Config.AutoInject)
+        settings.AutoInject = @checked;
+
+        if (@checked)
             MainWindow.CreateMessageBox("The launcher will now auto-inject the client whenever Minecraft is launched.");
     }
 
     void MinimizeToTray_Click(object sender, EventArgs args)
     {
+        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        Config.MinimizeToTray = (bool)button.IsChecked;
+        if (button.IsChecked is not bool @checked)
+            return;
 
-        if (!Config.MinimizeToTray)
+        settings.MinimizeToTray = @checked;
+
+        if (!@checked)
         {
-            Config.StartMinimized = false;
+            settings.StartMinimized = false;
             StartMinimized.IsChecked = false;
         }
         else MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
@@ -154,12 +162,16 @@ public partial class SettingsGeneralPage : Page
 
     void StartMinimized_Click(object sender, EventArgs args)
     {
+        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        Config.StartMinimized = (bool)button.IsChecked;
+        if (button.IsChecked is not bool @checked)
+            return;
 
-        if (Config.StartMinimized)
+        settings.StartMinimized = @checked;
+
+        if (@checked)
         {
-            Config.MinimizeToTray = true;
+            settings.MinimizeToTray = true;
             MinimizeToTray.IsChecked = true;
             MainWindow.CreateMessageBox("The launcher will now start minimized.");
         }
@@ -173,63 +185,75 @@ public partial class SettingsGeneralPage : Page
             Config.UseDLLBuild = 0;
         }*/
 
-        if (Config.StartMinimized && !Config.MinimizeToTray)
-            Config.StartMinimized = false;
+        var settings = Settings.Current;
+        if (settings.StartMinimized && !settings.MinimizeToTray)
+            settings.StartMinimized = false;
 
-        switch (Config.DllSelected)
+        switch (settings.DllBuild)
         {
-            case DllSelection.Stable:
+            case Settings.DllSelection.Stable:
                 StableRadioButton.IsChecked = true;
                 break;
-            case DllSelection.Beta:
+
+            case Settings.DllSelection.Beta:
                 BetaRadioButton.IsChecked = true;
                 break;
-            case DllSelection.Nightly:
+
+            case Settings.DllSelection.Nightly:
                 NightlyRadioButton.IsChecked = true;
                 break;
-            case DllSelection.Custom:
+
+            case Settings.DllSelection.Custom:
                 CustomRadioButton.IsChecked = true;
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
-        
-        tb3.IsChecked = Config.AutoLogin;
-        tb4.IsChecked = Config.MCMinimized;
-        StartMinimized.IsChecked = Config.StartMinimized;
-        HardwareAcceleration.IsChecked = Config.HardwareAcceleration;
-        AutoInject.IsChecked = Config.AutoInject;
-        MinimizeToTray.IsChecked = Config.MinimizeToTray;
-        DLLTextBox.Value = Config.CustomDLLPath;
+
+        tb3.IsChecked = settings.AutoLogin;
+        tb4.IsChecked = settings.FixMinecraftMinimizing;
+        StartMinimized.IsChecked = settings.StartMinimized;
+        HardwareAcceleration.IsChecked = settings.HardwareAcceleration;
+        AutoInject.IsChecked = settings.AutoInject;
+        MinimizeToTray.IsChecked = settings.MinimizeToTray;
+        DLLTextBox.Value = settings.CustomDllPath;
 
         var window = (MainWindow)Application.Current.MainWindow;
         if (window != null) window.ContentRendered -= Window_ContentRendered;
     }
-    
+
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
     {
-        var isChecked = ((ToggleButton)sender).IsChecked;
-        if (isChecked != null && !(Config.HardwareAcceleration = (bool)isChecked))
+        var settings = Settings.Current;
+        var button = (ToggleButton)sender;
+
+        if (button.IsChecked is not bool @checked)
+            return;
+
+        settings.HardwareAcceleration = @checked;
+
+        if (!@checked)
             MainWindow.CreateMessageBox("Only disable hardware acceleration if you are having graphical issues in the launcher.");
-        SaveButton.IsChecked = true;
     }
 
     private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
     {
-        Config.AutoLogin = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
+        var settings = Settings.Current;
+        var button = (ToggleButton)sender;
+
+        if (button.IsChecked is not bool @checked)
+            return;
+
+        settings.AutoLogin = @checked;
     }
 
     private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
     {
-        Config.MCMinimized = (bool)((ToggleButton)sender).IsChecked;
-        SaveButton.IsChecked = true;
-    }
+        var settings = Settings.Current;
+        var button = (ToggleButton)sender;
 
-    private async void Button_Click(object sender, RoutedEventArgs e)
-    {
-        await Task.Run(() => Config.SaveConfig());
-        SaveButton.IsChecked = false;
+        if (button.IsChecked is not bool @checked)
+            return;
+
+        settings.FixMinecraftMinimizing = @checked;
     }
 
     private void BuildChanged(object sender, RoutedEventArgs e)
@@ -239,16 +263,22 @@ public partial class SettingsGeneralPage : Page
         {
             Duration = TimeSpan.FromMilliseconds(250),
             To = new Thickness(num * DllSelectionItemWidth + num * DllSelectionItemMargin, 0, 0, 0),
-            EasingFunction = new QuadraticEase{ EasingMode = EasingMode.EaseInOut}
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
         };
 
         BuildSelectedBorder.BeginAnimation(MarginProperty, animation);
 
-        if (Enum.TryParse((sender as RadioButton)?.Content.ToString(), out DllSelection dllSelection)) Config.DllSelected = dllSelection;
+        var settings = Settings.Current;
+        var button = (RadioButton)sender;
+        var content = $"{button.Content}";
 
-        if (dllSelection == DllSelection.Custom) Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
+        if (Enum.TryParse<Settings.DllSelection>(content, out var build))
+            settings.DllBuild = build;
+
+        if (build is Settings.DllSelection.Custom)
+            Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
     }
-    
+
     private void CustomRadioButton_OnUnchecked(object sender, RoutedEventArgs e)
         => Animations.ToggleButtonTransitions.UnCheckedAnimation(DllGrid);
 }

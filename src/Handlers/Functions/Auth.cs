@@ -55,14 +55,24 @@ public static class Auth
         return response.Content;
     }
 
+    static async Task<string> ReadAllTextAsync(string path)
+    {
+        using var reader = File.OpenText(path);
+        return await reader.ReadToEndAsync();
+    }
+
+    static async Task WriteAllTextAsync(string path, string content)
+    {
+        using var writer = File.CreateText(path);
+        await writer.WriteAsync(content);
+    }
+
     public static async Task CacheToken(string Token, DateTime Created, DateTime Expiry)
     {
         if (!File.Exists(Path))
-        {
-            await Task.Run(async () => await Config.WriteAllTextAsync(Path, string.Empty));
-        }
+            await WriteAllTextAsync(Path, string.Empty);
 
-        var raw = await Task.Run(async () => await Config.ReadAllTextAsync(Path));
+        var raw = await ReadAllTextAsync(Path);
 
         if (string.IsNullOrEmpty(raw))
         {
@@ -75,7 +85,7 @@ public static class Auth
 
             var tss = JsonConvert.SerializeObject(ts);
 
-            await Task.Run(async () => await Config.WriteAllTextAsync(Path, tss));
+            await Task.Run(async () => await WriteAllTextAsync(Path, tss));
         }
         else
         {
@@ -103,7 +113,7 @@ public static class Auth
 
             var tss = JsonConvert.SerializeObject(ts);
 
-            await Task.Run(async () => await Config.WriteAllTextAsync(Path, tss));
+            await Task.Run(async () => await WriteAllTextAsync(Path, tss));
         }
     }
 

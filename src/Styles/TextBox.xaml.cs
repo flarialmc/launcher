@@ -32,8 +32,9 @@ namespace Flarial.Launcher.Styles
             dialog.Title = "Select Custom DLL";
             if (dialog.ShowDialog() == true)
             {
+                var settings = Settings.Current;
                 textbox.Text = dialog.FileName;
-                Config.CustomDLLPath = dialog.FileName;
+                settings.CustomDllPath = dialog.FileName;
                 SettingsGeneralPage.saveButton.IsChecked = true;
             }
         }
