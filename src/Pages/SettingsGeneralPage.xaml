@@ -90,6 +90,11 @@
             <ToggleButton Click="StartMinimized_Click" Name="StartMinimized" Content="Start Minimized" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Auto Inject" Style="{StaticResource ToggleButton}"/>
 
+            <Grid HorizontalAlignment="Left">
+                <Label HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Folders" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+            </Grid>
+
             <UniformGrid Margin="0,6.25,0,0">
                 <Button Margin="0,0,3.125,0" Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
                 <Button Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
