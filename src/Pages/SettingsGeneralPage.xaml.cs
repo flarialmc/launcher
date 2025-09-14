@@ -138,9 +138,6 @@ public partial class SettingsGeneralPage : Page
             return;
 
         settings.AutoInject = @checked;
-
-        if (@checked)
-            MainWindow.CreateMessageBox("The launcher will now auto-inject the client whenever Minecraft is launched.");
     }
 
     void MinimizeToTray_Click(object sender, EventArgs args)
@@ -157,7 +154,6 @@ public partial class SettingsGeneralPage : Page
             settings.StartMinimized = false;
             StartMinimized.IsChecked = false;
         }
-        else MainWindow.CreateMessageBox("The launcher will now minimize to tray.");
     }
 
     void StartMinimized_Click(object sender, EventArgs args)
@@ -173,7 +169,6 @@ public partial class SettingsGeneralPage : Page
         {
             settings.MinimizeToTray = true;
             MinimizeToTray.IsChecked = true;
-            MainWindow.CreateMessageBox("The launcher will now start minimized.");
         }
     }
 
@@ -229,9 +224,6 @@ public partial class SettingsGeneralPage : Page
             return;
 
         settings.HardwareAcceleration = @checked;
-
-        if (!@checked)
-            MainWindow.CreateMessageBox("Only disable hardware acceleration if you are having graphical issues in the launcher.");
     }
 
     private void ToggleButton_Click_1(object sender, RoutedEventArgs e)

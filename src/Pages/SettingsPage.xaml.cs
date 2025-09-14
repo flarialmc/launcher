@@ -49,10 +49,6 @@ public partial class SettingsPage : Page
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            MainWindow.CreateMessageBox("Downgrade or update to a supported version.");
-        });
     }
 
     private void Navigate_Account(object sender, RoutedEventArgs e)
