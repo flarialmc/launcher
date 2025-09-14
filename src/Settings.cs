@@ -56,7 +56,7 @@ sealed partial class Settings
     internal enum DllSelection { Stable, Beta, Nightly, Custom }
 
     [DataMember]
-    internal DllSelection DllBuild = DllSelection.Beta;
+    internal DllSelection DllBuild = DllSelection.Stable;
 }
 
 sealed partial class Settings

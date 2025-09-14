@@ -186,9 +186,6 @@ public partial class MainWindow
 
         if (!_settings.HardwareAcceleration)
             CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
-
-        if (_settings.DllBuild is Settings.DllSelection.Stable)
-            CreateMessageBox("Use Flarial Client's beta for the latest features & updates!");
     }
 
     async Task SetCampaignBannerAsync()
