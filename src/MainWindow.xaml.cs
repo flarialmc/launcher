@@ -419,6 +419,7 @@ public partial class MainWindow
     }
 }
 
+[Obsolete("Broken & buggy, look for alternatives or deprecate entirely.", true)]
 public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTraceListener(stream)
 {
     public override async void Write(string message)
@@ -434,6 +435,7 @@ public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTra
     }
 }
 
+[Obsolete("Broken & buggy, look for alternatives or deprecate entirely.", true)]
 public class FileTraceListener : TraceListener
 {
     private readonly StreamWriter _writer;

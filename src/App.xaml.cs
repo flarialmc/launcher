@@ -91,8 +91,8 @@ public partial class App : Application
         var info = Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
         string path = @$"{VersionManagement.launcherPath}\cachedToken.txt";
 
-        if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
-        Trace.Listeners.Add(new AutoFlushTextWriterTraceListener(File.Create($@"{info.FullName}\{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt")));
+        if (!File.Exists(path))
+            File.WriteAllText(path, string.Empty);
 
         var settings = Settings.Current;
         if (!hardwareAcceleration) settings.HardwareAcceleration = false;
