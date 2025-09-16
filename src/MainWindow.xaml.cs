@@ -234,6 +234,7 @@ public partial class MainWindow
     {
         if (!_settings.AutoInject) return;
         if (!Game.Installed) return;
+        if (!SDK.Minecraft.GDK) return;
         if (!IsLaunchEnabled) return;
 
         IsLaunchEnabled = false;
@@ -308,6 +309,12 @@ public partial class MainWindow
             if (!SDK.Minecraft.Installed)
             {
                 CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
+                return;
+            }
+
+            if (SDK.Minecraft.GDK)
+            {
+                CreateMessageBox("Flarial Client doesn't support GDK builds of Minecraft currently.");
                 return;
             }
 
