@@ -234,7 +234,7 @@ public partial class MainWindow
     {
         if (!_settings.AutoInject) return;
         if (!Game.Installed) return;
-        if (!SDK.Minecraft.GDK) return;
+        if (SDK.Minecraft.GDK) return;
         if (!IsLaunchEnabled) return;
 
         IsLaunchEnabled = false;
