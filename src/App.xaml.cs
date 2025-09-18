@@ -48,7 +48,12 @@ public partial class App : Application
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         _mutex = new(false, Name, out var value);
-        if (!value) using (_mutex) Environment.Exit(0);
+
+        if (!value)
+        {
+            MainInstance.Activate();
+            using (_mutex) Environment.Exit(0);
+        }
     }
 
     // ↓ Start writing code from here. ↓
@@ -87,8 +92,7 @@ public partial class App : Application
         Environment.CurrentDirectory = Directory.CreateDirectory(VersionManagement.launcherPath).FullName;
         Directory.CreateDirectory(BackupManager.backupDirectory);
         Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Versions");
-
-        var info = Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
+        Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
         string path = @$"{VersionManagement.launcherPath}\cachedToken.txt";
 
         if (!File.Exists(path))

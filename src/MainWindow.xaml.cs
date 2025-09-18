@@ -202,6 +202,15 @@ public partial class MainWindow
         catch { }
     }
 
+    void MainInstanceActivated() => Dispatcher.Invoke(() =>
+    {
+        if (_settings.MinimizeToTray) NotifyIcon_Click(null, null);
+        else WindowState = WindowState.Normal;
+
+        Activate(); Topmost = true;
+        Focus(); Topmost = false;
+    });
+
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
         if (await SDK.Launcher.AvailableAsync())
@@ -226,8 +235,11 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;
 
-        if (_settings.StartMinimized) WindowMinimize(null, null);
+        if (_settings.StartMinimized)
+            WindowMinimize(null, null);
+
         GameEvents.Launched += GameEventsLaunched;
+        MainInstance.Activated += MainInstanceActivated;
     }
 
     void GameEventsLaunched() => Dispatcher.BeginInvoke(async () =>
