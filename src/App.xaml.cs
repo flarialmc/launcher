@@ -48,12 +48,7 @@ public partial class App : Application
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         _mutex = new(false, Name, out var value);
-
-        if (!value)
-        {
-            MainInstance.Activate();
-            using (_mutex) Environment.Exit(0);
-        }
+        if (!value) using (_mutex) Environment.Exit(0);
     }
 
     // ↓ Start writing code from here. ↓

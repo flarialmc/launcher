@@ -86,8 +86,8 @@
             </Grid>
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Minimize To Tray" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="StartMinimized_Click" Name="StartMinimized" Content="Start Minimized" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Visibility="Collapsed" Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Minimize To Tray" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Visibility="Collapsed" Click="StartMinimized_Click" Name="StartMinimized" Content="Start Minimized" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Auto Inject" Style="{StaticResource ToggleButton}"/>
 
             <Grid HorizontalAlignment="Left">

@@ -39,13 +39,7 @@ sealed partial class Settings
     }
 
     [DataMember]
-    internal bool StartMinimized = false;
-
-    [DataMember]
     internal bool AutoInject = false;
-
-    [DataMember]
-    internal bool MinimizeToTray = false;
 
     [DataMember]
     internal string CustomDllPath = null;
@@ -57,6 +51,10 @@ sealed partial class Settings
 
     [DataMember]
     internal DllSelection DllBuild = DllSelection.Stable;
+
+    internal bool StartMinimized = false;
+
+    internal bool MinimizeToTray = false;
 }
 
 sealed partial class Settings
