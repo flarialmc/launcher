@@ -11,6 +11,8 @@ namespace Flarial.Launcher.Styles
     /// </summary>
     public partial class TextBox : UserControl
     {
+        private readonly Settings _settings = Settings.Current;
+        
         public TextBox()
         {
             InitializeComponent();
@@ -30,13 +32,15 @@ namespace Flarial.Launcher.Styles
             dialog.DefaultExt = "dll";
             dialog.Filter = "DLL Files|*.dll;";
             dialog.Title = "Select Custom DLL";
-            if (dialog.ShowDialog() == true)
-            {
-                var settings = Settings.Current;
-                textbox.Text = dialog.FileName;
-                settings.CustomDllPath = dialog.FileName;
-                SettingsGeneralPage.saveButton.IsChecked = true;
-            }
+            if (dialog.ShowDialog() != true) return;
+            textbox.Text = dialog.FileName;
+            _settings.CustomDllPath = dialog.FileName;
+            SettingsGeneralPage.saveButton.IsChecked = true;
+        }
+
+        private void Textbox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            _settings.CustomDllPath = textbox.Text;
         }
     }
 }

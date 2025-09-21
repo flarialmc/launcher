@@ -13,11 +13,54 @@
         <Grid.Clip>
             <RectangleGeometry Rect="0,0,515,30" RadiusX="10" RadiusY="10"/>
         </Grid.Clip>
-        <TextBlock Background="Transparent" Opacity="0.5" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Margin="5,0,37.5,0" VerticalAlignment="Center" x:Name="textbox" FontSize="13" Text="{Binding Path=Text, Mode=TwoWay}">
+        <TextBox TextChanged="Textbox_OnTextChanged" BorderThickness="0" Background="Transparent" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Margin="5,0,37.5,0" VerticalAlignment="Center" x:Name="textbox" FontSize="14">
             <TextBlock.Foreground>
-                <SolidColorBrush Color="White" Opacity="1"/>
+                <SolidColorBrush Color="White" Opacity="0.5" x:Name="TextBrush"/>
             </TextBlock.Foreground>
-        </TextBlock>
+            <TextBox.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.1" To="1" Storyboard.TargetName="TextBrush" Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.1" To="0.5" Storyboard.TargetName="TextBrush" Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="GotKeyboardFocus">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="LostKeyboardFocus">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </TextBox.Triggers>
+        </TextBox>
+        <Grid Background="#FF2438" Height="3" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,1">
+            <Grid.RenderTransform>
+                <ScaleTransform ScaleX="1" ScaleY="0" x:Name="ScaleTransform"/>
+            </Grid.RenderTransform>
+        </Grid>
         <Button Opacity="0.5" Width="35" HorizontalAlignment="Right" Background="Transparent" Cursor="Hand" Click="Button_Click">
             <Button.Template>
                 <ControlTemplate>

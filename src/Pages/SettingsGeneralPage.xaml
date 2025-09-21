@@ -71,8 +71,12 @@
                         </Border.Effect>
                     </Border>
                     <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Tag="0"/>
-                    <RadioButton IsEnabled="false" Grid.Column="2" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
-                    <RadioButton IsEnabled="false" Grid.Column="4" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Tag="2"/>
+                    <Grid Grid.Column="2" Opacity="0.75" Cursor="No">
+                        <RadioButton IsEnabled="false" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
+                    </Grid>
+                    <Grid Grid.Column="4" Opacity="0.75" Cursor="No">
+                        <RadioButton IsEnabled="false" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Tag="2"/>
+                    </Grid>
                     <RadioButton Grid.Column="6" Name="CustomRadioButton" Checked="BuildChanged" Unchecked="CustomRadioButton_OnUnchecked" Content="Custom" Tag="3"/>
                 </Grid>
             </Border>
