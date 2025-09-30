@@ -329,6 +329,7 @@ public partial class MainWindow
             bool compatible = await VersionCatalog.CompatibleAsync();
             if (!custom && !compatible)
             {
+                CreateMessageBox("Version not supported. Please wait or switch to a supported version.");
                 SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
                 ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
                 return;
