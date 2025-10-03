@@ -71,10 +71,9 @@
                         </Border.Effect>
                     </Border>
                     <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Tag="0"/>
-                    <Grid Grid.Column="2" Opacity="0.75" Cursor="No">
-                        <RadioButton IsEnabled="true" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
-                    </Grid>
+                    <RadioButton Grid.Column="2" IsEnabled="true" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
                     <Grid Grid.Column="4" Opacity="0.75" Cursor="No">
+                        <!--Remove parent grid when enabling this radiobutton-->
                         <RadioButton IsEnabled="false" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Tag="2"/>
                     </Grid>
                     <RadioButton Grid.Column="6" Name="CustomRadioButton" Checked="BuildChanged" Unchecked="CustomRadioButton_OnUnchecked" Content="Custom" Tag="3"/>

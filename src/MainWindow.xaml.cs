@@ -327,7 +327,7 @@ public partial class MainWindow
             }
 
             bool compatible = await VersionCatalog.CompatibleAsync();
-            if (!custom && !compatible)
+            if (!custom && !compatible && !beta)
             {
                 CreateMessageBox("Version not supported. Please wait or switch to a supported version.");
                 SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
