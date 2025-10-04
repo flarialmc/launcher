@@ -27,6 +27,8 @@ public partial class SettingsGeneralPage : Page
 
     public static ToggleButton saveButton;
 
+    readonly Settings _settings = Settings.Current;
+
     //    readonly TextBlock _launcherFolderButtonTextBlock, _clientFolderButtonTextBlock;
 
     // readonly Border _launcherFolderButtonBorder, _clientFolderButtonBorder;
@@ -132,70 +134,59 @@ public partial class SettingsGeneralPage : Page
 
     void AutoInject_Click(object sender, EventArgs args)
     {
-        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        if (button.IsChecked is not bool @checked)
-            return;
 
-        settings.AutoInject = @checked;
+        if (button.IsChecked is not bool @checked) return;
+        _settings.AutoInject = @checked;
     }
 
     void MinimizeToTray_Click(object sender, EventArgs args)
     {
-        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        if (button.IsChecked is not bool @checked)
-            return;
 
-        settings.MinimizeToTray = @checked;
+        if (button.IsChecked is not bool @checked) return;
+        _settings.MinimizeToTray = @checked;
 
         if (!@checked)
         {
-            settings.StartMinimized = false;
+            _settings.StartMinimized = false;
             StartMinimized.IsChecked = false;
         }
     }
 
     void StartMinimized_Click(object sender, EventArgs args)
     {
-        var settings = Settings.Current;
         var button = (ToggleButton)sender;
-        if (button.IsChecked is not bool @checked)
-            return;
 
-        settings.StartMinimized = @checked;
+        if (button.IsChecked is not bool @checked) return;
+        _settings.StartMinimized = @checked;
 
         if (@checked)
         {
-            settings.MinimizeToTray = true;
+            _settings.MinimizeToTray = true;
             MinimizeToTray.IsChecked = true;
         }
     }
 
     void Window_ContentRendered(object sender, EventArgs args)
     {
-        /*if (Config.UseCustomDLL && Config.UseDLLBuild != 0)
-        {
-            Config.UseCustomDLL = false;
-            Config.UseDLLBuild = 0;
-        }*/
+        if (_settings.StartMinimized && !_settings.MinimizeToTray)
+            _settings.StartMinimized = false;
 
-        var settings = Settings.Current;
-        if (settings.StartMinimized && !settings.MinimizeToTray)
-            settings.StartMinimized = false;
-
-        switch (settings.DllBuild)
+        switch (_settings.DllBuild)
         {
             case Settings.DllSelection.Stable:
                 StableRadioButton.IsChecked = true;
                 break;
 
             case Settings.DllSelection.Beta:
-                BetaRadioButton.IsChecked = true;
+                if (BetaRadioButton.IsEnabled) BetaRadioButton.IsChecked = true;
+                else StableRadioButton.IsChecked = true;
                 break;
 
             case Settings.DllSelection.Nightly:
-                NightlyRadioButton.IsChecked = true;
+                if (NightlyRadioButton.IsEnabled) NightlyRadioButton.IsChecked = true;
+                else StableRadioButton.IsChecked = true;
                 break;
 
             case Settings.DllSelection.Custom:
@@ -203,13 +194,23 @@ public partial class SettingsGeneralPage : Page
                 break;
         }
 
-        tb3.IsChecked = settings.AutoLogin;
-        tb4.IsChecked = settings.FixMinecraftMinimizing;
-        StartMinimized.IsChecked = settings.StartMinimized;
-        HardwareAcceleration.IsChecked = settings.HardwareAcceleration;
-        AutoInject.IsChecked = settings.AutoInject;
-        MinimizeToTray.IsChecked = settings.MinimizeToTray;
-        DLLTextBox.Value = settings.CustomDllPath;
+        /*  if (!BetaRadioButton.IsEnabled || !NightlyRadioButton.IsEnabled)
+          {
+              _settings.DllBuild = Settings.DllSelection.Stable;
+              StableRadioButton.IsChecked = true;
+              BetaRadioButton.IsChecked = false;
+              NightlyRadioButton.IsChecked = false;
+              CustomRadioButton.IsChecked = false;
+          }
+  */
+
+        tb3.IsChecked = _settings.AutoLogin;
+        tb4.IsChecked = _settings.FixMinecraftMinimizing;
+        StartMinimized.IsChecked = _settings.StartMinimized;
+        HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
+        AutoInject.IsChecked = _settings.AutoInject;
+        MinimizeToTray.IsChecked = _settings.MinimizeToTray;
+        DLLTextBox.Value = _settings.CustomDllPath;
 
         var window = (MainWindow)Application.Current.MainWindow;
         if (window != null) window.ContentRendered -= Window_ContentRendered;

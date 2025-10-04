@@ -295,91 +295,80 @@ public partial class MainWindow
     }
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
-{
-    try
     {
-        var build = _settings.DllBuild;
-        var path = _settings.CustomDllPath;
-        var custom = build is Settings.DllSelection.Custom;
-
-        // change this in the future to add nightly dlls 
-        var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
-
-        IsLaunchEnabled = false;
-        _launchButtonTextBlock.Text = "Launching...";
-
-        if (!SDK.Minecraft.Installed)
+        try
         {
-            CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
-            return;
-        }
+            var build = _settings.DllBuild;
+            var path = _settings.CustomDllPath;
+            var custom = build is Settings.DllSelection.Custom;
+            var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
 
-        if (SDK.Minecraft.GDK)
-        {
-            CreateMessageBox("Flarial Client doesn't support GDK builds of Minecraft currently.");
-            return;
-        }
+            IsLaunchEnabled = false;
+            _launchButtonTextBlock.Text = "Launching...";
 
-        if (await Task.Run(() => Metadata.Instancing))
-        {
-            CreateMessageBox("Multi-instancing is not supported, please disable it.");
-            return;
-        }
-
-        bool compatible = await VersionCatalog.CompatibleAsync();
-        if (!custom && !compatible && !beta)
-        {
-            CreateMessageBox("Version not supported. Please wait or switch to a supported version.");
-            SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
-            ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
-            return;
-        }
-
-        if (!custom)
-        {
-            // Allow launch if compatible OR if beta
-            if (compatible || beta)
+            if (!SDK.Minecraft.Installed)
             {
-                await SDK.Client.DownloadAsync(beta, DownloadProgressCallback);
-                await SDK.Client.LaunchAsync(beta);
-
-                Dispatcher.Invoke(() =>
-                {
-                    StatusLabel.Text = beta ? "Launched Beta DLL! Enjoy." : "Launched! Enjoy.";
-                });
+                CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
+                return;
             }
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                Library value = new(path);
 
-                if (value.Valid)
+            if (SDK.Minecraft.GDK)
+            {
+                CreateMessageBox("Flarial Client doesn't support GDK builds of Minecraft currently.");
+                return;
+            }
+
+            if (await Task.Run(() => Metadata.Instancing))
+            {
+                CreateMessageBox("Multi-instancing is not supported, please disable it.");
+                return;
+            }
+
+            if (custom)
+            {
+                if (string.IsNullOrWhiteSpace(path))
                 {
-                    await Task.Run(() => Loader.Launch(value));
-                    Dispatcher.Invoke(() =>
-                    {
-                        StatusLabel.Text = "Launched Custom DLL! Enjoy.";
-                    });
+                    CreateMessageBox("Please specify a Custom DLL.");
+                    return;
                 }
-                else
+
+                Library library = new(path);
+
+                if (!library.Valid)
+                {
                     CreateMessageBox("The specified Custom DLL is potentially invalid or doesn't exist.");
+                    return;
+                }
+
+                await Task.Run(() => Loader.Launch(library));
+                StatusLabel.Text = "Launched Custom DLL! Enjoy!";
+
+                return;
             }
-            else CreateMessageBox("Please specify a Custom DLL.");
+
+            bool compatible = await VersionCatalog.CompatibleAsync() || beta;
+
+            if (!compatible)
+            {
+                CreateMessageBox("This version not supported. Please wait or switch to a supported version.");
+
+                SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
+                ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
+
+                return;
+            }
+
+            await SDK.Client.DownloadAsync(beta, DownloadProgressCallback);
+            await SDK.Client.LaunchAsync(beta);
+
+            StatusLabel.Text = $"Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
         }
-
-        if (_settings.FixMinecraftMinimizing)
-            SDK.Minecraft.Debug = true;
+        finally
+        {
+            _launchButtonTextBlock.Text = "Launch";
+            IsLaunchEnabled = true;
+        }
     }
-    finally 
-    { 
-        _launchButtonTextBlock.Text = "Launch"; 
-        IsLaunchEnabled = true; 
-    }
-}
-
-
 
 
     public void DownloadProgressCallback(int value)

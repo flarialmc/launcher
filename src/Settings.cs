@@ -79,7 +79,7 @@ sealed partial class Settings
 
                     var build = _current.DllBuild;
                     if (!Enum.IsDefined(typeof(DllSelection), build))
-                        _current.DllBuild = DllSelection.Beta;
+                        _current.DllBuild = DllSelection.Stable;
                 }
                 catch { _current = new(); }
 
