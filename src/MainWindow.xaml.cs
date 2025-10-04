@@ -18,8 +18,7 @@ using Bedrockix.Windows;
 using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
 using System.Windows.Forms;
-using System.Threading;
-using Flarial.Launcher.Structures;
+using Flarial.Launcher.SDK;
 
 namespace Flarial.Launcher;
 
@@ -181,6 +180,7 @@ public partial class MainWindow
         Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
         Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
+        _ = CheckLicenseAsync();
         _ = SetCampaignBannerAsync();
         CreateMessageBox("Join our discord! https://flarial.xyz/discord");
 
@@ -200,6 +200,22 @@ public partial class MainWindow
             };
         }
         catch { }
+    }
+
+    static readonly SolidColorBrush _darkRed = new(Colors.DarkRed);
+
+    static readonly SolidColorBrush _darkGreen = new(Colors.DarkGreen);
+
+    static readonly SolidColorBrush _gray = new(Colors.Gray);
+
+    async Task CheckLicenseAsync()
+    {
+        try
+        {
+            var @checked = await Licensing.CheckAsync();
+            VersionTextBorder.Background = @checked ? _darkGreen : _darkRed;
+        }
+        catch { VersionTextBorder.Background = _gray; }
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)

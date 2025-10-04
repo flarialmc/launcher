@@ -66,14 +66,14 @@
                         <Image Source="Assets/icon.png" Height="40" Margin="0" />
                         <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
-                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Black" Opacity="0.4" VerticalAlignment="Bottom" Margin="20,0,0,25">
+                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Gray" Opacity="1" VerticalAlignment="Bottom" Margin="20,0,0,25">
                         <Border.CornerRadius>
                             <MultiBinding ConverterParameter="Min(x,y)/2" Converter="{StaticResource Math}">
                                 <Binding ElementName="VersionTextBorder" Path="ActualHeight" />
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="0.0.0" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
                     <Grid Background="Transparent"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
