@@ -20,7 +20,6 @@ using Windows.ApplicationModel;
 using System.Windows.Forms;
 using System.Threading;
 using Flarial.Launcher.Structures;
-using Flarial.Launcher.SDK;
 
 namespace Flarial.Launcher;
 
@@ -305,13 +304,7 @@ public partial class MainWindow
             var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
 
             IsLaunchEnabled = false;
-            _launchButtonTextBlock.Text = "Verifying...";
-
-            if (!await Licensing.CheckAsync())
-            {
-                CreateMessageBox("Please purchase Minecraft from the Microsoft Store or Xbox App.");
-                return;
-            }
+            _launchButtonTextBlock.Text = "Launching...";
 
             if (!SDK.Minecraft.Installed)
             {
@@ -353,9 +346,8 @@ public partial class MainWindow
                 return;
             }
 
-            _launchButtonTextBlock.Text = "Launching...";
             bool compatible = await VersionCatalog.CompatibleAsync() || beta;
-            
+
             if (!compatible)
             {
                 CreateMessageBox("This version not supported. Please wait or switch to a supported version.");
@@ -366,8 +358,8 @@ public partial class MainWindow
                 return;
             }
 
-            await Client.DownloadAsync(beta, DownloadProgressCallback);
-            await Client.LaunchAsync(beta);
+            await SDK.Client.DownloadAsync(beta, DownloadProgressCallback);
+            await SDK.Client.LaunchAsync(beta);
 
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
         }
