@@ -17,7 +17,7 @@
     </Window.Clip>
     <Grid>
         <Grid Name="LolGrid" Background="#80000000" IsEnabled="{Binding updateTextEnabled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Text="{Binding updateProgress, RelativeSource={RelativeSource AncestorType=Window}, StringFormat='Updating {0}%'}" 
+            <TextBlock Text="{Binding updateProgress, RelativeSource={RelativeSource AncestorType=Window}, StringFormat='Updating... {0}%'}" 
                        FontSize="30" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
@@ -66,14 +66,14 @@
                         <Image Source="Assets/icon.png" Height="40" Margin="0" />
                         <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" VerticalAlignment="Center" FontSize="22" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
-                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Gray" Opacity="1" VerticalAlignment="Bottom" Margin="20,0,0,25">
+                    <Border Name="VersionTextBorder" Grid.Column="2" HorizontalAlignment="Left" Background="Transparent" Opacity="1" VerticalAlignment="Bottom" Margin="20,0,0,25">
                         <Border.CornerRadius>
                             <MultiBinding ConverterParameter="Min(x,y)/2" Converter="{StaticResource Math}">
                                 <Binding ElementName="VersionTextBorder" Path="ActualHeight" />
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock Name="VersionLabel" Margin="7.5,5,7.5,5" Text="0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock TextAlignment="Left" Name="VersionLabel" Margin="10,5,12,5" Text="🕹️ 0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
                     <Grid Background="Transparent"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
@@ -112,9 +112,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="Launcher" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="🎫" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Name="LauncherVersion" Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-                        <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready to inject" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="🎮 Ready!" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
                     <Border Visibility="Collapsed" Height="40" Background="{fw:AcrylicBrush bggrid}" CornerRadius="10,0,0,10" Margin="0,0,0,90" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                         <Grid>

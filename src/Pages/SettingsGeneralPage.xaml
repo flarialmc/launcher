@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         <StackPanel>
             <Grid HorizontalAlignment="Left">
-                <Label HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Client" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="🎮 Client" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
             </Grid>
             <Border Width="515" HorizontalAlignment="Right" Background="#363031" Height="35" CornerRadius="12.5" Padding="2.5">
@@ -70,13 +70,13 @@
                             <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
                         </Border.Effect>
                     </Border>
-                    <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Tag="0"/>
-                    <RadioButton Grid.Column="2" IsEnabled="true" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
+                    <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="⚪ Stable" Tag="0"/>
+                    <RadioButton Grid.Column="2" IsEnabled="true" Name="BetaRadioButton" Checked="BuildChanged" Content="🚫 Beta" Tag="1"/>
                     <Grid Grid.Column="4" Opacity="0.75" Cursor="No">
                         <!--Remove parent grid when enabling this radiobutton-->
-                        <RadioButton IsEnabled="false" Name="NightlyRadioButton" Checked="BuildChanged" Content="Nightly" Tag="2"/>
+                        <RadioButton IsEnabled="false" Name="NightlyRadioButton" Checked="BuildChanged" Content="⛔ Nightly" Tag="2"/>
                     </Grid>
-                    <RadioButton Grid.Column="6" Name="CustomRadioButton" Checked="BuildChanged" Unchecked="CustomRadioButton_OnUnchecked" Content="Custom" Tag="3"/>
+                    <RadioButton Grid.Column="6" Name="CustomRadioButton" Checked="BuildChanged" Unchecked="CustomRadioButton_OnUnchecked" Content="🛠️ Custom" Tag="3"/>
                 </Grid>
             </Border>
             <Grid Height="0" Name="DllGrid">
@@ -84,7 +84,7 @@
             </Grid>
             <ToggleButton Click="ToggleButton_Click_3" Name="tb4" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
             <Grid HorizontalAlignment="Left">
-                <Label HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Launcher" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="🎫 Launcher" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
             </Grid>
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="tb3" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
@@ -94,7 +94,7 @@
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="Experimental ~ Auto Inject" Style="{StaticResource ToggleButton}"/>
 
             <Grid HorizontalAlignment="Left">
-                <Label HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Folders" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="🗃️ Folders" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
             </Grid>
 

@@ -140,8 +140,6 @@ public partial class MainWindow
         IsLaunchEnabled = false;
 
         StartRefreshTimer();
-
-
     }
 
     private System.Timers.Timer refreshTimer;
@@ -166,7 +164,7 @@ public partial class MainWindow
             await Task.Run(() =>
             {
                 var text = value ? SDK.Minecraft.Version : "0.0.0";
-                Dispatcher.Invoke(() => VersionLabel.Text = text);
+                Dispatcher.Invoke(() => VersionLabel.Text = $"🕹️ {text}");
             });
     }
 
@@ -174,18 +172,15 @@ public partial class MainWindow
     {
         base.OnSourceInitialized(e);
 
-        if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
+        if (Game.Installed) VersionLabel.Text = $"🕹️ {SDK.Minecraft.Version}";
 
         Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
         Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
         Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
 
-        _ = CheckLicenseAsync();
-        _ = SetCampaignBannerAsync();
-        CreateMessageBox("Join our discord! https://flarial.xyz/discord");
-
-        if (!_settings.HardwareAcceleration)
-            CreateMessageBox("Hardware acceleration is disabled, the launcher's UI might be laggy.");
+        Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
+        CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
+        if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled, the launcher's UI might be laggy.");
     }
 
     async Task SetCampaignBannerAsync()
@@ -303,11 +298,11 @@ public partial class MainWindow
         int Time = int.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
         if (Time >= 0 && Time < 12)
-            GreetingLabel.Text = "Good Morning!";
+            GreetingLabel.Text = "🌅 Good Morning!";
         else if (Time >= 12 && Time < 18)
-            GreetingLabel.Text = "Good Afternoon!";
+            GreetingLabel.Text = "🌅 Good Afternoon!";
         else if (Time >= 18 && Time <= 24)
-            GreetingLabel.Text = "Good Evening!";
+            GreetingLabel.Text = "🌄 Good Evening!";
     }
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
@@ -320,23 +315,23 @@ public partial class MainWindow
             var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
 
             IsLaunchEnabled = false;
-            _launchButtonTextBlock.Text = "Launching...";
+            _launchButtonTextBlock.Text = "Verifying...";
 
             if (!SDK.Minecraft.Installed)
             {
-                CreateMessageBox("Please install Minecraft from the Microsoft Store or Xbox App.");
+                CreateMessageBox("⚠️ Please install Minecraft from the Microsoft Store or Xbox App.");
                 return;
             }
 
             if (SDK.Minecraft.GDK)
             {
-                CreateMessageBox("Flarial Client doesn't support GDK builds of Minecraft currently.");
+                CreateMessageBox("⚠️ Flarial Client doesn't support GDK builds of Minecraft currently.");
                 return;
             }
 
             if (await Task.Run(() => Metadata.Instancing))
             {
-                CreateMessageBox("Multi-instancing is not supported, please disable it.");
+                CreateMessageBox("⚠️ Multi-instancing is not supported, please disable it.");
                 return;
             }
 
@@ -344,7 +339,7 @@ public partial class MainWindow
             {
                 if (string.IsNullOrWhiteSpace(path))
                 {
-                    CreateMessageBox("Please specify a Custom DLL.");
+                    CreateMessageBox("⚠️ Please specify a Custom DLL.");
                     return;
                 }
 
@@ -352,12 +347,12 @@ public partial class MainWindow
 
                 if (!library.Valid)
                 {
-                    CreateMessageBox("The specified Custom DLL is potentially invalid or doesn't exist.");
+                    CreateMessageBox("⚠️ The specified Custom DLL is potentially invalid or doesn't exist.");
                     return;
                 }
 
                 await Task.Run(() => Loader.Launch(library));
-                StatusLabel.Text = "Launched Custom DLL! Enjoy!";
+                StatusLabel.Text = "😊 Launched Custom DLL! Enjoy!";
 
                 return;
             }
@@ -366,18 +361,16 @@ public partial class MainWindow
 
             if (!compatible)
             {
-                CreateMessageBox("This version not supported. Please wait or switch to a supported version.");
-
-                SettingsPageTransition.SettingsEnterAnimation(MainBorder, MainGrid);
-                ((SettingsPage)SettingsFrame.Content).VersionsPageButton.IsChecked = true;
-
+                CreateMessageBox("⚠️ This version not supported by the client.");
                 return;
             }
 
-            await SDK.Client.DownloadAsync(beta, DownloadProgressCallback);
-            await SDK.Client.LaunchAsync(beta);
+            await Client.DownloadAsync(beta, DownloadProgressCallback);
 
-            StatusLabel.Text = $"Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
+            _launchButtonTextBlock.Text = "Launching...";
+            await Client.LaunchAsync(beta);
+
+            StatusLabel.Text = $"😊 Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
         }
         finally
         {
@@ -387,14 +380,11 @@ public partial class MainWindow
     }
 
 
-    public void DownloadProgressCallback(int value)
+    public void DownloadProgressCallback(int value) => Dispatcher.Invoke(() =>
     {
-
-        Dispatcher.Invoke(() =>
-                {
-                    StatusLabel.Text = $"Downloaded {value}% of client";
-                });
-    }
+        _launchButtonTextBlock.Text = "Downloading...";
+        statusLabel.Text = $"📢 Downloading... {value}%";
+    });
 
     public void DownloadProgressCallback2(int value)
     {

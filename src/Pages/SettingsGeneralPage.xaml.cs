@@ -122,7 +122,7 @@ public partial class SettingsGeneralPage : Page
         {
             if (!Directory.Exists(_clientPath))
             {
-                MainWindow.CreateMessageBox("Please launch the client at least once to generate its folder.");
+                MainWindow.CreateMessageBox("⚠️ Please launch the client at least once to generate its folder.");
                 return;
             }
 
