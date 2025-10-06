@@ -324,19 +324,19 @@ public partial class MainWindow
 
             if (!SDK.Minecraft.Installed)
             {
-                CreateMessageBox("⚠️ Please install Minecraft from the Microsoft Store or Xbox App.");
+                CreateMessageBox("⚠️ Please install the game.");
                 return;
             }
 
             if (SDK.Minecraft.GDK)
             {
-                CreateMessageBox("⚠️ Flarial Client doesn't support GDK builds of Minecraft currently.");
+                CreateMessageBox("⚠️ GDK builds aren't supported.");
                 return;
             }
 
             if (await Task.Run(() => Metadata.Instancing))
             {
-                CreateMessageBox("⚠️ Multi-instancing is not supported, please disable it.");
+                CreateMessageBox("⚠️ Multi-instancing is not supported.");
                 return;
             }
 
