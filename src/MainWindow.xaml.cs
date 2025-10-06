@@ -180,7 +180,7 @@ public partial class MainWindow
 
         Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
-        if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled, the launcher's UI might be laggy.");
+        if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()
@@ -209,8 +209,13 @@ public partial class MainWindow
         {
             var @checked = await Licensing.CheckAsync();
             VersionTextBorder.Background = @checked ? _darkGreen : _darkRed;
+            if (!@checked) CreateMessageBox("❌ Please purchase a genuine copy of the game.");
         }
-        catch { VersionTextBorder.Background = _darkYellow; }
+        catch
+        {
+            VersionTextBorder.Background = _darkYellow;
+            CreateMessageBox("⚠️ Couldn't verify game ownership.");
+        }
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
