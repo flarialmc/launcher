@@ -399,15 +399,12 @@ public partial class MainWindow
         });
     }
 
-    [Obsolete("The launcher saves settings automatically when closed.")]
-    private async void SaveConfig(object sender, RoutedEventArgs e) => await Task.Run(Settings.Save);
-
     private void Window_OnClosing(object sender, CancelEventArgs e)
     {
         if (isDownloadingVersion)
         {
             e.Cancel = true;
-            CreateMessageBox("The launcher cannot be closed due a version of Minecraft being downloaded.");
+            CreateMessageBox("⚠️ The launcher cannot be closed due a version of Minecraft being downloaded.");
         }
     }
 
@@ -432,55 +429,3 @@ public partial class MainWindow
         using (Process.Start(_startInfo)) { }
     }
 }
-
-[Obsolete("Broken & buggy, look for alternatives or deprecate entirely.", true)]
-public class AutoFlushTextWriterTraceListener(FileStream stream) : TextWriterTraceListener(stream)
-{
-    public override async void Write(string message)
-    {
-        await Writer.WriteAsync(message).ConfigureAwait(false);
-        Writer.Flush();
-    }
-
-    public override async void WriteLine(string message)
-    {
-        await Writer.WriteLineAsync(message).ConfigureAwait(false);
-        Writer.Flush();
-    }
-}
-
-[Obsolete("Broken & buggy, look for alternatives or deprecate entirely.", true)]
-public class FileTraceListener : TraceListener
-{
-    private readonly StreamWriter _writer;
-
-    public FileTraceListener(string filePath)
-    {
-        _writer = new StreamWriter(filePath, true)
-        {
-            AutoFlush = true // Enable AutoFlush if needed
-        };
-    }
-
-    public override async void Write(string message)
-    {
-        await _writer.WriteAsync(message).ConfigureAwait(false);
-    }
-
-    public override async void WriteLine(string message)
-    {
-        await _writer.WriteLineAsync(message).ConfigureAwait(false);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _writer?.Flush();
-            _writer?.Close();
-            _writer?.Dispose();
-        }
-        base.Dispose(disposing);
-    }
-}
-
