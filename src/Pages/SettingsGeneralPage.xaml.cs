@@ -65,7 +65,7 @@ public partial class SettingsGeneralPage : Page
 
         var launcherFolderButtonTextBlock = (TextBlock)LauncherFolderButton.Template.FindName("LaunchText", LauncherFolderButton);
         launcherFolderButtonTextBlock.Margin = new();
-        launcherFolderButtonTextBlock.Text = "📁 Launcher";
+        launcherFolderButtonTextBlock.Text = "Launcher";
 
         var launcherFolderButtonBorder = (Border)LauncherFolderButton.Template.FindName("MainBorder", LauncherFolderButton);
         launcherFolderButtonBorder.Background = brush;
@@ -77,7 +77,7 @@ public partial class SettingsGeneralPage : Page
 
         var clientFolderButtonTextBlock = (TextBlock)ClientFolderButton.Template.FindName("LaunchText", ClientFolderButton);
         clientFolderButtonTextBlock.Margin = new();
-        clientFolderButtonTextBlock.Text = "📁 Client";
+        clientFolderButtonTextBlock.Text = "Client";
 
         var clientFolderButtonIcon = (System.Windows.Shapes.Path)ClientFolderButton.Template.FindName("LaunchIcon", ClientFolderButton);
         clientFolderButtonIcon.Data = null;

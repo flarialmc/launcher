@@ -164,7 +164,7 @@ public partial class MainWindow
             await Task.Run(() =>
             {
                 var text = value ? SDK.Minecraft.Version : "0.0.0";
-                Dispatcher.Invoke(() => VersionLabel.Text = $"🕹️ {text}");
+                Dispatcher.Invoke(() => VersionLabel.Text = text);
             });
     }
 
@@ -172,7 +172,7 @@ public partial class MainWindow
     {
         base.OnSourceInitialized(e);
 
-        if (Game.Installed) VersionLabel.Text = $"🕹️ {SDK.Minecraft.Version}";
+        if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
 
         Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
         Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
@@ -201,7 +201,7 @@ public partial class MainWindow
 
     static readonly SolidColorBrush _darkGreen = new(Colors.DarkGreen);
 
-    static readonly SolidColorBrush _gray = new(Colors.Gray);
+    static readonly SolidColorBrush _darkYellow = new(Colors.DarkGoldenrod);
 
     async Task CheckLicenseAsync()
     {
@@ -210,7 +210,7 @@ public partial class MainWindow
             var @checked = await Licensing.CheckAsync();
             VersionTextBorder.Background = @checked ? _darkGreen : _darkRed;
         }
-        catch { VersionTextBorder.Background = _gray; }
+        catch { VersionTextBorder.Background = _darkYellow; }
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -298,11 +298,11 @@ public partial class MainWindow
         int Time = int.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
 
         if (Time >= 0 && Time < 12)
-            GreetingLabel.Text = "🌅 Good Morning!";
+            GreetingLabel.Text = "Good Morning!";
         else if (Time >= 12 && Time < 18)
-            GreetingLabel.Text = "🌅 Good Afternoon!";
+            GreetingLabel.Text = "Good Afternoon!";
         else if (Time >= 18 && Time <= 24)
-            GreetingLabel.Text = "🌄 Good Evening!";
+            GreetingLabel.Text = "Good Evening!";
     }
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
@@ -352,7 +352,7 @@ public partial class MainWindow
                 }
 
                 await Task.Run(() => Loader.Launch(library));
-                StatusLabel.Text = "😊 Launched Custom DLL! Enjoy!";
+                StatusLabel.Text = "Launched Custom DLL! Enjoy!";
 
                 return;
             }
@@ -370,7 +370,7 @@ public partial class MainWindow
             _launchButtonTextBlock.Text = "Launching...";
             await Client.LaunchAsync(beta);
 
-            StatusLabel.Text = $"😊 Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
+            StatusLabel.Text = $"Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
         }
         finally
         {
@@ -383,7 +383,7 @@ public partial class MainWindow
     public void DownloadProgressCallback(int value) => Dispatcher.Invoke(() =>
     {
         _launchButtonTextBlock.Text = "Downloading...";
-        statusLabel.Text = $"📢 Downloading... {value}%";
+        statusLabel.Text = $"Downloading... {value}%";
     });
 
     public void DownloadProgressCallback2(int value)
