@@ -67,7 +67,7 @@ sealed partial class Settings
 partial class Settings
 {
     [OnDeserializing]
-    private void Defaults(StreamingContext context)
+    private void OnDeserializing(StreamingContext context)
     {
         CustomDllPath = null;
         DllBuild = DllBuild.Stable;
