@@ -54,19 +54,19 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    internal override Win32Process Activate(bool wait)
+    internal override Win32Process Activate(bool waitForResources)
     {
         Console.WriteLine($"Minecraft: {Running}");
-        if (Running) return base.Activate(wait);
+        if (Running) return base.Activate(waitForResources);
 
         var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
-        var path2 = wait ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
+        var path2 = waitForResources ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(path1, path2))
         {
             Win32File? file = null; try
             {
-                Win32Process process = base.Activate(wait);
+                Win32Process process = base.Activate(waitForResources);
 
                 while (process.Running(1))
                 {
