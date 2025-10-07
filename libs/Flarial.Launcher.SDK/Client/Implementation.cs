@@ -63,6 +63,8 @@ public static partial class Client
 
     public static async partial Task DownloadAsync(bool value, Action<int> action) => await Task.Run(async () =>
     {
+        throw new();
+
         var path = value ? Beta.Path : Release.Path;
         var uri = value ? Beta.Uri : Release.Uri;
 

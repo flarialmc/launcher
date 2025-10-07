@@ -16,6 +16,9 @@
 
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

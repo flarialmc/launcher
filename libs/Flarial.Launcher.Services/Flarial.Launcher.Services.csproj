@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Optimize>true</Optimize>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -10,6 +10,9 @@
 
     <NoWarn>PInvoke009</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

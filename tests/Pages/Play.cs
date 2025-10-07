@@ -40,7 +40,7 @@ sealed class Play : UserControl
 
         CheckBox checkBox2 = new()
         {
-            Text = "Wait For Resources",
+            Text = "Lock",
             AutoSize = true,
             Checked = true,
             Anchor = AnchorStyles.None,
@@ -92,7 +92,7 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Client.LaunchAsync(checkBox1.Checked, checkBox2.Checked);
+                await Client.LaunchAsync(checkBox1.Checked);
             }
             finally
             {
