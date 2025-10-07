@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.Client;
 
 sealed class Play : UserControl
 {

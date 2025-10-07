@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Bedrockix.Minecraft;
+using Windows.UI.Input.Preview.Injection;
+using Flarial.Launcher.Services.Modding;
 
 namespace Flarial.Launcher.SDK;
 
@@ -23,6 +25,16 @@ static class Release
 
         var _ = Loader.Launch(Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
+        return _.HasValue;
+    }
+
+    internal static bool Activate(bool wait)
+    {
+        if (Beta.Exists) Game.Terminate();
+        if (Exists) return Game.Launch(false).HasValue;
+
+        var _ = Injector.UWP.Launch(wait, Path);
+        if (_.HasValue) Instance.Create((int)_.Value, Mutex);
         return _.HasValue;
     }
 }
@@ -46,6 +58,16 @@ static class Beta
         if (_.HasValue) Instance.Create(_.Value, Mutex);
         return _.HasValue;
     }
+
+    internal static bool Activate(bool wait)
+    {
+        if (Beta.Exists) Game.Terminate();
+        if (Exists) return Game.Launch(false).HasValue;
+
+        var _ = Injector.UWP.Launch(wait, Path);
+        if (_.HasValue) Instance.Create((int)_.Value, Mutex);
+        return _.HasValue;
+    }
 }
 
 public static partial class Client
@@ -63,8 +85,6 @@ public static partial class Client
 
     public static async partial Task DownloadAsync(bool value, Action<int> action) => await Task.Run(async () =>
     {
-        throw new();
-
         var path = value ? Beta.Path : Release.Path;
         var uri = value ? Beta.Uri : Release.Uri;
 
@@ -76,4 +96,6 @@ public static partial class Client
     });
 
     public static async partial Task<bool> LaunchAsync(bool value) => await Task.Run(() => value ? Beta.Launch() : Release.Launch());
+
+    public static partial async Task<bool> ActivateAsync(bool wait, bool beta) => await Task.Run(() => beta ? Beta.Activate(wait) : Release.Activate(wait));
 }

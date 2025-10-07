@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>IDE0130;IDE0330;CA1872;CA1835;SYSLIB1054</NoWarn>
 
-    <AssemblyVersion>1.7.0.3</AssemblyVersion>
+    <AssemblyVersion>1.7.1.0</AssemblyVersion>
     <AssemblyTitle>Flarial Launcher SDK</AssemblyTitle>
     <Product>Flarial Launcher SDK</Product>
     <Copyright>Copyright (C) 2024 - 25</Copyright>
@@ -18,7 +19,6 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +29,10 @@
   <ItemGroup>
     <PackageReference Include="Bedrockix" Version="1.9.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flarial.Launcher.Services\Flarial.Launcher.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

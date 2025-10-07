@@ -12,7 +12,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

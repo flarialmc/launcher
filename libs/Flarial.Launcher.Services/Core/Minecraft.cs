@@ -7,6 +7,8 @@ namespace Flarial.Launcher.Services.Core;
 
 public unsafe abstract class Minecraft
 {
+    public static readonly Minecraft UWP = new MinecraftUWP(); 
+
     private protected static readonly IPackageDebugSettings Settings;
 
     private protected static readonly IApplicationActivationManager Manager;
@@ -25,23 +27,22 @@ public unsafe abstract class Minecraft
         ApplicationUserModelId = applicationUserModelId;
     }
 
-    protected uint Activate()
+
+    public uint? Launch(bool wait)
+    {
+        using var process = Activate(wait);
+        return process.Running(0) ? process.Id : null;
+    }
+
+    internal virtual Win32Process Activate(bool waitForResources)
     {
         fixed (char* appUserModelId = ApplicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
             Manager.ActivateApplication(appUserModelId, null, options, out var processId);
-            return processId;
+            return new(processId);
         }
     }
-
-    public uint? Launch(bool @lock)
-    {
-        using var process = Get(@lock);
-        return process.Running(0) ? process.Id : null;
-    }
-
-    internal abstract Win32Process Get(bool @lock);
 
     public abstract void Terminate();
 

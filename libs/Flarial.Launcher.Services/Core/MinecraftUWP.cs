@@ -13,7 +13,7 @@ namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftUWP : Minecraft
 {
-    internal MinecraftUWP() : base("Microsoft.MinecraftUWP_8wekyb3d8bbwe", "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App") { }
+    internal MinecraftUWP() : base("Microsoft.MinecraftUWP_8wekyb3d8bbwe", "") { }
 }
 
 
@@ -40,7 +40,7 @@ unsafe partial class MinecraftUWP
                     var error = GetApplicationUserModelId(process, &length, string2);
                     if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                    var result = CompareStringOrdinal(string1, -1, string2, 1, true);
+                    var result = CompareStringOrdinal(string1, -1, string2, -1, true);
                     if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
                     return true;
@@ -54,18 +54,19 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    internal override Win32Process Get(bool @lock)
+    internal override Win32Process Activate(bool wait)
     {
-        if (Running) return new(Activate());
+        Console.WriteLine($"Minecraft: {Running}");
+        if (Running) return base.Activate(wait);
 
         var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
-        var path2 = @lock ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
+        var path2 = wait ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(path1, path2))
         {
             Win32File? file = null; try
             {
-                Win32Process process = new(Activate());
+                Win32Process process = base.Activate(wait);
 
                 while (process.Running(1))
                 {
