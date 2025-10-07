@@ -13,7 +13,7 @@ namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftUWP : Minecraft
 {
-    internal MinecraftUWP() : base("Microsoft.MinecraftUWP_8wekyb3d8bbwe", "") { }
+    internal MinecraftUWP() : base("Microsoft.MinecraftUWP_8wekyb3d8bbwe", "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App") { }
 }
 
 

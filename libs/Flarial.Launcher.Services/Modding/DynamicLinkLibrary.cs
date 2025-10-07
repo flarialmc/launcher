@@ -16,7 +16,9 @@ public sealed class DynamicLinkLibrary
     internal DynamicLinkLibrary(string path)
     {
         const LOAD_LIBRARY_FLAGS flags = LOAD_LIBRARY_FLAGS.DONT_RESOLVE_DLL_REFERENCES;
-        Path = GetFullPath(path); Exists = File.Exists(Path) && HasExtension(Path);
+       
+        Path = GetFullPath(path);
+        Exists = File.Exists(Path) && HasExtension(Path);
         Valid = Exists && FreeLibrary(LoadLibraryEx(Path, flags));
     }
 

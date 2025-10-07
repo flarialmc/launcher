@@ -23,15 +23,14 @@ public sealed class Injector
 
     public uint? Launch(bool wait, DynamicLinkLibrary library)
     {
-        if (!library.Exists)
-            throw new FileNotFoundException(null, library.Path);
+        var path = library.Path;
 
-        if (!library.Valid)
-            throw new BadImageFormatException(null, library.Path);
+        if (!library.Exists) throw new FileNotFoundException(null, path);
+        if (!library.Valid) throw new BadImageFormatException(null, path);
 
-        var security = File.GetAccessControl(library.Path);
+        var security = File.GetAccessControl(path);
         security.SetAccessRule(_rule);
-        File.SetAccessControl(library.Path, security);
+        File.SetAccessControl(path, security);
 
         using var process = _minecraft.Activate(wait);
         if (!process.Running(0)) return null;
