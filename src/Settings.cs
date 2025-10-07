@@ -16,6 +16,8 @@ internal enum DllBuild { Stable, Beta, Nightly, Custom }
 [DataContract]
 sealed partial class Settings
 {
+    bool _hardwareAcceleration = true;
+
     [DataMember]
     internal bool HardwareAcceleration
     {
@@ -27,7 +29,8 @@ sealed partial class Settings
         }
     }
 
-    bool _hardwareAcceleration = true;
+
+    bool _fixMinecraftMinimizing = true;
 
     [DataMember]
     internal bool FixMinecraftMinimizing
@@ -41,25 +44,24 @@ sealed partial class Settings
         }
     }
 
-    bool _fixMinecraftMinimizing;
 
     [DataMember]
-    internal bool AutoInject;
+    internal bool AutoInject = false;
 
     [DataMember]
-    internal string CustomDllPath;
+    internal string CustomDllPath = null;
 
     [DataMember]
-    internal DllBuild DllBuild;
+    internal DllBuild DllBuild = DllBuild.Stable;
 
     [DataMember]
-    internal bool WaitForResources;
+    internal bool WaitForResources = true;
 
-    internal bool AutoLogin;
+    internal bool AutoLogin = true;
 
-    internal bool StartMinimized;
+    internal bool StartMinimized = false;
 
-    internal bool MinimizeToTray;
+    internal bool MinimizeToTray = false;
 }
 
 partial class Settings
