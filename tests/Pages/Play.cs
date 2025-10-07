@@ -92,7 +92,7 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Client.LaunchAsync(checkBox1.Checked, checkBox1.Checked);
+                await Client.LaunchAsync(checkBox1.Checked, checkBox2.Checked);
             }
             finally
             {

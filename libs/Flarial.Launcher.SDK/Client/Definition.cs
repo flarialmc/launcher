@@ -27,9 +27,9 @@ public static partial class Client
     /// <summary>
     /// Asynchronously launch Minecraft &#38; load Flarial Client's dynamic link library.
     /// </summary>
-    /// <param name="beta">Specify <c>true</c> to use Flarial Client's Beta.</param>
-    /// <param name="wait">Wait for the game to initialize.</param>
+    /// <param name="useBeta">Specify <c>true</c> to use Flarial Client's Beta.</param>
+    /// <param name="waitForResources">Wait for the game to initialize.</param>
     /// <returns>If the game initialized &amp; launched successfully or not.</returns>
 
-    public static partial Task<bool> LaunchAsync(bool beta, bool wait);
+    public static partial Task<bool> LaunchAsync(bool useBeta, bool waitForResources);
 }

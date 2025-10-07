@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Bedrockix.Minecraft;
 using Windows.UI.Input.Preview.Injection;
 using Flarial.Launcher.Services.Modding;
+using System.Diagnostics;
 
 namespace Flarial.Launcher.SDK;
 
@@ -18,12 +19,12 @@ static class Release
 
     internal static bool Exists => Instance.Exists(Mutex);
 
-    internal static bool Launch(bool wait)
+    internal static bool Launch(bool waitForResources)
     {
         if (Beta.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = wait ? Loader.Launch(Path) : (int)Injector.UWP.Launch(wait, Path);
+        var _ = waitForResources ? Loader.Launch(Path) : (int)Injector.UWP.Launch(false, Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
         return _.HasValue;
     }
@@ -39,19 +40,19 @@ static class Beta
 
     internal static bool Exists => Instance.Exists(Mutex);
 
-    internal static bool Launch(bool wait)
+    internal static bool Launch(bool waitForResources)
     {
         if (Release.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = wait ? Loader.Launch(Path) : (int)Injector.UWP.Launch(wait, Path);
+        var _ = waitForResources ? Loader.Launch(Path) : (int)Injector.UWP.Launch(false, Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
         return _.HasValue;
     }
 }
 
 public static partial class Client
-{    
+{
     static readonly HashAlgorithm Algorithm = SHA256.Create();
 
     static readonly object Lock = new();
