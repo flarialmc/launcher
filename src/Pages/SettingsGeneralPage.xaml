@@ -83,7 +83,7 @@
                 <styles:TextBox x:Name="DLLTextBox"/>
             </Grid>
             <ToggleButton Click="ToggleButton_Click_3" Name="FixMinecraftMinimizing" Content="Fix Minecraft Minimizing" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="WaitForResourcesClick" Name="WaitForResources" Content="🧪 Wait For Resources" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton  Visibility="Collapsed" Click="WaitForResourcesClick" Name="WaitForResources" Content="🧪 Wait For Resources" Style="{StaticResource ToggleButton}"/>
             <Grid HorizontalAlignment="Left">
                 <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Launcher" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />

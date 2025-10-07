@@ -374,7 +374,7 @@ public partial class MainWindow
             await Client.DownloadAsync(useBeta, DownloadProgressCallback);
 
             _launchButtonTextBlock.Text = "Launching...";
-            await Client.LaunchAsync(useBeta, waitForResources);
+            await Client.LaunchAsync(useBeta);
 
             StatusLabel.Text = $"Launched {(useBeta ? "Beta" : "Stable")} DLL! Enjoy.";
         }

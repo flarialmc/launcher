@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Bedrockix" Version="1.9.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
   </ItemGroup>
