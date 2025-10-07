@@ -18,23 +18,13 @@ static class Release
 
     internal static bool Exists => Instance.Exists(Mutex);
 
-    internal static bool Launch()
+    internal static bool Launch(bool wait)
     {
         if (Beta.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = Loader.Launch(Path);
+        var _ = wait ? Loader.Launch(Path) : (int)Injector.UWP.Launch(wait, Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
-        return _.HasValue;
-    }
-
-    internal static bool Activate(bool wait)
-    {
-        if (Beta.Exists) Game.Terminate();
-        if (Exists) return Game.Launch(false).HasValue;
-
-        var _ = Injector.UWP.Launch(wait, Path);
-        if (_.HasValue) Instance.Create((int)_.Value, Mutex);
         return _.HasValue;
     }
 }
@@ -49,29 +39,19 @@ static class Beta
 
     internal static bool Exists => Instance.Exists(Mutex);
 
-    internal static bool Launch()
+    internal static bool Launch(bool wait)
     {
         if (Release.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = Loader.Launch(Path);
+        var _ = wait ? Loader.Launch(Path) : (int)Injector.UWP.Launch(wait, Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
-        return _.HasValue;
-    }
-
-    internal static bool Activate(bool wait)
-    {
-        if (Release.Exists) Game.Terminate();
-        if (Exists) return Game.Launch(false).HasValue;
-
-        var _ = Injector.UWP.Launch(wait, Path);
-        if (_.HasValue) Instance.Create((int)_.Value, Mutex);
         return _.HasValue;
     }
 }
 
 public static partial class Client
-{
+{    
     static readonly HashAlgorithm Algorithm = SHA256.Create();
 
     static readonly object Lock = new();
@@ -95,7 +75,5 @@ public static partial class Client
         }
     });
 
-    public static async partial Task<bool> LaunchAsync(bool value) => await Task.Run(() => value ? Beta.Launch() : Release.Launch());
-
-    public static partial async Task<bool> ActivateAsync(bool wait, bool beta) => await Task.Run(() => beta ? Beta.Activate(wait) : Release.Activate(wait));
+    public static partial async Task<bool> LaunchAsync(bool useBeta, bool waitForResources) => await Task.Run(() => useBeta ? Beta.Launch(waitForResources) : Release.Launch(waitForResources));
 }

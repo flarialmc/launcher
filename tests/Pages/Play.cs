@@ -32,7 +32,7 @@ sealed class Play : UserControl
 
         CheckBox checkBox1 = new()
         {
-            Text = "Beta",
+            Text = "Use Beta",
             AutoSize = true,
             Anchor = AnchorStyles.None,
             Margin = default
@@ -40,7 +40,7 @@ sealed class Play : UserControl
 
         CheckBox checkBox2 = new()
         {
-            Text = "Lock",
+            Text = "Wait For Resources",
             AutoSize = true,
             Checked = true,
             Anchor = AnchorStyles.None,
@@ -92,8 +92,7 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                if (checkBox2.Checked) await Client.LaunchAsync(checkBox1.Checked);
-                else await Client.ActivateAsync(false, checkBox1.Checked);
+                await Client.LaunchAsync(checkBox1.Checked, checkBox1.Checked);
             }
             finally
             {
