@@ -175,21 +175,21 @@ public partial class SettingsGeneralPage : Page
 
         switch (_settings.DllBuild)
         {
-            case Settings.DllSelection.Stable:
+            case DllBuild.Stable:
                 StableRadioButton.IsChecked = true;
                 break;
 
-            case Settings.DllSelection.Beta:
+            case DllBuild.Beta:
                 if (BetaRadioButton.IsEnabled) BetaRadioButton.IsChecked = true;
                 else StableRadioButton.IsChecked = true;
                 break;
 
-            case Settings.DllSelection.Nightly:
+            case DllBuild.Nightly:
                 if (NightlyRadioButton.IsEnabled) NightlyRadioButton.IsChecked = true;
                 else StableRadioButton.IsChecked = true;
                 break;
 
-            case Settings.DllSelection.Custom:
+            case DllBuild.Custom:
                 CustomRadioButton.IsChecked = true;
                 break;
         }
@@ -204,8 +204,9 @@ public partial class SettingsGeneralPage : Page
           }
   */
 
-        tb3.IsChecked = _settings.AutoLogin;
-        tb4.IsChecked = _settings.FixMinecraftMinimizing;
+        AutoLogin.IsChecked = _settings.AutoLogin;
+        WaitForResources.IsChecked = _settings.WaitForResources;
+        FixMinecraftMinimizing.IsChecked = _settings.FixMinecraftMinimizing;
         StartMinimized.IsChecked = _settings.StartMinimized;
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
         AutoInject.IsChecked = _settings.AutoInject;
@@ -214,6 +215,13 @@ public partial class SettingsGeneralPage : Page
 
         var window = (MainWindow)Application.Current.MainWindow;
         if (window != null) window.ContentRendered -= Window_ContentRendered;
+    }
+
+    void WaitForResourcesClick(object sender, RoutedEventArgs args)
+    {
+        var button = (ToggleButton)sender;
+        if (button.IsChecked is not bool @checked) return;
+        _settings.WaitForResources = @checked;
     }
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
@@ -265,10 +273,10 @@ public partial class SettingsGeneralPage : Page
         var button = (RadioButton)sender;
         var content = $"{button.Content}";
 
-        if (Enum.TryParse<Settings.DllSelection>(content, out var build))
+        if (Enum.TryParse<DllBuild>(content, out var build))
             settings.DllBuild = build;
 
-        if (build is Settings.DllSelection.Custom)
+        if (build is DllBuild.Custom)
             Animations.ToggleButtonTransitions.CheckedAnimation(DllGrid);
     }
 

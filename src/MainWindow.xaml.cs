@@ -316,8 +316,9 @@ public partial class MainWindow
         {
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;
-            var custom = build is Settings.DllSelection.Custom;
-            var beta = build is Settings.DllSelection.Beta or Settings.DllSelection.Nightly;
+            var custom = build is DllBuild.Custom;
+            var useBeta = build is DllBuild.Beta or DllBuild.Nightly;
+            var waitForResources = _settings.WaitForResources;
 
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Verifying...";
@@ -362,7 +363,7 @@ public partial class MainWindow
                 return;
             }
 
-            bool compatible = await VersionCatalog.CompatibleAsync() || beta;
+            bool compatible = await VersionCatalog.CompatibleAsync() || useBeta;
 
             if (!compatible)
             {
@@ -370,12 +371,12 @@ public partial class MainWindow
                 return;
             }
 
-            await Client.DownloadAsync(beta, DownloadProgressCallback);
+            await Client.DownloadAsync(useBeta, DownloadProgressCallback);
 
             _launchButtonTextBlock.Text = "Launching...";
-            await Client.LaunchAsync(beta);
+            await Client.LaunchAsync(useBeta, waitForResources);
 
-            StatusLabel.Text = $"Launched {(beta ? "Beta" : "Stable")} DLL! Enjoy.";
+            StatusLabel.Text = $"Launched {(useBeta ? "Beta" : "Stable")} DLL! Enjoy.";
         }
         finally
         {

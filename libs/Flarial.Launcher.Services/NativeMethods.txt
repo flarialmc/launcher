@@ -1,0 +1,53 @@
+GetPackagesByPackageFamily
+    PACKAGE_FULL_NAME_MAX_LENGTH
+
+GetApplicationUserModelId
+    APPLICATION_USER_MODEL_ID_MAX_LENGTH
+
+PackageDebugSettings
+IPackageDebugSettings
+
+ApplicationActivationManager
+IApplicationActivationManager
+
+OpenProcess
+TerminateProcess
+WaitForSingleObject
+CloseHandle
+    INVALID_HANDLE_VALUE
+
+CompareStringOrdinal
+
+FindWindowEx
+GetWindowThreadProcessId
+
+CreateFile2
+GetFileInformationByHandleEx
+    FILE_STANDARD_INFO
+
+CreateRemoteThread
+TerminateThread
+ResumeThread
+
+LoadLibraryEx
+GetModuleHandle
+GetProcAddress
+
+SetEntriesInAcl
+SetNamedSecurityInfo
+
+NtQueryInformationProcess
+    PROCESS_BASIC_INFORMATION
+
+QueueUserAPC
+WriteProcessMemory
+
+VirtualAllocEx
+VirtualFreeEx
+
+ACE_FLAGS
+GENERIC_ACCESS_RIGHTS
+EXPLICIT_ACCESS_W
+
+PROCESS_CREATION_FLAGS
+INFINITE

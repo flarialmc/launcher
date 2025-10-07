@@ -3,16 +3,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Windows.Devices.Midi;
+using Windows.UI.Xaml.Controls.Maps;
 
 namespace Flarial.Launcher;
+
+internal enum DllBuild { Stable, Beta, Nightly, Custom }
 
 [DataContract]
 sealed partial class Settings
 {
-    bool _hardwareAcceleration = true;
-
     [DataMember]
     internal bool HardwareAcceleration
     {
@@ -24,7 +27,7 @@ sealed partial class Settings
         }
     }
 
-    bool _fixMinecraftMinimizing = true;
+    bool _hardwareAcceleration = true;
 
     [DataMember]
     internal bool FixMinecraftMinimizing
@@ -38,23 +41,45 @@ sealed partial class Settings
         }
     }
 
-    [DataMember]
-    internal bool AutoInject = false;
+    bool _fixMinecraftMinimizing;
 
     [DataMember]
-    internal string CustomDllPath = null;
+    internal bool AutoInject;
 
     [DataMember]
-    internal bool AutoLogin = true;
-
-    internal enum DllSelection { Stable, Beta, Nightly, Custom }
+    internal string CustomDllPath;
 
     [DataMember]
-    internal DllSelection DllBuild = DllSelection.Stable;
+    internal DllBuild DllBuild;
 
-    internal bool StartMinimized = false;
+    [DataMember]
+    internal bool WaitForResources;
 
-    internal bool MinimizeToTray = false;
+    internal bool AutoLogin;
+
+    internal bool StartMinimized;
+
+    internal bool MinimizeToTray;
+}
+
+partial class Settings
+{
+    [OnDeserializing]
+    private void Defaults(StreamingContext context)
+    {
+        CustomDllPath = null;
+        DllBuild = DllBuild.Stable;
+
+        WaitForResources = true;
+        FixMinecraftMinimizing = true;
+
+        AutoInject = false;
+        HardwareAcceleration = true;
+
+        AutoLogin = true;
+        StartMinimized = false;
+        MinimizeToTray = false;
+    }
 }
 
 sealed partial class Settings
@@ -78,8 +103,8 @@ sealed partial class Settings
                     _current = (Settings)_serializer.ReadObject(stream);
 
                     var build = _current.DllBuild;
-                    if (!Enum.IsDefined(typeof(DllSelection), build))
-                        _current.DllBuild = DllSelection.Stable;
+                    if (!Enum.IsDefined(typeof(DllBuild), build))
+                        _current.DllBuild = DllBuild.Stable;
                 }
                 catch { _current = new(); }
 
