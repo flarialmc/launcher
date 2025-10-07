@@ -61,7 +61,7 @@ static class Beta
 
     internal static bool Activate(bool wait)
     {
-        if (Beta.Exists) Game.Terminate();
+        if (Release.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
         var _ = Injector.UWP.Launch(wait, Path);
