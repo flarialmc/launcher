@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
-using Flarial.Launcher.Services.Client;
 
 sealed class Play : UserControl
 {
@@ -93,7 +92,8 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Client.LaunchAsync(checkBox1.Checked);
+                if (checkBox2.Checked) await Client.LaunchAsync(checkBox1.Checked);
+                else await Client.ActivateAsync(false, checkBox1.Checked);
             }
             finally
             {
