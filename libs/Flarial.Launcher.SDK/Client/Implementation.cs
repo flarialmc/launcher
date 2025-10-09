@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Bedrockix.Minecraft;
 using Flarial.Launcher.Services.Modding;
+using Flarial.Launcher.Services.Client;
 
 namespace Flarial.Launcher.SDK;
 
@@ -19,10 +20,13 @@ static class Stable
 
     internal static bool Launch(bool waitForResources)
     {
+        if (!waitForResources)
+            return FlarialClient.Stable.LaunchClient(false);
+
         if (Beta.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = waitForResources ? Loader.Launch(Path) : (int)Injector.UWP.LaunchGame(false, Path);
+        var _ = Loader.Launch(Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
         return _.HasValue;
     }
@@ -40,10 +44,13 @@ static class Beta
 
     internal static bool Launch(bool waitForResources)
     {
+        if (!waitForResources)
+            return FlarialClient.Beta.LaunchClient(false);
+
         if (Stable.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
-        var _ = waitForResources ? Loader.Launch(Path) : (int)Injector.UWP.LaunchGame(false, Path);
+        var _ = Loader.Launch(Path);
         if (_.HasValue) Instance.Create(_.Value, Mutex);
         return _.HasValue;
     }

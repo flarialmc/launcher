@@ -358,7 +358,7 @@ public partial class MainWindow
                 }
 
                 await Task.Run(() => Loader.Launch(library));
-                StatusLabel.Text = "Launched Custom DLL! Enjoy!";
+                StatusLabel.Text = "Launched Custom DLL.";
 
                 return;
             }
@@ -376,7 +376,7 @@ public partial class MainWindow
             _launchButtonTextBlock.Text = "Launching...";
             await Client.LaunchAsync(useBeta, waitForResources);
 
-            StatusLabel.Text = $"Launched {(useBeta ? "Beta" : "Stable")} DLL! Enjoy.";
+            StatusLabel.Text = $"Launched {(useBeta ? "Beta" : "Stable")} DLL.";
         }
         finally
         {

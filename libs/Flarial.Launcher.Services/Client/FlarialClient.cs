@@ -45,7 +45,7 @@ partial class FlarialClient
         }
     }
 
-    internal bool IsRunning
+    public bool IsRunning
     {
         get
         {
@@ -54,14 +54,22 @@ partial class FlarialClient
         }
     }
 
-    public void LaunchClient(bool initialized)
+    public bool LaunchClient(bool initialized)
     {
         var minecraft = Injector.Minecraft;
 
-        if (!IsInjectable) minecraft.TerminateGame();
-        else if (IsRunning) { minecraft.LaunchGame(initialized); return; }
+        if (!IsInjectable)
+            minecraft.TerminateGame();
+
+        if (IsRunning)
+        {
+            minecraft.LaunchGame(initialized);
+            return true;
+        }
 
         using var process = Injector.BootstrapGame(initialized, _path);
         using Win32Mutex mutex = new(_name); mutex.Duplicate(process);
+
+        return process.IsRunning(0);
     }
 }
