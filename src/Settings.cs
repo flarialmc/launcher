@@ -57,6 +57,8 @@ sealed partial class Settings
     [DataMember]
     internal bool WaitForResources = true;
 
+    internal bool ServicesHealthCheck = false;
+
     internal bool AutoLogin = true;
 
     internal bool StartMinimized = false;
@@ -77,6 +79,7 @@ partial class Settings
 
         AutoInject = false;
         HardwareAcceleration = true;
+        ServicesHealthCheck = false;
 
         AutoLogin = true;
         StartMinimized = false;

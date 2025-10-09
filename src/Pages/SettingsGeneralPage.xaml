@@ -90,6 +90,7 @@
             </Grid>
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="AutoLogin" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Visibility="Collapsed" Click="ServicesHealthCheckClick" Name="ServicesHealthCheck" Content="Services Health Check" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Visibility="Collapsed" Click="MinimizeToTray_Click" Name="MinimizeToTray" Content="Minimize To Tray" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Visibility="Collapsed" Click="StartMinimized_Click" Name="StartMinimized" Content="Start Minimized" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="AutoInject_Click" Name="AutoInject" Content="🧪 Auto Inject" Style="{StaticResource ToggleButton}"/>

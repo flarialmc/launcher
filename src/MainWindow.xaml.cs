@@ -19,6 +19,7 @@ using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher;
 
@@ -88,7 +89,7 @@ public partial class MainWindow
 
         LaunchButton.ApplyTemplate();
         _launchButtonTextBlock = (TextBlock)LaunchButton.Template.FindName("LaunchText", LaunchButton);
-        _launchButtonTextBlock.Text = "Updating...";
+        _launchButtonTextBlock.Text = "Checking...";
 
         WindowInteropHelper = new(this);
 
@@ -209,7 +210,7 @@ public partial class MainWindow
         {
             var @checked = await Licensing.CheckAsync();
             VersionTextBorder.Background = @checked ? _darkGreen : _darkRed;
-            if (!@checked) CreateMessageBox("❌ Please purchase a genuine copy of the game.");
+            if (!@checked) CreateMessageBox("⚠️ Please purchase a genuine copy of the game.");
         }
         catch
         {
@@ -220,6 +221,51 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
+        if (_settings.ServicesHealthCheck)
+        {
+            bool failed = false;
+            string message = "Something went wrong.";
+
+            switch (await ServicesHealth.CheckAsync())
+            {
+                case FailedService.None:
+                    break;
+
+                case FailedService.GameVersions:
+                    message = "Cannot fetch game versions.";
+                    failed = true; break;
+
+                case FailedService.ClientHashes:
+                    message = "Cannot fetch client updates.";
+                    failed = true; break;
+
+                case FailedService.GameFrameworks:
+                    message = "Cannot fetch game frameworks.";
+                    failed = true; break;
+
+                case FailedService.LauncherVersion:
+                    message = "Cannot fetch launcher updates.";
+                    failed = false; break;
+
+                case FailedService.MicrosoftStore:
+                    message = "Cannot connect to the Microsoft Store.";
+                    failed = true; break;
+
+                case FailedService.SupportedVersions:
+                    message = "Cannot fetch supported versions.";
+                    failed = true; break;
+            }
+
+            if (failed)
+            {
+                _launchButtonTextBlock.Text = "Error";
+                CreateMessageBox($"💀 {message} Please contact support.");
+                return;
+            }
+        }
+
+        _launchButtonTextBlock.Text = "Updating...";
+
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;

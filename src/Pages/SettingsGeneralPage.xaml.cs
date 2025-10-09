@@ -12,6 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Flarial.Launcher.Structures;
 using static System.Environment;
+using Windows.Devices.Midi;
 
 namespace Flarial.Launcher.Pages;
 
@@ -168,6 +169,14 @@ public partial class SettingsGeneralPage : Page
         }
     }
 
+    void ServicesHealthCheckClick(object sender, EventArgs args)
+    {
+        var button = (ToggleButton)sender;
+        if (button.IsChecked is not { } @checked) return;
+
+        _settings.ServicesHealthCheck = @checked;
+    }
+
     void Window_ContentRendered(object sender, EventArgs args)
     {
         if (_settings.StartMinimized && !_settings.MinimizeToTray)
@@ -194,23 +203,17 @@ public partial class SettingsGeneralPage : Page
                 break;
         }
 
-        /*  if (!BetaRadioButton.IsEnabled || !NightlyRadioButton.IsEnabled)
-          {
-              _settings.DllBuild = Settings.DllSelection.Stable;
-              StableRadioButton.IsChecked = true;
-              BetaRadioButton.IsChecked = false;
-              NightlyRadioButton.IsChecked = false;
-              CustomRadioButton.IsChecked = false;
-          }
-  */
-
         AutoLogin.IsChecked = _settings.AutoLogin;
+        AutoInject.IsChecked = _settings.AutoInject;
+        ServicesHealthCheck.IsChecked = _settings.ServicesHealthCheck;
+        HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
+
         WaitForResources.IsChecked = _settings.WaitForResources;
         FixMinecraftMinimizing.IsChecked = _settings.FixMinecraftMinimizing;
+
         StartMinimized.IsChecked = _settings.StartMinimized;
-        HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
-        AutoInject.IsChecked = _settings.AutoInject;
         MinimizeToTray.IsChecked = _settings.MinimizeToTray;
+
         DLLTextBox.Value = _settings.CustomDllPath;
 
         var window = (MainWindow)Application.Current.MainWindow;

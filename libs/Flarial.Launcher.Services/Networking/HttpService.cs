@@ -5,6 +5,7 @@ using static System.Math;
 using System.Threading.Tasks;
 using static System.Net.DecompressionMethods;
 using static System.Net.Http.HttpCompletionOption;
+using static System.Net.Http.HttpMethod;
 using static System.Environment;
 
 namespace Flarial.Launcher.Services.Networking;
@@ -19,7 +20,18 @@ static class HttpService
         AutomaticDecompression = GZip | Deflate
     });
 
-    internal static async Task<Stream> GetStreamAsync(string uri) => await _httpClient.GetStreamAsync(uri);
+    internal static async Task<Stream> StreamAsync(string uri) => await _httpClient.GetStreamAsync(uri);
+
+    internal static async Task<bool> CheckAsync(string uri)
+    {
+        using HttpRequestMessage request = new(Head, uri);
+        try
+        {
+            using var message = await _httpClient.SendAsync(request);
+            return true;
+        }
+        catch { return false; }
+    }
 
     internal static async Task DownloadAsync(string uri, string path, Action<int>? action)
     {
