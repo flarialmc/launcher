@@ -93,7 +93,8 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Client.LaunchAsync(checkBox1.Checked, checkBox2.Checked);
+                var client = checkBox1.Checked ? FlarialClient.Beta : FlarialClient.Stable;
+                await Task.Run(() => client.LaunchClient(checkBox2.Checked));
             }
             finally
             {

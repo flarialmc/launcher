@@ -9,14 +9,14 @@ namespace Flarial.Launcher.Services.Client;
 
 public abstract partial class FlarialClient
 {
-    readonly Injector _injector;
+    protected readonly Injector Injector = Injector.UWP;
 
-    readonly string _name;
+    readonly string _name, _path;
 
-    internal FlarialClient(Injector injector, string name)
+    internal FlarialClient(string name, string path)
     {
         _name = name;
-        _injector = injector;
+        _path = path;
     }
 }
 
@@ -59,12 +59,12 @@ partial class FlarialClient
 
     public void LaunchClient(bool initialized)
     {
-        var minecraft = _injector.Minecraft;
+        var minecraft = Injector.Minecraft;
 
         if (!IsInjectable) minecraft.TerminateGame();
         else if (IsRunning) { minecraft.LaunchGame(initialized); return; }
 
-        using var process = _injector.Minecraft.BootstrapGame(initialized);
+        using var process = Injector.BootstrapGame(initialized, _path);
         using Win32Mutex mutex = new(_name); mutex.Duplicate(process);
     }
 }

@@ -5,26 +5,33 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Services.Core;
 
-public unsafe abstract class Minecraft
+public unsafe abstract partial class Minecraft
 {
     public static readonly Minecraft UWP = new MinecraftUWP();
+}
 
-    private protected static readonly IPackageDebugSettings PackageDebugSettings;
+partial class Minecraft
+{
+    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    static readonly IApplicationActivationManager _applicationActivationManager;
+    private protected static readonly IPackageDebugSettings PackageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
 
-    protected readonly string PackageFamilyName, ApplicationUserModelId;
+    static readonly IApplicationActivationManager _applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
+}
 
-    static Minecraft()
+partial class Minecraft
+{
+    protected readonly string ApplicationUserModelId;
+
+    internal Minecraft(string applicationUserModelId) => ApplicationUserModelId = applicationUserModelId;
+}
+
+unsafe partial class Minecraft
+{
+    public uint? LaunchGame(bool initialized)
     {
-        PackageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
-        _applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
-    }
-
-    internal Minecraft(string packageFamilyName, string applicationUserModelId)
-    {
-        PackageFamilyName = packageFamilyName;
-        ApplicationUserModelId = applicationUserModelId;
+        using var process = BootstrapGame(initialized);
+        return process.IsRunning(0) ? process.Id : null;
     }
 
     private protected Win32Process ActivateApplication()
@@ -37,17 +44,23 @@ public unsafe abstract class Minecraft
         }
     }
 
-    public uint? LaunchGame(bool initialized)
+    public bool HasUWPAppLifecycle
     {
-        using var process = BootstrapGame(initialized);
-        return process.IsRunning(0) ? process.Id : null;
+        set
+        {
+            uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
+            PWSTR string1 = new(), string2 = stackalloc char[(int)length];
+
+            GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
+            if (value) PackageDebugSettings.EnableDebugging(string2, null, null);
+            else PackageDebugSettings.DisableDebugging(string2);
+        }
     }
+}
 
-    internal abstract Win32Process BootstrapGame(bool initialized);
-
-    public abstract void TerminateGame();
-
-    public bool IsInstalled
+unsafe partial class Minecraft
+{
+    public static bool IsInstalled
     {
         get
         {
@@ -56,19 +69,13 @@ public unsafe abstract class Minecraft
             return error is WIN32_ERROR.ERROR_SUCCESS && count > 0;
         }
     }
+}
+
+partial class Minecraft
+{
+    public abstract void TerminateGame();
 
     public abstract bool IsRunning { get; }
 
-    public bool HasUWPAppLifecycle
-    {
-        set
-        {
-            uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
-            PWSTR string1 = new(), string2 = stackalloc char[(int)length];
-            
-            GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-            if (value) PackageDebugSettings.EnableDebugging(string2, null, null);
-            else PackageDebugSettings.DisableDebugging(string2);
-        }
-    }
+    internal abstract Win32Process BootstrapGame(bool initialized);
 }

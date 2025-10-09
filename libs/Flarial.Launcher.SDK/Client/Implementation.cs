@@ -7,9 +7,9 @@ using Flarial.Launcher.Services.Modding;
 
 namespace Flarial.Launcher.SDK;
 
-static class Release
+static class Stable
 {
-    internal const string Path = "Flarial.Client.Release.dll";
+    internal const string Path = "Flarial.Client.Stable.dll";
 
     internal const string Uri = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
 
@@ -40,7 +40,7 @@ static class Beta
 
     internal static bool Launch(bool waitForResources)
     {
-        if (Release.Exists) Game.Terminate();
+        if (Stable.Exists) Game.Terminate();
         if (Exists) return Game.Launch(false).HasValue;
 
         var _ = waitForResources ? Loader.Launch(Path) : (int)Injector.UWP.LaunchGame(false, Path);
@@ -64,15 +64,15 @@ public static partial class Client
 
     public static async partial Task DownloadAsync(bool value, Action<int> action) => await Task.Run(async () =>
     {
-        var path = value ? Beta.Path : Release.Path;
-        var uri = value ? Beta.Uri : Release.Uri;
+        var path = value ? Beta.Path : Stable.Path;
+        var uri = value ? Beta.Uri : Stable.Uri;
 
         if (!await VerifyAsync(path, value))
         {
-            if (value ? Beta.Exists : Release.Exists) Game.Terminate();
+            if (value ? Beta.Exists : Stable.Exists) Game.Terminate();
             await Web.DownloadAsync(uri, path, action);
         }
     });
 
-    public static partial async Task<bool> LaunchAsync(bool useBeta, bool waitForResources) => await Task.Run(() => useBeta ? Beta.Launch(waitForResources) : Release.Launch(waitForResources));
+    public static partial async Task<bool> LaunchAsync(bool useBeta, bool waitForResources) => await Task.Run(() => useBeta ? Beta.Launch(waitForResources) : Stable.Launch(waitForResources));
 }
