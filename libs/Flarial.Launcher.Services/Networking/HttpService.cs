@@ -24,9 +24,9 @@ static class HttpService
 
     internal static async Task<bool> CheckAsync(string uri)
     {
-        using HttpRequestMessage request = new(Head, uri);
         try
         {
+            using HttpRequestMessage request = new(Head, uri);
             using var message = await _httpClient.SendAsync(request);
             return true;
         }
