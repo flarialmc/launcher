@@ -7,18 +7,18 @@ namespace Flarial.Launcher.Services.Core;
 
 public unsafe abstract class Minecraft
 {
-    public static readonly Minecraft UWP = new MinecraftUWP(); 
+    public static readonly Minecraft UWP = new MinecraftUWP();
 
-    private protected static readonly IPackageDebugSettings Settings;
+    private protected static readonly IPackageDebugSettings PackageDebugSettings;
 
-    private protected static readonly IApplicationActivationManager Manager;
+    static readonly IApplicationActivationManager _applicationActivationManager;
 
     protected readonly string PackageFamilyName, ApplicationUserModelId;
 
     static Minecraft()
     {
-        Settings = (IPackageDebugSettings)new PackageDebugSettings();
-        Manager = (IApplicationActivationManager)new ApplicationActivationManager();
+        PackageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
+        _applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
     }
 
     internal Minecraft(string packageFamilyName, string applicationUserModelId)
@@ -27,26 +27,27 @@ public unsafe abstract class Minecraft
         ApplicationUserModelId = applicationUserModelId;
     }
 
-
-    public uint? Launch(bool wait)
-    {
-        using var process = Activate(wait);
-        return process.Running(0) ? process.Id : null;
-    }
-
-    internal virtual Win32Process Activate(bool waitForResources)
+    private protected Win32Process ActivateApplication()
     {
         fixed (char* appUserModelId = ApplicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
-            Manager.ActivateApplication(appUserModelId, null, options, out var processId);
+            _applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
             return new(processId);
         }
     }
 
-    public abstract void Terminate();
+    public uint? LaunchGame(bool initialized)
+    {
+        using var process = BootstrapGame(initialized);
+        return process.IsRunning(0) ? process.Id : null;
+    }
 
-    public bool Installed
+    internal abstract Win32Process BootstrapGame(bool initialized);
+
+    public abstract void TerminateGame();
+
+    public bool IsInstalled
     {
         get
         {
@@ -56,17 +57,18 @@ public unsafe abstract class Minecraft
         }
     }
 
-    public abstract bool Running { get; }
+    public abstract bool IsRunning { get; }
 
-    public bool Debug
+    public bool HasUWPAppLifecycle
     {
         set
         {
             uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
             PWSTR string1 = new(), string2 = stackalloc char[(int)length];
-
             GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-            if (value) Settings.EnableDebugging(string2, null, null); else Settings.DisableDebugging(string2);
+
+            if (value) PackageDebugSettings.EnableDebugging(string2, null, null);
+            else PackageDebugSettings.DisableDebugging(string2);
         }
     }
 }

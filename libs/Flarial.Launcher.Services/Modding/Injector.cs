@@ -21,20 +21,20 @@ public sealed class Injector
 
     Injector(Minecraft minecraft) => _minecraft = minecraft;
 
-    public uint? Launch(bool wait, DynamicLinkLibrary library)
+    public uint? LaunchGame(bool initialized, ModificationLibrary library)
     {
-        var parameter = library.Name;
+        var parameter = library.FileName;
         if (!library.Exists) throw new FileNotFoundException(null, parameter);
-        if (!library.Valid) throw new BadImageFormatException(null, parameter);
+        if (!library.IsValid) throw new BadImageFormatException(null, parameter);
 
         var security = File.GetAccessControl(parameter);
         security.SetAccessRule(_rule);
         File.SetAccessControl(parameter, security);
 
-        using var process = _minecraft.Activate(wait);
-        if (!process.Running(0)) return null;
+        using var process = _minecraft.BootstrapGame(initialized);
+        if (!process.IsRunning(0)) return null;
 
-        using Win32RemoteThread thread = new(process, _routine, parameter);
-        return process.Id;
+        using (new Win32RemoteThread(process, _routine, parameter))
+            return process.Id;
     }
 }

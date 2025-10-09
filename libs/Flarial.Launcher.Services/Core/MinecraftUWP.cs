@@ -2,11 +2,9 @@
 using System;
 using System.IO;
 using Flarial.Launcher.Services.System;
-using Windows.Devices.Printers.Extensions;
 using Windows.Management.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.Globalization;
-using Windows.Win32.System.Threading;
 using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Services.Core;
@@ -19,7 +17,7 @@ sealed partial class MinecraftUWP : Minecraft
 
 unsafe partial class MinecraftUWP
 {
-    public override bool Running
+    public override bool IsRunning
     {
         get
         {
@@ -54,24 +52,23 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    internal override Win32Process Activate(bool waitForResources)
+    internal override Win32Process BootstrapGame(bool initialized)
     {
-        Console.WriteLine($"Minecraft: {Running}");
-        if (Running) return base.Activate(waitForResources);
+        if (IsRunning) return ActivateApplication();
 
         var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
-        var path2 = waitForResources ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
+        var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(path1, path2))
         {
             Win32File? file = null; try
             {
-                Win32Process process = base.Activate(waitForResources);
+                Win32Process process = ActivateApplication();
 
-                while (process.Running(1))
+                while (process.IsRunning(1))
                 {
-                    file ??= Win32File.Open(path);
-                    if (file?.Deleted ?? false) break;
+                    file ??= Win32File.TryOpen(path);
+                    if (file?.IsDeleted ?? false) break;
                 }
 
                 return process;
@@ -83,7 +80,7 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    public override void Terminate()
+    public override void TerminateGame()
     {
         throw new NotImplementedException();
     }

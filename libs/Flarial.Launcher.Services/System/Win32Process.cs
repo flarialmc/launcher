@@ -17,7 +17,7 @@ readonly struct Win32Process : IDisposable
         Id = processId; _handle = OpenProcess(rights, false, processId);
     }
 
-    internal bool Running(uint timeout)
+    internal bool IsRunning(uint timeout)
     {
         const WAIT_EVENT @event = WAIT_EVENT.WAIT_TIMEOUT;
         return WaitForSingleObject(_handle, timeout) is @event;
