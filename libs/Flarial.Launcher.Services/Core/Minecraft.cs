@@ -65,8 +65,8 @@ public unsafe abstract class Minecraft
         {
             uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
             PWSTR string1 = new(), string2 = stackalloc char[(int)length];
+            
             GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-
             if (value) PackageDebugSettings.EnableDebugging(string2, null, null);
             else PackageDebugSettings.DisableDebugging(string2);
         }

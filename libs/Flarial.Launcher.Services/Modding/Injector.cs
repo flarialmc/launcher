@@ -13,15 +13,15 @@ public sealed class Injector
 {
     public readonly static Injector UWP = new(Minecraft.UWP);
 
-    readonly Minecraft _minecraft;
+    internal readonly Minecraft Minecraft;
 
     static readonly FileSystemAccessRule _rule = new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
 
     static readonly LPTHREAD_START_ROUTINE _routine = GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
 
-    Injector(Minecraft minecraft) => _minecraft = minecraft;
+    Injector(Minecraft minecraft) => Minecraft = minecraft;
 
-    public uint? LaunchGame(bool initialized, ModificationLibrary library)
+    internal Win32Process BootstrapGame(bool initialized, ModificationLibrary library)
     {
         var parameter = library.FileName;
         if (!library.Exists) throw new FileNotFoundException(null, parameter);
@@ -31,10 +31,14 @@ public sealed class Injector
         security.SetAccessRule(_rule);
         File.SetAccessControl(parameter, security);
 
-        using var process = _minecraft.BootstrapGame(initialized);
-        if (!process.IsRunning(0)) return null;
+        using var process = Minecraft.BootstrapGame(initialized);
+        using Win32RemoteThread thread = new(process, _routine, parameter);
+        return process;
+    }
 
-        using (new Win32RemoteThread(process, _routine, parameter))
-            return process.Id;
+    public uint? LaunchGame(bool initialized, ModificationLibrary library)
+    {
+        using var process = BootstrapGame(initialized, library);
+        return process.IsRunning(0) ? process.Id : null;
     }
 }

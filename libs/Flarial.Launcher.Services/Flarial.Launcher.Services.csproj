@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.205" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
   </ItemGroup>

@@ -45,6 +45,11 @@ WriteProcessMemory
 VirtualAllocEx
 VirtualFreeEx
 
+CreateMutex
+DuplicateHandle
+
+GetCurrentProcess
+
 ACE_FLAGS
 GENERIC_ACCESS_RIGHTS
 EXPLICIT_ACCESS_W
