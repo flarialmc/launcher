@@ -31,7 +31,7 @@ public sealed class Injector
         security.SetAccessRule(_rule);
         File.SetAccessControl(parameter, security);
 
-        using var process = Minecraft.BootstrapGame(initialized);
+         var process = Minecraft.BootstrapGame(initialized);
         using Win32RemoteThread thread = new(process, _routine, parameter);
         return process;
     }
