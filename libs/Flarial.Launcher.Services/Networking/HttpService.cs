@@ -27,7 +27,7 @@ static class HttpService
         try
         {
             using HttpRequestMessage request = new(Head, uri);
-            using var message = await _httpClient.SendAsync(request);
+            using var message = await _httpClient.SendAsync(request, ResponseHeadersRead);
             return true;
         }
         catch { return false; }
