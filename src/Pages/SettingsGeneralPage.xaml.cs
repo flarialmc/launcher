@@ -169,14 +169,6 @@ public partial class SettingsGeneralPage : Page
         }
     }
 
-    void ServicesHealthCheckClick(object sender, EventArgs args)
-    {
-        var button = (ToggleButton)sender;
-        if (button.IsChecked is not { } @checked) return;
-
-        _settings.ServicesHealthCheck = @checked;
-    }
-
     void Window_ContentRendered(object sender, EventArgs args)
     {
         if (_settings.StartMinimized && !_settings.MinimizeToTray)
@@ -205,7 +197,6 @@ public partial class SettingsGeneralPage : Page
 
         AutoLogin.IsChecked = _settings.AutoLogin;
         AutoInject.IsChecked = _settings.AutoInject;
-        ServicesHealthCheck.IsChecked = _settings.ServicesHealthCheck;
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
 
         WaitForResources.IsChecked = _settings.WaitForResources;

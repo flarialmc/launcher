@@ -19,7 +19,7 @@ using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
-using Flarial.Launcher.Services.Networking;
+using static System.StringComparison;
 
 namespace Flarial.Launcher;
 
@@ -89,7 +89,7 @@ public partial class MainWindow
 
         LaunchButton.ApplyTemplate();
         _launchButtonTextBlock = (TextBlock)LaunchButton.Template.FindName("LaunchText", LaunchButton);
-        _launchButtonTextBlock.Text = "Checking...";
+        _launchButtonTextBlock.Text = "Updating...";
 
         WindowInteropHelper = new(this);
 
@@ -159,26 +159,26 @@ public partial class MainWindow
 
     readonly PackageCatalog Catalog = PackageCatalog.OpenForCurrentUser();
 
-    async Task UpdateVersionLabel(Package source, bool value)
+    async Task UpdateGameVersionLabel(Package package, bool installed)
     {
-        if (source.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", StringComparison.OrdinalIgnoreCase))
-            await Task.Run(() =>
-            {
-                var text = value ? SDK.Minecraft.Version : "0.0.0";
-                Dispatcher.Invoke(() => VersionLabel.Text = text);
-            });
+        if (package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase))
+            await UpdateGameVersionLabel(installed);
     }
+
+    async Task UpdateGameVersionLabel(bool installed) => await Task.Run(async () =>
+    {
+        var text = installed ? $"v{SDK.Minecraft.Version}" : "v0.0.0";
+        var compatible = await VersionCatalog.CompatibleAsync();
+        Dispatcher.Invoke(() =>
+        {
+            VersionLabel.Text = text;
+            VersionTextBorder.Background = compatible ? _darkGreen : _darkGoldenrod;
+        });
+    });
 
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-
-        if (Game.Installed) VersionLabel.Text = SDK.Minecraft.Version;
-
-        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, true); };
-        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.TargetPackage, true); };
-        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateVersionLabel(args.Package, false); };
-
         Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
         if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
@@ -202,70 +202,20 @@ public partial class MainWindow
 
     static readonly SolidColorBrush _darkGreen = new(Colors.DarkGreen);
 
-    static readonly SolidColorBrush _darkYellow = new(Colors.DarkGoldenrod);
+    static readonly SolidColorBrush _darkGoldenrod = new(Colors.DarkGoldenrod);
 
     async Task CheckLicenseAsync()
     {
         try
         {
             var @checked = await Licensing.CheckAsync();
-            VersionTextBorder.Background = @checked ? _darkGreen : _darkRed;
-            if (!@checked) CreateMessageBox("⚠️ Please purchase a genuine copy of the game.");
+            LicenseText.Foreground = @checked ? _darkGreen : _darkRed;
         }
-        catch
-        {
-            VersionTextBorder.Background = _darkYellow;
-            CreateMessageBox("⚠️ Couldn't verify game ownership.");
-        }
+        catch { LicenseText.Foreground = _darkGoldenrod; }
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        if (_settings.ServicesHealthCheck)
-        {
-            bool failed = false;
-            string message = "Something went wrong.";
-
-            switch (await ServicesHealth.CheckAsync())
-            {
-                case FailedService.None:
-                    break;
-
-                case FailedService.GameVersions:
-                    message = "Cannot fetch game versions.";
-                    failed = true; break;
-
-                case FailedService.ClientHashes:
-                    message = "Cannot fetch client updates.";
-                    failed = true; break;
-
-                case FailedService.GameFrameworks:
-                    message = "Cannot fetch game frameworks.";
-                    failed = true; break;
-
-                case FailedService.LauncherVersion:
-                    message = "Cannot fetch launcher updates.";
-                    failed = false; break;
-
-                case FailedService.MicrosoftStore:
-                    message = "Cannot connect to the Microsoft Store.";
-                    failed = true; break;
-
-                case FailedService.SupportedVersions:
-                    message = "Cannot fetch supported versions.";
-                    failed = true; break;
-            }
-
-            if (failed)
-            {
-                _launchButtonTextBlock.Text = "Error";
-                CreateMessageBox($"💀 {message} Please contact support.");
-                return;
-            }
-        }
-
-        _launchButtonTextBlock.Text = "Updating...";
-
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -284,6 +234,26 @@ public partial class MainWindow
 
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
+
+        Catalog.PackageInstalling += async (_, args) =>
+        {
+            if (!args.IsComplete) return;
+            await UpdateGameVersionLabel(args.Package, true);
+        };
+
+        Catalog.PackageUpdating += async (_, args) =>
+        {
+            if (!args.IsComplete) return;
+            await UpdateGameVersionLabel(args.TargetPackage, true);
+        };
+
+        Catalog.PackageUninstalling += async (_, args) =>
+        {
+            if (!args.IsComplete) return;
+            await UpdateGameVersionLabel(args.Package, false);
+        };
+
+        _ = UpdateGameVersionLabel(Game.Installed);
 
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;

@@ -73,7 +73,7 @@
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock TextAlignment="Left" Name="VersionLabel" Margin="10,5,10,5" Text="0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock TextAlignment="Left" Name="VersionLabel" Margin="10,5,10,5" Text="v0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
                     <Grid Background="Transparent"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
@@ -112,8 +112,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
-                        <TextBlock Name="LauncherVersion" Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="#FF2438" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="LicenseText" Grid.Column="0" Margin="0,0,0,0" Text="⚫" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="Gray" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock Name="LauncherVersion" Grid.Column="1" Margin="5,0,0,0" Text="v2" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                         <TextBlock Name="statusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready!" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Grid>
                     <Border Visibility="Collapsed" Height="40" Background="{fw:AcrylicBrush bggrid}" CornerRadius="10,0,0,10" Margin="0,0,0,90" VerticalAlignment="Bottom" HorizontalAlignment="Right">
