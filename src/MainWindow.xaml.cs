@@ -178,16 +178,18 @@ public partial class MainWindow
 
     protected override async void OnSourceInitialized(EventArgs e)
     {
-        await Task.Yield(); base.OnSourceInitialized(e);
+        base.OnSourceInitialized(e);
 
+        await Dispatcher.Yield();
         _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
+
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
         if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()
     {
-        await Task.Yield(); try
+        await Dispatcher.Yield(); try
         {
             var imageSource = await Sponsors.GetLiteByteCampaignBannerAsync();
             if (imageSource is not null) AdBorder.Background = new ImageBrush()
@@ -207,7 +209,7 @@ public partial class MainWindow
 
     async Task CheckLicenseAsync()
     {
-        await Task.Yield(); try
+        await Dispatcher.Yield(); try
         {
             var @checked = await Licensing.CheckAsync();
             LicenseText.Foreground = @checked ? _darkGreen : _darkRed;
@@ -217,7 +219,7 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        await Task.Yield();
+        await Dispatcher.Yield();
 
         if (await SDK.Launcher.AvailableAsync())
         {
@@ -257,13 +259,9 @@ public partial class MainWindow
         };
 
         _ = UpdateGameVersionLabel(Game.Installed);
+        _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true;
 
-        _launchButtonTextBlock.Text = "Launch";
-        IsLaunchEnabled = true;
-
-        if (_settings.StartMinimized)
-            WindowMinimize(null, null);
-
+        if (_settings.StartMinimized) WindowMinimize(null, null);
         GameEvents.Launched += GameEventsLaunched;
     }
 
@@ -331,7 +329,7 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        await Task.Yield(); try
+        await Dispatcher.Yield(); try
         {
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;
