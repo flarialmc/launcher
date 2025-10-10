@@ -176,19 +176,20 @@ public partial class MainWindow
         });
     });
 
-    protected override void OnSourceInitialized(EventArgs e)
+    protected override async void OnSourceInitialized(EventArgs e)
     {
-        base.OnSourceInitialized(e);
-        Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
+        await Task.Yield(); base.OnSourceInitialized(e);
+
+        _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
         if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()
     {
-        try
+        await Task.Yield(); try
         {
-            var imageSource = await Sponsors.GetLiteByteCampaignBanner();
+            var imageSource = await Sponsors.GetLiteByteCampaignBannerAsync();
             if (imageSource is not null) AdBorder.Background = new ImageBrush()
             {
                 ImageSource = imageSource,
@@ -206,7 +207,7 @@ public partial class MainWindow
 
     async Task CheckLicenseAsync()
     {
-        try
+        await Task.Yield(); try
         {
             var @checked = await Licensing.CheckAsync();
             LicenseText.Foreground = @checked ? _darkGreen : _darkRed;
@@ -216,6 +217,8 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
+        await Task.Yield();
+
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -328,7 +331,7 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await Task.Yield(); try
         {
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;

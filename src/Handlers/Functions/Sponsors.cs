@@ -16,9 +16,9 @@ static class Sponsors
 
     const string LiteByteCampaignBannerUri = "https://litebyte.co/images/flarial.png";
 
-    internal static async Task<ImageSource> GetLiteByteCampaignBanner()
+    internal static async Task<ImageSource> GetLiteByteCampaignBannerAsync()
     {
-        try
+        await Task.Yield(); try
         {
             MemoryStream stream = new(await _httpClient.GetByteArrayAsync(LiteByteCampaignBannerUri));
             var source = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
