@@ -21,7 +21,8 @@ public partial class SettingsVersionPage : Page
     async void LaunchButtonIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs args)
     {
         await System.Windows.Threading.Dispatcher.Yield();
-        string[] dir = await Task.Run(() => Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"));
+
+        string[] files = await Task.Run(() => Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"));
 
         foreach (var name in MainWindow.VersionCatalog.Reverse())
         {
@@ -31,15 +32,12 @@ public partial class SettingsVersionPage : Page
             VersionItemProperties.SetState(versionItem, 0);
 
             bool unpackaged = SDK.Minecraft.Installed && SDK.Minecraft.Unpackaged;
-            
+
             if (unpackaged)
             {
-                foreach (string file in dir)
+                foreach (string file in files)
                 {
-                    if (file.Contains(name))
-                    {
-                        VersionItemProperties.SetState(versionItem, 2);
-                    }
+                    if (file.Contains(name)) VersionItemProperties.SetState(versionItem, 2);
                     await System.Windows.Threading.Dispatcher.Yield();
                 }
             }
