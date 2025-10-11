@@ -59,6 +59,9 @@ partial class FlarialClient
     {
         get
         {
+            if (!Injector.Minecraft.IsRunning)
+                return false;
+
             using Win32Mutex mutex = new(_name);
             return mutex.Exists;
         }
