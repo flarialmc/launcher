@@ -35,7 +35,7 @@ public partial class App : Application
         var message = exception.Message;
 
         var text = string.Format(Format, version, name, message, trace);
-        MessageBox.Show(text, "Flarial Launcher", MessageBoxButton.OK, MessageBoxImage.Error);
+        MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
         Environment.Exit(1);
     }
