@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Controls.Maps;
 
 namespace Flarial.Launcher;
 
-internal enum DllBuild { Stable, Beta, Nightly, Custom }
+internal enum DllBuild { Release, Beta, Nightly, Custom }
 
 [DataContract]
 sealed partial class Settings
@@ -52,7 +52,7 @@ sealed partial class Settings
     internal string CustomDllPath = null;
 
     [DataMember]
-    internal DllBuild DllBuild = DllBuild.Stable;
+    internal DllBuild DllBuild = DllBuild.Release;
 
     [DataMember]
     internal bool WaitForResources = true;
@@ -70,7 +70,7 @@ partial class Settings
     private void OnDeserializing(StreamingContext context)
     {
         CustomDllPath = null;
-        DllBuild = DllBuild.Stable;
+        DllBuild = DllBuild.Release;
 
         WaitForResources = true;
         FixMinecraftMinimizing = true;
@@ -106,7 +106,7 @@ sealed partial class Settings
 
                     var build = _current.DllBuild;
                     if (!Enum.IsDefined(typeof(DllBuild), build))
-                        _current.DllBuild = DllBuild.Stable;
+                        _current.DllBuild = DllBuild.Release;
                 }
                 catch { _current = new(); }
 

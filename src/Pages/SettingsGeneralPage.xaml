@@ -70,7 +70,7 @@
                             <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
                         </Border.Effect>
                     </Border>
-                    <RadioButton Grid.Column="0" Name="StableRadioButton" Checked="BuildChanged" Content="Stable" Tag="0"/>
+                    <RadioButton Grid.Column="0" Name="ReleaseRadioButton" Checked="BuildChanged" Content="Release" Tag="0"/>
                     <RadioButton Grid.Column="2" IsEnabled="true" Name="BetaRadioButton" Checked="BuildChanged" Content="Beta" Tag="1"/>
                     <Grid Grid.Column="4" Opacity="0.75" Cursor="No">
                         <!--Remove parent grid when enabling this radiobutton-->

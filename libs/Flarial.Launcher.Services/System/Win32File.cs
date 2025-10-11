@@ -10,7 +10,7 @@ unsafe readonly struct Win32File : IDisposable
 {
     readonly HANDLE _handle;
 
-    internal static Win32File? TryOpen(PCWSTR path)
+    internal static Win32File? Open(PCWSTR path)
     {
         const FILE_SHARE_MODE mode = FILE_SHARE_MODE.FILE_SHARE_DELETE;
         const FILE_CREATION_DISPOSITION disposition = FILE_CREATION_DISPOSITION.OPEN_EXISTING;

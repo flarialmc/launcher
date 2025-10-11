@@ -169,6 +169,7 @@ public partial class MainWindow
     {
         var text = installed ? $"v{SDK.Minecraft.Version}" : "v0.0.0";
         var compatible = await VersionCatalog.CompatibleAsync();
+        
         Dispatcher.Invoke(() =>
         {
             VersionLabel.Text = text;
@@ -176,20 +177,17 @@ public partial class MainWindow
         });
     });
 
-    protected override async void OnSourceInitialized(EventArgs e)
+    protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-
-        await Dispatcher.Yield();
         _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
-
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
         if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()
     {
-        await Dispatcher.Yield(); try
+        try
         {
             var imageSource = await Sponsors.GetLiteByteCampaignBannerAsync();
             if (imageSource is not null) AdBorder.Background = new ImageBrush()
@@ -209,7 +207,7 @@ public partial class MainWindow
 
     async Task CheckLicenseAsync()
     {
-        await Dispatcher.Yield(); try
+        try
         {
             var @checked = await Licensing.CheckAsync();
             LicenseText.Foreground = @checked ? _darkGreen : _darkRed;
@@ -219,8 +217,6 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        await Dispatcher.Yield();
-
         if (await SDK.Launcher.AvailableAsync())
         {
             updateTextEnabled = true;
@@ -329,7 +325,7 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        await Dispatcher.Yield(); try
+        try
         {
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;

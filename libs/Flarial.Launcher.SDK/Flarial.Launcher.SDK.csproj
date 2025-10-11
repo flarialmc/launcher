@@ -8,17 +8,8 @@
     <PublishRelease>true</PublishRelease>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>IDE0130;IDE0330;CA1872;CA1835;SYSLIB1054</NoWarn>
-
-    <AssemblyVersion>1.7.1.0</AssemblyVersion>
-    <AssemblyTitle>Flarial Launcher SDK</AssemblyTitle>
-    <Product>Flarial Launcher SDK</Product>
-    <Copyright>Copyright (C) 2024 - 25</Copyright>
-    <Company>Flarial</Company>
-
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo> 
   </PropertyGroup>
 
   <ItemGroup>

@@ -14,9 +14,9 @@ partial class Minecraft
 {
     protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    private protected static readonly IPackageDebugSettings PackageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
+    private protected static readonly IPackageDebugSettings _settings = (IPackageDebugSettings)new PackageDebugSettings();
 
-    static readonly IApplicationActivationManager _applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
+    static readonly IApplicationActivationManager _manager = (IApplicationActivationManager)new ApplicationActivationManager();
 }
 
 partial class Minecraft
@@ -39,7 +39,7 @@ unsafe partial class Minecraft
         fixed (char* appUserModelId = ApplicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
-            _applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
+            _manager.ActivateApplication(appUserModelId, null, options, out var processId);
             return new(processId);
         }
     }
@@ -52,8 +52,8 @@ unsafe partial class Minecraft
             PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
             GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-            if (value) PackageDebugSettings.EnableDebugging(string2, null, null);
-            else PackageDebugSettings.DisableDebugging(string2);
+            if (value) _settings.EnableDebugging(string2, null, null);
+            else _settings.DisableDebugging(string2);
         }
     }
 }

@@ -26,11 +26,7 @@ unsafe readonly struct Win32Mutex : IDisposable
     internal void Duplicate(in Win32Process process)
     {
         HANDLE handle = INVALID_HANDLE_VALUE;
-        try
-        {
-            Console.WriteLine((bool)DuplicateHandle(_process, _handle, process, &handle, 0, false, DUPLICATE_SAME_ACCESS));
-            Console.WriteLine(new Win32Exception(GetLastWin32Error()).Message);
-        }
+        try { DuplicateHandle(_process, _handle, process, &handle, 0, false, DUPLICATE_SAME_ACCESS); }
         finally { CloseHandle(handle); }
     }
 

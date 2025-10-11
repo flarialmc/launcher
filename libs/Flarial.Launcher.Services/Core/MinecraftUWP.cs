@@ -67,7 +67,7 @@ unsafe partial class MinecraftUWP
 
                 while (process.IsRunning(1))
                 {
-                    file ??= Win32File.TryOpen(path);
+                    file ??= Win32File.Open(path);
                     if (file?.IsDeleted ?? false) break;
                 }
 
@@ -86,6 +86,6 @@ unsafe partial class MinecraftUWP
         PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
         GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-        PackageDebugSettings.TerminateAllProcesses(string2);
+        _settings.TerminateAllProcesses(string2);
     }
 }

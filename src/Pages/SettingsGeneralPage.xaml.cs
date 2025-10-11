@@ -176,18 +176,18 @@ public partial class SettingsGeneralPage : Page
 
         switch (_settings.DllBuild)
         {
-            case DllBuild.Stable:
-                StableRadioButton.IsChecked = true;
+            case DllBuild.Release:
+                ReleaseRadioButton.IsChecked = true;
                 break;
 
             case DllBuild.Beta:
                 if (BetaRadioButton.IsEnabled) BetaRadioButton.IsChecked = true;
-                else StableRadioButton.IsChecked = true;
+                else ReleaseRadioButton.IsChecked = true;
                 break;
 
             case DllBuild.Nightly:
                 if (NightlyRadioButton.IsEnabled) NightlyRadioButton.IsChecked = true;
-                else StableRadioButton.IsChecked = true;
+                else ReleaseRadioButton.IsChecked = true;
                 break;
 
             case DllBuild.Custom:
