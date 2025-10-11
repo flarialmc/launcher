@@ -15,7 +15,16 @@ public partial class App : Application
 {
     // ↓ Do not modify this initialization code. ↓
 
-    const string Format = "Version: {0}\nException: {1}\n\n{2}\n\n{3}";
+    const string Format = @"Looks like the launcher crashed! 
+• Please take a screenshot of this.
+• Create a new support post & send the screenshot.
+
+Version: {0}
+Exception: {1}
+
+{2}
+
+{3}";
 
     const string Name = "54874D29-646C-4536-B6D1-8E05053BE00E";
 
