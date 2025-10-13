@@ -73,7 +73,7 @@
                                 <Binding ElementName="VersionTextBorder" Path="ActualWidth" />
                             </MultiBinding>
                         </Border.CornerRadius>
-                        <TextBlock TextAlignment="Left" Name="VersionLabel" Margin="10,5,10,5" Text="v0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
+                        <TextBlock TextAlignment="Left" Name="VersionLabel" Margin="10,5,10,5" Text="0.0.0" FontSize="16" Foreground="White" FontFamily="pack://application:,,,/Assets/#Space Grotesk"/>
                     </Border>
                     <Grid Background="Transparent"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">

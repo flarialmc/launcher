@@ -160,22 +160,33 @@ public partial class MainWindow
 
     readonly PackageCatalog Catalog = PackageCatalog.OpenForCurrentUser();
 
-    async Task UpdateGameVersionLabel(Package package, bool installed)
+    async Task UpdateGameVersionAsync(Package package)
     {
         if (package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase))
-            await UpdateGameVersionLabel(installed);
+            await UpdateGameVersionAsync();
     }
 
-    async Task UpdateGameVersionLabel(bool installed) => await Task.Run(async () =>
+    async Task UpdateGameVersionAsync() => await Task.Run(async () =>
     {
-        var text = installed ? $"v{SDK.Minecraft.Version}" : "v0.0.0";
-        var compatible = await VersionCatalog.CompatibleAsync();
-
-        Dispatcher.Invoke(() =>
+        try
         {
-            VersionLabel.Text = text;
-            VersionTextBorder.Background = compatible ? _darkGreen : _darkGoldenrod;
-        });
+            var text = SDK.Minecraft.Version;
+            var compatible = await VersionCatalog.CompatibleAsync();
+
+            Dispatcher.Invoke(() =>
+            {
+                VersionLabel.Text = text;
+                VersionTextBorder.Background = compatible ? _darkGreen : _darkRed;
+            });
+        }
+        catch
+        {
+            Dispatcher.Invoke(() =>
+            {
+                VersionLabel.Text = "0.0.0";
+                VersionTextBorder.Background = _darkGoldenrod;
+            });
+        }
     });
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -237,25 +248,11 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
-        Catalog.PackageInstalling += async (_, args) =>
-        {
-            if (!args.IsComplete) return;
-            await UpdateGameVersionLabel(args.Package, true);
-        };
+        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.Package); };
+        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.Package); };
+        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.TargetPackage); };
 
-        Catalog.PackageUpdating += async (_, args) =>
-        {
-            if (!args.IsComplete) return;
-            await UpdateGameVersionLabel(args.TargetPackage, true);
-        };
-
-        Catalog.PackageUninstalling += async (_, args) =>
-        {
-            if (!args.IsComplete) return;
-            await UpdateGameVersionLabel(args.Package, false);
-        };
-
-        _ = UpdateGameVersionLabel(Game.Installed);
+        _ = UpdateGameVersionAsync();
         _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true;
 
         if (_settings.StartMinimized) WindowMinimize(null, null);
