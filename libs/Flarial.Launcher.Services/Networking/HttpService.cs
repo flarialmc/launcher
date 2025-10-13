@@ -10,25 +10,25 @@ namespace Flarial.Launcher.Services.Networking;
 
 static class HttpService
 {
-    static readonly int _length = SystemPageSize;
+    static readonly int s_length = SystemPageSize;
 
-    static readonly HttpClient _client = new();
+    static readonly HttpClient s_client = new();
 
-    internal static async Task<string> StringAsync(string uri) => await _client.GetStringAsync(uri);
+    internal static async Task<string> StringAsync(string uri) => await s_client.GetStringAsync(uri);
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> action)
     {
-        using var message = await _client.GetAsync(uri, ResponseHeadersRead);
+        using var message = await s_client.GetAsync(uri, ResponseHeadersRead);
         message.EnsureSuccessStatusCode();
 
-        var buffer = new byte[_length];
+        var buffer = new byte[s_length];
         int count = new(), value = new();
         double length = message.Content.Headers.ContentLength ?? new();
 
         using var destination = File.Create(path);
         using var source = await message.Content.ReadAsStreamAsync();
 
-        while ((count = await source.ReadAsync(buffer, 0, _length)) != 0)
+        while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {
             await destination.WriteAsync(buffer, 0, count);
             if (action is { } && length != 0)

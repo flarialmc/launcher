@@ -19,7 +19,6 @@ unsafe readonly struct Win32RemoteThread : IDisposable
             const PAGE_PROTECTION_FLAGS flags = PAGE_PROTECTION_FLAGS.PAGE_READWRITE;
             const VIRTUAL_ALLOCATION_TYPE type = VIRTUAL_ALLOCATION_TYPE.MEM_COMMIT | VIRTUAL_ALLOCATION_TYPE.MEM_RESERVE;
 
-
             _process = process;
             var size = (nuint)(parameter.Length + 1) * sizeof(char);
 

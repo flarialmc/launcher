@@ -14,7 +14,7 @@ namespace Flarial.Launcher.Services.Client;
 
 public abstract partial class FlarialClient
 {
-    protected readonly Injector Injector = Injector.UWP;
+    static readonly Injector s_injector = Injector.UWP;
 
     readonly string _name, _path, _key, _uri;
 
@@ -29,12 +29,12 @@ public abstract partial class FlarialClient
 
 partial class FlarialClient
 {
-    static readonly List<FlarialClient> _clients = [];
+    static readonly List<FlarialClient> s_clients = [];
 
     static FlarialClient()
     {
-        _clients.Add(Beta = new FlarialClientBeta());
-        _clients.Add(Release = new FlarialClientRelease());
+        s_clients.Add(Beta = new FlarialClientBeta());
+        s_clients.Add(Release = new FlarialClientRelease());
     }
 
     public static readonly FlarialClient Release, Beta;
@@ -46,7 +46,7 @@ partial class FlarialClient
     {
         get
         {
-            foreach (var client in _clients)
+            foreach (var client in s_clients)
             {
                 if (ReferenceEquals(this, client)) continue;
                 else if (client.IsRunning) return false;
@@ -59,7 +59,7 @@ partial class FlarialClient
     {
         get
         {
-            if (!Injector.Minecraft.IsRunning)
+            if (!s_injector._minecraft.IsRunning)
                 return false;
 
             using Win32Mutex mutex = new(_name);
@@ -70,23 +70,17 @@ partial class FlarialClient
 
 partial class FlarialClient
 {
-    public bool LaunchGame(bool initialized)
+    public void LaunchGame(bool initialized)
     {
-        var minecraft = Injector.Minecraft;
+        var minecraft = s_injector._minecraft;
+        if (!IsInjectable) minecraft.TerminateGame();
 
-        if (!IsInjectable)
-            minecraft.TerminateGame();
-
-        if (IsRunning)
+        if (!IsRunning)
         {
-            minecraft.LaunchGame(initialized);
-            return true;
+            using var process = s_injector.BootstrapGame(initialized, _path);
+            using Win32Mutex mutex = new(_name); mutex.Duplicate(process);
         }
-
-        using var process = Injector.BootstrapGame(initialized, _path);
-        using Win32Mutex mutex = new(_name); mutex.Duplicate(process);
-
-        return process.IsRunning(0);
+        else minecraft.LaunchGame(initialized);
     }
 }
 
@@ -121,15 +115,10 @@ partial class FlarialClient
 
     public async Task DownloadAsync(Action<int> action)
     {
-        Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()];
-        await Task.WhenAll(tasks);
+        Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()]; await Task.WhenAll(tasks);
+        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase)) return;
 
-        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
-            return;
-
-        if (IsRunning)
-            Injector.Minecraft.TerminateGame();
-
+        if (IsRunning) s_injector._minecraft.TerminateGame();
         await HttpService.DownloadAsync(_uri, _path, action);
     }
 }

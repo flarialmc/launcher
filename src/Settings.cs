@@ -18,6 +18,8 @@ sealed partial class Settings
 {
     bool _hardwareAcceleration = true;
 
+    bool _fixMinecraftMinimizing = true;
+
     [DataMember]
     internal bool HardwareAcceleration
     {
@@ -29,24 +31,15 @@ sealed partial class Settings
         }
     }
 
-
-    bool _fixMinecraftMinimizing = true;
-
-    [DataMember]
     internal bool FixMinecraftMinimizing
     {
         get => _fixMinecraftMinimizing;
         set
         {
             _fixMinecraftMinimizing = value;
-            if (SDK.Minecraft.Installed)
-                SDK.Minecraft.Debug = value;
+            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = value;
         }
     }
-
-
-    [DataMember]
-    internal bool AutoInject = false;
 
     [DataMember]
     internal string CustomDllPath = null;
@@ -56,6 +49,8 @@ sealed partial class Settings
 
     [DataMember]
     internal bool WaitForResources = true;
+
+    internal bool AutoInject = false;
 
     internal bool AutoLogin = true;
 
@@ -77,7 +72,7 @@ partial class Settings
 
         AutoInject = false;
         HardwareAcceleration = true;
-        
+
         AutoLogin = true;
         StartMinimized = false;
         MinimizeToTray = false;
@@ -117,21 +112,17 @@ sealed partial class Settings
 
     static readonly DataContractJsonSerializer _serializer;
 
-    static Settings()
+    static Settings() => _serializer = new(typeof(Settings), new DataContractJsonSerializerSettings
     {
-        DataContractJsonSerializerSettings settings = new()
-        {
-            UseSimpleDictionaryFormat = true
-        };
-        _serializer = new(typeof(Settings), settings);
-    }
+        UseSimpleDictionaryFormat = true
+    });
 }
 
 sealed partial class Settings
 {
-    internal static void Save()
+    internal void Save()
     {
         using var stream = File.Create("Flarial.Launcher.Settings.json");
-        _serializer.WriteObject(stream, Current);
+        _serializer.WriteObject(stream, this);
     }
 }

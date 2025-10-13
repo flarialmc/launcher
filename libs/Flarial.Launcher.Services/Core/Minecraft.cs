@@ -14,16 +14,16 @@ partial class Minecraft
 {
     protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    private protected static readonly IPackageDebugSettings _settings = (IPackageDebugSettings)new PackageDebugSettings();
+    private protected static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
 
-    static readonly IApplicationActivationManager _manager = (IApplicationActivationManager)new ApplicationActivationManager();
+    static readonly IApplicationActivationManager s_applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
 }
 
 partial class Minecraft
 {
-    protected readonly string ApplicationUserModelId;
+    protected readonly string _applicationUserModelId;
 
-    internal Minecraft(string applicationUserModelId) => ApplicationUserModelId = applicationUserModelId;
+    internal Minecraft(string applicationUserModelId) => _applicationUserModelId = applicationUserModelId;
 }
 
 unsafe partial class Minecraft
@@ -36,10 +36,10 @@ unsafe partial class Minecraft
 
     private protected Win32Process ActivateApplication()
     {
-        fixed (char* appUserModelId = ApplicationUserModelId)
+        fixed (char* appUserModelId = _applicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
-            _manager.ActivateApplication(appUserModelId, null, options, out var processId);
+            s_applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
             return new(processId);
         }
     }
@@ -52,8 +52,8 @@ unsafe partial class Minecraft
             PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
             GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-            if (value) _settings.EnableDebugging(string2, null, null);
-            else _settings.DisableDebugging(string2);
+            if (value) s_packageDebugSettings.EnableDebugging(string2, null, null);
+            else s_packageDebugSettings.DisableDebugging(string2);
         }
     }
 }

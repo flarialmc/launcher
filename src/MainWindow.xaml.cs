@@ -20,6 +20,7 @@ using Windows.ApplicationModel;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
 using static System.StringComparison;
+using Flarial.Launcher.Services.Client;
 
 namespace Flarial.Launcher;
 
@@ -169,7 +170,7 @@ public partial class MainWindow
     {
         var text = installed ? $"v{SDK.Minecraft.Version}" : "v0.0.0";
         var compatible = await VersionCatalog.CompatibleAsync();
-        
+
         Dispatcher.Invoke(() =>
         {
             VersionLabel.Text = text;
@@ -230,7 +231,7 @@ public partial class MainWindow
                 LolGrid.IsEnabled = true;
             }, DispatcherPriority.ApplicationIdle);
 
-            await SDK.Launcher.UpdateAsync(DownloadProgressCallback2);
+            await SDK.Launcher.UpdateAsync(LauncherDownloadProgressAction);
         }
 
         _launchButtonTextBlock.Text = "Preparing...";
@@ -330,8 +331,10 @@ public partial class MainWindow
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;
             var custom = build is DllBuild.Custom;
-            var useBeta = build is DllBuild.Beta or DllBuild.Nightly;
-            var waitForResources = _settings.WaitForResources;
+            var initialized = _settings.WaitForResources;
+            var minimizing = _settings.FixMinecraftMinimizing;
+            var beta = build is DllBuild.Beta or DllBuild.Nightly;
+            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Verifying...";
@@ -376,20 +379,19 @@ public partial class MainWindow
                 return;
             }
 
-            bool compatible = await VersionCatalog.CompatibleAsync() || useBeta;
-
-            if (!compatible)
+            bool compatible = beta || await VersionCatalog.CompatibleAsync(); if (!compatible)
             {
                 CreateMessageBox("⚠️ This version not supported by the client.");
                 return;
             }
 
-            await Client.DownloadAsync(useBeta, DownloadProgressCallback);
+            await client.DownloadAsync(ClientDownloadProgressAction);
 
             _launchButtonTextBlock.Text = "Launching...";
-            await Client.LaunchAsync(useBeta, waitForResources);
+            await Task.Run(() => client.LaunchGame(initialized));
 
-            StatusLabel.Text = $"Launched {(useBeta ? "Beta" : "Stable")} DLL.";
+            if (minimizing) SDK.Minecraft.Debug = true;
+            StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
         }
         finally
         {
@@ -399,13 +401,13 @@ public partial class MainWindow
     }
 
 
-    public void DownloadProgressCallback(int value) => Dispatcher.Invoke(() =>
+    public void ClientDownloadProgressAction(int value) => Dispatcher.Invoke(() =>
     {
         _launchButtonTextBlock.Text = "Downloading...";
         statusLabel.Text = $"Downloading... {value}%";
     });
 
-    public void DownloadProgressCallback2(int value)
+    public void LauncherDownloadProgressAction(int value)
     {
         Dispatcher.Invoke(() =>
         {
@@ -425,10 +427,10 @@ public partial class MainWindow
     protected override void OnClosed(EventArgs args)
     {
         base.OnClosed(args);
-        _notifyIcon.Dispose();
 
-        Trace.Close();
-        Settings.Save();
+        _notifyIcon.Dispose();
+        Settings.Current.Save();
+
         Environment.Exit(0);
     }
 

@@ -21,7 +21,7 @@ unsafe partial class MinecraftUWP
         get
         {
             fixed (char* @class = "MSCTFIME UI")
-            fixed (char* string1 = ApplicationUserModelId)
+            fixed (char* string1 = _applicationUserModelId)
             {
                 HWND window = HWND.Null;
                 var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
@@ -85,6 +85,6 @@ unsafe partial class MinecraftUWP
         PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
         GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
-        _settings.TerminateAllProcesses(string2);
+        s_packageDebugSettings.TerminateAllProcesses(string2);
     }
 }
