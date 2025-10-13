@@ -2,6 +2,7 @@ using System;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.Foundation.WAIT_EVENT;
 
 namespace Flarial.Launcher.Services.System;
 
@@ -17,11 +18,7 @@ readonly struct Win32Process : IDisposable
         Id = processId; _handle = OpenProcess(rights, false, processId);
     }
 
-    internal bool IsRunning(uint timeout)
-    {
-        const WAIT_EVENT @event = WAIT_EVENT.WAIT_TIMEOUT;
-        return WaitForSingleObject(_handle, timeout) is @event;
-    }
+    internal bool IsRunning(uint timeout) => WaitForSingleObject(_handle, timeout) is WAIT_TIMEOUT or WAIT_OBJECT_0;
 
     public void Dispose() => CloseHandle(_handle);
 

@@ -1,5 +1,3 @@
-
-using System;
 using System.IO;
 using Flarial.Launcher.Services.System;
 using Windows.Management.Core;
@@ -23,16 +21,13 @@ unsafe partial class MinecraftUWP
             fixed (char* @class = "MSCTFIME UI")
             fixed (char* string1 = _applicationUserModelId)
             {
-                HWND window = HWND.Null;
+                Win32Window window = HWND.Null;
                 var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
                 var string2 = stackalloc char[(int)length];
 
                 while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
                 {
-                    uint processId = 0;
-                    GetWindowThreadProcessId(window, &processId);
-
-                    using Win32Process process = new(processId);
+                    using var process = window.Process;
 
                     var error = GetApplicationUserModelId(process, &length, string2);
                     if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;

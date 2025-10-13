@@ -11,6 +11,7 @@
     <NoWarn>PInvoke009</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
+    <PublishRelease>true</PublishRelease>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo> 
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
   </PropertyGroup>
