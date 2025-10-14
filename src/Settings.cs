@@ -48,7 +48,7 @@ sealed partial class Settings
     internal DllBuild DllBuild = DllBuild.Release;
 
     [DataMember]
-    internal bool WaitForResources = true;
+    internal bool WaitForInitialization = true;
 
     internal bool AutoInject = false;
 
@@ -67,7 +67,7 @@ partial class Settings
         CustomDllPath = null;
         DllBuild = DllBuild.Release;
 
-        WaitForResources = true;
+        WaitForInitialization = true;
         FixMinecraftMinimizing = true;
 
         AutoInject = false;

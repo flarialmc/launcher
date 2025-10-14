@@ -193,7 +193,7 @@ public partial class SettingsGeneralPage : Page
         AutoInject.IsChecked = _settings.AutoInject;
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
 
-        WaitForResources.IsChecked = _settings.WaitForResources;
+        WaitForInitialization.IsChecked = _settings.WaitForInitialization;
         FixMinecraftMinimizing.IsChecked = _settings.FixMinecraftMinimizing;
 
         StartMinimized.IsChecked = _settings.StartMinimized;
@@ -205,11 +205,11 @@ public partial class SettingsGeneralPage : Page
         if (window != null) window.ContentRendered -= Window_ContentRendered;
     }
 
-    void WaitForResourcesClick(object sender, RoutedEventArgs args)
+    void WaitForInitializationClick(object sender, RoutedEventArgs args)
     {
         var button = (ToggleButton)sender;
         if (button.IsChecked is not bool @checked) return;
-        _settings.WaitForResources = @checked;
+        _settings.WaitForInitialization = @checked;
     }
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)

@@ -328,7 +328,7 @@ public partial class MainWindow
             var build = _settings.DllBuild;
             var path = _settings.CustomDllPath;
             var custom = build is DllBuild.Custom;
-            var initialized = _settings.WaitForResources;
+            var initialized = _settings.WaitForInitialization;
             var minimizing = _settings.FixMinecraftMinimizing;
             var beta = build is DllBuild.Beta or DllBuild.Nightly;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
