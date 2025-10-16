@@ -1,8 +1,11 @@
 using System;
-using System.IO;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.Storage.FileSystem.FILE_ACCESS_RIGHTS;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
+using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
 
 namespace Flarial.Launcher.Services.System;
 
@@ -10,12 +13,12 @@ unsafe readonly struct Win32File : IDisposable
 {
     readonly HANDLE _handle;
 
-    internal static Win32File? Open(PCWSTR path)
+    internal static Win32File? TryOpen(PCWSTR path)
     {
-        const FILE_SHARE_MODE mode = FILE_SHARE_MODE.FILE_SHARE_DELETE;
-        const FILE_CREATION_DISPOSITION disposition = FILE_CREATION_DISPOSITION.OPEN_EXISTING;
+        const FILE_ACCESS_RIGHTS access = FILE_READ_DATA;
+        const FILE_SHARE_MODE mode = FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE;
 
-        var handle = CreateFile2(path, 0, mode, disposition, null);
+        var handle = CreateFile2(path, (uint)access, mode, OPEN_EXISTING, null);
         return handle != HANDLE.INVALID_HANDLE_VALUE ? new(handle) : null;
     }
 

@@ -65,6 +65,18 @@ unsafe partial class Minecraft
     }
 }
 
+unsafe partial class Minecraft
+{
+    public static bool UsingGameDevelopmentKit
+    {
+        get
+        {
+            
+            return false;
+        }
+    }
+}
+
 partial class Minecraft
 {
     public abstract uint? LaunchGame(bool initialized);

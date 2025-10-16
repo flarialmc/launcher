@@ -1,5 +1,4 @@
 using System;
-using System.Xml.Schema;
 using Flarial.Launcher.Services.System;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
@@ -82,11 +81,7 @@ partial class MinecraftGDK
     {
         get
         {
-            if (FindGameWindow() is not { } window)
-                return false;
-
-            using var process = window.Process;
-            return process.IsRunning(0);
+            throw new NotImplementedException();
         }
     }
 }
@@ -95,11 +90,7 @@ partial class MinecraftGDK
 {
     public override void TerminateGame()
     {
-        if (FindGameWindow() is not { } window)
-            return;
-        
-        using var process = window.Process;
-        window.EndTask(); process.IsRunning(INFINITE);
+        throw new NotImplementedException();
     }
 }
 

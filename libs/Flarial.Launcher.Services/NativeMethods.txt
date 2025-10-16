@@ -12,6 +12,8 @@ IApplicationActivationManager
 
 OpenProcess
 TerminateProcess
+GetCurrentProcess
+
 WaitForSingleObject
 CloseHandle
     INVALID_HANDLE_VALUE
@@ -20,6 +22,7 @@ CompareStringOrdinal
 
 FindWindowEx
 GetWindowThreadProcessId
+SetForegroundWindow
 
 CreateFile2
 GetFileInformationByHandleEx
@@ -48,12 +51,7 @@ VirtualFreeEx
 CreateMutex
 DuplicateHandle
 
-GetCurrentProcess
-
-SetForegroundWindow
-
-ACE_FLAGS
-GENERIC_ACCESS_RIGHTS
+FILE_ACCESS_RIGHTS
 EXPLICIT_ACCESS_W
 
 PROCESS_CREATION_FLAGS

@@ -354,6 +354,8 @@ public partial class MainWindow
                 return;
             }
 
+            if (minimizing) SDK.Minecraft.Debug = true;
+
             if (custom)
             {
                 if (string.IsNullOrWhiteSpace(path))
@@ -387,7 +389,6 @@ public partial class MainWindow
             _launchButtonTextBlock.Text = "Launching...";
             await Task.Run(() => client.LaunchGame(initialized));
 
-            if (minimizing) SDK.Minecraft.Debug = true;
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
         }
         finally

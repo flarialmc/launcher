@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>IDE0130;IDE0330;CA1872;CA1835;SYSLIB1054</NoWarn>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo> 
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>

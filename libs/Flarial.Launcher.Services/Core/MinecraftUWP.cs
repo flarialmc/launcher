@@ -60,9 +60,9 @@ unsafe partial class MinecraftUWP
                 var processId = ActivateApplication();
                 using Win32Process process = new(ActivateApplication());
 
-                while (process.IsRunning(1))
+                while (process.IsRunning(true))
                 {
-                    file ??= Win32File.Open(path);
+                    file ??= Win32File.TryOpen(path);
                     if (file?.IsDeleted ?? false) return processId;
                 }
 
