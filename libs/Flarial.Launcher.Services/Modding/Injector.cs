@@ -21,7 +21,7 @@ public sealed class Injector
 
     Injector(Minecraft minecraft) => _minecraft = minecraft;
 
-    internal Win32Process BootstrapGame(bool initialized, ModificationLibrary library)
+    public uint? LaunchGame(bool initialized, ModificationLibrary library)
     {
         var parameter = library.FileName;
         if (!library.Exists) throw new FileNotFoundException(null, parameter);
@@ -31,14 +31,12 @@ public sealed class Injector
         security.SetAccessRule(_rule);
         File.SetAccessControl(parameter, security);
 
-         var process = _minecraft.BootstrapGame(initialized);
-        using Win32RemoteThread thread = new(process, _routine, parameter);
-        return process;
-    }
+        if (_minecraft.LaunchGame(initialized) is not { } processId)
+            return null;
 
-    public uint? LaunchGame(bool initialized, ModificationLibrary library)
-    {
-        using var process = BootstrapGame(initialized, library);
-        return process.IsRunning(0) ? process.Id : null;
+        using Win32Process process = new(processId);
+        using Win32RemoteThread thread = new(process, _routine, parameter);
+
+        return processId;
     }
 }

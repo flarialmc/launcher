@@ -338,7 +338,7 @@ public partial class MainWindow
 
             if (!SDK.Minecraft.Installed)
             {
-                CreateMessageBox("⚠️ Please install the game.");
+                CreateMessageBox(@"⚠️ Please install the game.");
                 return;
             }
 

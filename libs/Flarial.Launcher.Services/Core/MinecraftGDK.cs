@@ -17,7 +17,7 @@ sealed partial class MinecraftGDK : Minecraft
 
 unsafe partial class MinecraftGDK
 {
-    internal Win32Process FindBootstrapperProcess()
+    internal uint FindBootstrapperProcess()
     {
         fixed (char* string1 = _applicationUserModelId)
         fixed (char* @class = "GAMINGSERVICESUI_HOSTING_WINDOW_CLASS")
@@ -33,7 +33,8 @@ unsafe partial class MinecraftGDK
                 PROCESS_BASIC_INFORMATION information = new();
                 NtQueryInformationProcess(process1, ProcessBasicInformation, &information, (uint)sizeof(PROCESS_BASIC_INFORMATION), null);
 
-                using Win32Process process2 = new((uint)information.InheritedFromUniqueProcessId);
+                var processId = (uint)information.InheritedFromUniqueProcessId;
+                using Win32Process process2 = new(processId);
 
                 var error = GetApplicationUserModelId(process2, &length, string2);
                 if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
@@ -41,7 +42,7 @@ unsafe partial class MinecraftGDK
                 var result = CompareStringOrdinal(string1, -1, string2, -1, true);
                 if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                return new(process2.Id);
+                return processId;
             }
 
             return ActivateApplication();
@@ -105,7 +106,7 @@ partial class MinecraftGDK
 
 partial class MinecraftGDK
 {
-    internal override Win32Process BootstrapGame(bool initialized)
+    public override uint? LaunchGame(bool _)
     {
         throw new NotImplementedException();
     }

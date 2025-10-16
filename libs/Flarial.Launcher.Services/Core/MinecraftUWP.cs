@@ -46,7 +46,7 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    internal override Win32Process BootstrapGame(bool initialized)
+    public override uint? LaunchGame(bool initialized)
     {
         if (IsRunning) return ActivateApplication();
 
@@ -57,15 +57,16 @@ unsafe partial class MinecraftUWP
         {
             Win32File? file = null; try
             {
-                Win32Process process = ActivateApplication();
+                var processId = ActivateApplication();
+                using Win32Process process = new(ActivateApplication());
 
                 while (process.IsRunning(1))
                 {
                     file ??= Win32File.Open(path);
-                    if (file?.IsDeleted ?? false) break;
+                    if (file?.IsDeleted ?? false) return processId;
                 }
 
-                return process;
+                return null;
             }
             finally { file?.Dispose(); }
         }

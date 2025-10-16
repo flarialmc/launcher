@@ -77,8 +77,13 @@ partial class FlarialClient
 
         if (!IsRunning)
         {
-            using var process = s_injector.BootstrapGame(initialized, _path);
-            using Win32Mutex mutex = new(_name); mutex.Duplicate(process);
+            if (s_injector.LaunchGame(initialized, _path) is not { } processId)
+                return;
+
+            using Win32Process process = new(processId);
+            using Win32Mutex mutex = new(_name);
+          
+            mutex.Duplicate(process);
         }
         else minecraft.LaunchGame(initialized);
     }

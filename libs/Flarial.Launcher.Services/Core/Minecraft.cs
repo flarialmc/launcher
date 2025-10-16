@@ -28,19 +28,13 @@ partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    public uint? LaunchGame(bool initialized)
-    {
-        using var process = BootstrapGame(initialized);
-        return process.IsRunning(0) ? process.Id : null;
-    }
-
-    private protected Win32Process ActivateApplication()
+    private protected uint ActivateApplication()
     {
         fixed (char* appUserModelId = _applicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
             s_applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
-            return new(processId);
+            return processId;
         }
     }
 
@@ -73,9 +67,9 @@ unsafe partial class Minecraft
 
 partial class Minecraft
 {
+    public abstract uint? LaunchGame(bool initialized);
+
     public abstract void TerminateGame();
 
     public abstract bool IsRunning { get; }
-
-    internal abstract Win32Process BootstrapGame(bool initialized);
 }
