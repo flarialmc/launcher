@@ -71,7 +71,6 @@ unsafe partial class Minecraft
     {
         get
         {
-            
             return false;
         }
     }
