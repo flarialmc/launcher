@@ -6,7 +6,7 @@ static class Program
 {
     static void Main()
     {
-        Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+        Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
         Application.EnableVisualStyles();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);

@@ -1,7 +1,17 @@
+using System.IO;
+using System.Linq;
 using Flarial.Launcher.Services.System;
+using Windows.Management.Deployment;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
+using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
+using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
 using static Windows.Win32.PInvoke;
+using Windows.Win32.Storage.FileSystem;
+using Windows.ApplicationModel;
+using System.Diagnostics;
+using System;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -14,9 +24,20 @@ partial class Minecraft
 {
     protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
+    static readonly PackageManager s_packageManager = new();
+
     private protected static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
 
     static readonly IApplicationActivationManager s_applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
+
+    static Package Package
+    {
+        get
+        {
+            var packages = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName);
+            return packages.FirstOrDefault() ?? throw new FileNotFoundException(null, PackageFamilyName);
+        }
+    }
 }
 
 partial class Minecraft
@@ -37,8 +58,11 @@ unsafe partial class Minecraft
             return processId;
         }
     }
+}
 
-    public bool HasUWPAppLifecycle
+unsafe partial class Minecraft
+{
+    public static bool HasUWPAppLifecycle
     {
         set
         {
@@ -50,28 +74,65 @@ unsafe partial class Minecraft
             else s_packageDebugSettings.DisableDebugging(string2);
         }
     }
-}
 
-unsafe partial class Minecraft
-{
     public static bool IsInstalled
     {
         get
         {
             uint count = new(), length = new();
             var error = GetPackagesByPackageFamily(PackageFamilyName, ref count, null, ref length, null);
-            return error is WIN32_ERROR.ERROR_SUCCESS && count > 0;
+            return error is WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER && count > 0;
         }
     }
+
+    public static bool IsUnpackaged => Package.IsDevelopmentMode;
 }
 
 unsafe partial class Minecraft
 {
+    const uint DesiredAccess = (uint)GENERIC_READ;
+
+    const FILE_SHARE_MODE ShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+
     public static bool UsingGameDevelopmentKit
     {
         get
         {
-            return false;
+            fixed (char* path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe"))
+            {
+                var handle = CreateFile2(path, DesiredAccess, ShareMode, OPEN_EXISTING, null);
+                try { return handle == HANDLE.INVALID_HANDLE_VALUE; }
+                finally { CloseHandle(handle); }
+            }
+        }
+    }
+}
+
+partial class Minecraft
+{
+    public static string ClientVersion
+    {
+        get
+        {
+            var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+            var version = FileVersionInfo.GetVersionInfo(path).FileVersion;
+            return (version ??= "0.0.0.0").Substring(0, version.LastIndexOf('.'));
+        }
+    }
+
+    public static string PackageVersion
+    {
+        get
+        {
+            var packageVersion = Package.Id.Version;
+
+            var major = packageVersion.Major;
+            var minor = packageVersion.Minor;
+            var build = packageVersion.Build;
+            var revision = packageVersion.Revision;
+
+            var version = $"{new Version(major, minor, build, revision)}";
+            return version.Substring(0, version.LastIndexOf('.'));
         }
     }
 }

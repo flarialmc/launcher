@@ -24,6 +24,7 @@ FindWindowEx
 GetWindowThreadProcessId
 SetForegroundWindow
 
+CreateFile2
 GetFileAttributes
     INVALID_FILE_ATTRIBUTES
 
@@ -34,9 +35,6 @@ ResumeThread
 LoadLibraryEx
 GetModuleHandle
 GetProcAddress
-
-SetEntriesInAcl
-SetNamedSecurityInfo
 
 NtQueryInformationProcess
     PROCESS_BASIC_INFORMATION
@@ -50,5 +48,6 @@ VirtualFreeEx
 CreateMutex
 DuplicateHandle
 
+GENERIC_ACCESS_RIGHTS
 PROCESS_CREATION_FLAGS
 INFINITE

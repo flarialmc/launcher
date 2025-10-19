@@ -6,12 +6,15 @@ using static Windows.Wdk.PInvoke;
 using static Windows.Wdk.System.Threading.PROCESSINFOCLASS;
 using Windows.Win32.System.Threading;
 using Windows.Win32.Globalization;
+using Windows.Wdk;
 
 namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftGDK : Minecraft
 {
-    internal MinecraftGDK() : base("Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe!Game") { }
+    const string ApplicationUserModelId = "Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe!Game";
+
+    internal MinecraftGDK() : base(ApplicationUserModelId) { }
 }
 
 unsafe partial class MinecraftGDK

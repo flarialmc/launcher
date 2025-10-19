@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 
@@ -64,12 +62,6 @@ public static partial class Minecraft
     /// </summary>
 
     public static partial string Version { get; }
-
-    /// <summary>
-    /// Get any running processes of Minecraft: Bedrock Edition.
-    /// </summary>
-
-    public static partial IEnumerable<Process> Processes { get; }
 
     /// <summary>
     /// Check if Minecraft: Bedrock Edition is unpackaged.
