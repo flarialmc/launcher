@@ -24,9 +24,8 @@ FindWindowEx
 GetWindowThreadProcessId
 SetForegroundWindow
 
-CreateFile2
-GetFileInformationByHandleEx
-    FILE_STANDARD_INFO
+GetFileAttributes
+    INVALID_FILE_ATTRIBUTES
 
 CreateRemoteThread
 TerminateThread
@@ -50,9 +49,6 @@ VirtualFreeEx
 
 CreateMutex
 DuplicateHandle
-
-FILE_ACCESS_RIGHTS
-EXPLICIT_ACCESS_W
 
 PROCESS_CREATION_FLAGS
 INFINITE

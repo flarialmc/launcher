@@ -55,20 +55,16 @@ unsafe partial class MinecraftUWP
 
         fixed (char* path = Path.Combine(path1, path2))
         {
-            Win32File? file = null; try
-            {
-                var processId = ActivateApplication();
-                using Win32Process process = new(ActivateApplication());
+            var processId = ActivateApplication();
+            using Win32Process process = new(processId);
 
-                while (process.IsRunning(true))
-                {
-                    file ??= Win32File.TryOpen(path);
-                    if (file?.IsDeleted ?? false) return processId;
-                }
+            while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
+                if (!process.IsRunning(true)) return null;
 
-                return null;
-            }
-            finally { file?.Dispose(); }
+            while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
+                if (!process.IsRunning(true)) return null;
+
+            return processId;
         }
     }
 }

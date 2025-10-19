@@ -4,11 +4,10 @@ using static Windows.Win32.PInvoke;
 using static System.Runtime.InteropServices.Marshal;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
-using System.ComponentModel;
 
 namespace Flarial.Launcher.Services.System;
 
-unsafe readonly struct Win32Mutex : IDisposable
+unsafe readonly ref struct Win32Mutex : IDisposable
 {
     static readonly HANDLE _process = GetCurrentProcess();
 

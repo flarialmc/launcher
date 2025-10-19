@@ -6,7 +6,7 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Services.System;
 
-readonly struct Win32Process : IDisposable
+readonly ref struct Win32Process : IDisposable
 {
     readonly HANDLE _handle;
 

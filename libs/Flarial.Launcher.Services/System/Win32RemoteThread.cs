@@ -6,7 +6,7 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Services.System;
 
-unsafe readonly struct Win32RemoteThread : IDisposable
+unsafe readonly ref struct Win32RemoteThread : IDisposable
 {
     readonly void* _parameter;
 
