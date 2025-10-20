@@ -14,13 +14,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Interop;
-using Bedrockix.Windows;
-using Bedrockix.Minecraft;
 using Windows.ApplicationModel;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
 using static System.StringComparison;
 using Flarial.Launcher.Services.Client;
+using Flarial.Launcher.Services.Modding;
 
 namespace Flarial.Launcher;
 
@@ -262,15 +261,15 @@ public partial class MainWindow
     void GameEventsLaunched() => Dispatcher.BeginInvoke(async () =>
     {
         if (!_settings.AutoInject) return;
-        if (!Game.Installed) return;
+        if (!SDK.Minecraft.Installed) return;
         if (SDK.Minecraft.GDK) return;
         if (!IsLaunchEnabled) return;
 
         IsLaunchEnabled = false;
         _launchButtonTextBlock.Text = "Launching...";
 
-        var result = await Task.Run(() => Game.Launch());
-        if (result is not null) Inject_Click(null, null);
+        var result = await Task.Run(() => SDK.Minecraft.Launch());
+        if (result) Inject_Click(null, null);
         else
         {
             IsLaunchEnabled = true;
@@ -348,12 +347,6 @@ public partial class MainWindow
                 return;
             }
 
-            if (await Task.Run(() => Metadata.Instancing))
-            {
-                CreateMessageBox("⚠️ Multi-instancing is not supported.");
-                return;
-            }
-
             if (minimizing) SDK.Minecraft.Debug = true;
 
             if (custom)
@@ -364,15 +357,16 @@ public partial class MainWindow
                     return;
                 }
 
-                Library library = new(path);
+                ModificationLibrary library = new(path);
 
-                if (!library.Valid)
+                if (!library.IsValid)
                 {
                     CreateMessageBox("⚠️ The specified Custom DLL is potentially invalid or doesn't exist.");
                     return;
                 }
 
-                await Task.Run(() => Loader.Launch(library));
+                _launchButtonTextBlock.Text = "Launching...";
+                await Task.Run(() => Injector.UWP.LaunchGame(initialized, library));
                 StatusLabel.Text = "Launched Custom DLL.";
 
                 return;

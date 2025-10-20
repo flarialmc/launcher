@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
-using Bedrockix.Minecraft;
-using Flarial.Launcher.Functions;
 using Flarial.Launcher.Managers;
+using Flarial.Launcher.Services.Modding;
 
 namespace Flarial.Launcher;
 
@@ -82,7 +82,7 @@ Exception: {1}
                     var count = length - offset;
 
                     ArraySegment<string> segment = new(arguments, offset, count);
-                    Loader.Launch(segment);
+                    Injector.UWP.LaunchGame(true, segment.First());
 
                     Environment.Exit(0);
                     break;

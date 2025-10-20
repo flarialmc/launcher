@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Windows.Management.Deployment;
 using System.IO.Compression;
-using Bedrockix.Minecraft;
 using System.Threading;
 
 namespace Flarial.Launcher.SDK;
@@ -67,7 +66,7 @@ public sealed partial class Catalog : IEnumerable<string>
         await FrameworksAsync(); return await Web.UriAsync(content);
     });
 
-    public async partial Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Metadata.Version));
+    public async partial Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Minecraft.Version));
 
     public async partial Task<Request> InstallAsync(string value, Action<int> action) => new(Manager.AddPackageByUriAsync(await UriAsync(value), Options), action);
 

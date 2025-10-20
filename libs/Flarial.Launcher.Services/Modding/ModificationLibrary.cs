@@ -12,7 +12,7 @@ public sealed class ModificationLibrary
 
     public readonly bool Exists;
 
-    internal ModificationLibrary(string path)
+    public ModificationLibrary(string path)
     {
         FileName = Path.GetFullPath(path);
         Exists = File.Exists(FileName) && Path.HasExtension(FileName);

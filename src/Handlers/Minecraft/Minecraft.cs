@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
 using Windows.Management.Deployment;
-using Bedrockix.Minecraft;
 using Flarial.Launcher.Functions;
 using Version = System.Version;
 
@@ -38,15 +37,15 @@ public static partial class Minecraft
         // minimize fix
         var settings = Settings.Current;
         var fixMinecraftMinimizing = settings.FixMinecraftMinimizing;
-        if (fixMinecraftMinimizing && isInstalled()) Game.Debug = true;
-        else if (!fixMinecraftMinimizing && isInstalled()) Game.Debug = false;
+        if (fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = true;
+        else if (!fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = false;
     }
 
 
 
     public static bool isInstalled()
     {
-        return Game.Installed;
+        return SDK.Minecraft.Installed;
     }
 
     public static void InitManagers()
