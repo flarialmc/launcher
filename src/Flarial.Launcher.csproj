@@ -18,7 +18,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <ErrorReport>prompt</ErrorReport>
-    <LangVersion>latest</LangVersion> 
+    <LangVersion>latest</LangVersion>
     <PublishRelease>true</PublishRelease>
     <NoWarn>IDE1006,IDE0130,IDE0052,IDE0051</NoWarn>
     <DebugType>embedded</DebugType>
@@ -37,10 +37,6 @@
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="MathConverter" Version="2.2.1" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.213">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
@@ -52,6 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../libs/Flarial.Launcher.SDK/Flarial.Launcher.SDK.csproj" />
+    <ProjectReference Include="../libs/Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -127,47 +127,8 @@ public partial class SettingsGeneralPage : Page
         window.ContentRendered += Window_ContentRendered;
     }
 
-    void AutoInject_Click(object sender, EventArgs args)
-    {
-        var button = (ToggleButton)sender;
-
-        if (button.IsChecked is not bool @checked) return;
-        _settings.AutoInject = @checked;
-    }
-
-    void MinimizeToTray_Click(object sender, EventArgs args)
-    {
-        var button = (ToggleButton)sender;
-
-        if (button.IsChecked is not bool @checked) return;
-        _settings.MinimizeToTray = @checked;
-
-        if (!@checked)
-        {
-            _settings.StartMinimized = false;
-            StartMinimized.IsChecked = false;
-        }
-    }
-
-    void StartMinimized_Click(object sender, EventArgs args)
-    {
-        var button = (ToggleButton)sender;
-
-        if (button.IsChecked is not bool @checked) return;
-        _settings.StartMinimized = @checked;
-
-        if (@checked)
-        {
-            _settings.MinimizeToTray = true;
-            MinimizeToTray.IsChecked = true;
-        }
-    }
-
     void Window_ContentRendered(object sender, EventArgs args)
     {
-        if (_settings.StartMinimized && !_settings.MinimizeToTray)
-            _settings.StartMinimized = false;
-
         switch (_settings.DllBuild)
         {
             case DllBuild.Release:
@@ -190,15 +151,9 @@ public partial class SettingsGeneralPage : Page
         }
 
         AutoLogin.IsChecked = _settings.AutoLogin;
-        AutoInject.IsChecked = _settings.AutoInject;
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
 
         WaitForInitialization.IsChecked = _settings.WaitForInitialization;
-        FixMinecraftMinimizing.IsChecked = _settings.FixMinecraftMinimizing;
-
-        StartMinimized.IsChecked = _settings.StartMinimized;
-        MinimizeToTray.IsChecked = _settings.MinimizeToTray;
-
         DLLTextBox.Value = _settings.CustomDllPath;
 
         var window = (MainWindow)Application.Current.MainWindow;
@@ -232,17 +187,6 @@ public partial class SettingsGeneralPage : Page
             return;
 
         settings.AutoLogin = @checked;
-    }
-
-    private void ToggleButton_Click_3(object sender, RoutedEventArgs e)
-    {
-        var settings = Settings.Current;
-        var button = (ToggleButton)sender;
-
-        if (button.IsChecked is not bool @checked)
-            return;
-
-        settings.FixMinecraftMinimizing = @checked;
     }
 
     private void BuildChanged(object sender, RoutedEventArgs e)

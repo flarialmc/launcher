@@ -20,6 +20,7 @@ using Flarial.Launcher.SDK;
 using static System.StringComparison;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
+using Flarial.Launcher.Services.Management;
 
 namespace Flarial.Launcher;
 
@@ -40,8 +41,6 @@ public partial class MainWindow
     public static TextBlock StatusLabel, versionLabel, Username;
 
     private static StackPanel mbGrid;
-
-    readonly NotifyIcon _notifyIcon = new() { Text = "Flarial Launcher", Visible = false };
 
     private static readonly Stopwatch speed = new();
 
@@ -92,9 +91,6 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Updating...";
 
         WindowInteropHelper = new(this);
-
-        _notifyIcon.Icon = EmbeddedResources.GetIcon("app.ico");
-        _notifyIcon.Click += NotifyIcon_Click;
 
         Icon = EmbeddedResources.GetImageSource("app.ico");
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -218,17 +214,13 @@ public partial class MainWindow
 
     async Task CheckLicenseAsync()
     {
-        try
-        {
-            var @checked = await Licensing.CheckAsync();
-            LicenseText.Foreground = @checked ? _darkGreen : _darkRed;
-        }
+        try { LicenseText.Foreground = await LicensingService.VerifyAsync() ? _darkGreen : _darkRed; }
         catch { LicenseText.Foreground = _darkGoldenrod; }
     }
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        if (await SDK.Launcher.AvailableAsync())
+        if (await LauncherUpdater.CheckAsync())
         {
             updateTextEnabled = true;
 
@@ -239,9 +231,10 @@ public partial class MainWindow
                 mbGrid.Visibility = Visibility.Hidden;
                 LolGrid.Visibility = Visibility.Visible;
                 LolGrid.IsEnabled = true;
-            }, DispatcherPriority.ApplicationIdle);
+            });
 
-            await SDK.Launcher.UpdateAsync(LauncherDownloadProgressAction);
+            await LauncherUpdater.DownloadAsync(LauncherDownloadProgressAction);
+            return;
         }
 
         _launchButtonTextBlock.Text = "Preparing...";
@@ -252,53 +245,18 @@ public partial class MainWindow
         Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.TargetPackage); };
 
         _ = UpdateGameVersionAsync();
-        _launchButtonTextBlock.Text = "Launch"; IsLaunchEnabled = true;
-
-        if (_settings.StartMinimized) WindowMinimize(null, null);
-        GameEvents.Launched += GameEventsLaunched;
+        _launchButtonTextBlock.Text = "Launch";
+        IsLaunchEnabled = true;
     }
-
-    void GameEventsLaunched() => Dispatcher.BeginInvoke(async () =>
-    {
-        if (!_settings.AutoInject) return;
-        if (!SDK.Minecraft.Installed) return;
-        if (SDK.Minecraft.GDK) return;
-        if (!IsLaunchEnabled) return;
-
-        IsLaunchEnabled = false;
-        _launchButtonTextBlock.Text = "Launching...";
-
-        var result = await Task.Run(() => SDK.Minecraft.Launch());
-        if (result) Inject_Click(null, null);
-        else
-        {
-            IsLaunchEnabled = true;
-            _launchButtonTextBlock.Text = "Launch";
-        }
-    });
 
     public static void CreateMessageBox(string text)
     {
         mbGrid.Children.Add(new Styles.MessageBox { Text = text });
     }
 
-    void NotifyIcon_Click(object sender, EventArgs args)
-    {
-        _notifyIcon.Visible = false;
-        Visibility = Visibility.Visible;
-    }
-
     private void MoveWindow(object sender, MouseButtonEventArgs e) => DragMove();
 
-    private void WindowMinimize(object sender, RoutedEventArgs e)
-    {
-        if (_settings.MinimizeToTray)
-        {
-            _notifyIcon.Visible = true;
-            Visibility = Visibility.Hidden;
-        }
-        else WindowState = WindowState.Minimized;
-    }
+    private void WindowMinimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
     private void WindowClose(object sender, RoutedEventArgs e) => Close();
 
@@ -328,7 +286,6 @@ public partial class MainWindow
             var path = _settings.CustomDllPath;
             var custom = build is DllBuild.Custom;
             var initialized = _settings.WaitForInitialization;
-            var minimizing = _settings.FixMinecraftMinimizing;
             var beta = build is DllBuild.Beta or DllBuild.Nightly;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
@@ -347,7 +304,7 @@ public partial class MainWindow
                 return;
             }
 
-            if (minimizing) SDK.Minecraft.Debug = true;
+            SDK.Minecraft.Debug = true;
 
             if (custom)
             {
@@ -419,10 +376,7 @@ public partial class MainWindow
     protected override void OnClosed(EventArgs args)
     {
         base.OnClosed(args);
-
-        _notifyIcon.Dispose();
         Settings.Current.Save();
-
         Environment.Exit(0);
     }
 

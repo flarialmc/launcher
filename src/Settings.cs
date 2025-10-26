@@ -18,8 +18,6 @@ sealed partial class Settings
 {
     bool _hardwareAcceleration = true;
 
-    bool _fixMinecraftMinimizing = true;
-
     [DataMember]
     internal bool HardwareAcceleration
     {
@@ -28,16 +26,6 @@ sealed partial class Settings
         {
             _hardwareAcceleration = value;
             RenderOptions.ProcessRenderMode = value ? RenderMode.Default : RenderMode.SoftwareOnly;
-        }
-    }
-
-    internal bool FixMinecraftMinimizing
-    {
-        get => _fixMinecraftMinimizing;
-        set
-        {
-            _fixMinecraftMinimizing = value;
-            if (SDK.Minecraft.Installed) SDK.Minecraft.Debug = value;
         }
     }
 
@@ -50,13 +38,7 @@ sealed partial class Settings
     [DataMember]
     internal bool WaitForInitialization = true;
 
-    internal bool AutoInject = false;
-
     internal bool AutoLogin = true;
-
-    internal bool StartMinimized = false;
-
-    internal bool MinimizeToTray = false;
 }
 
 partial class Settings
@@ -66,16 +48,10 @@ partial class Settings
     {
         CustomDllPath = null;
         DllBuild = DllBuild.Release;
-
         WaitForInitialization = true;
-        FixMinecraftMinimizing = true;
 
-        AutoInject = false;
         HardwareAcceleration = true;
-
         AutoLogin = true;
-        StartMinimized = false;
-        MinimizeToTray = false;
     }
 }
 

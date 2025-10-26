@@ -35,8 +35,7 @@ public static partial class Minecraft
         }
 
         // minimize fix
-        var settings = Settings.Current;
-        var fixMinecraftMinimizing = settings.FixMinecraftMinimizing;
+        var fixMinecraftMinimizing = true;
         if (fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = true;
         else if (!fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = false;
     }
