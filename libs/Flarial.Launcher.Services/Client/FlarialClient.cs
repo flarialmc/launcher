@@ -91,11 +91,11 @@ partial class FlarialClient
 
     static readonly HashAlgorithm _algorithm = SHA256.Create();
 
-    const string Uri = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll_hashes.json";
+    const string HashesUri = "https://cdn.flarial.xyz/dll_hashes.json";
 
     async Task<string> RemoteHashAsync()
     {
-        var @string = await HttpService.StringAsync(Uri);
+        var @string = await HttpService.StringAsync(HashesUri);
         return JsonObject.Parse(@string)[_key].GetString();
     }
 

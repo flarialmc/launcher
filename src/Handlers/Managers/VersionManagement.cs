@@ -307,15 +307,6 @@ public static class VersionManagement
                 Console.WriteLine($"An unexpected error occurred: {ex.Message}");
                 return false;
             }
-
-
-            WebClient webClient = new WebClient();
-
-            if (File.Exists(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png")))
-                File.Delete(Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
-
-            await webClient.DownloadFileTaskAsync(new Uri("https://raw.githubusercontent.com/flarialmc/newcdn/main/assets/flarial_mogang.png"),
-                Path.Combine(launcherPath, "Versions", version, "UAP.Assets", "minecraft", "icons", "MCSplashScreen.scale-200.png"));
         }
 
         return true;
