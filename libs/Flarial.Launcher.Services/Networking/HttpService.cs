@@ -14,6 +14,8 @@ static class HttpService
 
     static readonly HttpClient s_client = new();
 
+    internal static async Task<Stream> StreamAsync(string uri) => await s_client.GetStreamAsync(uri);
+
     internal static async Task<string> StringAsync(string uri) => await s_client.GetStringAsync(uri);
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> action)
