@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using Windows.Data.Json;
 
@@ -14,11 +12,11 @@ namespace Flarial.Launcher.SDK;
 
 static class Web
 {
-    const string Packages = "https://raw.githubusercontent.com/ddf8196/mc-w10-versiondb-auto-update/master/versions.json.min";
+    const string Packages = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
+
+    const string Supported = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
     const string Store = "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
-
-    const string Supported = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/NewSupported.txt";
 
     static readonly HttpClient Client = new(new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, AllowAutoRedirect = true });
 
@@ -41,25 +39,25 @@ static class Web
 
     internal static async Task<(HashSet<string> Supported, Dictionary<string, string> Packages)> VersionsAsync() => await Task.Run(async () =>
     {
-        HashSet<string>supported = [];
+        HashSet<string> supported = [];
         Dictionary<string, string> packages = [];
 
         using StreamReader stream = new(await Client.GetStreamAsync(Supported));
 
         string @string; while ((@string = stream.ReadLine()) != default)
             if (!string.IsNullOrEmpty(@string = @string.Trim()))
-               supported.Add(@string);
+                supported.Add(@string);
 
         foreach (var item in JsonArray.Parse(await Client.GetStringAsync(Packages)))
         {
             var array = item.GetArray(); if (array.GetNumberAt(2) != default) continue;
             var value = array.GetStringAt(default);
 
-            if (!supported .Contains(value = value.Substring(default, value.LastIndexOf('.')))) continue;
+            if (!supported.Contains(value = value.Substring(default, value.LastIndexOf('.')))) continue;
             packages.Add(value, array.GetStringAt(1));
         }
 
-        return (supported,  packages);
+        return (supported, packages);
     });
 
     internal static async Task<Uri> UriAsync(HttpContent content)

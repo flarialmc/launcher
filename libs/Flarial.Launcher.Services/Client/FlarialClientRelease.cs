@@ -8,7 +8,7 @@ sealed partial class FlarialClientRelease : FlarialClient
 
     const string Path = "Flarial.Client.Release.dll";
 
-    const string Uri = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll/latest.dll";
+    const string Uri = "https://cdn.flarial.xyz/dll/latest.dll";
 
     internal FlarialClientRelease() : base(Name, Path, Key, Uri) { }
 }

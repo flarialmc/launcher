@@ -1,16 +1,12 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Linq;
-using System.Xml.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Collections;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Windows.Management.Deployment;
-using System.IO.Compression;
-using System.Threading;
 
 namespace Flarial.Launcher.SDK;
 

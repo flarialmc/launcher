@@ -57,9 +57,9 @@ del ""%~f0""
 
     static readonly ProcessStartInfo s_info;
 
-    const string VersionUri = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/launcherVersion.txt";
+    const string VersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
 
-    const string LauncherUri = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/Flarial.Launcher.exe";
+    const string LauncherUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
 
     public static async Task<bool> CheckAsync()
     {

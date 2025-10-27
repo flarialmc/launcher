@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.IO.Compression" />
   </ItemGroup>
 
   <ItemGroup>

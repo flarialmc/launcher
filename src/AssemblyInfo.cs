@@ -14,7 +14,7 @@ using System.Windows;
 
 [assembly: DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 [assembly: AssemblyTitle("Flarial Launcher")]
-[assembly: AssemblyDescription("The Official Launcher for Flarial Client.")]
+[assembly: AssemblyDescription("The Official Launcher For Flarial Client.")]
 [assembly: AssemblyCompany("Flarial")]
 [assembly: AssemblyProduct("Launcher")]
 [assembly: AssemblyCopyright("Copyright © Flarial 2025")]
