@@ -5,6 +5,7 @@ using static System.Math;
 using System.Threading.Tasks;
 using static System.Environment;
 using static System.Net.Http.HttpCompletionOption;
+using static System.Net.DecompressionMethods;
 using System.Net;
 
 namespace Flarial.Launcher.Services.Networking;
@@ -16,7 +17,8 @@ static class HttpService
     static readonly HttpClient s_client = new(new HttpClientHandler
     {
         AllowAutoRedirect = true,
-        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+        AutomaticDecompression = GZip | Deflate,
+        ServerCertificateCustomValidationCallback = delegate { return true; }
     }, true);
 
     internal static async Task<Stream> StreamAsync(string uri) => await s_client.GetStreamAsync(uri);
