@@ -18,7 +18,12 @@ static class Web
 
     const string Store = "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
 
-    static readonly HttpClient Client = new(new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, AllowAutoRedirect = true });
+    static readonly HttpClient Client = new(new HttpClientHandler()
+    {
+        AllowAutoRedirect = true,
+        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+        ServerCertificateCustomValidationCallback = delegate { return true; }
+    });
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> action = default)
     {
