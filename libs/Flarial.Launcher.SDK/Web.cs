@@ -21,8 +21,7 @@ static class Web
     static readonly HttpClient Client = new(new HttpClientHandler()
     {
         AllowAutoRedirect = true,
-        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-        ServerCertificateCustomValidationCallback = delegate { return true; }
+        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
     });
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> action = default)

@@ -17,8 +17,7 @@ static class HttpService
     static readonly HttpClient s_client = new(new HttpClientHandler
     {
         AllowAutoRedirect = true,
-        AutomaticDecompression = GZip | Deflate,
-        ServerCertificateCustomValidationCallback = delegate { return true; }
+        AutomaticDecompression = GZip | Deflate
     }, true);
 
     internal static async Task<Stream> StreamAsync(string uri) => await s_client.GetStreamAsync(uri);
