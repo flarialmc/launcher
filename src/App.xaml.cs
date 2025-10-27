@@ -16,6 +16,7 @@ public partial class App : Application
     // ↓ Do not modify this initialization code. ↓
 
     const string Format = @"Looks like the launcher crashed! 
+
 • Please take a screenshot of this.
 • Create a new support post & send the screenshot.
 
