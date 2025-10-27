@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Flarial.Launcher.SDK;
 
-public sealed partial class Request : IDisposable
+public sealed class Request : IDisposable
 {
     readonly WaitHandle Handle;
 
@@ -33,15 +33,15 @@ public sealed partial class Request : IDisposable
             };
     }
 
-    public partial TaskAwaiter<object> GetAwaiter() => Source.Task.GetAwaiter();
+    public TaskAwaiter<object> GetAwaiter() => Source.Task.GetAwaiter();
 
-    public partial void Cancel()
+    public void Cancel()
     {
         if (Source.Task.IsCompleted) return;
         Operation.Cancel(); Handle.WaitOne();
     }
 
-    public partial void Dispose() { Handle.Dispose(); GC.SuppressFinalize(this); }
+    public void Dispose() { Handle.Dispose(); GC.SuppressFinalize(this); }
 
     /// <summary>
     /// Releases resources held by the installation request.

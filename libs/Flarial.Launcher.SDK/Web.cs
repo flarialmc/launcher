@@ -16,12 +16,6 @@ static class Web
 {
     const string Packages = "https://raw.githubusercontent.com/ddf8196/mc-w10-versiondb-auto-update/master/versions.json.min";
 
-    const string Hashes = "https://raw.githubusercontent.com/flarialmc/newcdn/main/dll_hashes.json";
-
-    const string Index = "https://api.nuget.org/v3/registration5-gz-semver2/microsoft.services.store.engagement/index.json";
-
-    const string Launcher = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/launcherVersion.txt";
-
     const string Store = "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
 
     const string Supported = "https://raw.githubusercontent.com/flarialmc/newcdn/main/launcher/NewSupported.txt";
@@ -68,12 +62,6 @@ static class Web
         return (supported,  packages);
     });
 
-    internal static async Task<Stream> FrameworksAsync()
-    {
-        using var reader = JsonReaderWriterFactory.CreateJsonReader(await Client.GetStreamAsync(Index), XmlDictionaryReaderQuotas.Max);
-        return await Client.GetStreamAsync(XElement.Load(reader).Descendants("packageContent").Last(_ => _.Value.StartsWith("https://")).Value);
-    }
-
     internal static async Task<Uri> UriAsync(HttpContent content)
     {
         using var message = await Client.PostAsync(Store, content);
@@ -82,8 +70,4 @@ static class Web
         using var stream = await message.Content.ReadAsStreamAsync();
         return new(XElement.Load(stream).Descendants().FirstOrDefault(_ => _.Value.StartsWith("http://tlu.dl.delivery.mp.microsoft.com", StringComparison.Ordinal)).Value);
     }
-
-    internal static async Task<string> HashAsync(bool value) => JsonObject.Parse(await Client.GetStringAsync(Hashes))[value ? "Beta" : "Release"].GetString();
-
-    internal static async Task<JsonObject> LauncherAsync() => await Task.Run(async () => JsonObject.Parse(await Client.GetStringAsync(Launcher)));
 }

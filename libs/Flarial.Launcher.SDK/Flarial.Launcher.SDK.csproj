@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net481</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Deterministic>true</Deterministic>
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFramework>net481</TargetFramework>
+
+    <LangVersion>latest</LangVersion>
     <NoWarn>IDE0130;IDE0330;CA1872;CA1835;SYSLIB1054</NoWarn>
+
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
