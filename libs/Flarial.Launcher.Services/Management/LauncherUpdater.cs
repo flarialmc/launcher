@@ -59,8 +59,8 @@ del ""%~f0""
     {
         await HttpService.DownloadAsync(LauncherUri, s_source, action);
 
-        using StreamWriter writer = new(s_script);
-        await writer.WriteAsync(s_content);
+        using (StreamWriter writer = new(s_script))
+            await writer.WriteAsync(s_content);
 
         using (Process.Start(new ProcessStartInfo
         {
