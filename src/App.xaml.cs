@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Services.Modding;
+using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher;
 
@@ -90,6 +91,10 @@ Exception: {1}
 
                 case "--no-hardware-acceleration":
                     hardwareAcceleration = false;
+                    break;
+
+                case "--use-proxy":
+                    HttpService.Proxy = true;
                     break;
             }
         }

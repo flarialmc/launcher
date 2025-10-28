@@ -18,6 +18,7 @@ using static System.StringComparison;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Management;
+using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher;
 
@@ -124,7 +125,7 @@ public partial class MainWindow
         Dispatcher.InvokeAsync(RPCManager.Initialize);
 
         Trace.WriteLine("Debug 9 " + stopwatch.Elapsed.Milliseconds.ToString());
-        System.Windows.Application.Current.MainWindow = this;
+        Application.Current.MainWindow = this;
 
         SetGreetingLabel();
         Trace.WriteLine("Debug 10 " + stopwatch.Elapsed.Milliseconds.ToString());
@@ -184,9 +185,12 @@ public partial class MainWindow
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
+
         _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
-        if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
+
+        if (!_settings.HardwareAcceleration)
+            CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()

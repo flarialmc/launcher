@@ -7,12 +7,18 @@ using static System.Environment;
 using static System.Net.Http.HttpCompletionOption;
 using static System.Net.DecompressionMethods;
 using System.Net;
+using MihaZupan;
 
 namespace Flarial.Launcher.Services.Networking;
 
-static class HttpService
+public static class HttpService
 {
-    static readonly int s_length = SystemPageSize;
+    static readonly HttpClient s_proxy = new(new HttpClientHandler
+    {
+        AllowAutoRedirect = true,
+        AutomaticDecompression = GZip | Deflate,
+        Proxy = new HttpToSocks5Proxy($"{IPAddress.Loopback}", ushort.MaxValue)
+    }, true);
 
     static readonly HttpClient s_client = new(new HttpClientHandler
     {
@@ -20,13 +26,29 @@ static class HttpService
         AutomaticDecompression = GZip | Deflate
     }, true);
 
-    internal static async Task<Stream> StreamAsync(string uri) => await s_client.GetStreamAsync(uri);
+    static HttpClient HttpClient => Proxy ? s_proxy : s_client;
 
-    internal static async Task<string> StringAsync(string uri) => await s_client.GetStringAsync(uri);
+    static readonly int s_length = SystemPageSize;
 
-    internal static async Task DownloadAsync(string uri, string path, Action<int> action)
+    public static bool Proxy { get; set; }
+
+    public static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
+
+    public static async Task<HttpResponseMessage> GetAsync(string uri) => await GetAsync(uri);
+
+    public static async Task<T> GetAsync<T>(string uri)
     {
-        using var message = await s_client.GetAsync(uri, ResponseHeadersRead);
+        return (T)(object)(typeof(T) switch
+        {
+            var @_ when _ == typeof(string) => await HttpClient.GetStringAsync(uri),
+            var @_ when _ == typeof(Stream) => await HttpClient.GetStreamAsync(uri),
+            _ => throw new NotImplementedException()
+        });
+    }
+
+    public static async Task DownloadAsync(string uri, string path, Action<int> action)
+    {
+        using var message = await HttpClient.GetAsync(uri, ResponseHeadersRead);
         message.EnsureSuccessStatusCode();
 
         var buffer = new byte[s_length];

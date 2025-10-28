@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ public static class LicensingService
     {
         var uri = string.Format(s_uri, new GeographicRegion().CodeTwoLetter);
 
-        using var stream = await HttpService.StreamAsync(uri);
+        using var stream = await HttpService.GetAsync<Stream>(uri);
         using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);
 
         var element = XElement.Load(reader);
