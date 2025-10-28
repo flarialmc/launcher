@@ -23,18 +23,13 @@ public static class LauncherUpdater
         var destination = assembly.ManifestModule.FullyQualifiedName;
 
         path = Environment.GetFolderPath(Environment.SpecialFolder.System);
-        s_content = string.Format(Content, Path.Combine(path, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
 
-        var cmd = Path.Combine(path, "cmd.exe"); s_info = new()
-        {
-            FileName = cmd,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            Arguments = string.Format(Arguments, s_script, cmd, destination),
-        };
+        s_filename = Path.Combine(path, "cmd.exe");
+        s_arguments = string.Format(Arguments, s_script, s_filename, destination, "{0}");
+        s_content = string.Format(Content, Path.Combine(path, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
     }
 
-    const string Arguments = "/e:on /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
+    const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\" {3}";
 
     const string Content = @"
 chcp 65001
@@ -47,19 +42,11 @@ if not %errorlevel%==0 goto _
 del ""%~f0""
 ";
 
-    static readonly string s_version;
-
-    static readonly string s_source;
-
-    static readonly string s_script;
-
-    static readonly string s_content;
-
-    static readonly ProcessStartInfo s_info;
-
     const string VersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
 
     const string LauncherUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
+
+    static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
 
     public static async Task<bool> CheckAsync()
     {
@@ -70,10 +57,17 @@ del ""%~f0""
 
     public static async Task DownloadAsync(Action<int> action)
     {
+        await HttpService.DownloadAsync(LauncherUri, s_source, action);
+
         using StreamWriter writer = new(s_script);
         await writer.WriteAsync(s_content);
 
-        await HttpService.DownloadAsync(LauncherUri, s_source, action);
-        using (Process.Start(s_info)) { }
+        using (Process.Start(new ProcessStartInfo
+        {
+            FileName = s_filename,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            Arguments = string.Format(s_arguments, HttpService.Proxy ? "--use-proxy" : string.Empty)
+        })) { }
     }
 }
