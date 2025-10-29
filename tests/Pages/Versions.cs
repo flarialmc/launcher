@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Bedrockix.Minecraft;
 using Flarial.Launcher.SDK;
 
 sealed class Versions : UserControl
@@ -85,7 +84,7 @@ sealed class Versions : UserControl
 
         button1.Click += async (_, _) =>
         {
-            if (!Game.Installed) return;
+            if (!Minecraft.Installed) return;
 
             SuspendLayout();
             tableLayoutPanel.Visible = true;

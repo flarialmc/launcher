@@ -163,7 +163,7 @@ public partial class MainWindow
     {
         try
         {
-            var text = SDK.Minecraft.Version;
+            var text = SDK.Minecraft.GDK ? Services.Core.Minecraft.PackageVersion : SDK.Minecraft.Version;
             var compatible = await VersionCatalog.CompatibleAsync();
 
             Dispatcher.Invoke(() =>
@@ -299,13 +299,8 @@ public partial class MainWindow
                 return;
             }
 
-            if (SDK.Minecraft.GDK)
-            {
-                CreateMessageBox("⚠️ GDK builds aren't supported.");
-                return;
-            }
-
             SDK.Minecraft.Debug = true;
+            var gdk = Services.Core.Minecraft.UsingGameDevelopmentKit;
 
             if (custom)
             {
@@ -324,9 +319,15 @@ public partial class MainWindow
                 }
 
                 _launchButtonTextBlock.Text = "Launching...";
-                await Task.Run(() => Injector.UWP.LaunchGame(initialized, library));
-                StatusLabel.Text = "Launched Custom DLL.";
+                await Task.Run(() => (gdk ? Injector.GDK : Injector.UWP).LaunchGame(initialized, library));
 
+                StatusLabel.Text = "Launched Custom DLL.";
+                return;
+            }
+
+            if (gdk)
+            {
+                CreateMessageBox("⚠️ GDK builds aren’t supported yet — join our Discord to stay updated!");
                 return;
             }
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
 using Flarial.Launcher.Services.Client;
+using Flarial.Launcher.Services.Management;
 
 sealed class Play : UserControl
 {
@@ -66,7 +67,7 @@ sealed class Play : UserControl
                 button.Enabled = checkBox1.Visible = default;
                 ResumeLayout();
 
-                if (!await Licensing.CheckAsync()) throw new LicenseException(typeof(object));
+                if (!await LicensingService.VerifyAsync()) throw new LicenseException(typeof(object));
                 if (!checkBox1.Checked && !await _.Catalog.CompatibleAsync()) return;
 
                 var client = checkBox1.Checked ? FlarialClient.Beta : FlarialClient.Release;

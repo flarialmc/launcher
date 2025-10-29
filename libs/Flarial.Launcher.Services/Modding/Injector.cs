@@ -13,6 +13,8 @@ public sealed class Injector
 {
     public readonly static Injector UWP = new(Minecraft.UWP);
 
+    public readonly static Injector GDK = new(Minecraft.GDK);
+
     internal readonly Minecraft _minecraft;
 
     static readonly FileSystemAccessRule _rule = new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);

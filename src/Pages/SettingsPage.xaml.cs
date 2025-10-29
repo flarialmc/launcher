@@ -19,6 +19,7 @@ public partial class SettingsPage : Page
 
     public static Border b1;
     public static Grid MainGrid;
+    static bool s_shown = false;
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsLeaveAnimation(b1, MainGrid);
@@ -46,6 +47,12 @@ public partial class SettingsPage : Page
                 MainWindow.CreateMessageBox("Run the launcher as an administrator to downgrade or update versions.");
             });
             return;
+        }
+
+        if (SDK.Minecraft.GDK && !s_shown)
+        {
+            s_shown = true;
+            MainWindow.CreateMessageBox("⚠️ Backups will not be generated for the GDK builds of the game.");
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);

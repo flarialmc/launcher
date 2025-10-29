@@ -18,6 +18,8 @@ namespace Flarial.Launcher.Services.Core;
 public unsafe abstract partial class Minecraft
 {
     public static readonly Minecraft UWP = new MinecraftUWP();
+
+    public static readonly Minecraft GDK = new MinecraftGDK();
 }
 
 partial class Minecraft

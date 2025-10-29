@@ -29,7 +29,7 @@ unsafe partial class MinecraftUWP
 
                 while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
                 {
-                    using var process = window.Process;
+                    using Win32Process process = new(window.ProcessId);
 
                     var error = GetApplicationUserModelId(process, &length, string2);
                     if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
@@ -61,10 +61,10 @@ unsafe partial class MinecraftUWP
             using Win32Process process = new(processId);
 
             while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
-                if (!process.IsRunning(true)) return null;
+                if (!process.IsRunning(1)) return null;
 
             while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
-                if (!process.IsRunning(true)) return null;
+                if (!process.IsRunning(1)) return null;
 
             return processId;
         }

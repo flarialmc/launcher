@@ -36,7 +36,6 @@ public static class VersionManagement
     {
         string path = Path.Combine(launcherPath, "Versions", $"Minecraft{version}.Appx");
 
-
         WebClient webClient = new();
 
         if (File.Exists(path))
@@ -317,14 +316,19 @@ public static class VersionManagement
     {
         if (!SDK.Minecraft.Installed)
         {
-            Application.Current.MainWindow.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("Minecraft isn't installed, please install it."));
+            Application.Current.MainWindow.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("⚠️ Minecraft isn't installed, please install it."));
             return false;
         }
 
-        if (!SDK.Minecraft.Unpackaged)
+        var gdk = SDK.Minecraft.GDK;
+
+        if (gdk || !SDK.Minecraft.Unpackaged)
         {
-            string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
-            if (!await BackupManager.CreateBackup(backupname)) return false;
+            if (!gdk)
+            {
+                string backupname = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "-").Replace(":", "-");
+                if (!await BackupManager.CreateBackup(backupname)) return false;
+            }
 
             MainWindow.isDownloadingVersion = true;
 

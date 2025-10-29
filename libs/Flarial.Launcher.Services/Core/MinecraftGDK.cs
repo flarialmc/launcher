@@ -6,15 +6,25 @@ using static Windows.Wdk.PInvoke;
 using static Windows.Wdk.System.Threading.PROCESSINFOCLASS;
 using Windows.Win32.System.Threading;
 using Windows.Win32.Globalization;
-using Windows.Wdk;
+using System.IO;
+using System.Diagnostics;
+using Windows.UI.Xaml;
 
 namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftGDK : Minecraft
 {
-    const string ApplicationUserModelId = "Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe!Game";
+    const string ApplicationUserModelId = "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
+
+    static readonly string s_path;
 
     internal MinecraftGDK() : base(ApplicationUserModelId) { }
+
+    static MinecraftGDK()
+    {
+        var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        s_path = Path.Combine(path, @"Minecraft Bedrock\Users");
+    }
 }
 
 unsafe partial class MinecraftGDK
@@ -30,7 +40,7 @@ unsafe partial class MinecraftGDK
 
             while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
             {
-                using var process1 = window.Process;
+                using Win32Process process1 = new(window.ProcessId);
 
                 PROCESS_BASIC_INFORMATION information = new();
                 NtQueryInformationProcess(process1, ProcessBasicInformation, &information, (uint)sizeof(PROCESS_BASIC_INFORMATION), null);
@@ -62,7 +72,7 @@ unsafe partial class MinecraftGDK
 
             while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
             {
-                using var process = window.Process;
+                using Win32Process process = new(window.ProcessId);
 
                 var error = GetApplicationUserModelId(process, &length, string2);
                 if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
@@ -78,30 +88,40 @@ unsafe partial class MinecraftGDK
     }
 }
 
-partial class MinecraftGDK
+unsafe partial class MinecraftGDK
 {
-    public override bool IsRunning
+    public override bool IsRunning => FindGameWindow() is { };
+
+    public override void TerminateGame() => FindGameWindow()?.EndTask();
+
+    public override uint? LaunchGame(bool initialized)
     {
-        get
+        if (FindGameWindow() is { } window1)
         {
-            throw new NotImplementedException();
+            window1.SetForeground();
+            return window1.ProcessId;
         }
-    }
-}
 
-partial class MinecraftGDK
-{
-    public override void TerminateGame()
-    {
-        throw new NotImplementedException();
-    }
-}
+        using Win32Process process1 = new(FindBootstrapperProcess());
+        process1.IsRunning(INFINITE);
 
+        if (FindGameWindow() is not { } window2)
+            return null;
 
-partial class MinecraftGDK
-{
-    public override uint? LaunchGame(bool _)
-    {
-        throw new NotImplementedException();
+        using Win32Event @event = new();
+        using Win32Process process = new(window2.ProcessId);
+
+        using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+        {
+            InternalBufferSize = new(),
+            EnableRaisingEvents = true,
+            IncludeSubdirectories = true,
+            NotifyFilter = NotifyFilters.FileName
+        }; watcher.Deleted += delegate { @event.Set(); };
+
+        var handles = stackalloc HANDLE[] { @event, process };
+        if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
+
+        return window2.ProcessId;
     }
 }

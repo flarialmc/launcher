@@ -11,7 +11,7 @@ unsafe readonly struct Win32Window
 {
     readonly HWND _handle = HWND.Null;
 
-    readonly uint _processId = new();
+    internal readonly uint ProcessId = new();
 
     [DllImport("User32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(Bool)]
@@ -23,10 +23,8 @@ unsafe readonly struct Win32Window
         GetWindowThreadProcessId(handle, &processId);
 
         _handle = handle;
-        _processId = processId;
+        ProcessId = processId;
     }
-
-    internal Win32Process Process => new(_processId);
 
     internal void SetForeground() => SetForegroundWindow(_handle);
 

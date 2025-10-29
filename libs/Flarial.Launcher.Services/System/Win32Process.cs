@@ -12,9 +12,7 @@ readonly ref struct Win32Process : IDisposable
 
     internal Win32Process(uint processId) => _handle = OpenProcess(PROCESS_ALL_ACCESS, false, processId);
 
-    internal bool IsRunning(bool timeout) => WaitForSingleObject(_handle, timeout ? 1U : 0) is WAIT_TIMEOUT;
-
-    internal bool WaitForExit() => WaitForSingleObject(_handle, INFINITE) is WAIT_OBJECT_0;
+    internal bool IsRunning(uint timeout) => WaitForSingleObject(_handle, timeout ) is WAIT_TIMEOUT;
 
     public void Dispose() => CloseHandle(_handle);
 

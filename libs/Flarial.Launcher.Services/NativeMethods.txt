@@ -15,6 +15,10 @@ GetCurrentProcessId
 TerminateProcess
 GetCurrentProcess
 
+CreateEvent
+SetEvent
+
+WaitForMultipleObjects
 WaitForSingleObject
 CloseHandle
     INVALID_HANDLE_VALUE
