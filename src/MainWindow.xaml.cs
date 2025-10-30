@@ -329,7 +329,7 @@ public partial class MainWindow
 
             bool compatible = beta || await VersionCatalog.CompatibleAsync(); if (!compatible)
             {
-                CreateMessageBox("⚠️ This version not supported by the client.");
+                CreateMessageBox("⚠️ This version is not supported by the client.");
                 return;
             }
 
