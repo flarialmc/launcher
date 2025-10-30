@@ -1,6 +1,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Networking;
 
 sealed class Form : System.Windows.Forms.Form
 {
@@ -35,7 +37,7 @@ sealed class Form : System.Windows.Forms.Form
 
             SuspendLayout();
             progressBar.Visible = false;
-            Controls.Add(new Pages(new Play(this), new Versions(this), new Settings(this)) { Enabled = Minecraft.Installed  });
+            Controls.Add(new Pages(new Play(this), new Versions(this), new Settings(this)) { Enabled = Minecraft.IsInstalled  });
             ResumeLayout();
         };
     }

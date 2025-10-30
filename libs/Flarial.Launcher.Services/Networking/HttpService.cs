@@ -13,24 +13,21 @@ namespace Flarial.Launcher.Services.Networking;
 
 public static class HttpService
 {
-    static readonly HttpClient s_proxy = new(new HttpClientHandler
-    {
-        AllowAutoRedirect = true,
-        AutomaticDecompression = GZip | Deflate,
-        Proxy = new HttpToSocks5Proxy($"{IPAddress.Loopback}", ushort.MaxValue)
-    }, true);
+    static readonly HttpClient s_proxy = new(new HttpServiceHandler { Proxy = new HttpToSocks5Proxy($"{IPAddress.Loopback}", ushort.MaxValue) }, true);
 
-    static readonly HttpClient s_client = new(new HttpClientHandler
-    {
-        AllowAutoRedirect = true,
-        AutomaticDecompression = GZip | Deflate
-    }, true);
+    static readonly HttpClient s_client = new(new HttpServiceHandler(), true);
 
     static HttpClient HttpClient => UseProxy ? s_proxy : s_client;
 
     static readonly int s_length = SystemPageSize;
 
     public static bool UseProxy { get; set; }
+
+    public static bool UseDnsOverHttps
+    {
+        get => HttpServiceHandler.UseDnsOverHttps;
+        set => HttpServiceHandler.UseDnsOverHttps = value;
+    }
 
     public static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 

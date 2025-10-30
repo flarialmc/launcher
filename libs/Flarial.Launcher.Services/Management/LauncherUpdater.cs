@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Networking;
 using Windows.Data.Json;
@@ -29,7 +31,7 @@ public static class LauncherUpdater
         s_content = string.Format(Content, Path.Combine(path, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
     }
 
-    const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\" {3}";
+    const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
 
     const string Content = @"
 chcp 65001
@@ -58,16 +60,18 @@ del ""%~f0""
     public static async Task DownloadAsync(Action<int> action)
     {
         await HttpService.DownloadAsync(LauncherUri, s_source, action);
+        using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
 
-        using (StreamWriter writer = new(s_script))
-            await writer.WriteAsync(s_content);
+        StringBuilder builder = new(s_arguments);
+        if (HttpService.UseProxy) builder.Append(' ').Append("--use-proxy");
+        if (HttpService.UseDnsOverHttps) builder.Append(' ').Append("--use-dns-over-https");
 
         using (Process.Start(new ProcessStartInfo
         {
             FileName = s_filename,
-            UseShellExecute = false,
             CreateNoWindow = true,
-            Arguments = string.Format(s_arguments, HttpService.UseProxy ? "--use-proxy" : string.Empty)
+            UseShellExecute = false,
+            Arguments = $"{builder}"
         })) { }
     }
 }

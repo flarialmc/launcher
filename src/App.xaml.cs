@@ -101,6 +101,10 @@ Exception: {1}
                 case "--use-proxy":
                     HttpService.UseProxy = true;
                     break;
+
+                case "--use-dns-over-https":
+                    HttpService.UseDnsOverHttps = true;
+                    break;
             }
         }
 
