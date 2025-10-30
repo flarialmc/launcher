@@ -1,15 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
+using static System.Net.DecompressionMethods;
+using static System.Net.IPAddress;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using static Windows.Networking.HostNameType;
-using static Windows.Networking.Connectivity.NetworkInformation;
+using static System.UriHostNameType;
 using System.Runtime.Serialization.Json;
 using System.Xml;
 using System.Xml.Linq;
+using static System.Net.Http.HttpCompletionOption;
+using System.Linq;
+using System.Net.Sockets;
 
 namespace Flarial.Launcher.Services.Networking;
 
@@ -20,18 +23,15 @@ sealed partial class HttpServiceHandler : HttpClientHandler
     internal HttpServiceHandler()
     {
         AllowAutoRedirect = true;
-        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+        AutomaticDecompression = GZip | Deflate;
     }
-}
 
-partial class HttpServiceHandler
-{
     static HttpServiceHandler()
     {
         HttpClientHandler handler = new()
         {
             AllowAutoRedirect = true,
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            AutomaticDecompression = GZip | Deflate
         };
 
         s_client = new(handler, true);
@@ -40,46 +40,42 @@ partial class HttpServiceHandler
 
     static readonly HttpClient s_client;
 
-    const string DnsQueryUri = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
+    const string TraceUri = "https://speed.cloudflare.com/__down";
 
-    static HostNameType? InternetProtocolVersion
+    const string DnsUri = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
+
+    static async Task<HostNameType?> VersionAsync()
     {
-        get
+        try
         {
-            if (GetInternetConnectionProfile() is not { } profile)
+            using var message = await s_client.GetAsync(TraceUri, ResponseHeadersRead);
+            var @string = message.Headers.GetValues("cf-meta-ip").FirstOrDefault();
+
+            if (!TryParse(@string, out var address))
                 return null;
 
-            HashSet<HostNameType> types = [];
-
-            foreach (var name in GetHostNames())
+            return address.AddressFamily switch
             {
-                if (name.IPInformation is not { } information)
-                    continue;
-
-                if (profile.NetworkAdapter.NetworkAdapterId != information.NetworkAdapter.NetworkAdapterId)
-                    continue;
-
-                types.Add(name.Type);
-            }
-
-            if (types.Contains(Ipv6)) return Ipv6;
-            if (types.Contains(Ipv4)) return Ipv4;
-            return null;
+                AddressFamily.InterNetwork => Ipv4,
+                AddressFamily.InterNetworkV6 => Ipv6,
+                _ => null
+            };
         }
+        catch (HttpRequestException) { return null; }
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
     {
         var uri = request.RequestUri;
 
-        if (UseDnsOverHttps && uri.HostNameType is UriHostNameType.Dns && InternetProtocolVersion is { } version)
+        if (UseDnsOverHttps && uri.HostNameType is Dns && await VersionAsync() is { } version)
         {
             var name = uri.Host;
 
             var type = version switch { Ipv6 => "AAAA", Ipv4 => "A", _ => null };
             var value = version switch { Ipv6 => "28", Ipv4 => "1", _ => null };
 
-            using var stream = await s_client.GetStreamAsync(string.Format(DnsQueryUri, name, type));
+            using var stream = await s_client.GetStreamAsync(string.Format(DnsUri, name, type));
             using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);
 
             foreach (var element in XElement.Load(reader).Descendants("data"))

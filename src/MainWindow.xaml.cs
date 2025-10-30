@@ -164,7 +164,8 @@ public partial class MainWindow
     {
         try
         {
-            var text = Minecraft.UsingGameDevelopmentKit ? Minecraft.PackageVersion : Minecraft.ClientVersion;
+            var gdk = Minecraft.UsingGameDevelopmentKit;
+            var text = $"{(gdk ? "GDK" : "UWP")} ~ {(gdk ? Minecraft.PackageVersion : Minecraft.ClientVersion)}";
             var compatible = await VersionCatalog.CompatibleAsync();
 
             Dispatcher.Invoke(() =>
@@ -177,7 +178,7 @@ public partial class MainWindow
         {
             Dispatcher.Invoke(() =>
             {
-                VersionLabel.Text = "0.0.0";
+                VersionLabel.Text = "? ~ 0.0.0";
                 VersionTextBorder.Background = _darkGoldenrod;
             });
         }
@@ -328,7 +329,7 @@ public partial class MainWindow
 
             if (gdk)
             {
-                CreateMessageBox("⚠️ GDK builds aren’t supported yet — join our Discord to stay updated!");
+                CreateMessageBox("⚠️ GDK builds aren't supported yet, join our Discord to stay updated!");
                 return;
             }
 

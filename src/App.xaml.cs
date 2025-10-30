@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using Flarial.Launcher.Managers;
+using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
@@ -68,13 +69,19 @@ Exception: {1}
 
     void ApplicationStartup(object sender, StartupEventArgs args)
     {
-        try { new AppInstallManager().AutoUpdateSetting = Enabled; }
-        catch { }
+        Environment.CurrentDirectory = Directory.CreateDirectory(VersionManagement.launcherPath).FullName;
+        Directory.CreateDirectory(BackupManager.backupDirectory);
+        Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Versions");
+        Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
+
+        string path = @$"{VersionManagement.launcherPath}\cachedToken.txt";
+        if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
+
+        try { new AppInstallManager().AutoUpdateSetting = Disabled; } catch { }
 
         var arguments = args.Args;
         var length = arguments.Length;
-
-        var hardwareAcceleration = true;
+        var settings = Settings.Current;
 
         for (var index = 0; index < length; index++)
         {
@@ -88,14 +95,14 @@ Exception: {1}
                     var offset = index + 1; var count = length - offset;
                     ArraySegment<string> segment = new(arguments, offset, count);
 
-                    var gdk = Services.Core.Minecraft.UsingGameDevelopmentKit;
+                    var gdk = Minecraft.UsingGameDevelopmentKit;
                     (gdk ? Injector.GDK : Injector.UWP).Launch(true, segment.First());
 
                     Environment.Exit(0);
                     break;
 
                 case "--no-hardware-acceleration":
-                    hardwareAcceleration = false;
+                    settings.HardwareAcceleration = false;
                     break;
 
                 case "--use-proxy":
@@ -107,17 +114,5 @@ Exception: {1}
                     break;
             }
         }
-
-        Environment.CurrentDirectory = Directory.CreateDirectory(VersionManagement.launcherPath).FullName;
-        Directory.CreateDirectory(BackupManager.backupDirectory);
-        Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Versions");
-        Directory.CreateDirectory(@$"{VersionManagement.launcherPath}\Logs");
-        string path = @$"{VersionManagement.launcherPath}\cachedToken.txt";
-
-        if (!File.Exists(path))
-            File.WriteAllText(path, string.Empty);
-
-        var settings = Settings.Current;
-        if (!hardwareAcceleration) settings.HardwareAcceleration = false;
     }
 }
