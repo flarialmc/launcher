@@ -327,12 +327,6 @@ public partial class MainWindow
                 return;
             }
 
-            if (gdk)
-            {
-                CreateMessageBox("⚠️ GDK builds aren't supported yet, join our Discord to stay updated!");
-                return;
-            }
-
             bool compatible = beta || await VersionCatalog.CompatibleAsync(); if (!compatible)
             {
                 CreateMessageBox("⚠️ This version not supported by the client.");

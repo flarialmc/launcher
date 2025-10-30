@@ -53,7 +53,7 @@ public partial class SettingsPage : Page
         if (Minecraft.UsingGameDevelopmentKit && !s_shown)
         {
             s_shown = true;
-            MainWindow.CreateMessageBox("⚠️ Backups will not be generated for the GDK builds of the game.");
+            MainWindow.CreateMessageBox("🚨 Backups will not be generated for the currently installed version.");
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
