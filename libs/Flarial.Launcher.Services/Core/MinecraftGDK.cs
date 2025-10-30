@@ -2,23 +2,21 @@ using System;
 using Flarial.Launcher.Services.System;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
-using static Windows.Wdk.PInvoke;
-using static Windows.Wdk.System.Threading.PROCESSINFOCLASS;
-using Windows.Win32.System.Threading;
+using static Windows.Win32.Foundation.HANDLE;
 using Windows.Win32.Globalization;
 using System.IO;
-using System.Diagnostics;
-using Windows.UI.Xaml;
+using Windows.Win32.System.RemoteDesktop;
+using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 
 namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftGDK : Minecraft
 {
-    const string ApplicationUserModelId = "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
+    protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
 
     static readonly string s_path;
 
-    internal MinecraftGDK() : base(ApplicationUserModelId) { }
+    internal MinecraftGDK() : base() { }
 
     static MinecraftGDK()
     {
@@ -29,42 +27,52 @@ sealed partial class MinecraftGDK : Minecraft
 
 unsafe partial class MinecraftGDK
 {
-    internal uint FindBootstrapperProcess()
+    uint LaunchBootstrapper()
     {
-        fixed (char* string1 = _applicationUserModelId)
-        fixed (char* @class = "GAMINGSERVICESUI_HOSTING_WINDOW_CLASS")
+        fixed (char* processName = "GameLaunchHelper.exe")
+        fixed (char* applicationUserModelId = ApplicationUserModelId)
         {
-            Win32Window window = HWND.Null;
+            var level = 0U;
+            var session = WTS_CURRENT_SESSION;
+            var handle = WTS_CURRENT_SERVER_HANDLE;
+
+            uint count = new();
+            WTS_PROCESS_INFOW* information = null;
+
             var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
-            var string2 = stackalloc char[(int)length];
+            var @string = stackalloc char[(int)length];
 
-            while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
+            try
             {
-                using Win32Process process1 = new(window.ProcessId);
+                if (WTSEnumerateProcessesEx(handle, &level, session, (PWSTR*)&information, &count))
+                    for (var index = 0; index < count; index++)
+                    {
+                        var entry = information[index];
 
-                PROCESS_BASIC_INFORMATION information = new();
-                NtQueryInformationProcess(process1, ProcessBasicInformation, &information, (uint)sizeof(PROCESS_BASIC_INFORMATION), null);
+                        var result = CompareStringOrdinal(processName, -1, entry.pProcessName, -1, true);
+                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                var processId = (uint)information.InheritedFromUniqueProcessId;
-                using Win32Process process2 = new(processId);
+                        using Win32Process process = new(entry.ProcessId);
 
-                var error = GetApplicationUserModelId(process2, &length, string2);
-                if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
+                        var error = GetApplicationUserModelId(process, &length, @string);
+                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                var result = CompareStringOrdinal(string1, -1, string2, -1, true);
-                if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                        result = CompareStringOrdinal(applicationUserModelId, -1, @string, -1, true);
+                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                return processId;
+                        return entry.ProcessId;
+                    }
+
+                return ActivateApplication();
             }
-
-            return ActivateApplication();
+            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
         }
     }
 
-    internal Win32Window? FindGameWindow()
+    Win32Window? FindWindow()
     {
         fixed (char* @class = "Bedrock")
-        fixed (char* string1 = _applicationUserModelId)
+        fixed (char* string1 = ApplicationUserModelId)
         {
             Win32Window window = new();
             var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
@@ -90,26 +98,26 @@ unsafe partial class MinecraftGDK
 
 unsafe partial class MinecraftGDK
 {
-    public override bool IsRunning => FindGameWindow() is { };
+    public override bool IsRunning => FindWindow() is { };
 
-    public override void TerminateGame() => FindGameWindow()?.EndTask();
+    public override void Terminate() => FindWindow()?.Close();
 
-    public override uint? LaunchGame(bool initialized)
+    public override uint? Launch(bool initialized)
     {
-        if (FindGameWindow() is { } window1)
+        if (FindWindow() is { } running)
         {
-            window1.SetForeground();
-            return window1.ProcessId;
+            running.Switch();
+            return running.ProcessId;
         }
 
-        using Win32Process process1 = new(FindBootstrapperProcess());
-        process1.IsRunning(INFINITE);
+        using (Win32Process bootstrapper = new(LaunchBootstrapper()))
+            bootstrapper.IsRunning(INFINITE);
 
-        if (FindGameWindow() is not { } window2)
+        if (FindWindow() is not { } @new)
             return null;
 
         using Win32Event @event = new();
-        using Win32Process process = new(window2.ProcessId);
+        using Win32Process process = new(@new.ProcessId);
 
         using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
         {
@@ -122,6 +130,6 @@ unsafe partial class MinecraftGDK
         var handles = stackalloc HANDLE[] { @event, process };
         if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
 
-        return window2.ProcessId;
+        @new.Switch(); return @new.ProcessId;
     }
 }

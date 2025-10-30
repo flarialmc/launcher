@@ -2,7 +2,7 @@
 
 namespace Flarial.Launcher;
 
-public static partial class Minecraft
+public static partial class MinecraftGame
 {
     public static class Backups
     {

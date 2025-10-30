@@ -202,7 +202,7 @@ public static class BackupManager
 
     public static async Task<string> CreateConfig()
     {
-        var version = Minecraft.GetVersion();
+        var version = MinecraftGame.GetVersion();
         await Task.CompletedTask;
 
         var backupConfig = new BackupConfiguration

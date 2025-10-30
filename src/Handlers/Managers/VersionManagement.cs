@@ -14,6 +14,7 @@ using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using System.Xml;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.Managers;
 
@@ -153,7 +154,7 @@ public static class VersionManagement
         try
         {
 
-            var registerPackageOperation = Minecraft.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true });
+            var registerPackageOperation = MinecraftGame.PackageManager.RegisterPackageByUriAsync(new Uri(escapedPath), new RegisterPackageOptions { DeveloperMode = true, ForceAppShutdown = true, ForceUpdateFromAnyVersion = true, ForceTargetAppShutdown = true });
             var registerPackageTask = registerPackageOperation.AsTask();
 
             await registerPackageTask;
@@ -213,8 +214,8 @@ public static class VersionManagement
         try
         {
 
-            var removePackageOperation = Minecraft.PackageManager.RemovePackageAsync(
-                Minecraft.Package.Id.FullName,
+            var removePackageOperation = MinecraftGame.PackageManager.RemovePackageAsync(
+                MinecraftGame.Package.Id.FullName,
                 RemovalOptions.RemoveForAllUsers
             );
             await removePackageOperation;
@@ -314,15 +315,15 @@ public static class VersionManagement
 
     public static async Task<bool> InstallMinecraft(string version, UIElement element)
     {
-        if (!SDK.Minecraft.Installed)
+        if (!Minecraft.IsInstalled)
         {
             Application.Current.MainWindow.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("⚠️ Minecraft isn't installed, please install it."));
             return false;
         }
 
-        var gdk = SDK.Minecraft.GDK;
+        var gdk = Minecraft.UsingGameDevelopmentKit;
 
-        if (gdk || !SDK.Minecraft.Unpackaged)
+        if (gdk || !Minecraft.IsUnpackaged)
         {
             if (!gdk)
             {
@@ -432,7 +433,7 @@ public static class VersionManagement
                     return false;
                 }
 
-                if (Minecraft.Package != null)
+                if (MinecraftGame.Package != null)
                 {
                     if (await BackupManager.GetConfig(backupname) == null)
                     {
@@ -536,9 +537,9 @@ public static class VersionManagement
                 Trace.WriteLine("Application data directory does not exist.");
             }
 
-            if (Minecraft.ApplicationData != null)
+            if (MinecraftGame.ApplicationData != null)
             {
-                await Minecraft.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
+                await MinecraftGame.ApplicationData.ClearAsync(ApplicationDataLocality.Local | ApplicationDataLocality.Roaming | ApplicationDataLocality.Temporary | ApplicationDataLocality.LocalCache);
             }
             else
             {

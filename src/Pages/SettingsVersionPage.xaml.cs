@@ -1,4 +1,5 @@
 ﻿using Flarial.Launcher.Managers;
+using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Styles;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ public partial class SettingsVersionPage : Page
             VersionItemProperties.SetVersion(versionItem, name);
             VersionItemProperties.SetState(versionItem, 0);
 
-            bool unpackaged = SDK.Minecraft.Installed && SDK.Minecraft.Unpackaged;
+            bool unpackaged = Minecraft.IsInstalled && Minecraft.IsUnpackaged;
 
             if (unpackaged)
             {
@@ -42,7 +43,7 @@ public partial class SettingsVersionPage : Page
                 }
             }
 
-            if (Minecraft.GetVersion().ToString() == name)
+            if (MinecraftGame.GetVersion().ToString() == name)
             {
                 VersionItemProperties.SetState(versionItem, 3);
                 versionItem.IsChecked = true;

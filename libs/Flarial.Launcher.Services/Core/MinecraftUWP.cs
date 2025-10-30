@@ -9,9 +9,9 @@ namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftUWP : Minecraft
 {
-    const string ApplicationUserModelId = $"{PackageFamilyName}!App";
+    protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App";
 
-    internal MinecraftUWP() : base(ApplicationUserModelId) { }
+    internal MinecraftUWP() : base() { }
 }
 
 unsafe partial class MinecraftUWP
@@ -21,7 +21,7 @@ unsafe partial class MinecraftUWP
         get
         {
             fixed (char* @class = "MSCTFIME UI")
-            fixed (char* string1 = _applicationUserModelId)
+            fixed (char* string1 = ApplicationUserModelId)
             {
                 Win32Window window = HWND.Null;
                 var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
@@ -48,11 +48,11 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    public override uint? LaunchGame(bool initialized)
+    public override uint? Launch(bool initialized)
     {
         if (IsRunning) return ActivateApplication();
 
-        var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
+        var path1 = ApplicationDataManager.CreateForPackageFamily(s_packageFamilyName).LocalFolder.Path;
         var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(path1, path2))
@@ -73,12 +73,12 @@ unsafe partial class MinecraftUWP
 
 unsafe partial class MinecraftUWP
 {
-    public override void TerminateGame()
+    public override void Terminate()
     {
         uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
         PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
-        GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
+        GetPackagesByPackageFamily(s_packageFamilyName, ref count, &string1, ref length, string2);
         s_packageDebugSettings.TerminateAllProcesses(string2);
     }
 }

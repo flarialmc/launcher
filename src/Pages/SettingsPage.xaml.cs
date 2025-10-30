@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Animations;
 using Flarial.Launcher.Functions;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.Pages;
 
@@ -31,7 +32,7 @@ public partial class SettingsPage : Page
 
     internal void Navigate_Versions(object sender, RoutedEventArgs e)
     {
-        if (!SDK.Minecraft.Installed)
+        if (!Minecraft.IsInstalled)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -40,7 +41,7 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (SDK.Minecraft.Unpackaged && !Utils.IsAdministrator)
+        if (Minecraft.IsUnpackaged && !Utils.IsAdministrator)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -49,7 +50,7 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (SDK.Minecraft.GDK && !s_shown)
+        if (Minecraft.UsingGameDevelopmentKit && !s_shown)
         {
             s_shown = true;
             MainWindow.CreateMessageBox("⚠️ Backups will not be generated for the GDK builds of the game.");

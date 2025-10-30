@@ -5,10 +5,11 @@ using System.Security.Principal;
 using Windows.Management.Deployment;
 using Flarial.Launcher.Functions;
 using Version = System.Version;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher;
 
-public static partial class Minecraft
+public static partial class MinecraftGame
 {
 
     public static Process Process1;
@@ -36,15 +37,15 @@ public static partial class Minecraft
 
         // minimize fix
         var fixMinecraftMinimizing = true;
-        if (fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = true;
-        else if (!fixMinecraftMinimizing && isInstalled()) SDK.Minecraft.Debug = false;
+        if (fixMinecraftMinimizing && isInstalled()) Minecraft.HasUWPAppLifecycle = true;
+        else if (!fixMinecraftMinimizing && isInstalled()) Minecraft.HasUWPAppLifecycle = false;
     }
 
 
 
     public static bool isInstalled()
     {
-        return SDK.Minecraft.Installed;
+        return Minecraft.IsInstalled;
     }
 
     public static void InitManagers()
@@ -95,5 +96,5 @@ public static partial class Minecraft
         return scale * Math.Round(d / scale, digits);
     }
 
-    public static Version GetVersion() => new(SDK.Minecraft.Installed ? SDK.Minecraft.Version : "0.0.0");
+    public static Version GetVersion() => new(Minecraft.IsInstalled ? Minecraft.ClientVersion : "0.0.0");
 }

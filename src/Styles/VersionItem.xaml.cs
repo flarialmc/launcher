@@ -48,7 +48,7 @@ namespace Flarial.Launcher.Styles
 
                     time += 50;
 
-                    if (Minecraft.isInstalled() && time > 7000 && MainWindow.progressPercentage == 100 && MainWindow.progressType == "Installing")
+                    if (MinecraftGame.isInstalled() && time > 7000 && MainWindow.progressPercentage == 100 && MainWindow.progressType == "Installing")
                     {
                         Trace.WriteLine("yes 1");
                         timer.Stop();
@@ -118,7 +118,7 @@ namespace Flarial.Launcher.Styles
 
                     time += 50;
 
-                    if (Minecraft.isInstalled() && time > 7000 && MainWindow.progressPercentage == 100 && MainWindow.progressType == "Installing")
+                    if (MinecraftGame.isInstalled() && time > 7000 && MainWindow.progressPercentage == 100 && MainWindow.progressType == "Installing")
                     {
                         Trace.WriteLine("yes 1");
                         timer.Stop();

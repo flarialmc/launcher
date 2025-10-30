@@ -19,6 +19,7 @@ using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Management;
 using Flarial.Launcher.Services.Networking;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher;
 
@@ -111,7 +112,7 @@ public partial class MainWindow
 
         Trace.WriteLine("Debug 2 " + stopwatch.Elapsed.Milliseconds.ToString());
 
-        Dispatcher.InvokeAsync(Minecraft.Init);
+        Dispatcher.InvokeAsync(MinecraftGame.Init);
         Trace.WriteLine("Debug 3 " + stopwatch.Elapsed.Milliseconds.ToString());
 
         StatusLabel = statusLabel;
@@ -163,7 +164,7 @@ public partial class MainWindow
     {
         try
         {
-            var text = SDK.Minecraft.GDK ? Services.Core.Minecraft.PackageVersion : SDK.Minecraft.Version;
+            var text = Minecraft.UsingGameDevelopmentKit ? Minecraft.PackageVersion : Minecraft.ClientVersion;
             var compatible = await VersionCatalog.CompatibleAsync();
 
             Dispatcher.Invoke(() =>
@@ -293,14 +294,14 @@ public partial class MainWindow
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Verifying...";
 
-            if (!SDK.Minecraft.Installed)
+            if (!Minecraft.IsInstalled)
             {
                 CreateMessageBox(@"⚠️ Please install the game.");
                 return;
             }
 
-            SDK.Minecraft.Debug = true;
-            var gdk = Services.Core.Minecraft.UsingGameDevelopmentKit;
+            Minecraft.HasUWPAppLifecycle = true;
+            var gdk = Minecraft.UsingGameDevelopmentKit;
 
             if (custom)
             {
@@ -319,7 +320,7 @@ public partial class MainWindow
                 }
 
                 _launchButtonTextBlock.Text = "Launching...";
-                await Task.Run(() => (gdk ? Injector.GDK : Injector.UWP).LaunchGame(initialized, library));
+                await Task.Run(() => (gdk ? Injector.GDK : Injector.UWP).Launch(initialized, library));
 
                 StatusLabel.Text = "Launched Custom DLL.";
                 return;

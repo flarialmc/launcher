@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
 using Flarial.Launcher.Functions;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.Managers;
 
@@ -34,8 +35,7 @@ public static class RPCManager
 
     private static void TimerElapsed(object sender, ElapsedEventArgs e)
     {
-        if(SDK.Minecraft.Installed)
-        if (SDK.Minecraft.Running)
+        if (Minecraft.UWP.IsRunning)
         {
             var ip = readIp();
             if (ip != previousContent)

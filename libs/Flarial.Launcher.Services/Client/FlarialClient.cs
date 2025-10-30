@@ -74,9 +74,9 @@ partial class FlarialClient
     {
         var minecraft = s_injector._minecraft;
         
-        if (!IsInjectable) minecraft.TerminateGame();
-        if (IsRunning) return minecraft.LaunchGame(initialized) is not null;
-        if (s_injector.LaunchGame(initialized, _path) is not { } processId) return false;
+        if (!IsInjectable) minecraft.Terminate();
+        if (IsRunning) return minecraft.Launch(initialized) is { };
+        if (s_injector.Launch(initialized, _path) is not { } processId) return false;
 
         using Win32Process process = new(processId);
         using Win32Mutex mutex = new(_name);
@@ -119,7 +119,7 @@ partial class FlarialClient
         Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()]; await Task.WhenAll(tasks);
         if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase)) return;
 
-        if (IsRunning) s_injector._minecraft.TerminateGame();
+        if (IsRunning) s_injector._minecraft.Terminate();
         await HttpService.DownloadAsync(_uri, _path, action);
     }
 }

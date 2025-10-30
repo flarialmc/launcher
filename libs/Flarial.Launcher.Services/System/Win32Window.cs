@@ -13,22 +13,21 @@ unsafe readonly struct Win32Window
 
     internal readonly uint ProcessId = new();
 
-    [DllImport("User32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(Bool)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [DllImport("User32", ExactSpelling = true, SetLastError = true)]
     static extern bool EndTask(nint hWnd, [MarshalAs(Bool)] bool fShutDown, [MarshalAs(Bool)] bool fForce);
 
     Win32Window(HWND handle)
     {
         uint processId = 0;
         GetWindowThreadProcessId(handle, &processId);
-
-        _handle = handle;
-        ProcessId = processId;
+        _handle = handle; ProcessId = processId;
     }
 
-    internal void SetForeground() => SetForegroundWindow(_handle);
+    internal void Switch() => SwitchToThisWindow(_handle, true);
 
-    internal void EndTask() => EndTask(_handle, false, true);
+    internal void Close() => EndTask(_handle, false, true);
 
     public static implicit operator HWND(Win32Window @this) => @this._handle;
 

@@ -67,7 +67,7 @@ del ""%~f0""
             FileName = s_filename,
             UseShellExecute = false,
             CreateNoWindow = true,
-            Arguments = string.Format(s_arguments, HttpService.Proxy ? "--use-proxy" : string.Empty)
+            Arguments = string.Format(s_arguments, HttpService.UseProxy ? "--use-proxy" : string.Empty)
         })) { }
     }
 }

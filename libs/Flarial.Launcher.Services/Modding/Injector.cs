@@ -23,7 +23,7 @@ public sealed class Injector
 
     Injector(Minecraft minecraft) => _minecraft = minecraft;
 
-    public uint? LaunchGame(bool initialized, ModificationLibrary library)
+    public uint? Launch(bool initialized, ModificationLibrary library)
     {
         var parameter = library.FileName;
         if (!library.Exists) throw new FileNotFoundException(null, parameter);
@@ -33,7 +33,7 @@ public sealed class Injector
         security.SetAccessRule(_rule);
         File.SetAccessControl(parameter, security);
 
-        if (_minecraft.LaunchGame(initialized) is not { } processId)
+        if (_minecraft.Launch(initialized) is not { } processId)
             return null;
 
         using Win32Process process = new(processId);

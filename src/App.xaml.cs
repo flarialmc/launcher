@@ -9,6 +9,8 @@ using System.Windows;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
+using static Windows.ApplicationModel.Store.Preview.InstallControl.AutoUpdateSetting;
 
 namespace Flarial.Launcher;
 
@@ -66,6 +68,9 @@ Exception: {1}
 
     void ApplicationStartup(object sender, StartupEventArgs args)
     {
+        try { new AppInstallManager().AutoUpdateSetting = Enabled; }
+        catch { }
+
         var arguments = args.Args;
         var length = arguments.Length;
 
@@ -80,11 +85,11 @@ Exception: {1}
                     if (!(index + 1 < length))
                         continue;
 
-                    var offset = index + 1;
-                    var count = length - offset;
-
+                    var offset = index + 1; var count = length - offset;
                     ArraySegment<string> segment = new(arguments, offset, count);
-                    Injector.UWP.LaunchGame(true, segment.First());
+
+                    var gdk = Services.Core.Minecraft.UsingGameDevelopmentKit;
+                    (gdk ? Injector.GDK : Injector.UWP).Launch(true, segment.First());
 
                     Environment.Exit(0);
                     break;
@@ -94,7 +99,7 @@ Exception: {1}
                     break;
 
                 case "--use-proxy":
-                    HttpService.Proxy = true;
+                    HttpService.UseProxy = true;
                     break;
             }
         }

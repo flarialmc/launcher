@@ -1,17 +1,15 @@
 using System.IO;
 using System.Linq;
-using Flarial.Launcher.Services.System;
 using Windows.Management.Deployment;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
-using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
+using static Windows.Win32.Storage.FileSystem.FILE_ACCESS_RIGHTS;
 using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
 using static Windows.Win32.PInvoke;
 using Windows.Win32.Storage.FileSystem;
 using Windows.ApplicationModel;
 using System.Diagnostics;
-using System;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -24,7 +22,7 @@ public unsafe abstract partial class Minecraft
 
 partial class Minecraft
 {
-    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+    protected static readonly string s_packageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
     static readonly PackageManager s_packageManager = new();
 
@@ -36,24 +34,24 @@ partial class Minecraft
     {
         get
         {
-            var packages = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName);
-            return packages.FirstOrDefault() ?? throw new FileNotFoundException(null, PackageFamilyName);
+            var packages = s_packageManager.FindPackagesForUser(string.Empty, s_packageFamilyName);
+            return packages.FirstOrDefault() ?? throw new FileNotFoundException(null, s_packageFamilyName);
         }
     }
 }
 
 partial class Minecraft
 {
-    protected readonly string _applicationUserModelId;
+    internal Minecraft() { }
 
-    internal Minecraft(string applicationUserModelId) => _applicationUserModelId = applicationUserModelId;
+    protected abstract string ApplicationUserModelId { get; }
 }
 
 unsafe partial class Minecraft
 {
     private protected uint ActivateApplication()
     {
-        fixed (char* appUserModelId = _applicationUserModelId)
+        fixed (char* appUserModelId = ApplicationUserModelId)
         {
             const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
             s_applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
@@ -71,7 +69,7 @@ unsafe partial class Minecraft
             uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
             PWSTR string1 = new(), string2 = stackalloc char[(int)length];
 
-            GetPackagesByPackageFamily(PackageFamilyName, ref count, &string1, ref length, string2);
+            GetPackagesByPackageFamily(s_packageFamilyName, ref count, &string1, ref length, string2);
             if (value) s_packageDebugSettings.EnableDebugging(string2, null, null);
             else s_packageDebugSettings.DisableDebugging(string2);
         }
@@ -82,7 +80,7 @@ unsafe partial class Minecraft
         get
         {
             uint count = new(), length = new();
-            var error = GetPackagesByPackageFamily(PackageFamilyName, ref count, null, ref length, null);
+            var error = GetPackagesByPackageFamily(s_packageFamilyName, ref count, null, ref length, null);
             return error is WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER && count > 0;
         }
     }
@@ -92,7 +90,7 @@ unsafe partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    const uint DesiredAccess = (uint)GENERIC_READ;
+    const uint DesiredAccess = (uint)FILE_READ_DATA;
 
     const FILE_SHARE_MODE ShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 
@@ -126,24 +124,17 @@ partial class Minecraft
     {
         get
         {
-            var packageVersion = Package.Id.Version;
-
-            var major = packageVersion.Major;
-            var minor = packageVersion.Minor;
-            var build = packageVersion.Build;
-            var revision = packageVersion.Revision;
-
-            var version = $"{new Version(major, minor, build, revision)}";
-            return version.Substring(0, version.LastIndexOf('.'));
+            var version = Package.Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         }
     }
 }
 
 partial class Minecraft
 {
-    public abstract uint? LaunchGame(bool initialized);
+    public abstract uint? Launch(bool initialized);
 
-    public abstract void TerminateGame();
+    public abstract void Terminate();
 
     public abstract bool IsRunning { get; }
 }

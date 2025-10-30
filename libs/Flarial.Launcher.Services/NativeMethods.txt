@@ -18,6 +18,12 @@ GetCurrentProcess
 CreateEvent
 SetEvent
 
+WTSEnumerateProcessesEx
+    WTS_CURRENT_SESSION
+    WTS_CURRENT_SERVER_HANDLE
+    WTS_PROCESS_INFOW
+WTSFreeMemoryEx
+
 WaitForMultipleObjects
 WaitForSingleObject
 CloseHandle
@@ -27,7 +33,7 @@ CompareStringOrdinal
 
 FindWindowEx
 GetWindowThreadProcessId
-SetForegroundWindow
+SwitchToThisWindow
 
 CreateFile2
 GetFileAttributes
@@ -41,10 +47,6 @@ LoadLibraryEx
 GetModuleHandle
 GetProcAddress
 
-NtQueryInformationProcess
-    PROCESS_BASIC_INFORMATION
-
-QueueUserAPC
 WriteProcessMemory
 
 VirtualAllocEx
@@ -53,6 +55,6 @@ VirtualFreeEx
 CreateMutex
 DuplicateHandle
 
-GENERIC_ACCESS_RIGHTS
+FILE_ACCESS_RIGHTS
 PROCESS_CREATION_FLAGS
 INFINITE

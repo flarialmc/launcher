@@ -40,13 +40,9 @@ public sealed class Catalog : IEnumerable<string>
         return await Web.UriAsync(content);
     });
 
-    public async Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Minecraft.Version));
+    public async Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Services.Core.Minecraft.ClientVersion));
 
     public async Task<Request> InstallAsync(string value, Action<int> action) => new(Manager.AddPackageByUriAsync(await UriAsync(value), Options), action);
-
-    /// <summary>
-    /// Enumerates versions present in the catalog.
-    /// </summary>
 
     public IEnumerator<string> GetEnumerator() => Packages.Keys.GetEnumerator();
 

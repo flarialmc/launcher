@@ -26,11 +26,11 @@ public static class HttpService
         AutomaticDecompression = GZip | Deflate
     }, true);
 
-    static HttpClient HttpClient => Proxy ? s_proxy : s_client;
+    static HttpClient HttpClient => UseProxy ? s_proxy : s_client;
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool Proxy { get; set; }
+    public static bool UseProxy { get; set; }
 
     public static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
