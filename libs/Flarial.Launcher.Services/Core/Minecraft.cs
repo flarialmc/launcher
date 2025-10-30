@@ -4,7 +4,7 @@ using Windows.Management.Deployment;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
-using static Windows.Win32.Storage.FileSystem.FILE_ACCESS_RIGHTS;
+using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
 using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
 using static Windows.Win32.PInvoke;
 using Windows.Win32.Storage.FileSystem;
@@ -90,7 +90,7 @@ unsafe partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    const uint DesiredAccess = (uint)FILE_READ_DATA;
+    const uint DesiredAccess = (uint)GENERIC_READ;
 
     const FILE_SHARE_MODE ShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 
