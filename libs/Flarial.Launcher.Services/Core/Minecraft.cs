@@ -1,16 +1,8 @@
 using System.IO;
 using System.Linq;
 using Windows.Management.Deployment;
-using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
-using static System.StringComparison;
-using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
-using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
-using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
 using static Windows.Win32.UI.Shell.ACTIVATEOPTIONS;
-using static Windows.Win32.PInvoke;
-using Windows.Win32.Storage.FileSystem;
-using Windows.ApplicationModel;
 using System.Diagnostics;
 using System;
 
