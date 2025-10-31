@@ -49,14 +49,7 @@ unsafe partial class Minecraft
 {
     public static bool IsInstalled => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).Any();
 
-    public static bool IsUnpackaged
-    {
-        get
-        {
-            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-            return package.IsDevelopmentMode;
-        }
-    }
+    public static bool IsUnpackaged => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First().IsDevelopmentMode;
 
     public static bool HasUWPAppLifecycle
     {
