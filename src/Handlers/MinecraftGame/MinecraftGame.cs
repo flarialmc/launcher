@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
 using Windows.Management.Deployment;
-using Flarial.Launcher.Functions;
-using Version = System.Version;
 using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher;
@@ -72,8 +70,6 @@ public static partial class MinecraftGame
         }
     }
 
-
-
     public static void FindPackage()
     {
         if (PackageManager is null) throw new NullReferenceException();
@@ -96,5 +92,5 @@ public static partial class MinecraftGame
         return scale * Math.Round(d / scale, digits);
     }
 
-    public static Version GetVersion() => new(Minecraft.IsInstalled ? Minecraft.ClientVersion : "0.0.0");
+    public static Version GetVersion() => new(Minecraft.IsInstalled ? Minecraft.Version : "0.0.0");
 }

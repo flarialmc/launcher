@@ -32,19 +32,13 @@ unsafe partial class MinecraftGDK
         fixed (char* processName = "GameLaunchHelper.exe")
         fixed (char* applicationUserModelId = ApplicationUserModelId)
         {
-            var level = 0U;
-            var session = WTS_CURRENT_SESSION;
-            var handle = WTS_CURRENT_SERVER_HANDLE;
-
-            uint count = new();
+            uint level = 0, count = 0, length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
             WTS_PROCESS_INFOW* information = null;
-
-            var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
             var @string = stackalloc char[(int)length];
 
             try
             {
-                if (WTSEnumerateProcessesEx(handle, &level, session, (PWSTR*)&information, &count))
+                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
                     for (var index = 0; index < count; index++)
                     {
                         var entry = information[index];
@@ -121,7 +115,7 @@ unsafe partial class MinecraftGDK
 
         using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
         {
-            InternalBufferSize = new(),
+            InternalBufferSize = 0,
             EnableRaisingEvents = true,
             IncludeSubdirectories = true,
             NotifyFilter = NotifyFilters.FileName

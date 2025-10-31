@@ -164,8 +164,7 @@ public partial class MainWindow
     {
         try
         {
-            var gdk = Minecraft.UsingGameDevelopmentKit;
-            var text = $"{(gdk ? "GDK" : "UWP")} ~ {(gdk ? Minecraft.PackageVersion : Minecraft.ClientVersion)}";
+            var text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.Version}";
             var compatible = await VersionCatalog.CompatibleAsync();
 
             Dispatcher.Invoke(() =>

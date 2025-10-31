@@ -7,6 +7,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Windows.Management.Deployment;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.SDK;
 
@@ -40,7 +41,7 @@ public sealed class Catalog : IEnumerable<string>
         return await Web.UriAsync(content);
     });
 
-    public async Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Services.Core.Minecraft.ClientVersion));
+    public async Task<bool> CompatibleAsync() => await Task.Run(() => Supported.Contains(Minecraft.Version));
 
     public async Task<Request> InstallAsync(string value, Action<int> action) => new(Manager.AddPackageByUriAsync(await UriAsync(value), Options), action);
 

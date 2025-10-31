@@ -12,7 +12,6 @@ IApplicationActivationManager
 
 OpenProcess
 GetCurrentProcessId
-TerminateProcess
 GetCurrentProcess
 
 CreateEvent
@@ -26,6 +25,7 @@ WTSFreeMemoryEx
 
 WaitForMultipleObjects
 WaitForSingleObject
+
 CloseHandle
     INVALID_HANDLE_VALUE
 
@@ -40,7 +40,6 @@ GetFileAttributes
     INVALID_FILE_ATTRIBUTES
 
 CreateRemoteThread
-TerminateThread
 ResumeThread
 
 LoadLibraryEx

@@ -8,7 +8,7 @@
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <NoWarn>PInvoke009</NoWarn>
+    <NoWarn>PInvoke009,IDE0130</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <PublishRelease>true</PublishRelease>
@@ -18,6 +18,11 @@
 
   <ItemGroup>
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Flarial.Launcher.SDK/Resources/GetExtendedUpdateInfo2.xml"
+      LogicalName="GetExtendedUpdateInfo2.xml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,10 +6,12 @@ using Windows.Win32.UI.Shell;
 using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
 using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
 using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
+using static Windows.Win32.UI.Shell.ACTIVATEOPTIONS;
 using static Windows.Win32.PInvoke;
 using Windows.Win32.Storage.FileSystem;
 using Windows.ApplicationModel;
 using System.Diagnostics;
+using System;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -49,12 +51,11 @@ partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    private protected uint ActivateApplication()
+    protected uint ActivateApplication()
     {
-        fixed (char* appUserModelId = ApplicationUserModelId)
+        fixed (char* applicationUserModelId = ApplicationUserModelId)
         {
-            const ACTIVATEOPTIONS options = ACTIVATEOPTIONS.AO_NOERRORUI;
-            s_applicationActivationManager.ActivateApplication(appUserModelId, null, options, out var processId);
+            s_applicationActivationManager.ActivateApplication(applicationUserModelId, null, AO_NOERRORUI, out var processId);
             return processId;
         }
     }
@@ -90,17 +91,13 @@ unsafe partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    const uint DesiredAccess = (uint)GENERIC_READ;
-
-    const FILE_SHARE_MODE ShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-
     public static bool UsingGameDevelopmentKit
     {
         get
         {
             fixed (char* path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe"))
             {
-                var handle = CreateFile2(path, DesiredAccess, ShareMode, OPEN_EXISTING, null);
+                var handle = CreateFile2(path, (uint)GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, null);
                 try { return handle == HANDLE.INVALID_HANDLE_VALUE; }
                 finally { CloseHandle(handle); }
             }
@@ -110,22 +107,18 @@ unsafe partial class Minecraft
 
 partial class Minecraft
 {
-    public static string ClientVersion
+    public static string Version
     {
         get
         {
-            var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-            var version = FileVersionInfo.GetVersionInfo(path).FileVersion;
-            return (version ??= "0.0.0.0").Substring(0, version.LastIndexOf('.'));
-        }
-    }
+            var package = Package;
+            var path = Path.Combine(package.InstalledPath, "Minecraft.Windows.exe");
 
-    public static string PackageVersion
-    {
-        get
-        {
-            var version = Package.Id.Version;
-            return $"{version.Major}.{version.Minor}.{version.Build}";
+            var fileVersion = FileVersionInfo.GetVersionInfo(path).FileVersion;
+            if (fileVersion is { }) return fileVersion.Substring(0, fileVersion.LastIndexOf('.'));
+
+            var packageVersion = package.Id.Version;
+            return $"{packageVersion.Major}.{packageVersion.Minor}.{packageVersion.Build}";
         }
     }
 }

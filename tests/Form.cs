@@ -2,7 +2,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
 using Flarial.Launcher.Services.Core;
-using Flarial.Launcher.Services.Networking;
 
 sealed class Form : System.Windows.Forms.Form
 {

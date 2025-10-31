@@ -11,18 +11,18 @@ public sealed class Request : IDisposable
 {
     readonly WaitHandle Handle;
 
-    readonly TaskCompletionSource<object> Source;
+    readonly TaskCompletionSource<bool> Source;
 
     readonly IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> Operation;
 
-    internal Request(IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> operation, Action<int> action = default)
+    internal Request(IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> operation, Action<int> action)
     {
         Handle = ((IAsyncResult)(Source = new()).Task).AsyncWaitHandle;
 
         (Operation = operation).Completed += (@this, _) =>
         {
             if (@this.Status is AsyncStatus.Error) Source.TrySetException(@this.ErrorCode);
-            else Source.TrySetResult(default);
+            else Source.TrySetResult(new());
         };
 
         if (action != default)
@@ -33,7 +33,7 @@ public sealed class Request : IDisposable
             };
     }
 
-    public TaskAwaiter<object> GetAwaiter() => Source.Task.GetAwaiter();
+    public TaskAwaiter<bool> GetAwaiter() => Source.Task.GetAwaiter();
 
     public void Cancel()
     {

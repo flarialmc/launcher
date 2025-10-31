@@ -46,8 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../libs/Flarial.Launcher.SDK/Flarial.Launcher.SDK.csproj" />
-    <ProjectReference Include="../libs/Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
+    <ProjectReference Include="../libs/Flarial.Launcher.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.Management;
 
 sealed class Settings : UserControl
 {
@@ -94,6 +95,8 @@ sealed class Settings : UserControl
         button3.Click += async (_, _) =>
         {
             button3.Enabled = false;
+            await LauncherUpdater.DownloadAsync((_) => button3.Text = $"{_}%");
+            return;
         };
     }
 }
