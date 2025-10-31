@@ -80,11 +80,7 @@ unsafe partial class Minecraft
         get
         {
             var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-
-            var entry = package.GetAppListEntries().FirstOrDefault();
-            if (entry?.AppUserModelId is not { } appUserModeId) return false;
-
-            return appUserModeId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", StringComparison.OrdinalIgnoreCase);
+            return package.GetAppListEntries()[0].AppUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
