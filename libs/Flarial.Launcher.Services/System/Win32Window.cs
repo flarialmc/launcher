@@ -1,6 +1,4 @@
-using System.Deployment.Internal;
 using Windows.Win32.Foundation;
-using Windows.Win32;
 using static Windows.Win32.PInvoke;
 using System.Runtime.InteropServices;
 using static System.Runtime.InteropServices.UnmanagedType;

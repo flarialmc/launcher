@@ -3,6 +3,7 @@ using System.Linq;
 using Windows.Management.Deployment;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using static System.StringComparison;
 using static Windows.Win32.Storage.FileSystem.FILE_SHARE_MODE;
 using static Windows.Win32.Foundation.GENERIC_ACCESS_RIGHTS;
 using static Windows.Win32.Storage.FileSystem.FILE_CREATION_DISPOSITION;
@@ -24,22 +25,13 @@ public unsafe abstract partial class Minecraft
 
 partial class Minecraft
 {
-    protected static readonly string s_packageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    static readonly PackageManager s_packageManager = new();
+    protected static readonly PackageManager s_packageManager = new();
 
     private protected static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
 
     static readonly IApplicationActivationManager s_applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
-
-    static Package Package
-    {
-        get
-        {
-            var packages = s_packageManager.FindPackagesForUser(string.Empty, s_packageFamilyName);
-            return packages.FirstOrDefault() ?? throw new FileNotFoundException(null, s_packageFamilyName);
-        }
-    }
 }
 
 partial class Minecraft
@@ -63,30 +55,30 @@ unsafe partial class Minecraft
 
 unsafe partial class Minecraft
 {
+    public static bool IsInstalled => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).Any();
+
+    public static bool IsUnpackaged
+    {
+        get
+        {
+            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
+            return package.IsDevelopmentMode;
+        }
+    }
+
     public static bool HasUWPAppLifecycle
     {
         set
         {
-            uint count = 1, length = PACKAGE_FULL_NAME_MAX_LENGTH;
-            PWSTR string1 = new(), string2 = stackalloc char[(int)length];
+            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
 
-            GetPackagesByPackageFamily(s_packageFamilyName, ref count, &string1, ref length, string2);
-            if (value) s_packageDebugSettings.EnableDebugging(string2, null, null);
-            else s_packageDebugSettings.DisableDebugging(string2);
+            fixed (char* packageFullName = package.Id.FullName)
+            {
+                if (value) s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
+                else s_packageDebugSettings.DisableDebugging(packageFullName);
+            }
         }
     }
-
-    public static bool IsInstalled
-    {
-        get
-        {
-            uint count = new(), length = new();
-            var error = GetPackagesByPackageFamily(s_packageFamilyName, ref count, null, ref length, null);
-            return error is WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER && count > 0;
-        }
-    }
-
-    public static bool IsUnpackaged => Package.IsDevelopmentMode;
 }
 
 unsafe partial class Minecraft
@@ -95,12 +87,12 @@ unsafe partial class Minecraft
     {
         get
         {
-            fixed (char* path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe"))
-            {
-                var handle = CreateFile2(path, (uint)GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, null);
-                try { return handle == HANDLE.INVALID_HANDLE_VALUE; }
-                finally { CloseHandle(handle); }
-            }
+            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
+
+            var entry = package.GetAppListEntries().FirstOrDefault();
+            if (entry?.AppUserModelId is not { } appUserModeId) return false;
+
+            return appUserModeId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
@@ -111,7 +103,7 @@ partial class Minecraft
     {
         get
         {
-            var package = Package;
+            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
             var path = Path.Combine(package.InstalledPath, "Minecraft.Windows.exe");
 
             var fileVersion = FileVersionInfo.GetVersionInfo(path).FileVersion;
@@ -125,9 +117,9 @@ partial class Minecraft
 
 partial class Minecraft
 {
-    public abstract uint? Launch(bool initialized);
-
     public abstract void Terminate();
+
+    public abstract uint? Launch(bool initialized);
 
     public abstract bool IsRunning { get; }
 }

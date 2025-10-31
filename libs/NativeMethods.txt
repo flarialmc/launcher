@@ -1,6 +1,3 @@
-GetPackagesByPackageFamily
-    PACKAGE_FULL_NAME_MAX_LENGTH
-
 GetApplicationUserModelId
     APPLICATION_USER_MODEL_ID_MAX_LENGTH
 
