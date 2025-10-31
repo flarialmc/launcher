@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Flarial.Launcher.Services.System;
@@ -5,6 +6,7 @@ using Windows.Management.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.Globalization;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -30,15 +32,19 @@ unsafe partial class MinecraftUWP
 
                 while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
                 {
-                    using Win32Process process = new(window.ProcessId);
+                    if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                        continue;
 
-                    var error = GetApplicationUserModelId(process, &length, string2);
-                    if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
+                    using (process)
+                    {
+                        var error = GetApplicationUserModelId(process, &length, string2);
+                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                    var result = CompareStringOrdinal(string1, -1, string2, -1, true);
-                    if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                        var result = CompareStringOrdinal(string1, -1, string2, -1, true);
+                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                    return true;
+                        return true;
+                    }
                 }
 
                 return false;
@@ -59,24 +65,20 @@ unsafe partial class MinecraftUWP
         fixed (char* path = Path.Combine(path1, path2))
         {
             var processId = ActivateApplication();
-            using Win32Process process = new(processId);
 
-            while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
-                if (!process.IsRunning(1)) return null;
+            if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
+                return null;
 
-            while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
-                if (!process.IsRunning(1)) return null;
+            using (process)
+            {
+                while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
+                    if (!process.Wait(1)) return null;
 
-            return processId;
+                while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
+                    if (!process.Wait(1)) return null;
+
+                return processId;
+            }
         }
-    }
-}
-
-unsafe partial class MinecraftUWP
-{
-    public override void Terminate()
-    {
-        var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-        fixed (char* packageFullName = package.Id.FullName) s_packageDebugSettings.TerminateAllProcesses(packageFullName);
     }
 }

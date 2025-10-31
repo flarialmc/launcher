@@ -154,32 +154,19 @@ public partial class MainWindow
 
     readonly PackageCatalog Catalog = PackageCatalog.OpenForCurrentUser();
 
-    async Task UpdateGameVersionAsync(Package package)
-    {
-        if (package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase))
-            await UpdateGameVersionAsync();
-    }
+    void UpdateGameVersionText(Package package) { if (package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) UpdateGameVersionText(); }
 
-    async Task UpdateGameVersionAsync() => await Task.Run(async () =>
+    void UpdateGameVersionText() => Dispatcher.BeginInvoke(() =>
     {
         try
         {
-            var text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.Version}";
-            var compatible = await VersionCatalog.CompatibleAsync();
-
-            Dispatcher.Invoke(() =>
-            {
-                VersionLabel.Text = text;
-                VersionTextBorder.Background = compatible ? _darkGreen : _darkRed;
-            });
+            VersionLabel.Text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.Version}";
+            VersionTextBorder.Background = VersionCatalog.IsCompatible ? _darkGreen : _darkRed;
         }
         catch
         {
-            Dispatcher.Invoke(() =>
-            {
-                VersionLabel.Text = "? ~ 0.0.0";
-                VersionTextBorder.Background = _darkGoldenrod;
-            });
+            VersionLabel.Text = "? ~ 0.0.0";
+            VersionTextBorder.Background = _darkGoldenrod;
         }
     });
 
@@ -242,11 +229,11 @@ public partial class MainWindow
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
-        Catalog.PackageInstalling += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.Package); };
-        Catalog.PackageUninstalling += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.Package); };
-        Catalog.PackageUpdating += async (_, args) => { if (args.IsComplete) await UpdateGameVersionAsync(args.TargetPackage); };
+        Catalog.PackageInstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
+        Catalog.PackageUninstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
+        Catalog.PackageUpdating += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.TargetPackage); };
 
-        _ = UpdateGameVersionAsync();
+        UpdateGameVersionText();
         _launchButtonTextBlock.Text = "Launch";
         IsLaunchEnabled = true;
     }
@@ -282,15 +269,15 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
+        var build = _settings.DllBuild;
+        var path = _settings.CustomDllPath;
+        var custom = build is DllBuild.Custom;
+        var initialized = _settings.WaitForInitialization;
+        var beta = build is DllBuild.Beta or DllBuild.Nightly;
+        var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+
         try
         {
-            var build = _settings.DllBuild;
-            var path = _settings.CustomDllPath;
-            var custom = build is DllBuild.Custom;
-            var initialized = _settings.WaitForInitialization;
-            var beta = build is DllBuild.Beta or DllBuild.Nightly;
-            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
-
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Verifying...";
 
@@ -301,7 +288,6 @@ public partial class MainWindow
             }
 
             Minecraft.HasUWPAppLifecycle = true;
-            var gdk = Minecraft.UsingGameDevelopmentKit;
 
             if (custom)
             {
@@ -320,22 +306,28 @@ public partial class MainWindow
                 }
 
                 _launchButtonTextBlock.Text = "Launching...";
-                await Task.Run(() => (gdk ? Injector.GDK : Injector.UWP).Launch(initialized, library));
+                if (await Task.Run(() => (Minecraft.UsingGameDevelopmentKit ? Injector.GDK : Injector.UWP).Launch(initialized, library)) is not { })
+                    CreateMessageBox("💡 Please close the game & try again.");
 
                 StatusLabel.Text = "Launched Custom DLL.";
                 return;
             }
 
-            bool compatible = beta || await VersionCatalog.CompatibleAsync(); if (!compatible)
+            if (!!beta || !VersionCatalog.IsCompatible)
             {
                 CreateMessageBox("⚠️ This version is not supported by the client.");
                 return;
             }
 
-            await client.DownloadAsync(ClientDownloadProgressAction);
+            if (!await client.DownloadAsync(ClientDownloadProgressAction))
+            {
+                CreateMessageBox("💡 Please close the game to update the client.");
+                return;
+            }
 
             _launchButtonTextBlock.Text = "Launching...";
-            await Task.Run(() => client.LaunchGame(initialized));
+            if (!await Task.Run(() => client.LaunchGame(initialized)))
+                CreateMessageBox("💡 Please close the game & try again to launch the client.");
 
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
         }

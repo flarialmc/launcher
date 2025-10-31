@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -6,6 +7,7 @@ using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.System;
 using Windows.Win32.System.Threading;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Services.Modding;
 
@@ -26,6 +28,7 @@ public sealed class Injector
     public uint? Launch(bool initialized, ModificationLibrary library)
     {
         var parameter = library.FileName;
+
         if (!library.Exists) throw new FileNotFoundException(null, parameter);
         if (!library.IsValid) throw new BadImageFormatException(null, parameter);
 
@@ -36,9 +39,13 @@ public sealed class Injector
         if (_minecraft.Launch(initialized) is not { } processId)
             return null;
 
-        using Win32Process process = new(processId);
-        using Win32RemoteThread thread = new(process, _routine, parameter);
+        if (Win32Process.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
+            return null;
 
-        return processId;
+        using (process)
+        {
+            using Win32RemoteThread thread = new(process, _routine, parameter);
+            return processId;
+        }
     }
 }

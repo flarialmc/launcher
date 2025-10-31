@@ -9,6 +9,7 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.Services.System;
 using Windows.Data.Json;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Services.Client;
 
@@ -72,16 +73,26 @@ partial class FlarialClient
 {
     public bool LaunchGame(bool initialized)
     {
-        var minecraft = s_injector._minecraft;
-        
-        if (!IsInjectable) minecraft.Terminate();
-        if (IsRunning) return minecraft.Launch(initialized) is { };
-        if (s_injector.Launch(initialized, _path) is not { } processId) return false;
+        if (!IsInjectable)
+            return false;
 
-        using Win32Process process = new(processId);
-        using Win32Mutex mutex = new(_name);
+        if (IsRunning)
+        {
+            s_injector._minecraft.Launch(initialized);
+            return true;
+        }
 
-        mutex.Duplicate(process); return true;
+        if (s_injector.Launch(initialized, _path) is not { } processId)
+            return false;
+
+        if (Win32Process.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
+            return false;
+
+        using (process)
+        {
+            using Win32Mutex mutex = new(_name);
+            mutex.Duplicate(process); return true;
+        }
     }
 }
 
@@ -114,12 +125,17 @@ partial class FlarialClient
         catch { return string.Empty; }
     });
 
-    public async Task DownloadAsync(Action<int> action)
+    public async Task<bool> DownloadAsync(Action<int> action)
     {
         Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()]; await Task.WhenAll(tasks);
-        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase)) return;
 
-        if (IsRunning) s_injector._minecraft.Terminate();
+        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
+            return true;
+
+        if (IsRunning)
+            return false;
+
         await HttpService.DownloadAsync(_uri, _path, action);
+        return true;
     }
 }

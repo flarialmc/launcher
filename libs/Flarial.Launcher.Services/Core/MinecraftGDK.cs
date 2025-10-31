@@ -7,6 +7,8 @@ using Windows.Win32.Globalization;
 using System.IO;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+using Windows.UI.Xaml;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -46,15 +48,20 @@ unsafe partial class MinecraftGDK
                         var result = CompareStringOrdinal(processName, -1, entry.pProcessName, -1, true);
                         if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                        using Win32Process process = new(entry.ProcessId);
+                        if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
+                            continue;
 
-                        var error = GetApplicationUserModelId(process, &length, @string);
-                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
+                        using (process)
+                        {
 
-                        result = CompareStringOrdinal(applicationUserModelId, -1, @string, -1, true);
-                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                            var error = GetApplicationUserModelId(process, &length, @string);
+                            if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                        return entry.ProcessId;
+                            result = CompareStringOrdinal(applicationUserModelId, -1, @string, -1, true);
+                            if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+
+                            return entry.ProcessId;
+                        }
                     }
 
                 return ActivateApplication();
@@ -74,15 +81,19 @@ unsafe partial class MinecraftGDK
 
             while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
             {
-                using Win32Process process = new(window.ProcessId);
+                if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                    continue;
 
-                var error = GetApplicationUserModelId(process, &length, string2);
-                if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
+                using (process)
+                {
+                    var error = GetApplicationUserModelId(process, &length, string2);
+                    if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                var result = CompareStringOrdinal(string1, -1, string2, -1, true);
-                if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                    var result = CompareStringOrdinal(string1, -1, string2, -1, true);
+                    if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
-                return window;
+                    return window;
+                }
             }
 
             return null;
@@ -94,8 +105,6 @@ unsafe partial class MinecraftGDK
 {
     public override bool IsRunning => FindWindow() is { };
 
-    public override void Terminate() => FindWindow()?.Close();
-
     public override uint? Launch(bool initialized)
     {
         if (FindWindow() is { } running)
@@ -104,26 +113,31 @@ unsafe partial class MinecraftGDK
             return running.ProcessId;
         }
 
-        using (Win32Process bootstrapper = new(LaunchBootstrapper()))
-            bootstrapper.IsRunning(INFINITE);
-
-        if (FindWindow() is not { } @new)
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, LaunchBootstrapper()) is not { } bootstrapper)
             return null;
 
-        using Win32Event @event = new();
-        using Win32Process process = new(@new.ProcessId);
+        using (bootstrapper) bootstrapper.Wait(INFINITE);
+        if (FindWindow() is not { } @new) return null;
 
-        using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, @new.ProcessId) is not { } process)
+            return null;
+
+        using (process)
         {
-            InternalBufferSize = 0,
-            EnableRaisingEvents = true,
-            IncludeSubdirectories = true,
-            NotifyFilter = NotifyFilters.FileName
-        }; watcher.Deleted += delegate { @event.Set(); };
+            using Win32Event @event = new();
+            using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+            {
+                InternalBufferSize = 0,
+                EnableRaisingEvents = true,
+                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.FileName
+            };
 
-        var handles = stackalloc HANDLE[] { @event, process };
-        if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
+            watcher.Deleted += delegate { @event.Set(); };
+            var handles = stackalloc HANDLE[] { @event, process };
 
-        @new.Switch(); return @new.ProcessId;
+            if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
+            @new.Switch(); return @new.ProcessId;
+        }
     }
 }

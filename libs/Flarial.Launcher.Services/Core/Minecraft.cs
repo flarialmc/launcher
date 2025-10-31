@@ -21,7 +21,7 @@ partial class Minecraft
 
     protected static readonly PackageManager s_packageManager = new();
 
-    private protected static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
+    static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
 
     static readonly IApplicationActivationManager s_applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
 }
@@ -98,8 +98,6 @@ partial class Minecraft
 
 partial class Minecraft
 {
-    public abstract void Terminate();
-
     public abstract uint? Launch(bool initialized);
 
     public abstract bool IsRunning { get; }
