@@ -102,8 +102,7 @@ unsafe partial class MinecraftGDK
         using (Win32Process bootstrapper = new(LaunchBootstrapper())) bootstrapper.IsRunning(INFINITE);
 
         if (FindWindow() is not { } @new) return null;
-        using Win32Event @event = new();
-        using Win32Process process = new(@new.ProcessId);
+        using Win32Event @event = new(); using Win32Process process = new(@new.ProcessId);
 
         using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
         {
