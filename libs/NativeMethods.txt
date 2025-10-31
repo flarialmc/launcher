@@ -32,7 +32,6 @@ FindWindowEx
 GetWindowThreadProcessId
 SwitchToThisWindow
 
-CreateFile2
 GetFileAttributes
     INVALID_FILE_ATTRIBUTES
 
