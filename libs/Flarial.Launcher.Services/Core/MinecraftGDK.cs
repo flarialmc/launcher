@@ -98,18 +98,10 @@ unsafe partial class MinecraftGDK
 
     public override uint? Launch(bool initialized)
     {
-        if (FindWindow() is { } running)
-        {
-            running.Switch();
-            return running.ProcessId;
-        }
+        if (FindWindow() is { } running) { running.Switch(); return running.ProcessId; }
+        using (Win32Process bootstrapper = new(LaunchBootstrapper())) bootstrapper.IsRunning(INFINITE);
 
-        using (Win32Process bootstrapper = new(LaunchBootstrapper()))
-            bootstrapper.IsRunning(INFINITE);
-
-        if (FindWindow() is not { } @new)
-            return null;
-
+        if (FindWindow() is not { } @new) return null;
         using Win32Event @event = new();
         using Win32Process process = new(@new.ProcessId);
 
