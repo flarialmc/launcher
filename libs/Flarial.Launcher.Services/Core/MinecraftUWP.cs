@@ -57,14 +57,14 @@ unsafe partial class MinecraftUWP
 {
     public override uint? Launch(bool initialized)
     {
-        if (IsRunning) return ActivateApplication();
+        if (IsRunning) return Activate();
 
         var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
         var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(path1, path2))
         {
-            var processId = ActivateApplication();
+            var processId = Activate();
 
             if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
                 return null;

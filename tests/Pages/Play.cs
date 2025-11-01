@@ -68,7 +68,7 @@ sealed class Play : UserControl
                 ResumeLayout();
 
                 if (!await LicensingService.VerifyAsync()) throw new LicenseException(typeof(object));
-                if (!checkBox1.Checked && !await _.Catalog.CompatibleAsync()) return;
+                if (!checkBox1.Checked && !_.Catalog.IsCompatible) return;
 
                 var client = checkBox1.Checked ? FlarialClient.Beta : FlarialClient.Release;
 
@@ -86,7 +86,7 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Task.Run(() => client.LaunchGame(true));
+                await Task.Run(() => client.Launch(true));
             }
             finally
             {

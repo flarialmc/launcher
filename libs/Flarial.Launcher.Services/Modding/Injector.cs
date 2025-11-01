@@ -19,33 +19,23 @@ public sealed class Injector
 
     internal readonly Minecraft _minecraft;
 
-    static readonly FileSystemAccessRule _rule = new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
+    static readonly FileSystemAccessRule s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
 
-    static readonly LPTHREAD_START_ROUTINE _routine = GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
+    static readonly LPTHREAD_START_ROUTINE s_routine = GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
 
     Injector(Minecraft minecraft) => _minecraft = minecraft;
 
     public uint? Launch(bool initialized, ModificationLibrary library)
     {
-        var parameter = library.FileName;
+        if (!library.Exists) throw new FileNotFoundException(null, library.FileName);
+        if (!library.IsValid) throw new BadImageFormatException(null, library.FileName);
 
-        if (!library.Exists) throw new FileNotFoundException(null, parameter);
-        if (!library.IsValid) throw new BadImageFormatException(null, parameter);
+        var security = File.GetAccessControl(library.FileName);
+        security.SetAccessRule(s_rule);
+        File.SetAccessControl(library.FileName, security);
 
-        var security = File.GetAccessControl(parameter);
-        security.SetAccessRule(_rule);
-        File.SetAccessControl(parameter, security);
-
-        if (_minecraft.Launch(initialized) is not { } processId)
-            return null;
-
-        if (Win32Process.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
-            return null;
-
-        using (process)
-        {
-            using Win32RemoteThread thread = new(process, _routine, parameter);
-            return processId;
-        }
+        if (_minecraft.Launch(initialized) is not { } processId) return null;
+        if (Win32Process.Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
+        using (process) using (new Win32RemoteThread(process, s_routine, library.FileName)) return processId;
     }
 }

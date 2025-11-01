@@ -35,7 +35,7 @@ partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    protected uint ActivateApplication()
+    internal uint Activate()
     {
         fixed (char* applicationUserModelId = ApplicationUserModelId)
         {

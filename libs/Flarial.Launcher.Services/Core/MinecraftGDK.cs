@@ -64,7 +64,7 @@ unsafe partial class MinecraftGDK
                         }
                     }
 
-                return ActivateApplication();
+                return Activate();
             }
             finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
         }
@@ -107,14 +107,8 @@ unsafe partial class MinecraftGDK
 
     public override uint? Launch(bool initialized)
     {
-        if (FindWindow() is { } running)
-        {
-            running.Switch();
-            return running.ProcessId;
-        }
-
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, LaunchBootstrapper()) is not { } bootstrapper)
-            return null;
+        if (FindWindow() is { } running) { running.Switch(); return running.ProcessId; }
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, LaunchBootstrapper()) is not { } bootstrapper) return null;
 
         using (bootstrapper) bootstrapper.Wait(INFINITE);
         if (FindWindow() is not { } @new) return null;
@@ -137,7 +131,7 @@ unsafe partial class MinecraftGDK
             var handles = stackalloc HANDLE[] { @event, process };
 
             if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
-            @new.Switch(); return @new.ProcessId;
+            return @new.ProcessId;
         }
     }
 }

@@ -2,13 +2,13 @@ namespace Flarial.Launcher.Services.Client;
 
 sealed partial class FlarialClientBeta : FlarialClient
 {
-    const string Key = "Beta";
+    protected override string Key => nameof(Beta);
 
-    const string Path = "Flarial.Client.Beta.dll";
+    protected override string Path => $"Flarial.Client.{nameof(Beta)}.dll";
 
-    const string Name = "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
+    protected override string Name => "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
 
-    const string Uri = "https://cdn.flarial.xyz/dll/beta.dll";
+    protected override string Uri => "https://cdn.flarial.xyz/dll/beta.dll";
 
-    internal FlarialClientBeta() : base(Name, Path, Key, Uri) { }
+    internal FlarialClientBeta() : base() { }
 }

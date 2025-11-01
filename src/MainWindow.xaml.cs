@@ -326,7 +326,7 @@ public partial class MainWindow
             }
 
             _launchButtonTextBlock.Text = "Launching...";
-            if (!await Task.Run(() => client.LaunchGame(initialized)))
+            if (!await Task.Run(() => client.Launch(initialized)))
                 CreateMessageBox("💡 Please close the game & try again to launch the client.");
 
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
