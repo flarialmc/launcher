@@ -57,7 +57,6 @@ namespace Flarial.Launcher.Styles
                         {
                             item.IsEnabled = true;
                         }
-                        MainWindow.versionLabel.Text = version;
                     }
                 };
 
@@ -127,7 +126,6 @@ namespace Flarial.Launcher.Styles
                         {
                             item.IsEnabled = true;
                         }
-                        MainWindow.versionLabel.Text = version;
                     }
                 };
 
