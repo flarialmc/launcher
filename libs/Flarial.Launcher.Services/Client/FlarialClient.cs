@@ -8,13 +8,12 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.Services.System;
 using Windows.Data.Json;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.Services.Client;
 
 public abstract partial class FlarialClient
 {
-    static readonly Injector s_injector = Injector.UWP;
-
     protected abstract string Name { get; }
     protected abstract string Path { get; }
     protected abstract string Key { get; }
@@ -55,7 +54,7 @@ partial class FlarialClient
     {
         get
         {
-            if (!s_injector._minecraft.IsRunning) return false;
+            if (Minecraft.Current.IsRunning) return false;
             using Win32Mutex mutex = new(Name); return mutex.Exists;
         }
     }
@@ -66,9 +65,9 @@ partial class FlarialClient
     public bool Launch(bool initialized)
     {
         if (!IsInjectable) return false;
-        if (IsRunning) { s_injector._minecraft.Activate(); return true; }
+        if (IsRunning) { Minecraft.Current.Activate(); return true; }
 
-        if (s_injector.Launch(initialized, Path) is not { } processId) return false;
+        if (Injector.Launch(initialized, Path) is not { } processId) return false;
         using Win32Mutex mutex = new(Name); return mutex.Duplicate(processId);
     }
 }

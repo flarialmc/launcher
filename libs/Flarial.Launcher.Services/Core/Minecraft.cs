@@ -8,11 +8,13 @@ using System;
 
 namespace Flarial.Launcher.Services.Core;
 
-public unsafe abstract partial class Minecraft
+public abstract partial class Minecraft
 {
-    public static readonly Minecraft UWP = new MinecraftUWP();
+    static readonly MinecraftUWP s_uwp = new();
 
-    public static readonly Minecraft GDK = new MinecraftGDK();
+    static readonly MinecraftGDK s_gdk = new();
+
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
 }
 
 partial class Minecraft

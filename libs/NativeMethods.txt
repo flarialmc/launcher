@@ -1,54 +1,38 @@
 GetApplicationUserModelId
-    APPLICATION_USER_MODEL_ID_MAX_LENGTH
-
 PackageDebugSettings
 IPackageDebugSettings
-
 ApplicationActivationManager
 IApplicationActivationManager
-
 OpenProcess
 GetCurrentProcessId
 GetCurrentProcess
-
 CreateEvent
 SetEvent
-
 WTSEnumerateProcessesEx
-    WTS_CURRENT_SESSION
-    WTS_CURRENT_SERVER_HANDLE
-    WTS_PROCESS_INFOW
 WTSFreeMemoryEx
-
 WaitForMultipleObjects
 WaitForSingleObject
-
 CloseHandle
-    INVALID_HANDLE_VALUE
-
 CompareStringOrdinal
-
 FindWindowEx
 GetWindowThreadProcessId
 SwitchToThisWindow
-
 GetFileAttributes
-    INVALID_FILE_ATTRIBUTES
-
 CreateRemoteThread
 ResumeThread
-
 LoadLibraryEx
 GetModuleHandle
 GetProcAddress
-
 WriteProcessMemory
-
 VirtualAllocEx
 VirtualFreeEx
-
 CreateMutex
 DuplicateHandle
-
-PROCESS_CREATION_FLAGS
 INFINITE
+INVALID_HANDLE_VALUE
+INVALID_FILE_ATTRIBUTES
+PROCESS_CREATION_FLAGS
+APPLICATION_USER_MODEL_ID_MAX_LENGTH
+WTS_CURRENT_SESSION
+WTS_CURRENT_SERVER_HANDLE
+WTS_PROCESS_INFOW

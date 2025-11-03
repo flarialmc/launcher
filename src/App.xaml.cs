@@ -95,9 +95,7 @@ Exception: {1}
                     var offset = index + 1; var count = length - offset;
                     ArraySegment<string> segment = new(arguments, offset, count);
 
-                    var gdk = Minecraft.UsingGameDevelopmentKit;
-                    (gdk ? Injector.GDK : Injector.UWP).Launch(true, segment.First());
-
+                    Injector.Launch(true, segment.First());
                     Environment.Exit(0);
                     break;
 

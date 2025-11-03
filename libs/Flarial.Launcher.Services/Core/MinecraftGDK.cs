@@ -118,20 +118,22 @@ unsafe partial class MinecraftGDK
 
         using (process)
         {
-            using Win32Event @event = new();
-            using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+            HANDLE @event = CreateEvent(null, true, false, null); try
             {
-                InternalBufferSize = 0,
-                EnableRaisingEvents = true,
-                IncludeSubdirectories = true,
-                NotifyFilter = NotifyFilters.FileName
-            };
+                using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                {
+                    InternalBufferSize = 0,
+                    EnableRaisingEvents = true,
+                    IncludeSubdirectories = true,
+                    NotifyFilter = NotifyFilters.FileName
+                };
 
-            watcher.Deleted += delegate { @event.Set(); };
-            var handles = stackalloc HANDLE[] { @event, process };
+                watcher.Deleted += (_, _) => SetEvent(@event);
+                var handles = stackalloc HANDLE[] { @event, process };
 
-            if (WaitForMultipleObjects(2, handles, false, INFINITE) > 0) return null;
-            return @new.ProcessId;
+                return WaitForMultipleObjects(2, handles, false, INFINITE) > 0 ? null : @new.ProcessId;
+            }
+            finally { CloseHandle(@event); }
         }
     }
 }

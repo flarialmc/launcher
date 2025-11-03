@@ -306,7 +306,7 @@ public partial class MainWindow
                 }
 
                 _launchButtonTextBlock.Text = "Launching...";
-                if (await Task.Run(() => (Minecraft.UsingGameDevelopmentKit ? Injector.GDK : Injector.UWP).Launch(initialized, library)) is not { })
+                if (await Task.Run(() => Injector.Launch(initialized, library)) is not { })
                     CreateMessageBox("💡 Please close the game & try again.");
 
                 StatusLabel.Text = "Launched Custom DLL.";
