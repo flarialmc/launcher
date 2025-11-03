@@ -179,6 +179,9 @@ public partial class MainWindow
 
         if (!_settings.HardwareAcceleration)
             CreateMessageBox("⚠️ Hardware acceleration is disabled.");
+
+        if (Minecraft.IsInstalled && Minecraft.UsingGameDevelopmentKit && _settings.DllBuild is not DllBuild.Beta)
+            CreateMessageBox("📢 Beta now supports GDK builds, please enable it!");
     }
 
     async Task SetCampaignBannerAsync()
@@ -313,7 +316,7 @@ public partial class MainWindow
                 return;
             }
 
-            if (!!beta || !VersionCatalog.IsCompatible)
+            if (!beta && !VersionCatalog.IsCompatible)
             {
                 CreateMessageBox("⚠️ This version is not supported by the client.");
                 return;
