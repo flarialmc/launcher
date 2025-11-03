@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Flarial.Launcher.Services.Core;
 using static System.Environment;
 
 namespace Flarial.Launcher.Pages;
@@ -37,7 +38,7 @@ public partial class SettingsGeneralPage : Page
         var localAppDataPath = GetFolderPath(SpecialFolder.LocalApplicationData);
         const string packagePath = @"Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\RoamingState\Flarial";
 
-        _clientPath = System.IO.Path.Combine(localAppDataPath, packagePath);
+        _clientPath = Path.Combine(localAppDataPath, packagePath);
         _startInfo = new()
         {
             UseShellExecute = true,
@@ -115,6 +116,18 @@ public partial class SettingsGeneralPage : Page
 
         ClientFolderButton.Click += (_, _) =>
         {
+            if (!Minecraft.IsInstalled)
+            {
+                MainWindow.CreateMessageBox("⚠️ Please install the game.");
+                return;
+            }
+
+            if (Minecraft.UsingGameDevelopmentKit)
+            {
+                MainWindow.CreateMessageBox("⚠️ Cannot find the client's folder for GDK versions.");
+                return;
+            }
+
             if (!Directory.Exists(_clientPath))
             {
                 MainWindow.CreateMessageBox("⚠️ Please launch the client at least once to generate its folder.");

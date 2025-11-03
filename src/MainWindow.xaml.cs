@@ -179,9 +179,6 @@ public partial class MainWindow
 
         if (!_settings.HardwareAcceleration)
             CreateMessageBox("⚠️ Hardware acceleration is disabled.");
-
-        if (Minecraft.IsInstalled && Minecraft.UsingGameDevelopmentKit && _settings.DllBuild is not DllBuild.Beta)
-            CreateMessageBox("📢 Beta now supports GDK builds, please enable it!");
     }
 
     async Task SetCampaignBannerAsync()
