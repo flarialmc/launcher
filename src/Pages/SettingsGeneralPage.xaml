@@ -100,7 +100,7 @@
 
             <UniformGrid Margin="0,6.25,0,0">
                 <Button Margin="0,0,3.125,0" Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
-                <Button Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
+                <Button IsEnabled="false" Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
             </UniformGrid>
             
         </StackPanel>
