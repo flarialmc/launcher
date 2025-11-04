@@ -8,7 +8,7 @@ using System.IO;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using Windows.UI.Xaml;
+using static Windows.Win32.Foundation.WAIT_EVENT;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -131,7 +131,7 @@ unsafe partial class MinecraftGDK
                 watcher.Deleted += (_, _) => SetEvent(@event);
                 var handles = stackalloc HANDLE[] { @event, process };
 
-                return WaitForMultipleObjects(2, handles, false, INFINITE) > 0 ? null : @new.ProcessId;
+                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? @new.ProcessId : null;
             }
             finally { CloseHandle(@event); }
         }
