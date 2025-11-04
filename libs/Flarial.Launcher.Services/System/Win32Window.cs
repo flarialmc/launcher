@@ -7,7 +7,7 @@ unsafe readonly struct Win32Window
 {
     readonly HWND _handle = HWND.Null;
 
-    internal readonly uint ProcessId = new();
+    internal readonly uint ProcessId = 0;
 
     Win32Window(HWND handle)
     {

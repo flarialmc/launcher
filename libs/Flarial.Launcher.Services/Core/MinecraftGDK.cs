@@ -75,7 +75,7 @@ unsafe partial class MinecraftGDK
         fixed (char* @class = "Bedrock")
         fixed (char* string1 = ApplicationUserModelId)
         {
-            Win32Window window = new();
+            Win32Window window = HWND.Null;
             var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
             var string2 = stackalloc char[(int)length];
 
@@ -113,10 +113,10 @@ unsafe partial class MinecraftGDK
         using (bootstrapper) bootstrapper.Wait(INFINITE);
         if (FindWindow() is not { } @new) return null;
 
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, @new.ProcessId) is not { } process)
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, @new.ProcessId) is not { } game)
             return null;
 
-        using (process)
+        using (game)
         {
             HANDLE @event = CreateEvent(null, true, false, null); try
             {
@@ -129,7 +129,7 @@ unsafe partial class MinecraftGDK
                 };
 
                 watcher.Deleted += (_, _) => SetEvent(@event);
-                var handles = stackalloc HANDLE[] { @event, process };
+                var handles = stackalloc HANDLE[] { @event, game };
 
                 return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? @new.ProcessId : null;
             }

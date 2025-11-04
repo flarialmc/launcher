@@ -53,7 +53,7 @@ partial class FlarialClient
     {
         get
         {
-            if (Minecraft.Current.IsRunning) return false;
+            if (!Minecraft.Current.IsRunning) return false;
             using Win32Mutex mutex = new(Name); return mutex.Exists;
         }
     }
@@ -64,7 +64,7 @@ partial class FlarialClient
     public bool Launch(bool initialized)
     {
         if (!IsInjectable) return false;
-        if (IsRunning) { Minecraft.Current.Activate(); return true; }
+        if (IsRunning) return Minecraft.Current.Launch(initialized) is { };
 
         if (Injector.Launch(initialized, Path) is not { } processId) return false;
         using Win32Mutex mutex = new(Name); return mutex.Duplicate(processId);
@@ -102,15 +102,14 @@ partial class FlarialClient
 
     public async Task<bool> DownloadAsync(Action<int> action)
     {
-        Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()]; await Task.WhenAll(tasks);
+        Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()];
 
-        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
-            return true;
+        await Task.WhenAll(tasks);
+        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase)) return true;
 
-        if (IsRunning)
-            return false;
-
+        if (IsRunning) return false;
         await HttpService.DownloadAsync(Uri, Path, action);
+
         return true;
     }
 }

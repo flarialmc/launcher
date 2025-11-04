@@ -9,7 +9,7 @@ namespace Flarial.Launcher.Services.System;
 
 readonly struct Win32Process : IDisposable
 {
-    internal readonly HANDLE _handle = INVALID_HANDLE_VALUE;
+    internal readonly HANDLE _handle = Null;
 
     Win32Process(HANDLE handle) => _handle = handle;
 

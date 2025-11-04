@@ -12,7 +12,7 @@ unsafe readonly ref struct Win32Mutex : IDisposable
 {
     static readonly HANDLE _process = GetCurrentProcess();
 
-    readonly HANDLE _handle;
+    readonly HANDLE _handle = Null;
 
     internal Win32Mutex(string name)
     {
