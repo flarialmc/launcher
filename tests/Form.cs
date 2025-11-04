@@ -5,7 +5,7 @@ using Flarial.Launcher.Services.Core;
 
 sealed class Form : System.Windows.Forms.Form
 {
-    internal Catalog Catalog = default;
+    internal Catalog Catalog;
 
     internal Form()
     {
@@ -36,7 +36,7 @@ sealed class Form : System.Windows.Forms.Form
 
             SuspendLayout();
             progressBar.Visible = false;
-            Controls.Add(new Pages(new Play(this), new Versions(this), new Settings(this)) { Enabled = Minecraft.IsInstalled  });
+            Controls.Add(new Pages(new Play(this), new Versions(this), new Settings(this)) { Enabled = Minecraft.IsInstalled });
             ResumeLayout();
         };
     }

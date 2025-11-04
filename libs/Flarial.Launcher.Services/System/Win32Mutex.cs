@@ -16,9 +16,8 @@ unsafe readonly ref struct Win32Mutex : IDisposable
 
     internal Win32Mutex(string name)
     {
-        _handle = CreateMutex(null, false, name);
-        Exists = _handle != INVALID_HANDLE_VALUE;
-        Exists = Exists && GetLastWin32Error() > 0;
+        fixed (char* buffer = name) _handle = CreateMutex(null, false, buffer);
+        Exists = _handle != INVALID_HANDLE_VALUE && GetLastWin32Error() > 0;
     }
 
     internal readonly bool Exists;

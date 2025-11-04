@@ -13,14 +13,27 @@ using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
 using static Windows.Win32.System.Memory.VIRTUAL_FREE_TYPE;
 using static Windows.Win32.Foundation.HANDLE;
 using Windows.Win32.Foundation;
+using static System.Security.AccessControl.FileSystemRights;
+using static System.Security.AccessControl.AccessControlType;
+using static System.Text.Encoding;
 
 namespace Flarial.Launcher.Services.Modding;
 
-public static class Injector
+public unsafe static class Injector
 {
-    static readonly FileSystemAccessRule s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
+    static readonly FileSystemAccessRule s_rule;//= new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
 
-    static readonly LPTHREAD_START_ROUTINE s_procedure = GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
+    static readonly LPTHREAD_START_ROUTINE s_procedure;//= GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
+
+    static Injector()
+    {
+        fixed (char* module = "Kernel32")
+        fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
+        {
+            s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FullControl, Allow);
+            s_procedure = GetProcAddress(GetModuleHandle(module), new(procedure)).CreateDelegate<LPTHREAD_START_ROUTINE>();
+        }
+    }
 
     public static unsafe uint? Launch(bool initialized, ModificationLibrary library)
     {

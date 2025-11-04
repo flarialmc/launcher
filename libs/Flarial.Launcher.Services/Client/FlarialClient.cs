@@ -18,7 +18,6 @@ public abstract partial class FlarialClient
     protected abstract string Path { get; }
     protected abstract string Key { get; }
     protected abstract string Uri { get; }
-
     internal FlarialClient() { }
 }
 

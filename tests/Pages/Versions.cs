@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -69,7 +68,7 @@ sealed class Versions : UserControl
         tableLayoutPanel.Controls.Add(progressBar, 0, 0);
         tableLayoutPanel.Controls.Add(button2, 1, 0);
 
-        Request request = default;
+        Request request = null;
 
         Application.ThreadExit += (_, _) => { using (request) request?.Cancel(); };
 
@@ -117,7 +116,7 @@ sealed class Versions : UserControl
         button2.Click += async (_, _) =>
         {
             tableLayoutPanel.Enabled = default;
-            await Task.Run(request.Cancel);
+            await Task.Run(() => request?.Cancel());
         };
 
         panel.RowStyles.Add(new() { SizeType = SizeType.Percent, Height = 100 });

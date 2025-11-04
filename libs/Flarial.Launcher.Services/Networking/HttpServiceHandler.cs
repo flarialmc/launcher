@@ -20,25 +20,15 @@ sealed partial class HttpServiceHandler : HttpClientHandler
 {
     internal static bool UseDnsOverHttps { get; set; }
 
-    internal HttpServiceHandler()
+    internal HttpServiceHandler() { AllowAutoRedirect = true; AutomaticDecompression = GZip | Deflate; }
+
+    static HttpServiceHandler() => s_client.DefaultRequestHeaders.Add("accept", "application/dns-json");
+
+    static readonly HttpClient s_client = new(new HttpClientHandler
     {
-        AllowAutoRedirect = true;
-        AutomaticDecompression = GZip | Deflate;
-    }
-
-    static HttpServiceHandler()
-    {
-        HttpClientHandler handler = new()
-        {
-            AllowAutoRedirect = true,
-            AutomaticDecompression = GZip | Deflate
-        };
-
-        s_client = new(handler, true);
-        s_client.DefaultRequestHeaders.Add("accept", "application/dns-json");
-    }
-
-    static readonly HttpClient s_client;
+        AllowAutoRedirect = true,
+        AutomaticDecompression = GZip | Deflate
+    }, true);
 
     const string TraceUri = "https://speed.cloudflare.com/__down";
 

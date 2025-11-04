@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Flarial.Launcher.SDK;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Management;
 
@@ -68,7 +67,7 @@ sealed class Play : UserControl
                 ResumeLayout();
 
                 if (!await LicensingService.VerifyAsync()) throw new LicenseException(typeof(object));
-                if (!checkBox1.Checked && !_.Catalog.IsCompatible) return;
+                if (!checkBox1.Checked && !(_.Catalog?.IsCompatible ?? false)) return;
 
                 var client = checkBox1.Checked ? FlarialClient.Beta : FlarialClient.Release;
 

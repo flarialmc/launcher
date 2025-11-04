@@ -345,13 +345,7 @@ public partial class MainWindow
         statusLabel.Text = $"Downloading... {value}%";
     });
 
-    public void LauncherDownloadProgressAction(int value)
-    {
-        Dispatcher.Invoke(() =>
-        {
-            updateProgress = value;
-        });
-    }
+    void LauncherDownloadProgressAction(int value) => Dispatcher.Invoke(() => { updateProgress = value; });
 
     private void Window_OnClosing(object sender, CancelEventArgs e)
     {
