@@ -29,20 +29,26 @@ public partial class SettingsGeneralPage : Page
 
     // readonly Border _launcherFolderButtonBorder, _clientFolderButtonBorder;
 
-    static readonly string _clientPath;
+    //  static readonly string _clientPath;
 
-    static readonly ProcessStartInfo _startInfo;
+    static readonly ProcessStartInfo s_gdk;
+
+    static readonly ProcessStartInfo s_uwp;
 
     static SettingsGeneralPage()
     {
         var localAppDataPath = GetFolderPath(SpecialFolder.LocalApplicationData);
-        const string packagePath = @"Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\RoamingState\Flarial";
 
-        _clientPath = Path.Combine(localAppDataPath, packagePath);
-        _startInfo = new()
+        s_gdk = new()
         {
             UseShellExecute = true,
-            FileName = _clientPath
+            FileName = Path.Combine(localAppDataPath, @"Flarial\Client")
+        };
+
+        s_uwp = new()
+        {
+            UseShellExecute = true,
+            FileName = Path.Combine(localAppDataPath, @"Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\RoamingState\Flarial")
         };
     }
 
@@ -122,19 +128,15 @@ public partial class SettingsGeneralPage : Page
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit)
-            {
-                MainWindow.CreateMessageBox("⚠️ Cannot find the client's folder for GDK versions.");
-                return;
-            }
+            var startInfo = Minecraft.UsingGameDevelopmentKit ? s_gdk : s_uwp;
 
-            if (!Directory.Exists(_clientPath))
+            if (!Directory.Exists(startInfo.FileName))
             {
                 MainWindow.CreateMessageBox("⚠️ Please launch the client at least once to generate its folder.");
                 return;
             }
 
-            using (Process.Start(_startInfo)) { }
+            using (Process.Start(startInfo)) { }
         };
 
         window.ContentRendered += Window_ContentRendered;

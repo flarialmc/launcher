@@ -226,6 +226,9 @@ public partial class MainWindow
             return;
         }
 
+        if (Minecraft.IsInstalled && Minecraft.UsingGameDevelopmentKit && _settings.DllBuild is not DllBuild.Beta)
+            CreateMessageBox("📢 Beta now supports GDK builds, please enable it to try it out.");
+
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
