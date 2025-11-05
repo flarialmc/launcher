@@ -86,14 +86,8 @@ partial class Minecraft
     {
         get
         {
-            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-            var path = Path.Combine(package.InstalledPath, "Minecraft.Windows.exe");
-
-            var fileVersion = FileVersionInfo.GetVersionInfo(path).FileVersion;
-            if (fileVersion is { }) return fileVersion.Substring(0, fileVersion.LastIndexOf('.'));
-
-            var packageVersion = package.Id.Version;
-            return $"{packageVersion.Major}.{packageVersion.Minor}.{packageVersion.Build}";
+            var version = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First().Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build / 100}";
         }
     }
 }
