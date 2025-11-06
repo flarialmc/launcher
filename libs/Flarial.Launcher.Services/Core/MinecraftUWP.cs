@@ -19,48 +19,24 @@ sealed partial class MinecraftUWP : Minecraft
 
 unsafe partial class MinecraftUWP
 {
-    public override bool IsRunning
-    {
-        get
-        {
-            fixed (char* @class = "MSCTFIME UI")
-            fixed (char* string1 = ApplicationUserModelId)
-            {
-                Win32Window window = HWND.Null;
-                var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
-                var string2 = stackalloc char[(int)length];
+    /*
+        - Every UWP window has a "MSCTFIME UI" window that is a child of the desktop window.
+        - This is useful since we don't account for parent windows.
+    */
 
-                while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
-                {
-                    if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
-                        continue;
+    public override bool IsRunning => FindWindow("MSCTFIME UI") is { };
 
-                    using (process)
-                    {
-                        var error = GetApplicationUserModelId(process, &length, string2);
-                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
-
-                        var result = CompareStringOrdinal(string1, -1, string2, -1, true);
-                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-    }
-}
-
-unsafe partial class MinecraftUWP
-{
     public override uint? Launch(bool initialized)
     {
         if (IsRunning) return Activate();
 
         var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
         var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
+
+        /*
+            - Here, we poll for changes to ensure the game initialized.
+            - Due to symlinks, we must resort to polling for UWP builds.
+        */
 
         fixed (char* path = Path.Combine(path1, path2))
         {

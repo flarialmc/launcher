@@ -2,11 +2,7 @@ using System;
 using Flarial.Launcher.Services.System;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
-using static Windows.Win32.Foundation.HANDLE;
-using Windows.Win32.Globalization;
 using System.IO;
-using Windows.Win32.System.RemoteDesktop;
-using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 
@@ -29,94 +25,46 @@ sealed partial class MinecraftGDK : Minecraft
 
 unsafe partial class MinecraftGDK
 {
-    uint LaunchBootstrapper()
-    {
-        fixed (char* processName = "GameLaunchHelper.exe")
-        fixed (char* applicationUserModelId = ApplicationUserModelId)
-        {
-            uint level = 0, count = 0, length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
-            WTS_PROCESS_INFOW* information = null;
-            var @string = stackalloc char[(int)length];
+    /*
+        - The game's main window class is called "Bedrock".
+        - Filtering via extremely fast due to this.
+    */
 
-            try
-            {
-                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
-                    for (var index = 0; index < count; index++)
-                    {
-                        var entry = information[index];
-
-                        var result = CompareStringOrdinal(processName, -1, entry.pProcessName, -1, true);
-                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                        if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
-                            continue;
-
-                        using (process)
-                        {
-
-                            var error = GetApplicationUserModelId(process, &length, @string);
-                            if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
-
-                            result = CompareStringOrdinal(applicationUserModelId, -1, @string, -1, true);
-                            if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                            return entry.ProcessId;
-                        }
-                    }
-
-                return Activate();
-            }
-            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
-        }
-    }
-
-    Win32Window? FindWindow()
-    {
-        fixed (char* @class = "Bedrock")
-        fixed (char* string1 = ApplicationUserModelId)
-        {
-            Win32Window window = HWND.Null;
-            var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
-            var string2 = stackalloc char[(int)length];
-
-            while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
-            {
-                if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
-                    continue;
-
-                using (process)
-                {
-                    var error = GetApplicationUserModelId(process, &length, string2);
-                    if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
-
-                    var result = CompareStringOrdinal(string1, -1, string2, -1, true);
-                    if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                    return window;
-                }
-            }
-
-            return null;
-        }
-    }
-}
-
-unsafe partial class MinecraftGDK
-{
-    public override bool IsRunning => FindWindow() is { };
+    public override bool IsRunning => FindWindow("Bedrock") is { };
 
     public override uint? Launch(bool initialized)
     {
-        if (FindWindow() is { } running) { running.Switch(); return running.ProcessId; }
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, LaunchBootstrapper()) is not { } bootstrapper) return null;
+        if (FindWindow("Bedrock") is { } window1)
+        {
+            window1.Switch();
+            return window1.ProcessId;
+        }
 
-        using (bootstrapper) bootstrapper.Wait(INFINITE);
-        if (FindWindow() is not { } @new) return null;
+        /* 
+            - Attempt to find the "PC Bootstrapper" process & wait for it to exit.
+            - The process will automatically close once the game window is visible.
+        */
 
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, @new.ProcessId) is not { } game)
-            return null;
+        var processId = FindProcessId("GameLaunchHelper.exe") ?? Activate();
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process1) return null;
 
-        using (game)
+        using (process1) process1.Wait(INFINITE);
+
+        /*
+            - The "PC Bootstrapper" process will close once any game window is visible.
+            - This also includes potential miscellaneous windows from other sources which is undesirable.
+            - If we cannot find the desired window then fallback to finding the actual process.
+        */
+
+        processId = FindWindow("Bedrock")?.ProcessId ?? FindProcessId("Minecraft.Windows.exe") ?? 0;
+        if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process2) return null;
+
+        /*
+            - GDK builds store data in unique directories for each signed user.
+            - Hence we must wildcard to ensure the game is actually initialized.
+        */
+
+        using (process2)
         {
             HANDLE @event = CreateEvent(null, true, false, null); try
             {
@@ -129,9 +77,8 @@ unsafe partial class MinecraftGDK
                 };
 
                 watcher.Deleted += (_, _) => SetEvent(@event);
-                var handles = stackalloc HANDLE[] { @event, game };
-
-                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? @new.ProcessId : null;
+                var handles = stackalloc HANDLE[] { @event, process2 };
+                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? processId : null;
             }
             finally { CloseHandle(@event); }
         }
