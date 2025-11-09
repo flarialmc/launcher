@@ -20,6 +20,8 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Management;
 using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Styles;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Flarial.Launcher;
 
@@ -39,6 +41,8 @@ public partial class MainWindow
 
     public static TextBlock StatusLabel, versionLabel, Username;
 
+    public static DialogBox MainWindowDialogBox;
+    
     private static StackPanel mbGrid;
 
     private static readonly Stopwatch speed = new();
@@ -120,6 +124,7 @@ public partial class MainWindow
         Username = username;
         mbGrid = MbGrid;
         PFP = pfp;
+        MainWindowDialogBox = DialogControl;
         SettingsPage.MainGrid = MainGrid;
         SettingsPage.b1 = MainBorder;
 
@@ -269,7 +274,7 @@ public partial class MainWindow
         else if (Time >= 18 && Time <= 24)
             GreetingLabel.Text = "Good Evening!";
     }
-
+    
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
         var build = _settings.DllBuild;
@@ -278,7 +283,7 @@ public partial class MainWindow
         var initialized = _settings.WaitForInitialization;
         var beta = build is DllBuild.Beta or DllBuild.Nightly;
         var client = beta ? FlarialClient.Beta : FlarialClient.Release;
-
+        
         try
         {
             IsLaunchEnabled = false;
