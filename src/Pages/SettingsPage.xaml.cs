@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Flarial.Launcher.Animations;
 using Flarial.Launcher.Functions;
 using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Styles;
 
 namespace Flarial.Launcher.Pages;
 
@@ -30,7 +31,7 @@ public partial class SettingsPage : Page
         SettingsPageTransition.SettingsNavigateAnimation(0, PageBorder, PageStackPanel);
     }
 
-    internal void Navigate_Versions(object sender, RoutedEventArgs e)
+    internal async void Navigate_Versions(object sender, RoutedEventArgs e)
     {
         if (!Minecraft.IsInstalled)
         {
@@ -52,8 +53,8 @@ public partial class SettingsPage : Page
 
         if (Minecraft.UsingGameDevelopmentKit && !s_shown)
         {
-            s_shown = true;
-            MainWindow.CreateMessageBox("🚨 Backups will not be generated for the currently installed version.");
+            s_shown = await DialogBox.ShowAsync("🚨 GDK Backups Unsupported", @"A GDK build of the game is currently installed. 
+The launcher doesn't support backing up data for GDK builds so please backup any data manually beforehand to avoid data loss.", ("OK", true));
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);

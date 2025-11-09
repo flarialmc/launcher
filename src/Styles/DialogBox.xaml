@@ -38,7 +38,7 @@
                 </Grid.RowDefinitions>
                 
                 <Grid Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,0">
-                    <TextBlock Name="TitleTextBlock" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Text="Version Not Supported!" Foreground="White" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Margin="0,0,0,7.5" Name="TitleTextBlock" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Text="Version Not Supported!" Foreground="White" FontSize="22" FontWeight="SemiBold"/>
                     <Border VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                 </Grid>
                 

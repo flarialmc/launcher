@@ -42,7 +42,7 @@ public partial class MainWindow
     public static TextBlock StatusLabel, versionLabel, Username;
 
     public static DialogBox MainWindowDialogBox;
-    
+
     private static StackPanel mbGrid;
 
     private static readonly Stopwatch speed = new();
@@ -274,7 +274,7 @@ public partial class MainWindow
         else if (Time >= 18 && Time <= 24)
             GreetingLabel.Text = "Good Evening!";
     }
-    
+
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
         var build = _settings.DllBuild;
@@ -283,7 +283,7 @@ public partial class MainWindow
         var initialized = _settings.WaitForInitialization;
         var beta = build is DllBuild.Beta or DllBuild.Nightly;
         var client = beta ? FlarialClient.Beta : FlarialClient.Release;
-        
+
         try
         {
             IsLaunchEnabled = false;
@@ -323,9 +323,15 @@ public partial class MainWindow
 
             if (!beta && !VersionCatalog.IsCompatible)
             {
-                CreateMessageBox("⚠️ This version is not supported by the client.");
+                await DialogBox.ShowAsync("⚠️ Unsupported Version", @"The currently installed version is unsupported by the client.
+You may try to switching to a supported version, using the beta build of the client or joining our Discord for support & updates.", ("OK", true));
                 return;
             }
+
+            if (beta && !await DialogBox.ShowAsync("⚠️ Beta Build", @"The beta build of the client might be potentially unstable. 
+This means bugs & crashes might occur frequently during gameplay hence use it at your own risk.
+We recommend using the beta build to only report potential bugs & issues with the client.", ("Cancel", false), ("Launch", true)))
+                return;
 
             if (!await client.DownloadAsync(ClientDownloadProgressAction))
             {
