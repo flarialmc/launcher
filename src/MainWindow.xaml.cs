@@ -328,20 +328,22 @@ You may try to switching to a supported version, using the beta build of the cli
                 return;
             }
 
-            if (beta && !await DialogBox.ShowAsync("⚠️ Beta Build", @"The beta build of the client might be potentially unstable. 
+            if (beta && !await DialogBox.ShowAsync("⚠️ Beta Usage", @"The beta build of the client might be potentially unstable. 
 This means bugs & crashes might occur frequently during gameplay hence use it at your own risk.
 We recommend using the beta build to only report potential bugs & issues with the client.", ("Cancel", false), ("Launch", true)))
                 return;
 
             if (!await client.DownloadAsync(ClientDownloadProgressAction))
             {
-                CreateMessageBox("💡 Please close the game to update the client.");
+                await DialogBox.ShowAsync("💡 Client Update", @"A client update is available for download.
+Please close the game & click on [Launch] to update.", ("OK", true));
                 return;
             }
 
             _launchButtonTextBlock.Text = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
-                CreateMessageBox("💡 Please close the game & try again to launch the client.");
+                await DialogBox.ShowAsync("💡 Launch Failure", @"The game couldn't launch correctly, please try again.
+Please remove any 3rd party mods, disable any 3rd party tools or contact support by joining our Discord.", ("OK", true));
 
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
         }
