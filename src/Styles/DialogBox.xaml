@@ -42,7 +42,7 @@
                     <Border VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                 </Grid>
                 
-                <TextBlock Name="DescriptionTextBlock" Grid.Row="1" Margin="0,10,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Text="Your version of Minecraft isn't supported by the client, however the beta release of Flarial Client does support your version, would you like to enable beta? (crashes or other bugs may be more prevalent)" Foreground="White" FontSize="16" FontWeight="Normal"/>
+                <TextBlock Name="DescriptionTextBlock" Grid.Row="1" Margin="0,10,0,7.5" HorizontalAlignment="Left" TextWrapping="Wrap" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Text="Your version of Minecraft isn't supported by the client, however the beta release of Flarial Client does support your version, would you like to enable beta? (crashes or other bugs may be more prevalent)" Foreground="White" FontSize="16" FontWeight="Normal"/>
                 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Name="ButtonsStackPanel">
                     <StackPanel.Resources>

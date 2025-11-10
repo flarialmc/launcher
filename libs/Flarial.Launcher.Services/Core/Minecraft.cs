@@ -63,13 +63,9 @@ unsafe partial class Minecraft
     {
         set
         {
-            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-
-            fixed (char* packageFullName = package.Id.FullName)
-            {
-                if (value) s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
-                else s_packageDebugSettings.DisableDebugging(packageFullName);
-            }
+            fixed (char* packageFullName = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First().Id.FullName)
+                if (value) s_packageDebugSettings.DisableDebugging(packageFullName);
+                else s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
         }
     }
 }

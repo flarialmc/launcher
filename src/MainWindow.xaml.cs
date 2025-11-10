@@ -231,9 +231,6 @@ public partial class MainWindow
             return;
         }
 
-        if (Minecraft.IsInstalled && Minecraft.UsingGameDevelopmentKit && _settings.DllBuild is not DllBuild.Beta)
-            CreateMessageBox("📢 Beta now supports GDK builds, please enable it to try it out.");
-
         _launchButtonTextBlock.Text = "Preparing...";
         VersionCatalog = await SDK.Catalog.GetAsync();
 
@@ -277,13 +274,6 @@ public partial class MainWindow
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
-        var build = _settings.DllBuild;
-        var path = _settings.CustomDllPath;
-        var custom = build is DllBuild.Custom;
-        var initialized = _settings.WaitForInitialization;
-        var beta = build is DllBuild.Beta or DllBuild.Nightly;
-        var client = beta ? FlarialClient.Beta : FlarialClient.Release;
-
         try
         {
             IsLaunchEnabled = false;
@@ -295,7 +285,14 @@ public partial class MainWindow
                 return;
             }
 
-            Minecraft.HasUWPAppLifecycle = true;
+            var build = _settings.DllBuild;
+            var path = _settings.CustomDllPath;
+            var custom = build is DllBuild.Custom;
+            var initialized = _settings.WaitForInitialization;
+            var beta = build is DllBuild.Beta or DllBuild.Nightly || Minecraft.UsingGameDevelopmentKit;
+            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+
+            Minecraft.HasUWPAppLifecycle = false;
 
             if (custom)
             {
@@ -324,13 +321,20 @@ public partial class MainWindow
             if (!beta && !VersionCatalog.IsCompatible)
             {
                 await DialogBox.ShowAsync("⚠️ Unsupported Version", @"The currently installed version is unsupported by the client.
-You may try to switching to a supported version, using the beta build of the client or joining our Discord for support & updates.", ("OK", true));
+
+• Try switching to a version supported by the client.
+• Try using the beta build of client via [Settings] -> [General].
+
+If you need support then join our Discord.", ("OK", true));
                 return;
             }
 
             if (beta && !await DialogBox.ShowAsync("⚠️ Beta Usage", @"The beta build of the client might be potentially unstable. 
-This means bugs & crashes might occur frequently during gameplay hence use it at your own risk.
-We recommend using the beta build to only report potential bugs & issues with the client.", ("Cancel", false), ("Launch", true)))
+
+• Bugs & crashes might occur frequently during gameplay.
+• The beta build is meant for reporting bugs & issues with the client.
+
+Hence use at your risk.", ("Cancel", false), ("Launch", true)))
                 return;
 
             if (!await client.DownloadAsync(ClientDownloadProgressAction))

@@ -54,7 +54,11 @@ public partial class SettingsPage : Page
         if (Minecraft.UsingGameDevelopmentKit && !s_shown)
         {
             s_shown = await DialogBox.ShowAsync("🚨 GDK Builds Unsupported", @"A GDK build of the game is currently installed. 
-The launcher doesn't support backing up data for GDK builds & downgrading isn't recommended due to auto-update issues.", ("OK", true));
+
+• The launcher doesn't support backing up data for GDK builds.
+• We don't recommend downgrading versions due to auto-update issues with the game.
+
+Hence use at your risk.", ("OK", true));
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);

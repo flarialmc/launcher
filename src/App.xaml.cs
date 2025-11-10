@@ -77,8 +77,6 @@ Exception: {1}
         string path = @$"{VersionManagement.launcherPath}\cachedToken.txt";
         if (!File.Exists(path)) File.WriteAllText(path, string.Empty);
 
-        try { new AppInstallManager().AutoUpdateSetting = Disabled; } catch { }
-
         var arguments = args.Args;
         var length = arguments.Length;
         var settings = Settings.Current;
