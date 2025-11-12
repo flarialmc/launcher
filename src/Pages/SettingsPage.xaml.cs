@@ -55,7 +55,7 @@ public partial class SettingsPage : Page
         {
             _shown = await DialogBox.ShowAsync("🚨 GDK Builds Unsupported", @"A GDK build of the game is currently installed. 
 
-• Downgrading is discouraged to due auto-update issues.
+• Downgrading is discouraged due to auto-update issues.
 • The launcher doesn't support backing up data for GDK builds.
 
 Hence use at your own risk.", ("OK", true));
