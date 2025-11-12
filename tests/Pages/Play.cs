@@ -85,7 +85,7 @@ sealed class Play : UserControl
                 progressBar.Style = ProgressBarStyle.Marquee;
                 ResumeLayout();
 
-                await Task.Run(() => client.Launch(true));
+                await Task.Run(() => client.Launch(false));
             }
             finally
             {

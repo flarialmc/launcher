@@ -21,7 +21,7 @@ public partial class SettingsPage : Page
 
     public static Border b1;
     public static Grid MainGrid;
-    static bool s_shown = false;
+    bool _shown = false;
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsLeaveAnimation(b1, MainGrid);
@@ -51,14 +51,14 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (Minecraft.UsingGameDevelopmentKit && !s_shown)
+        if (Minecraft.UsingGameDevelopmentKit && !_shown)
         {
-            s_shown = await DialogBox.ShowAsync("🚨 GDK Builds Unsupported", @"A GDK build of the game is currently installed. 
+            _shown = await DialogBox.ShowAsync("🚨 GDK Builds Unsupported", @"A GDK build of the game is currently installed. 
 
+• Downgrading is discouraged to due auto-update issues.
 • The launcher doesn't support backing up data for GDK builds.
-• We don't recommend downgrading versions due to auto-update issues with the game.
 
-Hence use at your risk.", ("OK", true));
+Hence use at your own risk.", ("OK", true));
         }
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);

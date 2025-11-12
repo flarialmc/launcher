@@ -16,9 +16,7 @@ namespace Flarial.Launcher.Services.Core;
 
 public abstract partial class Minecraft
 {
-    static readonly MinecraftUWP s_uwp = new();
-
-    static readonly MinecraftGDK s_gdk = new();
+    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
 
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
 }
@@ -38,6 +36,8 @@ partial class Minecraft
 {
     internal Minecraft() { }
 
+    protected abstract string WindowClass { get; }
+
     protected abstract string ApplicationUserModelId { get; }
 }
 
@@ -45,9 +45,9 @@ unsafe partial class Minecraft
 {
     protected uint Activate()
     {
-        fixed (char* applicationUserModelId = ApplicationUserModelId)
+        fixed (char* id = ApplicationUserModelId)
         {
-            s_applicationActivationManager.ActivateApplication(applicationUserModelId, null, AO_NOERRORUI, out var processId);
+            s_applicationActivationManager.ActivateApplication(id, null, AO_NOERRORUI, out var processId);
             return processId;
         }
     }
@@ -63,7 +63,8 @@ unsafe partial class Minecraft
     {
         set
         {
-            fixed (char* packageFullName = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First().Id.FullName)
+            var package = s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
+            fixed (char* packageFullName = package.Id.FullName)
                 if (value) s_packageDebugSettings.DisableDebugging(packageFullName);
                 else s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
         }
@@ -96,10 +97,9 @@ partial class Minecraft
 
 unsafe partial class Minecraft
 {
-    protected uint? FindProcessId(string value)
+    protected uint? GetProcessId(string value)
     {
-        fixed (char* name = value)
-        fixed (char* id = ApplicationUserModelId)
+        fixed (char* name = value) fixed (char* id = ApplicationUserModelId)
         {
             uint level = 0, count = 0, length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
             WTS_PROCESS_INFOW* information = null;
@@ -137,40 +137,42 @@ unsafe partial class Minecraft
         }
     }
 
-    private protected Win32Window? FindWindow(string value)
+    internal Win32Window? Window
     {
-        fixed (char* @class = value)
-        fixed (char* id = ApplicationUserModelId)
+        get
         {
-            Win32Window window = HWND.Null;
-            var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
-            var buffer = stackalloc char[(int)length];
-
-            while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
+            fixed (char* @class = WindowClass) fixed (char* id = ApplicationUserModelId)
             {
-                if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
-                    continue;
+                Win32Window window = HWND.Null;
+                var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
+                var buffer = stackalloc char[(int)length];
 
-                using (process)
+                while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
                 {
-                    var error = GetApplicationUserModelId(process, &length, buffer);
-                    if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
+                    if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                        continue;
 
-                    var result = CompareStringOrdinal(id, -1, buffer, -1, true);
-                    if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                    using (process)
+                    {
+                        var error = GetApplicationUserModelId(process, &length, buffer);
+                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                    return window;
+                        var result = CompareStringOrdinal(id, -1, buffer, -1, true);
+                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+
+                        return window;
+                    }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
     }
 }
 
 partial class Minecraft
 {
-    public abstract uint? Launch(bool initialized);
+    public bool IsRunning => Window is { };
 
-    public abstract bool IsRunning { get; }
+    public abstract uint? Launch(bool initialized);
 }

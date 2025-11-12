@@ -18,10 +18,8 @@ using static System.StringComparison;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Management;
-using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Styles;
-using MessageBox = System.Windows.MessageBox;
 
 namespace Flarial.Launcher;
 
@@ -325,7 +323,7 @@ public partial class MainWindow
 • Try switching to a version supported by the client.
 • Try using the beta build of client via [Settings] -> [General].
 
-If you need support then join our Discord.", ("OK", true));
+If you need help, join our Discord.", ("OK", true));
                 return;
             }
 
@@ -334,20 +332,28 @@ If you need support then join our Discord.", ("OK", true));
 • Bugs & crashes might occur frequently during gameplay.
 • The beta build is meant for reporting bugs & issues with the client.
 
-Hence use at your risk.", ("Cancel", false), ("Launch", true)))
+Hence use at your own risk.", ("Cancel", false), ("Launch", true)))
                 return;
 
             if (!await client.DownloadAsync(ClientDownloadProgressAction))
             {
-                await DialogBox.ShowAsync("💡 Client Update", @"A client update is available for download.
-Please close the game & click on [Launch] to update.", ("OK", true));
+                await DialogBox.ShowAsync("💡 Update Failed", @"A client update couldn't be downloaded.
+
+• Try closing the game & see if the client updates.
+• Try rebooting your machine & see if that resolves the issue.
+
+If you need help, join our Discord.", ("OK", true));
                 return;
             }
 
             _launchButtonTextBlock.Text = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
-                await DialogBox.ShowAsync("💡 Launch Failure", @"The game couldn't launch correctly, please try again.
-Please remove any 3rd party mods, disable any 3rd party tools or contact support by joining our Discord.", ("OK", true));
+                await DialogBox.ShowAsync("💡 Launch Failed", @"The client couldn't inject correctly.
+
+• Try closing the game & try again.
+• Remove & disable any 3rd party mods or tools.
+
+If you need help, join our Discord.", ("OK", true));
 
             StatusLabel.Text = $"Launched {(beta ? "Beta" : "Release")} DLL.";
         }

@@ -10,31 +10,20 @@ namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftGDK : Minecraft
 {
+    protected override string WindowClass => "Bedrock";
+
     protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
 
-    static readonly string s_path;
+    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
 
     internal MinecraftGDK() : base() { }
-
-    static MinecraftGDK()
-    {
-        var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        s_path = Path.Combine(path, @"Minecraft Bedrock\Users");
-    }
 }
 
 unsafe partial class MinecraftGDK
 {
-    /*
-        - The game's main window class is called "Bedrock".
-        - Filtering via extremely fast due to this.
-    */
-
-    public override bool IsRunning => FindWindow("Bedrock") is { };
-
     public override uint? Launch(bool initialized)
     {
-        if (FindWindow("Bedrock") is { } window1)
+        if (Window is { } window1)
         {
             window1.Switch();
             return window1.ProcessId;
@@ -45,7 +34,7 @@ unsafe partial class MinecraftGDK
             - The process will automatically close once the game window is visible.
         */
 
-        var processId = FindProcessId("GameLaunchHelper.exe") ?? Activate();
+        var processId = GetProcessId("GameLaunchHelper.exe") ?? Activate();
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process1) return null;
 
         using (process1) process1.Wait(INFINITE);
@@ -56,7 +45,7 @@ unsafe partial class MinecraftGDK
             - If we cannot find the desired window then fallback to finding the actual process.
         */
 
-        processId = FindWindow("Bedrock")?.ProcessId ?? FindProcessId("Minecraft.Windows.exe") ?? 0;
+        processId = Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe") ?? 0;
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process2) return null;
 
         /*

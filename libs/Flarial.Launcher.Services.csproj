@@ -21,13 +21,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Flarial.Launcher.SDK/Resources/GetExtendedUpdateInfo2.xml"
-      LogicalName="GetExtendedUpdateInfo2.xml" />
+    <EmbeddedResource Include="Flarial.Launcher.SDK/Resources/GetExtendedUpdateInfo2.xml" LogicalName="GetExtendedUpdateInfo2.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HttpToSocks5Proxy" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.228" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.242">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
   </ItemGroup>
 

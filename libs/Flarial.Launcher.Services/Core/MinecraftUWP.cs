@@ -12,6 +12,8 @@ namespace Flarial.Launcher.Services.Core;
 
 sealed partial class MinecraftUWP : Minecraft
 {
+    protected override string WindowClass => "MSCTFIME UI";
+
     protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App";
 
     internal MinecraftUWP() : base() { }
@@ -23,8 +25,6 @@ unsafe partial class MinecraftUWP
         - Every UWP window has a "MSCTFIME UI" window that is a child of the desktop window.
         - This is useful since we don't account for parent windows.
     */
-
-    public override bool IsRunning => FindWindow("MSCTFIME UI") is { };
 
     public override uint? Launch(bool initialized)
     {
