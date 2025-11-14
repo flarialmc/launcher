@@ -57,7 +57,7 @@ unsafe partial class MinecraftGDK
         {
             HANDLE @event = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(s_path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,
