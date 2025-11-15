@@ -28,9 +28,6 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
-CreateToolhelp32Snapshot
-Module32FirstW
-Module32NextW
 INFINITE
 INVALID_HANDLE_VALUE
 INVALID_FILE_ATTRIBUTES

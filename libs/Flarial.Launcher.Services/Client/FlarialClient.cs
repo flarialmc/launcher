@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using static System.StringComparison;
 using System.Security.Cryptography;
@@ -9,56 +8,35 @@ using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.Services.System;
 using Windows.Data.Json;
 using Flarial.Launcher.Services.Core;
-using Windows.Win32.Foundation;
-using static Windows.Win32.Foundation.HANDLE;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.Diagnostics.ToolHelp.CREATE_TOOLHELP_SNAPSHOT_FLAGS;
-using Windows.Win32.System.Diagnostics.ToolHelp;
-using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 
 namespace Flarial.Launcher.Services.Client;
 
 public abstract partial class FlarialClient
 {
     protected abstract string Identifer { get; }
-    protected abstract string FileName { get; }
-    protected abstract string BuildType { get; }
-    protected abstract string DownloadUri { get; }
+    protected abstract string Library { get; }
+    protected abstract string Build { get; }
+    protected abstract string Uri { get; }
     internal FlarialClient() { }
 
     public static readonly FlarialClient Beta = new FlarialClientBeta(), Release = new FlarialClientRelease();
 }
 
-unsafe partial class FlarialClient
+partial class FlarialClient
 {
     static FlarialClient? Client
     {
         get
         {
-            if (Minecraft.Current.Window?.ProcessId is not { } processId) return null;
+            using Win32Mutex beta = new(Beta.Identifer);
+            using Win32Mutex release = new(Release.Identifer);
 
-            HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, processId); try
-            {
-                MODULEENTRY32W entry = new() { dwSize = (uint)sizeof(MODULEENTRY32W) };
-
-                if (snapshot == INVALID_HANDLE_VALUE) return null;
-                if (!Module32NextW(snapshot, &entry)) return null;
-
-                fixed (char* beta = Path.GetFullPath(Beta.FileName))
-                fixed (char* release = Path.GetFullPath(Release.FileName))
-                    do
-                    {
-                        if (CompareStringOrdinal(beta, -1, entry.szExePath.Value, -1, true) is CSTR_EQUAL) return Beta;
-                        if (CompareStringOrdinal(release, -1, entry.szExePath.Value, -1, true) is CSTR_EQUAL) return Release;
-                    }
-                    while (Module32NextW(snapshot, &entry));
-            }
-            finally { CloseHandle(snapshot); }
+            if (!Minecraft.Current.IsRunning || (beta.Exists && release.Exists)) return null;
+            if (beta.Exists) return Beta; if (release.Exists) return Release;
 
             return null;
         }
     }
-
 }
 
 partial class FlarialClient
@@ -70,7 +48,9 @@ partial class FlarialClient
             if (!ReferenceEquals(this, client)) return false;
             return Minecraft.Current.Launch(false) is { };
         }
-        return Injector.Launch(initialized, FileName) is { };
+
+        if (Injector.Launch(initialized, Library) is not { } processId) return false;
+        using Win32Mutex mutex = new(Identifer); return mutex.Duplicate(processId);
     }
 }
 
@@ -85,7 +65,7 @@ partial class FlarialClient
     async Task<string> RemoteHashAsync()
     {
         var @string = await HttpService.GetAsync<string>(HashesUri);
-        return JsonObject.Parse(@string)[BuildType].GetString();
+        return JsonObject.Parse(@string)[Build].GetString();
     }
 
     async Task<string> LocalHashAsync() => await Task.Run(() =>
@@ -94,7 +74,7 @@ partial class FlarialClient
         {
             lock (_lock)
             {
-                using var stream = File.OpenRead(FileName);
+                using var stream = File.OpenRead(Library);
                 var value = _algorithm.ComputeHash(stream);
                 var @string = BitConverter.ToString(value);
                 return @string.Replace("-", string.Empty);
@@ -110,9 +90,8 @@ partial class FlarialClient
         await Task.WhenAll(tasks);
         if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase)) return true;
 
-        try { File.Delete(FileName); } catch { return false; }
-        //     if (IsRunning) return false;
-        await HttpService.DownloadAsync(DownloadUri, FileName, action);
+        try { File.Delete(Library); } catch { return false; }
+        await HttpService.DownloadAsync(Uri, Library, action);
 
         return true;
     }
