@@ -17,6 +17,7 @@ using Windows.ApplicationModel;
 using static System.StringComparison;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
+using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Management;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Styles;
@@ -47,7 +48,7 @@ public partial class MainWindow
 
     internal readonly WindowInteropHelper WindowInteropHelper;
 
-    public static SDK.Catalog VersionCatalog;
+    public static Catalog VersionCatalog;
 
     public bool IsLaunchEnabled
     {
@@ -155,7 +156,7 @@ public partial class MainWindow
     {
     }
 
-    readonly PackageCatalog Catalog = PackageCatalog.OpenForCurrentUser();
+    readonly PackageCatalog PackageCatalog = PackageCatalog.OpenForCurrentUser();
 
     void UpdateGameVersionText(Package package) { if (package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) UpdateGameVersionText(); }
 
@@ -230,11 +231,11 @@ public partial class MainWindow
         }
 
         _launchButtonTextBlock.Text = "Preparing...";
-        VersionCatalog = await SDK.Catalog.GetAsync();
+        VersionCatalog = await Catalog.GetAsync();
 
-        Catalog.PackageInstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
-        Catalog.PackageUninstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
-        Catalog.PackageUpdating += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.TargetPackage); };
+        PackageCatalog.PackageInstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
+        PackageCatalog.PackageUninstalling += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.Package); };
+        PackageCatalog.PackageUpdating += (_, args) => { if (args.IsComplete) UpdateGameVersionText(args.TargetPackage); };
 
         UpdateGameVersionText();
         _launchButtonTextBlock.Text = "Launch";

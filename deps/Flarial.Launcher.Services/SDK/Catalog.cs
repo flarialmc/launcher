@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Windows.Management.Deployment;
 using Flarial.Launcher.Services.Core;
 
-namespace Flarial.Launcher.SDK;
+namespace Flarial.Launcher.Services.SDK;
 
 public sealed class Catalog : IEnumerable<string>
 {

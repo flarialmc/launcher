@@ -15,11 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../libs/Flarial.Launcher.Services.csproj" />
+    <ProjectReference Include="../deps/Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All"/>
-  </ItemGroup>
-
 </Project>

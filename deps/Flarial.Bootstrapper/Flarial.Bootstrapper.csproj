@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net481</TargetFramework>
+
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <ApplicationIcon>Resources\Application.ico</ApplicationIcon>
+    <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
+
+    <PublishRelease>true</PublishRelease>
+    <NoWarn>PInvoke009</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\AssemblyVersion.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Application.ico" LogicalName="Application.ico" />
+    <EmbeddedResource Include="Resources/Background.png" LogicalName="Background.png" />
+  </ItemGroup>
+</Project>

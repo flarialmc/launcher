@@ -3,7 +3,7 @@ using System.Security;
 
 [assembly: DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 
-namespace Flarial.Launcher.SDK;
+namespace Flarial.Launcher.Services.SDK;
 
 [SuppressUnmanagedCodeSecurity]
 public static class Developer

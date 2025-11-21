@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Management;
 
 sealed class Settings : UserControl

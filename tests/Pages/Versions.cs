@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Flarial.Launcher.SDK;
+using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Core;
 
 sealed class Versions : UserControl

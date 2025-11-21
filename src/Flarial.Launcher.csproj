@@ -14,14 +14,13 @@
     <Optimize>true</Optimize>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <ErrorReport>prompt</ErrorReport>
     <LangVersion>latest</LangVersion>
     <PublishRelease>true</PublishRelease>
     <NoWarn>IDE1006,IDE0130,IDE0052,IDE0051</NoWarn>
     <DebugType>embedded</DebugType>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <!-- Release-specific settings -->
@@ -46,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../libs/Flarial.Launcher.Services.csproj" />
+    <ProjectReference Include="../deps/Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

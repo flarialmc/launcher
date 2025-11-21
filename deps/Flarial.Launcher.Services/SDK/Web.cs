@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using Flarial.Launcher.Services.Networking;
 using Windows.Data.Json;
 
-namespace Flarial.Launcher.SDK;
+namespace Flarial.Launcher.Services.SDK;
 
 static class Web
 {

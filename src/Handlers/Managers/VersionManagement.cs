@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Foundation;
+using Flarial.Launcher.Services.SDK;
 using Windows.Management.Deployment;
 using Windows.Storage;
 using Flarial.Launcher.Styles;
@@ -343,10 +344,10 @@ public static class VersionManagement
         }
         else
         {
-            if (!SDK.Developer.Enabled)
+            if (!Developer.Enabled)
             {
                 // Enable Developer Mode
-                SDK.Developer.Request();
+                Developer.Request();
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow.CreateMessageBox("Please enable developer mode.");
@@ -372,7 +373,7 @@ public static class VersionManagement
             {
                 Trace.WriteLine("Finished downloading the specified version's application bundle.");
 
-                if (!SDK.Developer.Enabled)
+                if (!Developer.Enabled)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {

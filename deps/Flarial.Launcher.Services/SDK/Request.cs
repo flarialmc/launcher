@@ -5,7 +5,7 @@ using Windows.Management.Deployment;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Flarial.Launcher.SDK;
+namespace Flarial.Launcher.Services.SDK;
 
 public sealed class Request : IDisposable
 {
