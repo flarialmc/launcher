@@ -10,6 +10,6 @@ static class Program
     {
         if (!GameLaunchHelper.HasPackageIdentity) return; if (GameLaunchHelper.Activate()) return;
         using Mutex mutex = new(false, Current.Id.FullName, out var @_); if (!_) return;
-        new Application { ShutdownMode = ShutdownMode.OnMainWindowClose }.Run(new MainWindow());
+        new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown }.Run(new MainWindow());
     }
 }

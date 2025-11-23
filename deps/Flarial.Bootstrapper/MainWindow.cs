@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,10 +55,12 @@ sealed class MainWindow : Window
         _grid.Children.Add(_progressBar);
     }
 
+    protected override void OnClosing(CancelEventArgs args){base.OnClosing(args); args.Cancel = true;}
+
     protected override async void OnContentRendered(EventArgs args)
     {
         base.OnContentRendered(args);
         await GameLaunchHelper.LaunchAsync();
-        Close();
+        Application.Current.Shutdown();
     }
 }
