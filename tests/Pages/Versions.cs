@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Management;
 
 sealed class Versions : UserControl
 {
