@@ -1,4 +1,4 @@
-﻿using Flarial.Launcher.Functions;
+using Flarial.Launcher.Functions;
 using Flarial.Launcher.Managers;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Animations;
@@ -259,17 +259,21 @@ public partial class MainWindow
     private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
         NewsPageTransition.Animation(Reverse, MainBorder, NewsBorder, NewsArrow);
 
-    private void SetGreetingLabel()
-    {
-        int Time = int.Parse(DateTime.Now.ToString("HH", System.Globalization.DateTimeFormatInfo.InvariantInfo));
+private void SetGreetingLabel()
+{
+    int hour = DateTime.Now.Hour;
+    string user = Environment.UserName;
+    string greeting;
 
-        if (Time >= 0 && Time < 12)
-            GreetingLabel.Text = "Good Morning!";
-        else if (Time >= 12 && Time < 18)
-            GreetingLabel.Text = "Good Afternoon!";
-        else if (Time >= 18 && Time <= 24)
-            GreetingLabel.Text = "Good Evening!";
-    }
+    if (hour < 12)
+        greeting = "Good Morning";
+    else if (hour < 18)
+        greeting = "Good Afternoon";
+    else
+        greeting = "Good Evening";
+
+    GreetingLabel.Text = $"{greeting}, {user}!";
+}
 
     private async void Inject_Click(object sender, RoutedEventArgs e)
     {
