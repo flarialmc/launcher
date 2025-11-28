@@ -8,7 +8,7 @@ using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher.Services.Management;
 
-public sealed partial class VersionCatalog
+public sealed class VersionCatalog
 {
     public IEnumerable<string> Versions => _catalog.Concat(_versions.Keys).Reverse();
 

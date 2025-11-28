@@ -15,7 +15,7 @@ public unsafe sealed class ModificationLibrary
     {
         FileName = Path.GetFullPath(path);
         Exists = File.Exists(FileName) && Path.HasExtension(FileName);
-        fixed (char* fileName = FileName) IsValid = Exists && FreeLibrary(LoadLibraryEx(fileName, Null, DONT_RESOLVE_DLL_REFERENCES));
+        fixed (char* name = FileName) IsValid = Exists && FreeLibrary(LoadLibraryEx(name, Null, DONT_RESOLVE_DLL_REFERENCES));
     }
 
     public static implicit operator ModificationLibrary(string @this) => new(@this);

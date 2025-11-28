@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Flarial.Bootstrapper/Flarial.Bootstrapper.csproj" />
     <EmbeddedResource Include="Resources/GetExtendedUpdateInfo2.xml" LogicalName="GetExtendedUpdateInfo2.xml" />
   </ItemGroup>
 

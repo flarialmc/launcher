@@ -21,21 +21,17 @@ namespace Flarial.Launcher.Services.Modding;
 
 public unsafe static class Injector
 {
-    static readonly FileSystemAccessRule s_rule;//= new(new SecurityIdentifier("S-1-15-2-1"), FileSystemRights.FullControl, AccessControlType.Allow);
+    static readonly FileSystemAccessRule s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FullControl, Allow);
 
-    static readonly LPTHREAD_START_ROUTINE s_procedure;//= GetProcAddress(GetModuleHandle("Kernel32"), "LoadLibraryW").CreateDelegate<LPTHREAD_START_ROUTINE>();
+    static readonly LPTHREAD_START_ROUTINE s_procedure;
 
     static Injector()
     {
-        fixed (char* module = "Kernel32")
-        fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
-        {
-            s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FullControl, Allow);
+        fixed (char* module = "Kernel32") fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
             s_procedure = GetProcAddress(GetModuleHandle(module), new(procedure)).CreateDelegate<LPTHREAD_START_ROUTINE>();
-        }
     }
 
-    public static unsafe uint? Launch(bool initialized, ModificationLibrary library)
+    public static uint? Launch(bool initialized, ModificationLibrary library)
     {
         if (!library.Exists) throw new FileNotFoundException(null, library.FileName);
         if (!library.IsValid) throw new BadImageFormatException(null, library.FileName);

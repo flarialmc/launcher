@@ -20,10 +20,7 @@ public abstract partial class FlarialClient
     internal FlarialClient() { }
 
     public static readonly FlarialClient Beta = new FlarialClientBeta(), Release = new FlarialClientRelease();
-}
 
-partial class FlarialClient
-{
     static FlarialClient? Client
     {
         get
@@ -37,10 +34,7 @@ partial class FlarialClient
             return null;
         }
     }
-}
 
-partial class FlarialClient
-{
     public bool Launch(bool initialized)
     {
         if (Client is { } client)
@@ -52,10 +46,7 @@ partial class FlarialClient
         if (Injector.Launch(initialized, Library) is not { } processId) return false;
         using Win32Mutex mutex = new(Identifer); return mutex.Duplicate(processId);
     }
-}
 
-partial class FlarialClient
-{
     static readonly object _lock = new();
 
     static readonly HashAlgorithm _algorithm = SHA256.Create();
