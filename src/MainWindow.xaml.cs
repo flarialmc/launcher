@@ -21,6 +21,7 @@ using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Management;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Styles;
+using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher;
 
@@ -213,6 +214,14 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
+        if (!await HttpService.AvailableAsync() && await DialogBox.ShowAsync("🚨 CDN Failure", @"Failed to connect to Flarial's CDN.
+        
+• Try restarting the launcher.
+• Check your internet connection.
+• Change your system DNS for both IPv4 and IPv6.
+
+If you need help, join our Discord.", ("Exit", true), ("Ignore", false))) { Close(); return; }
+
         if (await LauncherUpdater.CheckAsync())
         {
             updateTextEnabled = true;
@@ -349,7 +358,7 @@ If you need help, join our Discord.", ("OK", true));
 
             _launchButtonTextBlock.Text = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
-                await DialogBox.ShowAsync("💡 Launch Failed", @"The client couldn't inject correctly.
+                await DialogBox.ShowAsync("💡 Launch Failure", @"The client couldn't inject correctly.
 
 • Try closing the game & try again.
 • Remove & disable any 3rd party mods or tools.

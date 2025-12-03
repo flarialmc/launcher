@@ -15,6 +15,8 @@ public class HttpService
         Proxy = new HttpToSocks5Proxy($"{IPAddress.Loopback}", ushort.MaxValue)
     }, true);
 
+    const string Uri = "https://cdn.flarial.xyz/202.txt";
+
     static readonly HttpClient s_client = new(new HttpServiceHandler(), true);
 
     static HttpClient HttpClient => UseProxy ? s_proxy : s_client;
@@ -24,6 +26,16 @@ public class HttpService
     public static bool UseProxy { get; set; }
 
     public static bool UseDnsOverHttps { get => HttpServiceHandler.UseDnsOverHttps; set => HttpServiceHandler.UseDnsOverHttps = value; }
+
+    public static async Task<bool> AvailableAsync()
+    {
+        try
+        {
+            using var message = await HttpClient.GetAsync(Uri);
+            return message.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
 
     internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
