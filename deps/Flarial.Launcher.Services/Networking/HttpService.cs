@@ -27,15 +27,7 @@ public class HttpService
 
     public static bool UseDnsOverHttps { get => HttpServiceHandler.UseDnsOverHttps; set => HttpServiceHandler.UseDnsOverHttps = value; }
 
-    public static async Task<bool> AvailableAsync()
-    {
-        try
-        {
-            using var message = await HttpClient.GetAsync(Uri);
-            return message.IsSuccessStatusCode;
-        }
-        catch { return false; }
-    }
+    public static async Task<bool> AvailableAsync() { try { _ = await HttpClient.GetStringAsync(Uri); return true; } catch { return false; } }
 
     internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
