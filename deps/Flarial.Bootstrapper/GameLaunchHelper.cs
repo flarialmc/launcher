@@ -1,14 +1,14 @@
-using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.Foundation.WIN32_ERROR;
+using static NativeMethods;
 using static System.StringComparison;
 using System.IO;
 using System.Reflection;
-using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using Windows.Win32.Globalization;
-using static Windows.ApplicationModel.Package;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
+using Windows.ApplicationModel;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using System;
 
 static class GameLaunchHelper
 {
@@ -18,27 +18,30 @@ static class GameLaunchHelper
     {
         get
         {
-            var _ = 0U; if (GetCurrentPackageFamilyName(&_, null) != ERROR_INSUFFICIENT_BUFFER) return false;
-            if (!Current.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) return false;
-            return Path.Combine(Current.InstalledPath, "GameLaunchHelper.exe").Equals(s_path, OrdinalIgnoreCase);
+            var _ = 0U;
+            if (GetCurrentPackageFamilyName(&_, null) != ERROR_INSUFFICIENT_BUFFER) return false;
+
+            var package = Package.Current;
+            if (!package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) return false;
+            return Path.Combine(package.InstalledPath, "GameLaunchHelper.exe").Equals(s_path, OrdinalIgnoreCase);
         }
     }
 
     internal unsafe static bool Activate()
     {
-        fixed (char* @class = "Bedrock") fixed (char* pfn1 = Current.Id.FamilyName)
+        fixed (char* @class = "Bedrock") fixed (char* pfn1 = Package.Current.Id.FamilyName)
         {
-            HWND window = HWND.Null;
+            void* window = null;
             var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
             var pfn2 = stackalloc char[(int)length];
 
-            while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
+            while ((window = FindWindowEx(null, window, @class, null)) != null)
             {
                 uint processId = 0; GetWindowThreadProcessId(window, &processId);
                 var process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, processId); try
                 {
                     if (GetPackageFamilyName(process, &length, pfn2) != ERROR_SUCCESS) continue;
-                    if (CompareStringOrdinal(pfn1, -1, pfn2, -1, true) != COMPARESTRING_RESULT.CSTR_EQUAL) continue;
+                    if (CompareStringOrdinal(pfn1, -1, pfn2, -1, true) != CSTR_EQUAL) continue;
                     SwitchToThisWindow(window, true); return true;
                 }
                 finally { CloseHandle(process); }
@@ -47,15 +50,56 @@ static class GameLaunchHelper
         return false;
     }
 
-    internal static async Task LaunchAsync() => await Task.Run(() =>
+    [Obsolete("", true)]
+    internal static async Task LaunchAsync(CancellationToken token) => await Task.Run(() =>
     {
+        var path = Package.Current.InstalledPath;
+
         using var process = Process.Start(new ProcessStartInfo
         {
             CreateNoWindow = true,
             UseShellExecute = false,
-            WorkingDirectory = Current.InstalledPath,
-            FileName = Path.Combine(Current.InstalledPath, "Minecraft.Windows.exe"),
+            WorkingDirectory = path,
+            FileName = Path.Combine(path, "Minecraft.Windows.exe"),
         });
-        process.WaitForInputIdle();
+
+        using (token.Register(process.Kill)) process.WaitForInputIdle();
     });
+
+    internal static Request Launch() => new();
+
+    internal sealed class Request
+    {
+        readonly Process _process;
+        readonly TaskCompletionSource<bool> _source = new();
+
+        internal Request()
+        {
+            var path = Package.Current.InstalledPath;
+
+            _process = Process.Start(new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WorkingDirectory = path,
+                FileName = Path.Combine(path, "Minecraft.Windows.exe")
+            });
+
+            Task.Run(() =>
+            {
+                _process.WaitForInputIdle();
+                _source.TrySetResult(new());
+            });
+        }
+
+        internal TaskAwaiter GetAwaiter() => ((Task)_source.Task).GetAwaiter();
+
+        internal void Cancel()
+        {
+            if (_source.Task.IsCompleted) return;
+            if (!_process.HasExited) _process.Kill();
+        }
+
+        ~Request() => _process.Dispose();
+    }
 }

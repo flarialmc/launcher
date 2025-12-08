@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,7 +10,7 @@ sealed class MainWindow : Window
     {
         Background = new ImageBrush()
         {
-            ImageSource = EmbeddedResources.GetImage("Background.png"),
+            ImageSource = EmbeddedResources.GetImage("Background.jpg"),
             Stretch = Stretch.UniformToFill
         }
     };
@@ -23,10 +22,9 @@ sealed class MainWindow : Window
         Source = EmbeddedResources.GetImage("Application.ico")
     };
 
-    readonly ProgressBar _progressBar = new()
-    {
-        IsIndeterminate = true
-    };
+    readonly ProgressBar _progressBar = new() { IsIndeterminate = true };
+
+    GameLaunchHelper.Request? _request = null;
 
     internal MainWindow()
     {
@@ -37,7 +35,7 @@ sealed class MainWindow : Window
         UseLayoutRounding = true;
         SnapsToDevicePixels = true;
         Width = 1280; Height = 720;
-        WindowStyle = WindowStyle.None;
+        WindowStyle = WindowStyle.ThreeDBorderWindow;
         ResizeMode = ResizeMode.NoResize;
         SizeToContent = SizeToContent.Manual;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -55,12 +53,16 @@ sealed class MainWindow : Window
         _grid.Children.Add(_progressBar);
     }
 
-    protected override void OnClosing(CancelEventArgs args) { base.OnClosing(args); args.Cancel = true; }
+    protected override void OnClosing(CancelEventArgs args)
+    {
+        base.OnClosing(args);
+        _request?.Cancel();
+    }
 
     protected override async void OnContentRendered(EventArgs args)
     {
         base.OnContentRendered(args);
-        await GameLaunchHelper.LaunchAsync();
-        Application.Current.Shutdown();
+        _request = GameLaunchHelper.Launch();
+        await _request; Close();
     }
 }

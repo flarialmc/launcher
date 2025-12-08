@@ -214,13 +214,13 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        if (!await FlarialClient.IsConnectableAsync() && await DialogBox.ShowAsync("🚨 CDN Failure", @"Failed to connect to Flarial's CDN.
+        if (!await FlarialClient.IsAvailableAsync() && await DialogBox.ShowAsync("🚨 CDN Failure", @"Failed to connect to Flarial's CDN.
         
 • Try restarting the launcher.
 • Check your internet connection.
 • Change your system DNS for both IPv4 and IPv6.
 
-If you need help, join our Discord.", ("Exit", true), ("Ignore", false))) { Close(); return; }
+If you need help, join our Discord.", ("Exit", true), ("Continue", false))) { Close(); return; }
 
         if (await LauncherUpdater.CheckAsync())
         {

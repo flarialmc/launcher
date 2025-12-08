@@ -83,8 +83,13 @@ jobs:
           ls
           cd src
           cat AssemblyVersion.cs
+      
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
+      
+          msbuild -t:Restore "../deps/Flarial.Bootstrapper/Flarial.Bootstrapper.csproj"
+          msbuild /p:Configuration=Release /m "../deps/Flarial.Bootstrapper/Flarial.Bootstrapper.csproj"
+
       - name: update new version
         if: success()
         run: |
@@ -94,14 +99,17 @@ jobs:
           export new_version="${{ env.OUTPUT1 }}"
           contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
           echo -E "${contents}" > launcher/launcherVersion.txt
+        
           cat launcher/launcherVersion.txt
           git add launcher/launcherVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
+        
           cp D:/a/launcher/launcher/src/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
           git push origin main
+     
         env:
           OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
         shell: bash

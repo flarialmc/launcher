@@ -85,7 +85,7 @@ public abstract class FlarialClient
         return true;
     }
 
-    public static async Task<bool> IsConnectableAsync()
+    public static async Task<bool> IsAvailableAsync()
     {
         try { _ = await HttpService.GetAsync<string>(ConnectableUri); return true; }
         catch { return false; }
