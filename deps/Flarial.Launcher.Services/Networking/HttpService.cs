@@ -51,4 +51,12 @@ public class HttpService
             if (action is { }) action((int)((value += count) / source.Length * 100));
         }
     }
+
+    const string Uri = "https://cdn.flarial.xyz/202.txt";
+
+    public static async Task<bool> IsAvailableAsync()
+    {
+        try { _ = await HttpClient.GetStringAsync(Uri); return true; }
+        catch { return false; }
+    }
 }

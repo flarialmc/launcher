@@ -49,8 +49,6 @@ public abstract class FlarialClient
 
     const string HashesUri = "https://cdn.flarial.xyz/dll_hashes.json";
 
-    const string ConnectableUri = "https://cdn.flarial.xyz/202.txt";
-
     async Task<string> RemoteHashAsync()
     {
         var @string = await HttpService.GetAsync<string>(HashesUri);
@@ -83,11 +81,5 @@ public abstract class FlarialClient
         await HttpService.DownloadAsync(Uri, Library, action);
 
         return true;
-    }
-
-    public static async Task<bool> IsAvailableAsync()
-    {
-        try { _ = await HttpService.GetAsync<string>(ConnectableUri); return true; }
-        catch { return false; }
     }
 }
