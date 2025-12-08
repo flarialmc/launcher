@@ -15,8 +15,6 @@ public class HttpService
         Proxy = new HttpToSocks5Proxy($"{IPAddress.Loopback}", ushort.MaxValue)
     }, true);
 
-    const string Uri = "https://cdn.flarial.xyz/202.txt";
-
     static readonly HttpClient s_client = new(new HttpServiceHandler(), true);
 
     static HttpClient HttpClient => UseProxy ? s_proxy : s_client;
@@ -27,7 +25,7 @@ public class HttpService
 
     public static bool UseDnsOverHttps { get => HttpServiceHandler.UseDnsOverHttps; set => HttpServiceHandler.UseDnsOverHttps = value; }
 
-    public static async Task<bool> AvailableAsync() { try { _ = await HttpClient.GetStringAsync(Uri); return true; } catch { return false; } }
+    internal static async Task<HttpResponseMessage> GetAsync(string uri) => await HttpClient.GetAsync(uri);
 
     internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
@@ -46,9 +44,7 @@ public class HttpService
         using var message = await HttpClient.GetAsync(uri); message.EnsureSuccessStatusCode();
         using Stream source = await message.Content.ReadAsStreamAsync(), destination = File.Create(path);
 
-        int count = 0; double value = 0;
-        var buffer = new byte[s_length];
-
+        int count = 0; double value = 0; var buffer = new byte[s_length];
         while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {
             await destination.WriteAsync(buffer, 0, count);

@@ -11,13 +11,13 @@ using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher.Services.Client;
 
-public abstract partial class FlarialClient
+public abstract class FlarialClient
 {
-    protected abstract string Identifer { get; }
-    protected abstract string Library { get; }
-    protected abstract string Build { get; }
-    protected abstract string Uri { get; }
     internal FlarialClient() { }
+    protected abstract string Uri { get; }
+    protected abstract string Build { get; }
+    protected abstract string Library { get; }
+    protected abstract string Identifer { get; }
 
     public static readonly FlarialClient Beta = new FlarialClientBeta(), Release = new FlarialClientRelease();
 
@@ -25,13 +25,9 @@ public abstract partial class FlarialClient
     {
         get
         {
-            using Win32Mutex beta = new(Beta.Identifer);
-            using Win32Mutex release = new(Release.Identifer);
-
+            using Win32Mutex beta = new(Beta.Identifer), release = new(Release.Identifer);
             if (!Minecraft.Current.IsRunning || (beta.Exists && release.Exists)) return null;
-            if (beta.Exists) return Beta; if (release.Exists) return Release;
-
-            return null;
+            if (beta.Exists) return Beta; if (release.Exists) return Release; return null;
         }
     }
 
@@ -52,6 +48,8 @@ public abstract partial class FlarialClient
     static readonly HashAlgorithm _algorithm = SHA256.Create();
 
     const string HashesUri = "https://cdn.flarial.xyz/dll_hashes.json";
+
+    const string ConnectableUri = "https://cdn.flarial.xyz/202.txt";
 
     async Task<string> RemoteHashAsync()
     {
@@ -85,5 +83,11 @@ public abstract partial class FlarialClient
         await HttpService.DownloadAsync(Uri, Library, action);
 
         return true;
+    }
+
+    public static async Task<bool> IsConnectableAsync()
+    {
+        try { _ = await HttpService.GetAsync<string>(ConnectableUri); return true; }
+        catch { return false; }
     }
 }
