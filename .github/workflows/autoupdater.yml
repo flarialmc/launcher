@@ -100,17 +100,18 @@ jobs:
           contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
           echo -E "${contents}" > launcher/launcherVersion.txt
         
-          cat launcher/launcherVersion.txt
-          git add launcher/launcherVersion.txt
-          git commit -m "Bump launcher version"
-
-          cp D:/a/launcher/launcher/deps/Flarial.Bootstrapper\bin\Release\net481\Flarial.Bootstrapper.exe ./launcher/Flarial.Bootstrapper.exe
+          cp D:/a/launcher/launcher/deps/Flarial.Bootstrapper/bin/Release/net481/Flarial.Bootstrapper.exe ./launcher/Flarial.Bootstrapper.exe
           git add launcher/Flarial.Bootstrapper.exe
           git commit -a -m "Update bootstrapper"
         
           cp D:/a/launcher/launcher/src/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
+
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
+          git commit -m "Bump launcher version"
+
           git push origin main
      
         env:
