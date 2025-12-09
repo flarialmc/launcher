@@ -178,9 +178,10 @@ public partial class MainWindow
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
+
         _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
-        CreateMessageBox("🚨 The version switcher has been disabled due to reliability issues.");
+
         if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
@@ -223,7 +224,7 @@ If you need help, join our Discord.", ("Exit", true), ("Continue", false))) { Cl
         if (await LauncherUpdater.CheckAsync() && await DialogBox.ShowAsync("💡 Launcher Update", @"An update is available for the launcher.
 
 • Updating the launcher provides new bug fixes & features.
-• Newer versions of the client & game might require an launcher update.
+• Newer versions of the client & game might require a launcher update.
 
 If you need help, join our Discord.", ("Update", true), ("Later", false)))
         {

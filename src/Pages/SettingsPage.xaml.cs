@@ -51,15 +51,12 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (Minecraft.UsingGameDevelopmentKit && !_shown)
-        {
-            _shown = await DialogBox.ShowAsync("🚨 GDK Builds Unsupported", @"A GDK build of the game is currently installed. 
+        await DialogBox.ShowAsync("🚨 Version Switcher Unstable", @"The version switcher might be potentially unstable.
 
-• Downgrading is discouraged due to auto-update issues.
 • The launcher doesn't support backing up data for GDK builds.
+• UWP builds might auto-update randomly to the latest GDK builds.
 
-Hence use at your own risk.", ("OK", true));
-        }
+Hence use at your own risk.", ("Continue", true));
 
         SettingsPageTransition.SettingsNavigateAnimation(-500, PageBorder, PageStackPanel);
     }
