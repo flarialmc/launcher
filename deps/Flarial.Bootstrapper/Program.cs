@@ -14,7 +14,7 @@ static class Program
     [STAThread]
     static void Main()
     {
-        if (!GameLaunchHelper.HasPackageIdentity) return; if (GameLaunchHelper.Activate()) return;
+        if (!GameLaunchHelper.HasPackageIdentity || GameLaunchHelper.Activate()) return;
         using Mutex mutex = new(false, Current.Id.FullName, out var @_); if (!_) return;
         new Application { ShutdownMode = ShutdownMode.OnMainWindowClose }.Run(new MainWindow());
     }

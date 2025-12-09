@@ -28,7 +28,7 @@ unsafe static class NativeMethods
     [DllImport("Kernel32")]
     internal static extern int GetPackageFamilyName(void* hProcess, uint* packageFamilyNameLength, char* packageFamilyName);
 
-    [DllImport("Kernel32")]
+    [DllImport("User32")]
     internal static extern uint GetWindowThreadProcessId(void* hWnd, uint* lpdwProcessId);
 
     [DllImport("Kernel32")]
