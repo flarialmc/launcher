@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Management;
 using static System.Environment;
 
 namespace Flarial.Launcher.Pages;
@@ -52,40 +53,32 @@ public partial class SettingsGeneralPage : Page
         };
     }
 
+    readonly static Brush s_brush = (Brush)new BrushConverter().ConvertFromString("#3F2A2D");
+
+    static void OverrideLaunchButtonTemplate(Button button, string text)
+    {
+        button.ApplyTemplate();
+
+        var launcherFolderButtonTextBlock = (TextBlock)button.Template.FindName("LaunchText", button);
+        launcherFolderButtonTextBlock.Margin = new();
+        launcherFolderButtonTextBlock.Text = text;
+
+        var launcherFolderButtonBorder = (Border)button.Template.FindName("MainBorder", button);
+        launcherFolderButtonBorder.Background = s_brush;
+
+        var launcherFolderButtonIcon = (System.Windows.Shapes.Path)button.Template.FindName("LaunchIcon", button);
+        launcherFolderButtonIcon.Data = null;
+    }
+
     public SettingsGeneralPage()
     {
         InitializeComponent();
-
         DataContext = this;
 
-        // Start - Overrides some stuff from the Launch Buttom template.
+        // Start - Overrides some stuff from the Launch Button template.
 
-        BrushConverter brushConverter = new();
-        var brush = (Brush)brushConverter.ConvertFromString("#3F2A2D");
-
-        LauncherFolderButton.ApplyTemplate();
-
-        var launcherFolderButtonTextBlock = (TextBlock)LauncherFolderButton.Template.FindName("LaunchText", LauncherFolderButton);
-        launcherFolderButtonTextBlock.Margin = new();
-        launcherFolderButtonTextBlock.Text = "Launcher";
-
-        var launcherFolderButtonBorder = (Border)LauncherFolderButton.Template.FindName("MainBorder", LauncherFolderButton);
-        launcherFolderButtonBorder.Background = brush;
-
-        var launcherFolderButtonIcon = (System.Windows.Shapes.Path)LauncherFolderButton.Template.FindName("LaunchIcon", LauncherFolderButton);
-        launcherFolderButtonIcon.Data = null;
-
-        ClientFolderButton.ApplyTemplate();
-
-        var clientFolderButtonTextBlock = (TextBlock)ClientFolderButton.Template.FindName("LaunchText", ClientFolderButton);
-        clientFolderButtonTextBlock.Margin = new();
-        clientFolderButtonTextBlock.Text = "Client";
-
-        var clientFolderButtonIcon = (System.Windows.Shapes.Path)ClientFolderButton.Template.FindName("LaunchIcon", ClientFolderButton);
-        clientFolderButtonIcon.Data = null;
-
-        var clientFolderButtonBorder = (Border)ClientFolderButton.Template.FindName("MainBorder", ClientFolderButton);
-        clientFolderButtonBorder.Background = brush;
+        OverrideLaunchButtonTemplate(ClientFolderButton, "📁 Folder");
+        OverrideLaunchButtonTemplate(LauncherFolderButton, "📁 Folder");
 
         // End - Overrides some stuff from the Launch Button template.
 

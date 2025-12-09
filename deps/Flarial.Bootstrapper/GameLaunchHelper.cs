@@ -4,26 +4,24 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Threading;
 using Windows.ApplicationModel;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using System;
 
 static class GameLaunchHelper
 {
     static readonly string s_path = Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName;
 
-    internal unsafe static bool HasPackageIdentity
+    internal static bool HasPackageIdentity
     {
         get
         {
-            var _ = 0U;
-            if (GetCurrentPackageFamilyName(&_, null) != ERROR_INSUFFICIENT_BUFFER) return false;
-
-            var package = Package.Current;
-            if (!package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) return false;
-            return Path.Combine(package.InstalledPath, "GameLaunchHelper.exe").Equals(s_path, OrdinalIgnoreCase);
+            try
+            {
+                var package = Package.Current;
+                if (!package.Id.FamilyName.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe", OrdinalIgnoreCase)) return false;
+                return Path.Combine(package.InstalledPath, "GameLaunchHelper.exe").Equals(s_path, OrdinalIgnoreCase);
+            }
+            catch { return false; }
         }
     }
 
@@ -49,22 +47,6 @@ static class GameLaunchHelper
         }
         return false;
     }
-
-    [Obsolete("", true)]
-    internal static async Task LaunchAsync(CancellationToken token) => await Task.Run(() =>
-    {
-        var path = Package.Current.InstalledPath;
-
-        using var process = Process.Start(new ProcessStartInfo
-        {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            WorkingDirectory = path,
-            FileName = Path.Combine(path, "Minecraft.Windows.exe"),
-        });
-
-        using (token.Register(process.Kill)) process.WaitForInputIdle();
-    });
 
     internal static Request Launch() => new();
 

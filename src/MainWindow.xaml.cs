@@ -222,7 +222,12 @@ public partial class MainWindow
 
 If you need help, join our Discord.", ("Exit", true), ("Continue", false))) { Close(); return; }
 
-        if (await LauncherUpdater.CheckAsync())
+        if (await LauncherUpdater.CheckAsync() && await DialogBox.ShowAsync("💡 Launcher Update", @"An update is available for the launcher.
+
+• Updating the launcher provides new bug fixes & features.
+• Newer versions of the client & game might require an launcher update.
+
+If you need help, join our Discord.", ("Update", true), ("Later", false)))
         {
             updateTextEnabled = true;
 

@@ -12,6 +12,7 @@ using Windows.Win32.Globalization;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+using Windows.ApplicationModel;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -41,30 +42,17 @@ public unsafe abstract partial class Minecraft
         }
     }
 
-    public static bool IsInstalled
-    {
-        get
-        {
-            var packages = s_packageManager.FindPackagesForUser(Empty, PackageFamilyName);
-            return packages.Any();
-        }
-    }
+    static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Single();
 
-    public static bool IsUnpackaged
-    {
-        get
-        {
-            var package = s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First();
-            return package.IsDevelopmentMode;
-        }
-    }
+    public static bool IsInstalled => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Any();
+
+    public static bool IsUnpackaged => Package.IsDevelopmentMode;
 
     public static bool HasUWPAppLifecycle
     {
         set
         {
-            var package = s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First();
-            fixed (char* packageFullName = package.Id.FullName)
+            fixed (char* packageFullName = Package.Id.FullName)
                 if (value) s_packageDebugSettings.DisableDebugging(packageFullName);
                 else s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
         }
@@ -74,8 +62,7 @@ public unsafe abstract partial class Minecraft
     {
         get
         {
-            var package = s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First();
-            var appUserModelId = package.GetAppListEntries()[0].AppUserModelId;
+            var appUserModelId = Package.GetAppListEntries()[0].AppUserModelId;
             return appUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
         }
     }
@@ -84,7 +71,7 @@ public unsafe abstract partial class Minecraft
     {
         get
         {
-            var version = s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First().Id.Version;
+            var version = Package.Id.Version;
             return $"{version.Major}.{version.Minor}.{version.Build / 100}";
         }
     }

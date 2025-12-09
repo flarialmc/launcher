@@ -84,7 +84,10 @@
             <Grid Height="0" Name="DllGrid">
                 <styles:TextBox x:Name="DLLTextBox"/>
             </Grid>
+
             <ToggleButton Click="WaitForInitializationClick" Name="WaitForInitialization" Content="Wait For Initialization" Style="{StaticResource ToggleButton}"/>
+            <Button Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
+         
             <Grid HorizontalAlignment="Left">
                 <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Launcher" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
@@ -92,17 +95,7 @@
  
             <ToggleButton Visibility="Collapsed" Click="ToggleButton_Click_1" Name="AutoLogin" Content="Auto Login" Style="{StaticResource ToggleButton}"/>
             <ToggleButton Click="HardwareAcceleration_Click" Name="HardwareAcceleration" Content="Hardware Acceleration" Style="{StaticResource ToggleButton}"/>
- 
-            <Grid HorizontalAlignment="Left">
-                <Label Margin="0,0,0,5" HorizontalAlignment="Left" FontFamily="pack://application:,,,/Assets/#Space Grotesk" Content="Folders" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                <Border Margin="5,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-            </Grid>
-
-            <UniformGrid Margin="0,6.25,0,0">
-                <Button Margin="0,0,3.125,0" Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
-                <Button Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
-            </UniformGrid>
-            
+            <Button Name="LauncherFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>       
         </StackPanel>
         <ToggleButton Visibility="Hidden" Margin="0,0,0,0" Name="SaveButton" Grid.Row="1" IsChecked="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand">
             <ToggleButton.Template>

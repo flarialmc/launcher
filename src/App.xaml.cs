@@ -101,6 +101,10 @@ Exception: {1}
                     settings.HardwareAcceleration = false;
                     break;
 
+                case "--expose-gdk-builds":
+                    settings.ExposeGDKBuilds = true;
+                    break;
+
                 case "--use-proxy":
                     HttpService.UseProxy = true;
                     break;

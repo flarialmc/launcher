@@ -39,6 +39,8 @@ sealed partial class Settings
     internal bool WaitForInitialization = true;
 
     internal bool AutoLogin = true;
+
+    internal bool ExposeGDKBuilds = false;
 }
 
 partial class Settings
@@ -50,8 +52,9 @@ partial class Settings
         DllBuild = DllBuild.Release;
         WaitForInitialization = true;
 
-        HardwareAcceleration = true;
         AutoLogin = true;
+        ExposeGDKBuilds = false;
+        HardwareAcceleration = true;
     }
 }
 

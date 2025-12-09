@@ -39,7 +39,7 @@ public class HttpService
         });
     }
 
-    internal static async Task DownloadAsync(string uri, string path, Action<int> action)
+    internal static async Task DownloadAsync(string uri, string path, Action<int>? action)
     {
         using var message = await HttpClient.GetAsync(uri); message.EnsureSuccessStatusCode();
         using Stream source = await message.Content.ReadAsStreamAsync(), destination = File.Create(path);
