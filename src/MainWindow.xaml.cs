@@ -178,12 +178,10 @@ public partial class MainWindow
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-
         _ = Task.WhenAll(CheckLicenseAsync(), SetCampaignBannerAsync());
         CreateMessageBox("📢 Join our Discord! https://flarial.xyz/discord");
-
-        if (!_settings.HardwareAcceleration)
-            CreateMessageBox("⚠️ Hardware acceleration is disabled.");
+        CreateMessageBox("🚨 The version switcher has been disabled due to reliability issues.");
+        if (!_settings.HardwareAcceleration) CreateMessageBox("⚠️ Hardware acceleration is disabled.");
     }
 
     async Task SetCampaignBannerAsync()

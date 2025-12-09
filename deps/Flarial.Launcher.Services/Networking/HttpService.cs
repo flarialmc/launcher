@@ -41,14 +41,20 @@ public class HttpService
 
     internal static async Task DownloadAsync(string uri, string path, Action<int>? action)
     {
-        using var message = await HttpClient.GetAsync(uri); message.EnsureSuccessStatusCode();
-        using Stream source = await message.Content.ReadAsStreamAsync(), destination = File.Create(path);
+        using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead);
+        message.EnsureSuccessStatusCode();
 
-        int count = 0; double value = 0; var buffer = new byte[s_length];
+        using var destination = File.Create(path);
+        using var source = await message.Content.ReadAsStreamAsync();
+
+        int count = 0; double value = 0;
+        var buffer = new byte[s_length];
+        var length = message.Content.Headers.ContentLength ?? 0;
+
         while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {
             await destination.WriteAsync(buffer, 0, count);
-            if (action is { }) action((int)((value += count) / source.Length * 100));
+            if (action is { } && length > 0) action((int)((value += count) / length * 100));
         }
     }
 
