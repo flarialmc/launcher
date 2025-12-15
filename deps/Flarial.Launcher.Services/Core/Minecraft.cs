@@ -76,7 +76,7 @@ public unsafe abstract partial class Minecraft
         }
     }
 
-    protected uint? GetProcessId(string value)
+    protected uint? GetProcess(string value)
     {
         fixed (char* name = value) fixed (char* aumid = ApplicationUserModelId)
         {

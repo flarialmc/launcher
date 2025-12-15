@@ -21,7 +21,6 @@ public partial class SettingsPage : Page
 
     public static Border b1;
     public static Grid MainGrid;
-    bool _shown = false;
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         => SettingsPageTransition.SettingsLeaveAnimation(b1, MainGrid);

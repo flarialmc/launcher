@@ -24,7 +24,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             - The process will automatically close once the game window is visible.
         */
 
-        var bootstrapperId = GetProcessId("GameLaunchHelper.exe") ?? Activate();
+        var bootstrapperId = GetProcess("GameLaunchHelper.exe") ?? Activate();
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, bootstrapperId) is not { } bootstrapper) return null;
 
         /*
@@ -34,7 +34,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         */
 
         using (bootstrapper) bootstrapper.Wait(INFINITE);
-        var gameId = Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe") ?? 0;
+        var gameId = Window?.ProcessId ?? GetProcess("Minecraft.Windows.exe") ?? 0;
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, gameId) is not { } game) return null;
 
         /*
