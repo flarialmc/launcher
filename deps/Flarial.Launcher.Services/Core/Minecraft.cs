@@ -81,9 +81,10 @@ public unsafe abstract partial class Minecraft
 
     protected uint? GetProcessId(string value)
     {
-        fixed (char* name = value) fixed (char* aumid = ApplicationUserModelId)
+        fixed (char* name = value)
+        fixed (char* pfn = PackageFamilyName)
         {
-            uint level = 0, count = 0, length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
+            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
             WTS_PROCESS_INFOW* information = null;
             var buffer = stackalloc char[(int)length];
 
@@ -103,10 +104,10 @@ public unsafe abstract partial class Minecraft
                         using (process)
                         {
 
-                            var error = GetApplicationUserModelId(process, &length, buffer);
+                            var error = GetPackageFamilyName(process, &length, buffer);
                             if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                            result = CompareStringOrdinal(aumid, -1, buffer, -1, true);
+                            result = CompareStringOrdinal(pfn, -1, buffer, -1, true);
                             if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
                             return entry.ProcessId;
@@ -123,10 +124,11 @@ public unsafe abstract partial class Minecraft
     {
         get
         {
-            fixed (char* @class = WindowClass) fixed (char* aumid = ApplicationUserModelId)
+            fixed (char* @class = WindowClass)
+            fixed (char* pfn = PackageFamilyName)
             {
                 Win32Window window = HWND.Null;
-                var length = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
+                var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
                 var buffer = stackalloc char[(int)length];
 
                 while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
@@ -136,10 +138,10 @@ public unsafe abstract partial class Minecraft
 
                     using (process)
                     {
-                        var error = GetApplicationUserModelId(process, &length, buffer);
+                        var error = GetPackageFamilyName(process, &length, buffer);
                         if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
 
-                        var result = CompareStringOrdinal(aumid, -1, buffer, -1, true);
+                        var result = CompareStringOrdinal(pfn, -1, buffer, -1, true);
                         if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
 
                         return window;

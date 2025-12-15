@@ -16,6 +16,8 @@ sealed class MinecraftGDK : Core.MinecraftGDK
         }
     }
 
+    string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+
     public override uint? Launch(bool initialized)
     {
         if (!BypassPCBootstrapper) return base.Launch(initialized);
@@ -36,12 +38,8 @@ sealed class MinecraftGDK : Core.MinecraftGDK
         using (var @_ = PowerShell.Create())
         {
             @_.AddCommand("Invoke-CommandInDesktopPackage");
-
-            @_.AddParameter("AppId", "Game");
-            @_.AddParameter("PackageFamilyName", "Microsoft.MinecraftUWP_8wekyb3d8bbwe");
-            @_.AddParameter("Command", Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe"));
-
-            @_.Invoke();
+            @_.AddParameter(nameof(PackageFamilyName), PackageFamilyName);
+            @_.AddParameter(nameof(Command), Command); @_.Invoke();
         }
 
         if (Process is not { } process2) return null;
