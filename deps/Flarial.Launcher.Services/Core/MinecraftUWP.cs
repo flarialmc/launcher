@@ -30,14 +30,17 @@ unsafe sealed class MinecraftUWP : Minecraft
 
         fixed (char* path = Path.Combine(path1, path2))
         {
-            var processId = Activate();
-            if (Win32Process.Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+            if (Win32Process.Open(PROCESS_SYNCHRONIZE, Activate()) is not { } process) return null;
 
             using (process)
             {
-                while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES) if (!process.Wait(1)) return null;
-                while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES) if (!process.Wait(1)) return null;
-                return processId;
+                while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
+                    if (!process.IsRunning) return null;
+
+                while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
+                    if (!process.IsRunning) return null;
+
+                return process.ProcessId;
             }
         }
     }

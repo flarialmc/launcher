@@ -22,23 +22,13 @@ readonly partial struct Win32Process : IDisposable
         return handle != Null ? new(processId, handle) : null;
     }
 
-    internal bool Wait(uint timeout) => WaitForSingleObject(_handle, timeout) is WAIT_TIMEOUT;
-
-    public void Dispose() => CloseHandle(_handle);
-
-    public static implicit operator HANDLE(in Win32Process @this) => @this._handle;
-}
-
-partial struct Win32Process
-{
-    internal static Win32Process? Open(uint? processId)
-    {
-        if (processId is not { } @_) return null;
-        var handle = OpenProcess(PROCESS_ALL_ACCESS, false, @_);
-        return handle != Null ? new(@_, handle) : null;
-    }
+    internal bool IsRunning => WaitForSingleObject(_handle, 1) is WAIT_TIMEOUT;
 
     internal void WaitForExit() => WaitForSingleObject(_handle, INFINITE);
 
     internal void WaitForInputIdle() => PInvoke.WaitForInputIdle(_handle, INFINITE);
+
+    public void Dispose() => CloseHandle(_handle);
+
+    public static implicit operator HANDLE(in Win32Process @this) => @this._handle;
 }

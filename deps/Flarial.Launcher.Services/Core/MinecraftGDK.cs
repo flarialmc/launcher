@@ -30,6 +30,7 @@ unsafe class MinecraftGDK : Minecraft
 
         var bootstrapperId = GetProcessId("GameLaunchHelper.exe") ?? Activate();
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, bootstrapperId) is not { } bootstrapper) return null;
+        using (bootstrapper) bootstrapper.WaitForExit();
 
         /*
             - The "PC Bootstrapper" process will close once any game window is visible.
@@ -37,7 +38,6 @@ unsafe class MinecraftGDK : Minecraft
             - If we cannot find the desired window then fallback to finding the actual process.
         */
 
-        using (bootstrapper) bootstrapper.Wait(INFINITE);
         var gameId = Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe") ?? 0;
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, gameId) is not { } game) return null;
 
