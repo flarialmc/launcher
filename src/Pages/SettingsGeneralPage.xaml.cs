@@ -161,8 +161,19 @@ public partial class SettingsGeneralPage : Page
         AutoLogin.IsChecked = _settings.AutoLogin;
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
 
-        WaitForInitialization.IsChecked = _settings.WaitForInitialization;
+        if (_settings.WaitForInitialization && _settings.BypassPCBootstrapper)
+        {
+            WaitForInitialization.IsChecked = true;
+            BypassPCBootstrapper.IsChecked = false;
+        }
+        else
+        {
+            WaitForInitialization.IsChecked = _settings.WaitForInitialization;
+            BypassPCBootstrapper.IsChecked = _settings.BypassPCBootstrapper;
+        }
+
         DLLTextBox.Value = _settings.CustomDllPath;
+
 
         var window = (MainWindow)Application.Current.MainWindow;
         if (window != null) window.ContentRendered -= Window_ContentRendered;
@@ -172,8 +183,30 @@ public partial class SettingsGeneralPage : Page
     {
         var button = (ToggleButton)sender;
         if (button.IsChecked is not bool @checked) return;
+
+        if (@checked)
+        {
+            BypassPCBootstrapper.IsChecked = false;
+            _settings.BypassPCBootstrapper = false;
+        }
+
         _settings.WaitForInitialization = @checked;
     }
+
+    void BypassPCBootstrapperClick(object sender, RoutedEventArgs args)
+    {
+        var button = (ToggleButton)sender;
+        if (button.IsChecked is not bool @checked) return;
+
+        if (@checked)
+        {
+            WaitForInitialization.IsChecked = false;
+            _settings.WaitForInitialization = false;
+        }
+
+        _settings.BypassPCBootstrapper = @checked;
+    }
+
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)
     {

@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Flarial.Launcher.Services.Core;
 using Windows.Devices.Midi;
 using Windows.UI.Xaml.Controls.Maps;
 
@@ -38,9 +39,14 @@ sealed partial class Settings
     [DataMember]
     internal bool WaitForInitialization = true;
 
-    internal bool AutoLogin = true;
+    [DataMember]
+    internal bool BypassPCBootstrapper
+    {
+        get => Minecraft.BypassPCBootstrapper;
+        set => Minecraft.BypassPCBootstrapper = value;
+    }
 
-    internal bool ExposeGDKBuilds = false;
+    internal bool AutoLogin = true;
 }
 
 partial class Settings
@@ -53,7 +59,7 @@ partial class Settings
         WaitForInitialization = true;
 
         AutoLogin = true;
-        ExposeGDKBuilds = false;
+        BypassPCBootstrapper = false;
         HardwareAcceleration = true;
     }
 }

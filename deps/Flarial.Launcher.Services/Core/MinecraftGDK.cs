@@ -8,7 +8,7 @@ using static Windows.Win32.Foundation.WAIT_EVENT;
 
 namespace Flarial.Launcher.Services.Core;
 
-unsafe sealed class MinecraftGDK : Minecraft
+unsafe class MinecraftGDK : Minecraft
 {
     protected override string WindowClass => "Bedrock";
     protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
@@ -17,14 +17,18 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     public override uint? Launch(bool initialized)
     {
-        if (Window is { } window) { window.Switch(); return window.ProcessId; }
+        if (Window is { } window)
+        {
+            window.SwitchToThisWindow();
+            return window.ProcessId;
+        }
 
         /* 
             - Attempt to find the "PC Bootstrapper" process & wait for it to exit.
             - The process will automatically close once the game window is visible.
         */
 
-        var bootstrapperId = GetProcess("GameLaunchHelper.exe") ?? Activate();
+        var bootstrapperId = GetProcessId("GameLaunchHelper.exe") ?? Activate();
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, bootstrapperId) is not { } bootstrapper) return null;
 
         /*
@@ -34,7 +38,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         */
 
         using (bootstrapper) bootstrapper.Wait(INFINITE);
-        var gameId = Window?.ProcessId ?? GetProcess("Minecraft.Windows.exe") ?? 0;
+        var gameId = Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe") ?? 0;
         if (Win32Process.Open(PROCESS_SYNCHRONIZE, gameId) is not { } game) return null;
 
         /*

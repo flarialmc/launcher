@@ -18,8 +18,11 @@ namespace Flarial.Launcher.Services.Core;
 
 public unsafe abstract partial class Minecraft
 {
+    public static bool BypassPCBootstrapper { get; set; }
+
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
-    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
+
+    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new Experimental.MinecraftGDK();
 
     static readonly PackageManager s_packageManager = new();
     static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
@@ -42,7 +45,7 @@ public unsafe abstract partial class Minecraft
         }
     }
 
-    static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Single();
+    protected static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Single();
 
     public static bool IsInstalled => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
@@ -76,7 +79,7 @@ public unsafe abstract partial class Minecraft
         }
     }
 
-    protected uint? GetProcess(string value)
+    protected uint? GetProcessId(string value)
     {
         fixed (char* name = value) fixed (char* aumid = ApplicationUserModelId)
         {
