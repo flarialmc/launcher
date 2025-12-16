@@ -1,6 +1,7 @@
 using System.IO;
 using System.Management.Automation;
 using Flarial.Launcher.Services.System;
+using Windows.Gaming.UI;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Services.Core.Experimental;
@@ -15,6 +16,8 @@ sealed class MinecraftGDK : Core.MinecraftGDK
             return Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, processId);
         }
     }
+
+    const string AppId = "Game";
 
     string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
 
@@ -38,8 +41,12 @@ sealed class MinecraftGDK : Core.MinecraftGDK
         using (var @_ = PowerShell.Create())
         {
             @_.AddCommand("Invoke-CommandInDesktopPackage");
+
+            @_.AddParameter(nameof(AppId), AppId);
+            @_.AddParameter(nameof(Command), Command);
             @_.AddParameter(nameof(PackageFamilyName), PackageFamilyName);
-            @_.AddParameter(nameof(Command), Command); @_.Invoke();
+
+            @_.Invoke();
         }
 
         if (Process is not { } process2) return null;

@@ -86,7 +86,7 @@
             </Grid>
 
             <ToggleButton Click="WaitForInitializationClick" Name="WaitForInitialization" Content="Wait For Initialization" Style="{StaticResource ToggleButton}"/>
-            <ToggleButton Click="BypassPCBootstrapperClick" Name="BypassPCBootstrapper" Content="Bypass PC Bootstrapper 🧪" Style="{StaticResource ToggleButton}"/>
+            <ToggleButton Click="BypassPCBootstrapperClick" Name="BypassPCBootstrapper" Content="Bypass PC Bootstrapper (Experimental)" Style="{StaticResource ToggleButton}"/>
             <Button Margin="3.125,0,0,0" Name="ClientFolderButton" Cursor="Hand" Template="{StaticResource LaunchButtonTemplate}"/>
          
             <Grid HorizontalAlignment="Left">
