@@ -12,21 +12,16 @@ namespace Flarial.Launcher.Services.System;
 readonly partial struct Win32Process : IDisposable
 {
     readonly HANDLE _handle;
-    internal readonly uint Id;
 
-    Win32Process(uint processId, HANDLE handle) => (Id, _handle) = (processId, handle);
+    Win32Process(HANDLE handle) => _handle = handle;
 
     internal static Win32Process? Open(PROCESS_ACCESS_RIGHTS access, uint processId)
     {
         var handle = OpenProcess(access, false, processId);
-        return handle != Null ? new(processId, handle) : null;
+        return handle != Null ? new(handle) : null;
     }
 
-    internal bool IsRunning => WaitForSingleObject(_handle, 1) is WAIT_TIMEOUT;
-
-    internal void WaitForExit() => WaitForSingleObject(_handle, INFINITE);
-
-    internal void WaitForInputIdle() => PInvoke.WaitForInputIdle(_handle, INFINITE);
+    internal bool Wait(uint timeout) => WaitForSingleObject(_handle, timeout) is WAIT_TIMEOUT;
 
     public void Dispose() => CloseHandle(_handle);
 

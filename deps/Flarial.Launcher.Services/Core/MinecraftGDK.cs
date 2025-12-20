@@ -21,10 +21,10 @@ unsafe class MinecraftGDK : Minecraft
     protected override uint? Activate()
     {
         if ((GetProcessId("GameLaunchHelper.exe") ?? base.Activate()) is not { } processId) return null;
-      
+
         if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
-        using (process) process.WaitForExit();
-      
+        using (process) process.Wait(INFINITE);
+
         return Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe");
     }
 
@@ -54,7 +54,7 @@ unsafe class MinecraftGDK : Minecraft
                 watcher.Deleted += (_, _) => SetEvent(@event);
                 var handles = stackalloc HANDLE[] { @event, process };
 
-                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? process.Id : null;
+                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? processId : null;
             }
             finally { CloseHandle(@event); }
         }

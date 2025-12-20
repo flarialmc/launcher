@@ -36,12 +36,12 @@ unsafe sealed class MinecraftUWP : Minecraft
             using (process)
             {
                 while (GetFileAttributes(path) is INVALID_FILE_ATTRIBUTES)
-                    if (!process.IsRunning) return null;
+                    if (!process.Wait(1)) return null;
 
                 while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
-                    if (!process.IsRunning) return null;
+                    if (!process.Wait(1)) return null;
 
-                return process.Id;
+                return processId;
             }
         }
     }
