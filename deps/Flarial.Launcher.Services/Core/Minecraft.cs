@@ -18,7 +18,7 @@ namespace Flarial.Launcher.Services.Core;
 
 public unsafe abstract partial class Minecraft
 {
-    public static bool BypassPCBootstrapper { get; set; }
+    public static bool UseBootstrapper { get; set; }
 
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
 
@@ -36,11 +36,11 @@ public unsafe abstract partial class Minecraft
 
     public abstract uint? Launch(bool initialized);
 
-    protected uint Activate()
+    protected virtual uint? Activate()
     {
-        fixed (char* id = ApplicationUserModelId)
+        fixed (char* aumid = ApplicationUserModelId)
         {
-            s_applicationActivationManager.ActivateApplication(id, null, AO_NOERRORUI, out var processId);
+            s_applicationActivationManager.ActivateApplication(aumid, null, AO_NOERRORUI, out var processId);
             return processId;
         }
     }

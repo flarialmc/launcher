@@ -306,13 +306,6 @@ If you need help, join our Discord.", ("Update", true), ("Later", false)))
 
             Minecraft.HasUWPAppLifecycle = false;
 
-            if (_settings.BypassPCBootstrapper && await DialogBox.ShowAsync("🧪 Experimental Option", @"An experimental option has been enabled.
-
-• Experimental options might removed in future updates, if required.
-• Experimental options are purely meant for testing & might be unstable.
-
-Please provide feedback by using the option.
-", ("Back", true), ("Continue", false))) return;
 
             if (custom)
             {

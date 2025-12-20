@@ -65,7 +65,6 @@ del ""%~f0""
         StringBuilder builder = new(s_arguments);
         if (HttpService.UseProxy) builder.Append(' ').Append("--use-proxy");
         if (HttpService.UseDnsOverHttps) builder.Append(' ').Append("--use-dns-over-https");
-        if (Minecraft.BypassPCBootstrapper) builder.Append(' ').Append("--bypass-pc-bootstrapper");
 
         using (Process.Start(new ProcessStartInfo
         {

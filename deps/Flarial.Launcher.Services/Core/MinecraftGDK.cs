@@ -1,10 +1,13 @@
-using System;
-using Flarial.Launcher.Services.System;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
 using System.IO;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.WAIT_EVENT;
+using static Flarial.Launcher.Services.System.Win32Process;
+using static System.IO.Directory;
+using static System.IO.NotifyFilters;
+using static System.Environment;
+using static System.Environment.SpecialFolder;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -12,54 +15,46 @@ unsafe class MinecraftGDK : Minecraft
 {
     protected override string WindowClass => "Bedrock";
     protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game";
-    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
     internal MinecraftGDK() : base() { }
+
+    protected override uint? Activate()
+    {
+        if ((GetProcessId("GameLaunchHelper.exe") ?? base.Activate()) is not { } processId) return null;
+      
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+        using (process) process.WaitForExit();
+      
+        return Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe");
+    }
 
     public override uint? Launch(bool initialized)
     {
         if (Window is { } window)
         {
-            window.SwitchToThisWindow();
+            window.Switch();
             return window.ProcessId;
         }
 
-        /* 
-            - Attempt to find the "PC Bootstrapper" process & wait for it to exit.
-            - The process will automatically close once the game window is visible.
-        */
+        if (Activate() is not { } processId) return null;
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
-        var bootstrapperId = GetProcessId("GameLaunchHelper.exe") ?? Activate();
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, bootstrapperId) is not { } bootstrapper) return null;
-        using (bootstrapper) bootstrapper.WaitForExit();
-
-        /*
-            - The "PC Bootstrapper" process will close once any game window is visible.
-            - This also includes potential miscellaneous windows from other sources which is undesirable.
-            - If we cannot find the desired window then fallback to finding the actual process.
-        */
-
-        var gameId = Window?.ProcessId ?? GetProcessId("Minecraft.Windows.exe") ?? 0;
-        if (Win32Process.Open(PROCESS_SYNCHRONIZE, gameId) is not { } game) return null;
-
-        /*
-            - GDK builds store data in unique directories for each signed user.
-            - Hence we must wildcard to ensure the game is actually initialized.
-        */
-
-        using (game)
+        using (process)
         {
-            HANDLE @event = CreateEvent(null, true, false, null); try
+            var @event = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.FileName
+                    NotifyFilter = FileName
                 };
 
-                watcher.Deleted += (_, _) => SetEvent(@event); var handles = stackalloc HANDLE[] { @event, game };
-                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? gameId : null;
+                watcher.Deleted += (_, _) => SetEvent(@event);
+                var handles = stackalloc HANDLE[] { @event, process };
+
+                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? process.Id : null;
             }
             finally { CloseHandle(@event); }
         }

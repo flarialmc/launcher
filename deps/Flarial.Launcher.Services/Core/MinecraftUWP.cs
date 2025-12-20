@@ -1,8 +1,8 @@
 using System.IO;
-using Flarial.Launcher.Services.System;
-using Windows.Management.Core;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+using static Windows.Management.Core.ApplicationDataManager;
+using static Flarial.Launcher.Services.System.Win32Process;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -20,7 +20,7 @@ unsafe sealed class MinecraftUWP : Minecraft
     public override uint? Launch(bool initialized)
     {
         if (IsRunning) return Activate();
-        var path1 = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
+        var path1 = CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
         var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         /*
@@ -30,7 +30,8 @@ unsafe sealed class MinecraftUWP : Minecraft
 
         fixed (char* path = Path.Combine(path1, path2))
         {
-            if (Win32Process.Open(PROCESS_SYNCHRONIZE, Activate()) is not { } process) return null;
+            if (Activate() is not { } processId) return null;
+            if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
             using (process)
             {
@@ -40,7 +41,7 @@ unsafe sealed class MinecraftUWP : Minecraft
                 while (GetFileAttributes(path) is not INVALID_FILE_ATTRIBUTES)
                     if (!process.IsRunning) return null;
 
-                return process.ProcessId;
+                return process.Id;
             }
         }
     }

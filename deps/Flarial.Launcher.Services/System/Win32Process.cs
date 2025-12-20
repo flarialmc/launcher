@@ -12,9 +12,9 @@ namespace Flarial.Launcher.Services.System;
 readonly partial struct Win32Process : IDisposable
 {
     readonly HANDLE _handle;
-    internal readonly uint ProcessId;
+    internal readonly uint Id;
 
-    Win32Process(uint processId, HANDLE handle) => (ProcessId, _handle) = (processId, handle);
+    Win32Process(uint processId, HANDLE handle) => (Id, _handle) = (processId, handle);
 
     internal static Win32Process? Open(PROCESS_ACCESS_RIGHTS access, uint processId)
     {

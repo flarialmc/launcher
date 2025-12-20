@@ -16,7 +16,7 @@ unsafe readonly struct Win32Window
         _handle = handle; ProcessId = processId;
     }
 
-    internal void SwitchToThisWindow() => PInvoke.SwitchToThisWindow(_handle, true);
+    internal void Switch() => PInvoke.SwitchToThisWindow(_handle, true);
 
     public static implicit operator HWND(Win32Window @this) => @this._handle;
 
