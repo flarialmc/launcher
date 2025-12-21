@@ -162,8 +162,6 @@ public partial class SettingsGeneralPage : Page
         HardwareAcceleration.IsChecked = _settings.HardwareAcceleration;
 
         WaitForInitialization.IsChecked = _settings.WaitForInitialization;
-        UseBootstrapper.IsChecked = _settings.UseBootstrapper;
-
         DLLTextBox.Value = _settings.CustomDllPath;
 
 
@@ -176,13 +174,6 @@ public partial class SettingsGeneralPage : Page
         var button = (ToggleButton)sender;
         if (button.IsChecked is not bool @checked) return;
         _settings.WaitForInitialization = @checked;
-    }
-
-    void UseBootstrapperClick(object sender, RoutedEventArgs args)
-    {
-        var button = (ToggleButton)sender;
-        if (button.IsChecked is not bool @checked) return;
-        _settings.UseBootstrapper = @checked;
     }
 
     void HardwareAcceleration_Click(object sender, RoutedEventArgs e)

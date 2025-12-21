@@ -1,4 +1,3 @@
-using Windows.Win32;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
 
@@ -6,17 +5,21 @@ namespace Flarial.Launcher.Services.System;
 
 unsafe readonly struct Win32Window
 {
-    readonly HWND _handle = HWND.Null;
+    readonly HWND _handle;
 
-    internal readonly uint ProcessId;
-
-    Win32Window(HWND handle)
+    internal uint ProcessId
     {
-        uint processId = 0; GetWindowThreadProcessId(handle, &processId);
-        _handle = handle; ProcessId = processId;
+        get
+        {
+            uint processId = 0;
+            GetWindowThreadProcessId(_handle, &processId);
+            return processId;
+        }
     }
 
-    internal void Switch() => PInvoke.SwitchToThisWindow(_handle, true);
+    Win32Window(HWND handle) => _handle = handle;
+
+    internal void Switch() => SwitchToThisWindow(_handle, true);
 
     public static implicit operator HWND(Win32Window @this) => @this._handle;
 

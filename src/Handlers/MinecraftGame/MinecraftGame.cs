@@ -35,8 +35,8 @@ public static partial class MinecraftGame
 
         // minimize fix
         var fixMinecraftMinimizing = true;
-        if (fixMinecraftMinimizing && isInstalled()) Minecraft.HasUWPAppLifecycle = true;
-        else if (!fixMinecraftMinimizing && isInstalled()) Minecraft.HasUWPAppLifecycle = false;
+        if (fixMinecraftMinimizing && isInstalled()) { }
+        else if (!fixMinecraftMinimizing && isInstalled()) { }
     }
 
 

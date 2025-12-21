@@ -3,32 +3,36 @@ using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Management.Core.ApplicationDataManager;
 using static Flarial.Launcher.Services.System.Win32Process;
+using Windows.Win32.UI.Shell;
 
 namespace Flarial.Launcher.Services.Core;
 
 unsafe sealed class MinecraftUWP : Minecraft
 {
-    protected override string WindowClass => "MSCTFIME UI";
-    protected override string ApplicationUserModelId => "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App";
     internal MinecraftUWP() : base() { }
+    protected override string WindowClass => "MSCTFIME UI";
 
-    /*
-        - Every UWP window has a "MSCTFIME UI" window that is a child of the desktop window.
-        - This is useful since we don't account for parent windows.
-    */
+    static readonly IPackageDebugSettings s_settings = (IPackageDebugSettings)new PackageDebugSettings();
+    static readonly IApplicationActivationManager s_manager = (IApplicationActivationManager)new ApplicationActivationManager();
+
+    protected override uint? Activate()
+    {
+        fixed (char* pfn = Package.Id.FullName)
+        fixed (char* aumid = "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App")
+        {
+            s_settings.EnableDebugging(pfn, null, null);
+            s_manager.ActivateApplication(aumid, null, ACTIVATEOPTIONS.AO_NONE, out var processId);
+            return processId;
+        }
+    }
 
     public override uint? Launch(bool initialized)
     {
         if (IsRunning) return Activate();
-        var path1 = CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
-        var path2 = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
+        var parent = CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
+        var child = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
-        /*
-            - Here, we poll for changes to ensure the game initialized.
-            - Due to symlinks, we must resort to polling for UWP builds.
-        */
-
-        fixed (char* path = Path.Combine(path1, path2))
+        fixed (char* path = Path.Combine(parent, child))
         {
             if (Activate() is not { } processId) return null;
             if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;

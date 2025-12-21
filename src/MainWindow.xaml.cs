@@ -304,9 +304,6 @@ If you need help, join our Discord.", ("Update", true), ("Later", false)))
             var beta = build is DllBuild.Beta or DllBuild.Nightly || Minecraft.UsingGameDevelopmentKit;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
-            Minecraft.HasUWPAppLifecycle = false;
-
-
             if (custom)
             {
                 if (string.IsNullOrWhiteSpace(path))

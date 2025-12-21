@@ -87,9 +87,6 @@ jobs:
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
-          msbuild -t:Restore "../deps/Flarial.Bootstrapper/Flarial.Bootstrapper.csproj"
-          msbuild /p:Configuration=Release /m "../deps/Flarial.Bootstrapper/Flarial.Bootstrapper.csproj"
-
       - name: update new version
         if: success()
         run: |
@@ -104,12 +101,7 @@ jobs:
           git add launcher/launcherVersion.txt
           git commit -m "Bump launcher version"
           git push origin main
-        
-          cp D:/a/launcher/launcher/deps/Flarial.Bootstrapper/bin/Release/net481/Flarial.Bootstrapper.exe ./launcher/Flarial.Bootstrapper.exe
-          git add launcher/Flarial.Bootstrapper.exe
-          git commit -a -m "Update bootstrapper"
-          git push origin main
-        
+                
           cp D:/a/launcher/launcher/src/bin/Release/net481/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"

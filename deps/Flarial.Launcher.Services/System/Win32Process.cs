@@ -4,12 +4,10 @@ using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 using Windows.Win32.System.Threading;
 using static Windows.Win32.Foundation.HANDLE;
-using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using Windows.Win32;
 
 namespace Flarial.Launcher.Services.System;
 
-readonly partial struct Win32Process : IDisposable
+readonly struct Win32Process : IDisposable
 {
     readonly HANDLE _handle;
 

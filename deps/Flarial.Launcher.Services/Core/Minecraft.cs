@@ -13,60 +13,37 @@ using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
+using System;
 
 namespace Flarial.Launcher.Services.Core;
 
-public unsafe abstract partial class Minecraft
+public unsafe abstract class Minecraft
 {
-    public static bool UseBootstrapper { get; set; }
-
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
-
-    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new Experimental.MinecraftGDK();
+    internal Minecraft() { }
 
     static readonly PackageManager s_packageManager = new();
-    static readonly IPackageDebugSettings s_packageDebugSettings = (IPackageDebugSettings)new PackageDebugSettings();
-    static readonly IApplicationActivationManager s_applicationActivationManager = (IApplicationActivationManager)new ApplicationActivationManager();
+    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+    protected static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
-    internal Minecraft() { }
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
+    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
+
+
     public bool IsRunning => Window is { };
     protected abstract string WindowClass { get; }
-    protected abstract string ApplicationUserModelId { get; }
-    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
+    protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
 
-    protected virtual uint? Activate()
-    {
-        fixed (char* aumid = ApplicationUserModelId)
-        {
-            s_applicationActivationManager.ActivateApplication(aumid, null, AO_NOERRORUI, out var processId);
-            return processId;
-        }
-    }
-
-    protected static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Single();
-
-    public static bool IsInstalled => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Any();
-
     public static bool IsUnpackaged => Package.IsDevelopmentMode;
-
-    public static bool HasUWPAppLifecycle
-    {
-        set
-        {
-            fixed (char* packageFullName = Package.Id.FullName)
-                if (value) s_packageDebugSettings.DisableDebugging(packageFullName);
-                else s_packageDebugSettings.EnableDebugging(packageFullName, null, null);
-        }
-    }
+    public static bool IsInstalled => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit
     {
         get
         {
-            var appUserModelId = Package.GetAppListEntries()[0].AppUserModelId;
-            return appUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
+            var aumid = Package.GetAppListEntries()[0].AppUserModelId;
+            return aumid.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
         }
     }
 
@@ -79,48 +56,7 @@ public unsafe abstract partial class Minecraft
         }
     }
 
-    protected uint? GetProcessId(string value)
-    {
-        fixed (char* name = value)
-        fixed (char* pfn = PackageFamilyName)
-        {
-            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
-            WTS_PROCESS_INFOW* information = null;
-            var buffer = stackalloc char[(int)length];
-
-            try
-            {
-                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
-                    for (var index = 0; index < count; index++)
-                    {
-                        var entry = information[index];
-
-                        var result = CompareStringOrdinal(name, -1, entry.pProcessName, -1, true);
-                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                        if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
-                            continue;
-
-                        using (process)
-                        {
-
-                            var error = GetPackageFamilyName(process, &length, buffer);
-                            if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
-
-                            result = CompareStringOrdinal(pfn, -1, buffer, -1, true);
-                            if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
-                            return entry.ProcessId;
-                        }
-                    }
-
-                return null;
-            }
-            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
-        }
-    }
-
-    internal Win32Window? Window
+    private protected Win32Window? Window
     {
         get
         {

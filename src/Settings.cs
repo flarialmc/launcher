@@ -39,13 +39,6 @@ sealed partial class Settings
     [DataMember]
     internal bool WaitForInitialization = true;
 
-    [DataMember]
-    internal bool UseBootstrapper
-    {
-        get => Minecraft.UseBootstrapper;
-        set => Minecraft.UseBootstrapper = value;
-    }
-
     internal bool AutoLogin = true;
 }
 
@@ -59,7 +52,6 @@ partial class Settings
         WaitForInitialization = true;
 
         AutoLogin = true;
-        UseBootstrapper = false;
         HardwareAcceleration = true;
     }
 }

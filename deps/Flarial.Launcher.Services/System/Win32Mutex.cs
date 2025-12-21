@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.PInvoke;
+using static Flarial.Launcher.Services.System.Win32Process;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
 
@@ -11,7 +12,6 @@ namespace Flarial.Launcher.Services.System;
 readonly unsafe struct Win32Mutex : IDisposable
 {
     readonly HANDLE _handle;
-
     internal readonly bool Exists;
 
     internal Win32Mutex(string name)
@@ -22,7 +22,7 @@ readonly unsafe struct Win32Mutex : IDisposable
 
     internal bool Duplicate(uint processId)
     {
-        if (Win32Process.Open(PROCESS_DUP_HANDLE, processId) is not { } process)
+        if (Open(PROCESS_DUP_HANDLE, processId) is not { } process)
             return false;
 
         using (process)
