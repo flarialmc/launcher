@@ -16,6 +16,11 @@ unsafe sealed class MinecraftUWP : Minecraft
     static readonly IPackageDebugSettings s_settings = (IPackageDebugSettings)new PackageDebugSettings();
     static readonly IApplicationActivationManager s_manager = (IApplicationActivationManager)new ApplicationActivationManager();
 
+    /*
+        - We request the OS to start the game & return its process identifier.
+        - Alongside, we also enable debug mode on the game's app package to prevent PLM from kicking in.
+    */
+
     protected override uint? Activate()
     {
         fixed (char* pfn = Package.Id.FullName)
@@ -26,6 +31,12 @@ unsafe sealed class MinecraftUWP : Minecraft
             return processId;
         }
     }
+
+    /*
+        - We should wait for the game to fully initialize.
+        - The user can alter this behave but might lead to crashes.
+        - This ensures the game doesn't crash when injecting any mods.
+    */
 
     public override uint? Launch(bool initialized)
     {

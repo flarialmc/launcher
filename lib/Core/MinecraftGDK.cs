@@ -28,6 +28,11 @@ unsafe partial class MinecraftGDK : Minecraft
     string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
+    /*
+        - We use PowerShell to directly start the game executable.
+        - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
+    */
+
     protected override uint? Activate()
     {
         if (ProcessId is { } processId) return processId;
@@ -41,6 +46,11 @@ unsafe partial class MinecraftGDK : Minecraft
 
         _.Invoke(); return ProcessId;
     }
+
+    /*
+        - The initialization logic is derived from the UWP builds of the game.
+        - We don't need to resort to polling since symbolic links aren't used.
+    */
 
     public override uint? Launch(bool initialized)
     {
