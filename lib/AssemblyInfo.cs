@@ -1,6 +1,6 @@
 using System.Reflection;
 
-[assembly: AssemblyTitle("Flarial Client Bootstrapper")]
-[assembly: AssemblyProduct("Bootstrapper")]
 [assembly: AssemblyCompany("Flarial")]
+[assembly: AssemblyProduct("Services")]
+[assembly: AssemblyTitle("Flarial Launcher Services")]
 [assembly: AssemblyCopyright("Copyright © Flarial 2025")]

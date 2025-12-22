@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         Title="https://discord.com/api/oauth2/authorize?client_id=1058426966602174474/......." Height="600" Width="800" SizeToContent="WidthAndHeight">
     <DockPanel>
-
         <Wpf:WebView2 Name="web" Height="820" Width="1000"/>
     </DockPanel>
 

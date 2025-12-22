@@ -3,20 +3,21 @@ using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.PInvoke;
-using static Flarial.Launcher.Services.System.Win32Process;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
 
-namespace Flarial.Launcher.Services.System;
+namespace Flarial.Launcher.Services.Native;
 
-readonly unsafe struct Win32Mutex : IDisposable
+using static NativeProcess;
+
+readonly unsafe struct NativeMutex : IDisposable
 {
     readonly HANDLE _handle;
     internal readonly bool Exists;
 
-    internal Win32Mutex(string name)
+    internal NativeMutex(string identifier)
     {
-        fixed (char* buffer = name) _handle = CreateMutex(null, false, buffer);
+        fixed (char* name = identifier) _handle = CreateMutex(null, false, name);
         Exists = _handle != Null && Marshal.GetLastWin32Error() > 0;
     }
 

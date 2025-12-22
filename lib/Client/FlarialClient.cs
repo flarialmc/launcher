@@ -5,9 +5,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
-using Flarial.Launcher.Services.System;
 using Windows.Data.Json;
 using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Native;
 
 namespace Flarial.Launcher.Services.Client;
 
@@ -25,7 +25,7 @@ public abstract class FlarialClient
     {
         get
         {
-            using Win32Mutex beta = new(Beta.Identifer), release = new(Release.Identifer);
+            using NativeMutex beta = new(Beta.Identifer), release = new(Release.Identifer);
             if (!Minecraft.Current.IsRunning || (beta.Exists && release.Exists)) return null;
             if (beta.Exists) return Beta; if (release.Exists) return Release; return null;
         }
@@ -40,7 +40,7 @@ public abstract class FlarialClient
         }
 
         if (Injector.Launch(initialized, Library) is not { } processId) return false;
-        using Win32Mutex mutex = new(Identifer); return mutex.Duplicate(processId);
+        using NativeMutex mutex = new(Identifer); return mutex.Duplicate(processId);
     }
 
     static readonly object _lock = new();

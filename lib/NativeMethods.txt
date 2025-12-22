@@ -28,7 +28,7 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
-WaitForInputIdle
+CoCreateInstance
 INFINITE
 INVALID_HANDLE_VALUE
 INVALID_FILE_ATTRIBUTES

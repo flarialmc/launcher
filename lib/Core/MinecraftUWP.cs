@@ -2,10 +2,11 @@ using System.IO;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Management.Core.ApplicationDataManager;
-using static Flarial.Launcher.Services.System.Win32Process;
 using Windows.Win32.UI.Shell;
 
 namespace Flarial.Launcher.Services.Core;
+
+using static Native.NativeProcess;
 
 unsafe sealed class MinecraftUWP : Minecraft
 {

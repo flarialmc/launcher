@@ -5,15 +5,15 @@ using static Windows.Win32.Foundation.WAIT_EVENT;
 using Windows.Win32.System.Threading;
 using static Windows.Win32.Foundation.HANDLE;
 
-namespace Flarial.Launcher.Services.System;
+namespace Flarial.Launcher.Services.Native;
 
-readonly struct Win32Process : IDisposable
+readonly struct NativeProcess : IDisposable
 {
     readonly HANDLE _handle;
 
-    Win32Process(HANDLE handle) => _handle = handle;
+    NativeProcess(HANDLE handle) => _handle = handle;
 
-    internal static Win32Process? Open(PROCESS_ACCESS_RIGHTS access, uint processId)
+    internal static NativeProcess? Open(PROCESS_ACCESS_RIGHTS access, uint processId)
     {
         var handle = OpenProcess(access, false, processId);
         return handle != Null ? new(handle) : null;
@@ -23,5 +23,5 @@ readonly struct Win32Process : IDisposable
 
     public void Dispose() => CloseHandle(_handle);
 
-    public static implicit operator HANDLE(in Win32Process @this) => @this._handle;
+    public static implicit operator HANDLE(in NativeProcess @this) => @this._handle;
 }

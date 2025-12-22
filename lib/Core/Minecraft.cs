@@ -1,29 +1,25 @@
 using System.Linq;
 using Windows.Management.Deployment;
-using Windows.Win32.UI.Shell;
-using static Windows.Win32.UI.Shell.ACTIVATEOPTIONS;
 using static System.String;
 using static System.StringComparison;
-using Flarial.Launcher.Services.System;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
-using static Windows.Win32.Foundation.HANDLE;
 using Windows.Win32.Globalization;
-using Windows.Win32.System.RemoteDesktop;
-using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
-using System;
+using Flarial.Launcher.Services.Native;
 
 namespace Flarial.Launcher.Services.Core;
+
+using static Native.NativeProcess;
 
 public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
-    static readonly PackageManager s_packageManager = new();
+    static readonly PackageManager s_manager = new();
     protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-    protected static Package Package => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).First();
+    protected static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
     static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
@@ -36,7 +32,7 @@ public unsafe abstract class Minecraft
     public abstract uint? Launch(bool initialized);
 
     public static bool IsUnpackaged => Package.IsDevelopmentMode;
-    public static bool IsInstalled => s_packageManager.FindPackagesForUser(Empty, PackageFamilyName).Any();
+    public static bool IsInstalled => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit
     {
@@ -56,20 +52,20 @@ public unsafe abstract class Minecraft
         }
     }
 
-    private protected Win32Window? Window
+    private protected NativeWindow? Window
     {
         get
         {
             fixed (char* @class = WindowClass)
             fixed (char* pfn = PackageFamilyName)
             {
-                Win32Window window = HWND.Null;
+                NativeWindow window = HWND.Null;
                 var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
                 var buffer = stackalloc char[(int)length];
 
                 while ((window = FindWindowEx(HWND.Null, window, @class, null)) != HWND.Null)
                 {
-                    if (Win32Process.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                    if (Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
                         continue;
 
                     using (process)

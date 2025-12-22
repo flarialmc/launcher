@@ -3,7 +3,6 @@ using static Windows.Win32.PInvoke;
 using System.IO;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.WAIT_EVENT;
-using static Flarial.Launcher.Services.System.Win32Process;
 using static System.IO.Directory;
 using static System.IO.NotifyFilters;
 using static System.Environment;
@@ -11,21 +10,14 @@ using static System.Environment.SpecialFolder;
 using System.Management.Automation;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.Foundation.WIN32_ERROR;
-using System.Linq;
-using Windows.Management.Deployment;
-using Windows.Win32.UI.Shell;
-using static Windows.Win32.UI.Shell.ACTIVATEOPTIONS;
-using static System.String;
-using static System.StringComparison;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
-using Flarial.Launcher.Services.System;
 using static Windows.Win32.Foundation.HANDLE;
-using Windows.Win32.Globalization;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
-using System;
 
 namespace Flarial.Launcher.Services.Core;
+
+using static Native.NativeProcess;
 
 unsafe partial class MinecraftGDK : Minecraft
 {

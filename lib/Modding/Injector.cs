@@ -1,11 +1,8 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using Flarial.Launcher.Services.Core;
-using Flarial.Launcher.Services.System;
-using Windows.Win32.System.Threading;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
@@ -16,19 +13,24 @@ using Windows.Win32.Foundation;
 using static System.Security.AccessControl.FileSystemRights;
 using static System.Security.AccessControl.AccessControlType;
 using static System.Text.Encoding;
+using Windows.Win32.System.Threading;
 
 namespace Flarial.Launcher.Services.Modding;
 
+using static Native.NativeProcess;
+
 public unsafe static class Injector
 {
+    static readonly LPTHREAD_START_ROUTINE s_routine;
     static readonly FileSystemAccessRule s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FullControl, Allow);
-
-    static readonly LPTHREAD_START_ROUTINE s_procedure;
 
     static Injector()
     {
         fixed (char* module = "Kernel32") fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
-            s_procedure = GetProcAddress(GetModuleHandle(module), new(procedure)).CreateDelegate<LPTHREAD_START_ROUTINE>();
+        {
+            var address = GetProcAddress(GetModuleHandle(module), new(procedure));
+            s_routine = address.CreateDelegate<LPTHREAD_START_ROUTINE>();
+        }
     }
 
     public static uint? Launch(bool initialized, ModificationLibrary library)
@@ -41,7 +43,7 @@ public unsafe static class Injector
         File.SetAccessControl(library.FileName, security);
 
         if (Minecraft.Current.Launch(initialized) is not { } processId) return null;
-        if (Win32Process.Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
+        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
 
         using (process)
         {
@@ -52,7 +54,7 @@ public unsafe static class Injector
                 address = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
                 fixed (char* buffer = library.FileName) WriteProcessMemory(process, address, buffer, size, null);
 
-                thread = CreateRemoteThread(process, null, 0, s_procedure, address, 0, null);
+                thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
                 WaitForSingleObject(thread, INFINITE);
 
                 return processId;
