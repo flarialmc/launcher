@@ -41,7 +41,7 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (Minecraft.IsUnpackaged && !Utils.IsAdministrator)
+        if (!Minecraft.IsSigned && !Utils.IsAdministrator)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

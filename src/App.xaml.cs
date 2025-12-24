@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -7,11 +6,8 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using Flarial.Launcher.Managers;
-using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
-using static Windows.ApplicationModel.Store.Preview.InstallControl.AutoUpdateSetting;
 
 namespace Flarial.Launcher;
 

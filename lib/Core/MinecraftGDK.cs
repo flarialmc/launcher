@@ -14,6 +14,7 @@ using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
+using System.ComponentModel;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -28,14 +29,24 @@ unsafe partial class MinecraftGDK : Minecraft
     string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
-    /*
-        - We use PowerShell to directly start the game executable.
-        - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
-    */
 
     protected override uint? Activate()
     {
-        if (ProcessId is { } processId) return processId;
+        /*
+            - Verify if the game is actually signed by the Microsoft Store.
+            - This allows the launcher ensure the launch contract works as intended.
+        */
+
+        if (!IsSigned)
+            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
+
+        /*
+            - We use PowerShell to directly start the game executable.
+            - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
+        */
+
+        if (ProcessId is { } processId)
+            return processId;
 
         using var _ = PowerShell.Create();
         _.AddCommand("Invoke-CommandInDesktopPackage");
@@ -47,11 +58,6 @@ unsafe partial class MinecraftGDK : Minecraft
         _.Invoke(); return ProcessId;
     }
 
-    /*
-        - The initialization logic is derived from the UWP builds of the game.
-        - We don't need to resort to polling since symbolic links aren't used.
-    */
-
     public override uint? Launch(bool initialized)
     {
         if (Window is { } window)
@@ -62,6 +68,11 @@ unsafe partial class MinecraftGDK : Minecraft
 
         if (Activate() is not { } processId) return null;
         if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+
+        /*
+            - The initialization logic is derived from the UWP builds of the game.
+            - We don't need to resort to polling since symbolic links aren't used.
+        */
 
         using (process)
         {

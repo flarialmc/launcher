@@ -324,7 +324,7 @@ public static class VersionManagement
 
         var gdk = Minecraft.UsingGameDevelopmentKit;
 
-        if (gdk || !Minecraft.IsUnpackaged)
+        if (gdk || Minecraft.IsSigned)
         {
             if (!gdk)
             {

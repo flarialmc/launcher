@@ -31,7 +31,7 @@ public unsafe abstract class Minecraft
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
 
-    public static bool IsUnpackaged => Package.IsDevelopmentMode;
+    public static bool IsSigned => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsInstalled => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit
