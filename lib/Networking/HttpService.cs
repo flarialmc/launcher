@@ -41,7 +41,7 @@ public class HttpService
 
     internal static async Task DownloadAsync(string uri, string path, Action<int>? action)
     {
-        using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead);
+        using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
         message.EnsureSuccessStatusCode();
 
         using var destination = File.Create(path);
