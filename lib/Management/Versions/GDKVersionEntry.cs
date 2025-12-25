@@ -43,5 +43,5 @@ sealed class GDKVersionEntry : VersionEntry
         return entries;
     });
 
-    internal override async Task<string> UriAsync() => _urls[0];
+    internal override async Task<string> GetAsync() => _urls[0];
 }

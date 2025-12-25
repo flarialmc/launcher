@@ -9,7 +9,39 @@ abstract class MessageDialogContent
 
     internal static readonly ConnectionFailure _connectionFailure = new();
 
-    internal static readonly VersionDownloading _versionDownloading = new();
+    internal static readonly NotInstalled _notInstalled = new();
+
+    internal static readonly UnsupportedVersion _unsupportedVersion = new();
+
+    internal static readonly InvalidCustomDll _invalidCustomDll = new();
+
+    internal static readonly LaunchFailure _launchFailure = new();
+
+    internal static readonly UpdateFailure _updateFailure = new();
+}
+
+sealed class NotInstalled : MessageDialogContent
+{
+    public override string Primary => "Back";
+    public override string Title => "⚠️ Not Installed";
+    public override string Content => @"Minecraft: Bedrock Edition isn't installed.
+
+• Install the game via the Microsoft Store or Xbox App.
+• Ensure the installed version is supported by Flarial.
+
+If you need help, join our Discord.";
+}
+
+sealed class UnsupportedVersion : MessageDialogContent
+{
+    public override string Primary => "Back";
+    public override string Title => "⚠️ Unsupported Version";
+    public override string Content => @"The currently installed game version isn't supported by Flarial.
+
+• Install a game version that is supported by Flarial via the launcher.
+• Try using the beta build of client by enabling in the launcher's settings.
+
+If you need help, join our Discord.";
 }
 
 sealed class ConnectionFailure : MessageDialogContent
@@ -26,15 +58,38 @@ sealed class ConnectionFailure : MessageDialogContent
 If you need help, join our Discord.";
 }
 
-sealed class VersionDownloading : MessageDialogContent
+sealed class InvalidCustomDll : MessageDialogContent
 {
-    public override string Title => "🚨 Version Downloading";
     public override string Primary => "Back";
-    public override string Content => @"The launcher is downloading a game version.
+    public override string Title => "⚠️ Invalid Custom DLL";
+    public override string Content => @"The specified custom DLL is invalid.
 
-• Wait for the download to finish.
-• Once the download is finished, you may exit the launcher.
+• Specify a DLL that exists and valid.
+• If you didn't intend to use a custom DLL, disable it in the launcher's settings.
 
-If you need help, join our Discord."; 
+If you need help, join our Discord.";
 }
 
+sealed class LaunchFailure : MessageDialogContent
+{
+    public override string Title => "⚠️ Launch Failure";
+    public override string Primary => "Back";
+    public override string Content => @"The launcher couldn't inject & initialize the game correctly.
+
+• Try closing the game & try again.
+• Remove & disable any 3rd party mods or tools.
+
+If you need help, join our Discord.";
+}
+
+sealed class UpdateFailure : MessageDialogContent
+{
+    public override string Primary => "Back";
+    public override string Title => "⚠️ Update Failure";
+    public override string Content => @"A client update couldn't be downloaded.
+
+• Try closing the game & see if the client updates.
+• Try rebooting your machine & see if that resolves the issue.
+
+If you need help, join our Discord.";
+}

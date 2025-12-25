@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using static System.Environment;
 using System.Net;
 using MihaZupan;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Flarial.Launcher.Services.Networking;
 
@@ -39,7 +41,7 @@ public class HttpService
         });
     }
 
-    internal static async Task DownloadAsync(string uri, string path, Action<int>? action)
+    internal static async Task DownloadAsync(string uri, string path, Action<int> action, [Optional] CancellationToken token)
     {
         using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
         message.EnsureSuccessStatusCode();
@@ -51,10 +53,10 @@ public class HttpService
         var buffer = new byte[s_length];
         var length = message.Content.Headers.ContentLength ?? 0;
 
-        while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
+        while (!token.IsCancellationRequested && (count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {
             await destination.WriteAsync(buffer, 0, count);
-            if (action is { } && length > 0) action((int)((value += count) / length * 100));
+            if (length > 0) action((int)((value += count) / length * 100));
         }
     }
 

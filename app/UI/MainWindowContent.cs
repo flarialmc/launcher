@@ -72,7 +72,10 @@ sealed class MainWindowContent : NavigationView
                 Application.Current.Shutdown();
 
             var catalog = await VersionCatalog.GetAsync();
-            _homePage = new(catalog); _versionsPage = new(catalog);
+
+            _versionsPage = new(catalog);  
+            _homePage = new(configuration, catalog); 
+          
 
             foreach (var version in catalog.InstallableVersions)
             {

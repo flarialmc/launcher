@@ -25,7 +25,10 @@ static class Program
     {
         using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value))
         {
-            var path = Path.Combine(Environment.GetFolderPath(LocalApplicationData), @"Flarial\Launcher");
+            if (!value) return;
+
+            var path = Environment.GetFolderPath(LocalApplicationData);
+            path = Path.Combine(path, @"Flarial\Launcher");
             Environment.CurrentDirectory = Directory.CreateDirectory(path).FullName;
 
             Application application = new();
@@ -33,12 +36,7 @@ static class Program
 
             application.Resources.MergedDictionaries.Add(new ThemeResources());
             application.Resources.MergedDictionaries.Add(new XamlControlsResources());
-            application.Resources.MergedDictionaries.Add(new ColorPaletteResources
-            {
-                TargetTheme = ApplicationTheme.Dark,
-                Accent = Colors.IndianRed,
-                AltHigh = Colors.Red
-            });
+            application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
 
             application.Exit += (_, _) => configuration.Save();
             application.Run(new MainWindow(configuration));

@@ -21,6 +21,13 @@ sealed class SettingsPage : SimpleStackPanel
         HorizontalAlignment = HorizontalAlignment.Stretch
     };
 
+    readonly ToggleSwitch _waitForInitialization = new()
+    {
+        Header = "Configure whether the launcher should wait for the game to fully initialize.",
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Stretch
+    };
+
     readonly CustomDllPathPicker _customDllPath;
 
     internal SettingsPage(Configuration configuration)
@@ -36,6 +43,7 @@ sealed class SettingsPage : SimpleStackPanel
 
         Children.Add(_dllBuild);
         Children.Add(_customDllPath);
+        Children.Add(_waitForInitialization);
         Children.Add(_hardwareAcceleration);
 
         _dllBuild.SelectionChanged += (_, _) =>
@@ -46,8 +54,10 @@ sealed class SettingsPage : SimpleStackPanel
         };
 
         _hardwareAcceleration.Toggled += (_, _) => configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;
+        _waitForInitialization.Toggled += (_, _) => configuration.WaitForInitialization = _waitForInitialization.IsOn;
 
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
         _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
+        _waitForInitialization.IsOn = configuration.WaitForInitialization;
     }
 }

@@ -30,7 +30,7 @@ sealed class VersionsPage : Grid
     internal VersionsPage(VersionCatalog catalog)
     {
         Margin = new(12);
-    
+
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
@@ -49,13 +49,19 @@ sealed class VersionsPage : Grid
             _control._progressBar.Visibility = Visibility.Visible;
             _control._progressBar.IsIndeterminate = true;
 
-            _request = await catalog[(string)_listBox.SelectedItem].InstallAsync((_) => Dispatcher.Invoke(() =>
+            try
             {
-                if (_control._progressBar.Value == _) return;
-                _control._progressBar.Value = _; _control._progressBar.IsIndeterminate = false;
-            }));
+                var entry = catalog[(string)_listBox.SelectedItem];
 
-            await _request; _request = null;
+                _request = await entry.InstallAsync((_) => Dispatcher.Invoke(() =>
+                {
+                    if (_control._progressBar.Value == _) return;
+                    _control._progressBar.Value = _; _control._progressBar.IsIndeterminate = false;
+                }));
+
+                if (!await _request) Application.Current.Shutdown();
+            }
+            finally { _request?.Dispose(); _request = null; }
 
             _control._progressBar.IsIndeterminate = false;
             _control._button.Visibility = Visibility.Visible;
@@ -63,11 +69,10 @@ sealed class VersionsPage : Grid
             IsEnabled = true;
         };
 
-        Application.Current.MainWindow.Closing += async (sender,args) =>
+        Application.Current.MainWindow.Closing += (sender, args) =>
         {
-            args.Cancel = _request is {};
-            if (MessageDialog.IsShown) return;
-            if (args.Cancel) await MessageDialog.ShowAsync(MessageDialogContent._versionDownloading);
+            args.Cancel = _request?.Cancel() ?? false;
+            if (args.Cancel) ((Window)sender).Hide();
         };
     }
 }

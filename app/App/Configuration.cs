@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Windows.Interop;
@@ -13,10 +14,17 @@ enum DllBuild { Release, Beta, Custom }
 sealed class Configuration
 {
     [DataMember]
-    internal DllBuild DllBuild;
+    internal DllBuild DllBuild { get; set; } = DllBuild.Release;
 
     [DataMember]
-    internal string? CustomDllPath;
+    internal string? CustomDllPath
+    {
+        get => field;
+        set => field = value?.Trim();
+    } = null;
+
+    [DataMember]
+    internal bool WaitForInitialization { get; set; } = true;
 
     [DataMember]
     internal bool HardwareAcceleration
@@ -27,13 +35,14 @@ sealed class Configuration
             field = value;
             RenderOptions.ProcessRenderMode = value ? RenderMode.Default : RenderMode.SoftwareOnly;
         }
-    }
+    } = true;
 
     [OnDeserializing]
-    private void OnDeserializing(StreamingContext context)
+    void OnDeserializing(StreamingContext context)
     {
         DllBuild = DllBuild.Release;
         CustomDllPath = null;
+        WaitForInitialization = true;
         HardwareAcceleration = true;
     }
 

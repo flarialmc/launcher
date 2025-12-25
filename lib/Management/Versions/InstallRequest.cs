@@ -1,74 +1,63 @@
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Networking;
-using Windows.Foundation;
 using Windows.Management.Deployment;
+using static Windows.Management.Deployment.DeploymentOptions;
+using static System.Threading.Tasks.TaskContinuationOptions;
+using static Windows.Foundation.AsyncStatus;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-public sealed class InstallRequest
+public sealed class InstallRequest : IDisposable
 {
     static readonly PackageManager s_manager = new();
     static readonly string s_path = Path.GetTempPath();
-    static readonly ConcurrentDictionary<string, bool> s_paths = [];
-    static readonly AddPackageOptions s_options = new() { ForceAppShutdown = true, ForceUpdateFromAnyVersion = true };
 
-    static InstallRequest() => AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-    {
-        foreach (var path in s_paths)
-            try { File.Delete(path.Key); }
-            catch { }
-    };
+    readonly Task<bool> _task;
+    readonly CancellationTokenSource _source = new();
+    readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    public static async Task InstallAsync(string uri, string path, Action<int> action)
+    static async Task<bool> Task(string uri, string path, Action<int> action, CancellationToken token)
     {
+        await HttpService.DownloadAsync(uri, path, (_) => action(_ * 90 / 100), token);
+        if (token.IsCancellationRequested) return false;
+
         TaskCompletionSource<bool> source = new();
-        await HttpService.DownloadAsync(uri, path, (_) => action(_ * 90 / 100));
+        var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
-        var operation = s_manager.AddPackageByUriAsync(new(path), s_options);
-        operation.Progress += (sender, args) => action(90 + ((int)args.percentage * 10 / 100));
+        operation.Progress += (sender, args) => action(90 + (int)(args.percentage * 10 / 100));
 
         operation.Completed += (sender, args) =>
         {
-            if (sender.Status is AsyncStatus.Error) source.TrySetException(sender.ErrorCode);
-            else source.TrySetResult(new());
+            if (sender.Status != Error) source.TrySetResult(true);
+            else source.TrySetException(sender.ErrorCode);
         };
 
-        await source.Task;
+        await source.Task; return true;
     }
-
-    readonly Task _task;
-    readonly string _path;
 
     internal InstallRequest(string uri, Action<int> action)
     {
-        _path = Path.Combine(s_path, Path.GetRandomFileName());
-        s_paths.TryAdd(_path, new());
-
-        _task = InstallAsync(uri, _path, action);
-        _task.ContinueWith(delegate
-        {
-            try
-            {
-                File.Delete(_path);
-                s_paths.TryRemove(_path, out _);
-            }
-            catch { }
-        }, TaskContinuationOptions.ExecuteSynchronously);
+        _task = Task(uri, _path, action, _source.Token);
+        _task.ContinueWith(_ => { try { File.Delete(_path); } catch { } }, ExecuteSynchronously);
     }
 
-    public TaskAwaiter GetAwaiter() => _task.GetAwaiter();
+    public TaskAwaiter<bool> GetAwaiter() => _task.GetAwaiter();
 
-    ~InstallRequest()
+    public bool Cancel()
     {
-        try
-        {
-            File.Delete(_path);
-            s_paths.TryRemove(_path, out _);
-        }
-        catch { }
+        if (_task.IsCompleted) return false;
+        _source.Cancel(); return true;
     }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this); _source.Dispose();
+        try { File.Delete(_path); } catch { }
+    }
+
+    ~InstallRequest() => Dispose();
 }

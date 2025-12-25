@@ -64,7 +64,7 @@ sealed class UWPVersionEntry : VersionEntry
         return entries;
     });
 
-    internal override async Task<string> UriAsync() => await Task.Run(async () =>
+    internal override async Task<string> GetAsync() => await Task.Run(async () =>
     {
         using StringContent content = new(_content, Encoding.UTF8, MediaType);
         using var message = await HttpService.PostAsync(StoreUri, content);
