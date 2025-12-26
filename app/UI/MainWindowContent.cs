@@ -70,11 +70,11 @@ sealed class MainWindowContent : NavigationView
 
         Application.Current.MainWindow.ContentRendered += async (_, _) =>
         {
-            if (!await HttpService.IsAvailableAsync() && 
+            if (!await HttpService.IsAvailableAsync() &&
                 !await MessageDialog.ShowAsync(MessageDialogContent._connectionFailure))
                 Application.Current.Shutdown();
 
-            if (await LauncherUpdater.CheckAsync() && 
+            if (await LauncherUpdater.CheckAsync() &&
                 await MessageDialog.ShowAsync(MessageDialogContent._launcherUpdate))
             {
                 await LauncherUpdater.DownloadAsync(delegate { });

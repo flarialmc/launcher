@@ -16,16 +16,20 @@ sealed class SettingsPage : SimpleStackPanel
 
     readonly ToggleSwitch _hardwareAcceleration = new()
     {
-        Header = "Configure whether the launcher should use hardware acceleration.",
+        Header = "Allow the launcher to use hardware acceleration?",
         VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        OnContent = "Yes, improve launcher responsiveness.",
+        OffContent = "No, fix any launcher graphical issues."
     };
 
     readonly ToggleSwitch _waitForInitialization = new()
     {
-        Header = "Configure whether the launcher should wait for the game to fully initialize.",
+        Header = "Should the launcher wait for the game to initialize?",
         VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        OnContent = "Yes, reduce game crashes at the cost of injection speed.",
+        OffContent = "No, speed up injection with risk of game crashes."
     };
 
     readonly CustomDllPathPicker _customDllPath;
@@ -37,9 +41,9 @@ sealed class SettingsPage : SimpleStackPanel
 
         _customDllPath = new(configuration);
 
-        _dllBuild.Items.Add("Release");
-        _dllBuild.Items.Add("Beta");
-        _dllBuild.Items.Add("Custom");
+        _dllBuild.Items.Add("Use the release DLL of the client which is stable.");
+        _dllBuild.Items.Add("Use the beta DLL of the client which is unstable.");
+        _dllBuild.Items.Add("Specify your own custom DLL to be used with the game.");
 
         Children.Add(_dllBuild);
         Children.Add(_customDllPath);
