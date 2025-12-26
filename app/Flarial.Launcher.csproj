@@ -8,7 +8,6 @@
 
     <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
     <ApplicationIcon>Resources\Application.ico</ApplicationIcon>
-    <SatelliteResourceLanguages>XXX</SatelliteResourceLanguages>
 
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
