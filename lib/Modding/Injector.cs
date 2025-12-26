@@ -35,8 +35,8 @@ public unsafe static class Injector
 
     public static uint? Launch(bool initialized, ModificationLibrary library)
     {
-        if (!library.Exists) throw new FileNotFoundException(null, library.FileName);
-        if (!library.IsValid) throw new BadImageFormatException(null, library.FileName);
+        if (!library.IsValid)
+            throw new FileLoadException(null, library.FileName);
 
         var security = File.GetAccessControl(library.FileName);
         security.SetAccessRule(s_rule);

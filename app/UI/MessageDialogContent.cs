@@ -18,6 +18,10 @@ abstract class MessageDialogContent
     internal static readonly LaunchFailure _launchFailure = new();
 
     internal static readonly UpdateFailure _updateFailure = new();
+
+    internal static readonly LauncherUpdate _launcherUpdate = new();
+
+    internal static readonly BetaUsage _betaUsage= new();
 }
 
 sealed class NotInstalled : MessageDialogContent
@@ -92,4 +96,30 @@ sealed class UpdateFailure : MessageDialogContent
 • Try rebooting your machine & see if that resolves the issue.
 
 If you need help, join our Discord.";
+}
+
+sealed class LauncherUpdate : MessageDialogContent
+{
+    public override string Title => "💡 Launcher Update";
+    public override string Primary => "Update";
+    public override string? Close => "Later";
+    public override string Content => @"An update is available for the launcher.
+
+• Updating the launcher provides new bug fixes & features.
+• Newer versions of the client & game might require a launcher update.
+
+If you need help, join our Discord.";
+}
+
+sealed class BetaUsage : MessageDialogContent
+{
+    public override string Title => "⚠️ Beta Usage";
+    public override string Primary => "Cancel";
+    public override string? Close => "Launch";
+    public override string Content => @"The beta build of the client might be potentially unstable. 
+
+• Bugs & crashes might occur frequently during gameplay.
+• The beta build is meant for reporting bugs & issues with the client.
+
+Hence use at your own risk.";
 }

@@ -10,23 +10,24 @@ using Flarial.Launcher.Services.Core;
 using System;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
+using System.Windows.Threading;
 
 namespace Flarial.Launcher.UI.Pages;
 
 sealed class HomePage : Grid
 {
-    readonly Image _image = new()
+    readonly Image _logo = new()
     {
-        Source = Manifest.Icon,
-        Width = Manifest.Icon.Width / 3,
-        Height = Manifest.Icon.Height / 3,
+        Source = ApplicationManifest.Icon,
+        Width = ApplicationManifest.Icon.Width / 3,
+        Height = ApplicationManifest.Icon.Height / 3,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new(0, 0, 0, 120)
     };
 
     readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
-        Width = Manifest.Icon.Width * 2,
+        Width = ApplicationManifest.Icon.Width * 2,
         Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
@@ -48,19 +49,22 @@ sealed class HomePage : Grid
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
         Content = new SymbolIcon(Symbol.Play),
-        Width = Manifest.Icon.Width * 2,
+        Width = ApplicationManifest.Icon.Width * 2,
         Margin = new(0, 120, 0, 0)
     };
 
-    internal HomePage(Configuration configuration, VersionCatalog catalog)
+    internal HomePage(Configuration configuration, VersionCatalog catalog, Image? banner)
     {
-        Children.Add(_image);
+        if (banner is { })
+            Children.Add(banner);
+
+        Children.Add(_logo);
         Children.Add(_progressBar);
         Children.Add(_textBlock);
         Children.Add(_button);
         Children.Add(new TextBlock
         {
-            Text = Manifest.Version,
+            Text = ApplicationManifest.Version,
             VerticalAlignment = VerticalAlignment.Bottom,
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new(0, 0, 12, 12)
@@ -119,6 +123,8 @@ sealed class HomePage : Grid
                         await MessageDialog.ShowAsync(MessageDialogContent._launchFailure);
                         return;
                     }
+
+                    return;
                 }
 
                 _textBlock.Text = "Verifying...";
@@ -139,6 +145,9 @@ sealed class HomePage : Grid
 
                 _textBlock.Text = "Launching...";
                 _progressBar.IsIndeterminate = true;
+
+                if (beta && await MessageDialog.ShowAsync(MessageDialogContent._betaUsage))
+                    return;
 
                 if (!await Task.Run(() => client.Launch(configuration.WaitForInitialization)))
                 {

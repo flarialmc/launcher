@@ -32,8 +32,8 @@ public sealed class InstallRequest : IDisposable
 
         operation.Completed += (sender, args) =>
         {
-            if (sender.Status != Error) source.TrySetResult(true);
-            else source.TrySetException(sender.ErrorCode);
+            if (sender.Status is Error) source.TrySetException(sender.ErrorCode);
+            else source.TrySetResult(true);
         };
 
         await source.Task; return true;

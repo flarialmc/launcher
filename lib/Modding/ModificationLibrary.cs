@@ -7,15 +7,20 @@ namespace Flarial.Launcher.Services.Modding;
 
 public unsafe sealed class ModificationLibrary
 {
-    public readonly string FileName;
-
-    public readonly bool IsValid, Exists;
+    public readonly bool IsValid = false;
+    public readonly string FileName = string.Empty;
 
     public ModificationLibrary(string path)
     {
-        FileName = Path.GetFullPath(path);
-        Exists = File.Exists(FileName) && Path.HasExtension(FileName);
-        fixed (char* name = FileName) IsValid = Exists && FreeLibrary(LoadLibraryEx(name, Null, DONT_RESOLVE_DLL_REFERENCES));
+        try
+        {
+            fixed (char* buffer = FileName = Path.GetFullPath(path))
+            {
+                if (!File.Exists(FileName) || !Path.HasExtension(FileName)) return;
+                IsValid = FreeLibrary(LoadLibraryEx(buffer, Null, DONT_RESOLVE_DLL_REFERENCES));
+            }
+        }
+        catch { }
     }
 
     public static implicit operator ModificationLibrary(string @this) => new(@this);

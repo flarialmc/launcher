@@ -44,29 +44,43 @@ sealed class VersionsPage : Grid
 
         _control._button.Click += async (_, _) =>
         {
-            IsEnabled = false;
-            _control._button.Visibility = Visibility.Hidden;
-            _control._progressBar.Visibility = Visibility.Visible;
-            _control._progressBar.IsIndeterminate = true;
-
             try
             {
-                var entry = catalog[(string)_listBox.SelectedItem];
+                IsEnabled = false;
 
-                _request = await entry.InstallAsync((_) => Dispatcher.Invoke(() =>
+                if (!Minecraft.IsInstalled || !Minecraft.IsSigned)
                 {
-                    if (_control._progressBar.Value == _) return;
-                    _control._progressBar.Value = _; _control._progressBar.IsIndeterminate = false;
-                }));
+                    await MessageDialog.ShowAsync(MessageDialogContent._notInstalled);
+                    return;
+                }
 
-                if (!await _request) Application.Current.Shutdown();
+                _control._button.Visibility = Visibility.Hidden;
+                _control._progressBar.Visibility = Visibility.Visible;
+                _control._progressBar.IsIndeterminate = true;
+
+                try
+                {
+                    var entry = catalog[(string)_listBox.SelectedItem];
+
+                    _request = await entry.InstallAsync((_) => Dispatcher.Invoke(() =>
+                    {
+                        if (_control._progressBar.Value == _) return;
+                        _control._progressBar.Value = _;
+                        _control._progressBar.IsIndeterminate = false;
+                    }));
+
+                    if (!await _request) Application.Current.Shutdown();
+                }
+                finally { _request?.Dispose(); _request = null; }
+
             }
-            finally { _request?.Dispose(); _request = null; }
-
-            _control._progressBar.IsIndeterminate = false;
-            _control._button.Visibility = Visibility.Visible;
-            _control._progressBar.Visibility = Visibility.Hidden;
-            IsEnabled = true;
+            finally
+            {
+                _control._progressBar.IsIndeterminate = false;
+                _control._button.Visibility = Visibility.Visible;
+                _control._progressBar.Visibility = Visibility.Hidden;
+                IsEnabled = true;
+            }
         };
 
         Application.Current.MainWindow.Closing += (sender, args) =>

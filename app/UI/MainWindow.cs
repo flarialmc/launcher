@@ -16,7 +16,7 @@ sealed class MainWindow : Window
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 
-        Icon = Manifest.Icon;
+        Icon = ApplicationManifest.Icon;
         Title = $"Flarial Launcher";
         Width = 960; Height = 540;
         UseLayoutRounding = SnapsToDevicePixels = true;
