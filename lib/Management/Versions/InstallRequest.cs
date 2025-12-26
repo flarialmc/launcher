@@ -36,7 +36,7 @@ public sealed class InstallRequest : IDisposable
             else source.TrySetResult(true);
         };
 
-        await source.Task; return true;
+        await source.Task; return !token.IsCancellationRequested;
     }
 
     internal InstallRequest(string uri, Action<int> action)
