@@ -55,20 +55,11 @@ sealed class HomePage : Grid
 
     internal HomePage(Configuration configuration, VersionCatalog catalog, Image? banner)
     {
-        if (banner is { })
-            Children.Add(banner);
-
         Children.Add(_logo);
         Children.Add(_progressBar);
         Children.Add(_textBlock);
         Children.Add(_button);
-        Children.Add(new TextBlock
-        {
-            Text = ApplicationManifest.Version,
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Margin = new(0, 0, 12, 12)
-        });
+        if (banner is { }) Children.Add(banner);
 
         _button.Click += async (_, _) =>
         {

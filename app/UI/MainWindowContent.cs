@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Flarial.Launcher.App;
 using Flarial.Launcher.Services.Client;
@@ -51,11 +52,18 @@ sealed class MainWindowContent : NavigationView
             Tag = Symbol.AllApps,
         });
 
-        FooterMenuItems.Add(new NavigationViewItem
+        MenuItems.Add(new NavigationViewItem
         {
             Icon = new SymbolIcon(Symbol.Setting),
             Content = "Settings",
             Tag = Symbol.Setting,
+        });
+
+        FooterMenuItems.Add(new NavigationViewItem
+        {
+            Icon = new SymbolIcon(Symbol.Favorite),
+            Content = ApplicationManifest.Version,
+            IsEnabled= false
         });
 
         ItemInvoked += (sender, args) =>

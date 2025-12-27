@@ -22,13 +22,13 @@ public sealed class InstallRequest : IDisposable
 
     static async Task<bool> Task(string uri, string path, Action<int> action, CancellationToken token)
     {
-        await HttpService.DownloadAsync(uri, path, (_) => action(_ * 90 / 100), token);
+        await HttpService.DownloadAsync(uri, path, action, token);
         if (token.IsCancellationRequested) return false;
 
         TaskCompletionSource<bool> source = new();
         var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
-        operation.Progress += (sender, args) => action(90 + (int)(args.percentage * 10 / 100));
+        operation.Progress += (sender, args) => action((int)args.percentage);
 
         operation.Completed += (sender, args) =>
         {
