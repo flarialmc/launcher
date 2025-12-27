@@ -129,7 +129,7 @@ sealed class HomePage : Grid
 
                 _textBlock.Text = "Verifying...";
 
-                if (!await client.DownloadAsync(_ =>
+                if (!await client.DownloadAsync(_ => Dispatcher.Invoke(() =>
                 {
                     if (_progressBar.Value == _) return;
 
@@ -137,7 +137,7 @@ sealed class HomePage : Grid
 
                     _progressBar.Value = _;
                     _progressBar.IsIndeterminate = false;
-                }))
+                })))
                 {
                     await MessageDialog.ShowAsync(MessageDialogContent._updateFailure);
                     return;
