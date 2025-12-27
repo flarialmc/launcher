@@ -47,9 +47,9 @@ sealed class MainWindowContent : NavigationView
 
         FooterMenuItems.Add(new NavigationViewItem
         {
-            Icon = new SymbolIcon(Symbol.AllApps),
+            Icon = new SymbolIcon(Symbol.BrowsePhotos),
             Content = "Versions",
-            Tag = Symbol.AllApps,
+            Tag = Symbol.BrowsePhotos,
         });
 
         FooterMenuItems.Add(new NavigationViewItem
@@ -61,7 +61,7 @@ sealed class MainWindowContent : NavigationView
 
         FooterMenuItems.Add(new NavigationViewItem
         {
-            Icon = new SymbolIcon(Symbol.Favorite),
+            Icon = new SymbolIcon(Symbol.OutlineStar),
             Content = ApplicationManifest.Version,
             IsEnabled= false
         });
@@ -71,7 +71,7 @@ sealed class MainWindowContent : NavigationView
             switch ((Symbol)args.InvokedItemContainer.Tag)
             {
                 case Symbol.Home: Content = _homePage; break;
-                case Symbol.AllApps: Content = _versionsPage; break;
+                case Symbol.BrowsePhotos: Content = _versionsPage; break;
                 case Symbol.Setting: Content = _settingsPage; break;
             }
         };
