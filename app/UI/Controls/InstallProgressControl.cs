@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 namespace Flarial.Launcher.UI.Controls;
-
 sealed class InstallProgressControl : Grid
 {
     internal readonly Button _button = new()
