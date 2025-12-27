@@ -21,7 +21,9 @@ abstract class MessageDialogContent
 
     internal static readonly LauncherUpdate _launcherUpdate = new();
 
-    internal static readonly BetaUsage _betaUsage= new();
+    internal static readonly BetaUsage _betaUsage = new();
+
+    internal static readonly NotSigned _notSigned = new();
 }
 
 sealed class NotInstalled : MessageDialogContent
@@ -122,4 +124,17 @@ sealed class BetaUsage : MessageDialogContent
 • The beta build is meant for reporting bugs & issues with the client.
 
 Hence use at your own risk.";
+}
+
+sealed class NotSigned : MessageDialogContent
+{
+    public override string Title => "⚠️ Not Signed";
+    public override string Primary => "Back";
+    public override string Content => @"The current game installation is unsigned.
+
+• Reinstall the game via the Microsoft Store or Xbox App.
+• Unsigned installations cannot be launched by the launcher.
+• Unsigned installations cannot be updated or downgraded by the launcher.
+
+If you need help, join our Discord.";
 }

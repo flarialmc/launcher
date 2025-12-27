@@ -20,7 +20,7 @@ public sealed class InstallRequest : IDisposable
     readonly CancellationTokenSource _source = new();
     readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    static async Task<bool> Task(string uri, string path, Action<int> action, CancellationToken token)
+    static async Task<bool> InstallAsync(string uri, string path, Action<int> action, CancellationToken token)
     {
         await HttpService.DownloadAsync(uri, path, action, token);
         if (token.IsCancellationRequested) return false;
@@ -41,7 +41,7 @@ public sealed class InstallRequest : IDisposable
 
     internal InstallRequest(string uri, Action<int> action)
     {
-        _task = Task(uri, _path, action, _source.Token);
+        _task = InstallAsync(uri, _path, action, _source.Token);
         _task.ContinueWith(_ => { try { File.Delete(_path); } catch { } }, ExecuteSynchronously);
     }
 

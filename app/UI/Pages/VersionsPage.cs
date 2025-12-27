@@ -44,9 +44,15 @@ sealed class VersionsPage : Grid
             {
                 IsEnabled = false;
 
-                if (!Minecraft.IsInstalled || !Minecraft.IsSigned)
+                if (!Minecraft.IsInstalled)
                 {
                     await MessageDialog.ShowAsync(MessageDialogContent._notInstalled);
+                    return;
+                }
+
+                if (!Minecraft.IsSigned)
+                {
+                    await MessageDialog.ShowAsync(MessageDialogContent._notSigned);
                     return;
                 }
 
