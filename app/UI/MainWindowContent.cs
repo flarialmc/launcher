@@ -45,14 +45,14 @@ sealed class MainWindowContent : NavigationView
             IsSelected = true
         });
 
-        MenuItems.Add(new NavigationViewItem
+        FooterMenuItems.Add(new NavigationViewItem
         {
             Icon = new SymbolIcon(Symbol.AllApps),
             Content = "Versions",
             Tag = Symbol.AllApps,
         });
 
-        MenuItems.Add(new NavigationViewItem
+        FooterMenuItems.Add(new NavigationViewItem
         {
             Icon = new SymbolIcon(Symbol.Setting),
             Content = "Settings",
