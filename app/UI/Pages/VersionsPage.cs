@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Management.Versions;
 using Flarial.Launcher.UI.Controls;
+using ModernWpf.Controls;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace Flarial.Launcher.UI.Pages;
 
@@ -57,30 +59,48 @@ sealed class VersionsPage : Grid
                 }
 
                 _control._button.Visibility = Visibility.Hidden;
+
                 _control._progressBar.Visibility = Visibility.Visible;
                 _control._progressBar.IsIndeterminate = true;
+
+                _control._icon.Visibility = Visibility.Visible;
+                _control._icon.Symbol = Symbol.Refresh;
 
                 try
                 {
                     var entry = catalog[(string)_listBox.SelectedItem];
 
-                    _request = await entry.InstallAsync((_) => Dispatcher.Invoke(() =>
+                    _request = await entry.InstallAsync((sender, args) => Dispatcher.Invoke(() =>
                     {
-                        if (_control._progressBar.Value == _) return;
-                        _control._progressBar.Value = _;
+                        if (_control._progressBar.Value == args) return;
+
+                        if (sender is AppInstallState.Downloading) _control._icon.Symbol = Symbol.Download;
+                        else if (sender is AppInstallState.Installing) _control._icon.Symbol = Symbol.Save;
+
+                        _control._progressBar.Value = args;
                         _control._progressBar.IsIndeterminate = false;
                     }));
 
                     if (!await _request) Application.Current.Shutdown();
                 }
-                finally { _request?.Dispose(); _request = null; }
+                finally
+                {
+                    _request?.Dispose();
+                    _request = null;
+                }
 
             }
             finally
             {
                 _control._progressBar.IsIndeterminate = false;
                 _control._button.Visibility = Visibility.Visible;
+
+
+                _control._icon.Visibility = Visibility.Collapsed;
+                _control._icon.Symbol = Symbol.Refresh;
+
                 _control._progressBar.Visibility = Visibility.Hidden;
+
                 IsEnabled = true;
             }
         };

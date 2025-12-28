@@ -8,6 +8,7 @@ using Windows.Management.Deployment;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static System.Threading.Tasks.TaskContinuationOptions;
 using static Windows.Foundation.AsyncStatus;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
@@ -20,15 +21,15 @@ public sealed class InstallRequest : IDisposable
     readonly CancellationTokenSource _source = new();
     readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    static async Task<bool> InstallAsync(string uri, string path, Action<int> action, CancellationToken token)
+    static async Task<bool> InstallAsync(string uri, string path, Action<AppInstallState, int> action, CancellationToken token)
     {
-        await HttpService.DownloadAsync(uri, path, action, token);
+        await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _), token);
         if (token.IsCancellationRequested) return false;
 
         TaskCompletionSource<bool> source = new();
         var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
-        operation.Progress += (sender, args) => action((int)args.percentage);
+        operation.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
 
         operation.Completed += (sender, args) =>
         {
@@ -39,7 +40,7 @@ public sealed class InstallRequest : IDisposable
         await source.Task; return !token.IsCancellationRequested;
     }
 
-    internal InstallRequest(string uri, Action<int> action)
+    internal InstallRequest(string uri, Action<AppInstallState, int> action)
     {
         _task = InstallAsync(uri, _path, action, _source.Token);
         _task.ContinueWith(_ => { try { File.Delete(_path); } catch { } }, ExecuteSynchronously);
