@@ -37,7 +37,7 @@ unsafe partial class MinecraftGDK : Minecraft
             - This allows the launcher ensure the launch contract works as intended.
         */
 
-        if (!IsSigned)
+        if (!IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         /*

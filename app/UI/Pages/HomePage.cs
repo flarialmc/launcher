@@ -3,11 +3,9 @@ using System.Windows.Media;
 using Flarial.Launcher.App;
 using ModernWpf.Controls;
 using System.Windows.Controls;
-using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Management.Versions;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Core;
-using System;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using System.Windows.Threading;
@@ -48,14 +46,14 @@ sealed class HomePage : Grid
     {
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Content = new SymbolIcon(Symbol.Play),
+        Content = "Launch",
         Width = ApplicationManifest.Icon.Width * 2,
         Margin = new(0, 120, 0, 0)
     };
 
-    sealed class UnsupportedVersion(string installed, string supported) : MessageDialogContent
+    sealed class UnsupportedVersionDetected(string installed, string supported) : MessageDialogContent
     {
-        public override string Title => "⚠️ Unsupported Version";
+        public override string Title => "⚠️ Unsupported Version Detected";
         public override string Primary => "Back";
         public override string Content => $@"Minecraft v{installed} isn't compatible with Flarial Client.
 
@@ -71,7 +69,29 @@ If you need help, join our Discord.";
         Children.Add(_progressBar);
         Children.Add(_textBlock);
         Children.Add(_button);
-        if (banner is { }) Children.Add(banner);
+
+        if (banner is { })
+            Children.Add(banner);
+
+        Children.Add(new HyperlinkButton
+        {
+            Foreground = new SolidColorBrush(Colors.White),
+            Content = "Discord",
+            NavigateUri = new("https://flarial.xyz/discord"),
+            Padding = new(),
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Margin = new(12, 0, 0, 12)
+        });
+
+
+        Children.Add(new TextBlock
+        {
+            Text = ApplicationManifest.Version,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new(0, 0, 12, 12)
+        });
 
         _button.Click += async (_, _) =>
         {
@@ -90,21 +110,19 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsSigned)
+                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(MessageDialogContent._notSigned);
+                    await MessageDialog.ShowAsync(MessageDialogContent._unsignedInstallationDetected);
                     return;
                 }
 
                 var beta = configuration.DllBuild is DllBuild.Beta;
                 var custom = configuration.DllBuild is DllBuild.Custom;
-
-                beta = beta || Minecraft.UsingGameDevelopmentKit;
                 var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
                 if (!custom && !beta && !catalog.IsSupported)
                 {
-                    await MessageDialog.ShowAsync(new UnsupportedVersion(Minecraft.Version, catalog.LatestSupportedVersion));
+                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, catalog.LatestSupportedVersion));
                     return;
                 }
 
@@ -140,21 +158,20 @@ If you need help, join our Discord.";
                 if (!await client.DownloadAsync(_ => Dispatcher.Invoke(() =>
                 {
                     if (_progressBar.Value == _) return;
-
                     _textBlock.Text = "Downloading...";
 
                     _progressBar.Value = _;
                     _progressBar.IsIndeterminate = false;
                 })))
                 {
-                    await MessageDialog.ShowAsync(MessageDialogContent._updateFailure);
+                    await MessageDialog.ShowAsync(MessageDialogContent._clientUpdateFailure);
                     return;
                 }
 
                 _textBlock.Text = "Launching...";
                 _progressBar.IsIndeterminate = true;
 
-                if (beta && await MessageDialog.ShowAsync(MessageDialogContent._betaUsage))
+                if (beta && await MessageDialog.ShowAsync(MessageDialogContent._betaDllEnabled))
                     return;
 
                 if (!await Task.Run(() => client.Launch(configuration.WaitForInitialization)))

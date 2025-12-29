@@ -1,5 +1,4 @@
 using ModernWpf.Controls;
-using Modern = ModernWpf.Controls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,12 +8,12 @@ sealed class InstallProgressControl : Grid
 {
     internal readonly Button _button = new()
     {
-        Content = new SymbolIcon(Symbol.Download),
+        Content = "Install",
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
     };
 
-    internal readonly Modern.ProgressBar _progressBar = new()
+    internal readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Stretch,

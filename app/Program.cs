@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -50,11 +49,7 @@ Exception: {1}
             Environment.Exit(1);
         };
 
-        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-        };
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => { GC.Collect(); GC.WaitForPendingFinalizers(); };
     }
 
     [STAThread]
@@ -101,6 +96,7 @@ Exception: {1}
             }
 
             Application application = new();
+
             application.Resources.MergedDictionaries.Add(new ThemeResources());
             application.Resources.MergedDictionaries.Add(new XamlControlsResources());
             application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.Red });

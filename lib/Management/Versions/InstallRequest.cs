@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Networking;
 using Windows.Management.Deployment;
@@ -12,53 +11,46 @@ using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-public sealed class InstallRequest : IDisposable
+public sealed class InstallRequest
 {
+    const DeploymentOptions Options = ForceApplicationShutdown | ForceUpdateFromAnyVersion;
+
     static readonly PackageManager s_manager = new();
     static readonly string s_path = Path.GetTempPath();
 
-    readonly Task<bool> _task;
-    readonly CancellationTokenSource _source = new();
+    readonly Task _task;
     readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    static async Task<bool> InstallAsync(string uri, string path, Action<AppInstallState, int> action, CancellationToken token)
+    static async Task InstallAsync(InstallRequest request, string uri, string path, Action<AppInstallState, int> action)
     {
-        await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _), token);
-        if (token.IsCancellationRequested) return false;
+        request.State = AppInstallState.Downloading;
+        await HttpService.DownloadAsync(uri, path, (_) => action(request.State, _));
 
         TaskCompletionSource<bool> source = new();
-        var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+        var operation = s_manager.AddPackageAsync(new(path), null, Options);
 
-        operation.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
+        request.State = AppInstallState.Installing;
+        operation.Progress += (sender, args) => action(request.State, (int)args.percentage);
 
         operation.Completed += (sender, args) =>
         {
-            if (sender.Status is Error) source.TrySetException(sender.ErrorCode);
-            else source.TrySetResult(true);
+            if (sender.Status != Error) source.TrySetResult(true);
+            else source.TrySetException(sender.ErrorCode);
         };
 
-        await source.Task; return !token.IsCancellationRequested;
+        await source.Task;
+        request.State = AppInstallState.Completed;
     }
 
     internal InstallRequest(string uri, Action<AppInstallState, int> action)
     {
-        _task = InstallAsync(uri, _path, action, _source.Token);
+        _task = InstallAsync(this, uri, _path, action);
         _task.ContinueWith(_ => { try { File.Delete(_path); } catch { } }, ExecuteSynchronously);
     }
 
-    public TaskAwaiter<bool> GetAwaiter() => _task.GetAwaiter();
+    public TaskAwaiter GetAwaiter() => _task.GetAwaiter();
 
-    public bool Cancel()
-    {
-        if (_task.IsCompleted) return false;
-        _source.Cancel(); return true;
-    }
+    public AppInstallState State { get; private set; } = AppInstallState.Pending;
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this); _source.Dispose();
-        try { File.Delete(_path); } catch { }
-    }
-
-    ~InstallRequest() => Dispose();
+    ~InstallRequest() { try { File.Delete(_path); } catch { } }
 }

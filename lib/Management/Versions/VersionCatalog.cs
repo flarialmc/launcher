@@ -21,9 +21,12 @@ public sealed class VersionCatalog
     readonly SortedDictionary<string, VersionEntry> _entries;
 
     public string LatestSupportedVersion => _supported.First();
+   
     public VersionEntry this[string version] => _entries[version];
+   
     public IEnumerable<string> InstallableVersions => _entries.Keys;
-    public bool IsSupported => _supported.Contains(Minecraft.Version);
+   
+    public bool IsSupported => _supported.Contains(Minecraft.PackageVersion);
 
     static async Task<SortedSet<string>> SupportedAsync()
     {

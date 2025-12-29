@@ -17,13 +17,15 @@ abstract class MessageDialogContent
 
     internal static readonly LaunchFailure _launchFailure = new();
 
-    internal static readonly UpdateFailure _updateFailure = new();
+    internal static readonly ClientUpdateFailure _clientUpdateFailure= new();
 
-    internal static readonly LauncherUpdate _launcherUpdate = new();
+    internal static readonly LauncherUpdateAvailable _launcherUpdate = new();
 
-    internal static readonly BetaUsage _betaUsage = new();
+    internal static readonly BetaDllEnabled _betaDllEnabled = new();
 
-    internal static readonly NotSigned _notSigned = new();
+    internal static readonly UnpackagedInstallationDetected _unpackagedInstallationDetected = new();
+
+    internal static readonly UnsignedInstallationDetected _unsignedInstallationDetected = new();
 }
 
 sealed class NotInstalled : MessageDialogContent
@@ -32,7 +34,7 @@ sealed class NotInstalled : MessageDialogContent
     public override string Title => "⚠️ Not Installed";
     public override string Content => @"Minecraft: Bedrock Edition isn't installed.
 
-• Install the game via the Microsoft Store or Xbox App.
+• Install Minecraft: Bedrock Edition via the Microsoft Store or Xbox App.
 • Ensure the installed version is supported by Flarial.
 
 If you need help, join our Discord.";
@@ -52,6 +54,20 @@ sealed class ConnectionFailure : MessageDialogContent
 If you need help, join our Discord.";
 }
 
+sealed class UnsignedInstallationDetected : MessageDialogContent
+{
+    public override string Title => "⚠️ Unsigned Installation Detected";
+
+    public override string Content => @"An unsigned Minecraft installation has been detected.
+
+• Unsigned installs might cause compatibility issues with the client & launcher.
+• Reinstall Minecraft via the Microsoft or Xbox App to fix this issue.
+
+If you need help, join our Discord.";
+
+    public override string Primary => "Back";
+}
+
 sealed class InvalidCustomDll : MessageDialogContent
 {
     public override string Primary => "Back";
@@ -68,61 +84,60 @@ sealed class LaunchFailure : MessageDialogContent
 {
     public override string Title => "⚠️ Launch Failure";
     public override string Primary => "Back";
-    public override string Content => @"The launcher couldn't inject & initialize the game correctly.
+    public override string Content => @"The launcher couldn't inject or initialize Minecraft correctly.
 
-• Try closing the game & try again.
 • Remove & disable any 3rd party mods or tools.
+• Try closing Minecraft & launching it again via the launcher.
 
 If you need help, join our Discord.";
 }
 
-sealed class UpdateFailure : MessageDialogContent
+sealed class ClientUpdateFailure : MessageDialogContent
 {
     public override string Primary => "Back";
-    public override string Title => "⚠️ Update Failure";
+    public override string Title => "⚠️ Client Update Failure";
     public override string Content => @"A client update couldn't be downloaded.
 
-• Try closing the game & see if the client updates.
+• Try closing Minecraft & click on [Launch] to update the client.
 • Try rebooting your machine & see if that resolves the issue.
 
 If you need help, join our Discord.";
 }
 
-sealed class LauncherUpdate : MessageDialogContent
+sealed class LauncherUpdateAvailable : MessageDialogContent
 {
-    public override string Title => "💡 Launcher Update";
+    public override string Title => "💡 Launcher Update Available";
     public override string Primary => "Update";
     public override string? Close => "Later";
     public override string Content => @"An update is available for the launcher.
 
 • Updating the launcher provides new bug fixes & features.
-• Newer versions of the client & game might require a launcher update.
+• Newer versions of the client & Minecraft might require a launcher update.
 
 If you need help, join our Discord.";
 }
 
-sealed class BetaUsage : MessageDialogContent
+sealed class BetaDllEnabled : MessageDialogContent
 {
-    public override string Title => "⚠️ Beta Usage";
+    public override string Title => "⚠️ Beta DLL Enabled";
     public override string Primary => "Cancel";
     public override string? Close => "Launch";
-    public override string Content => @"The beta build of the client might be potentially unstable. 
+    public override string Content => @"The beta DLL of the client might be potentially unstable. 
 
 • Bugs & crashes might occur frequently during gameplay.
-• The beta build is meant for reporting bugs & issues with the client.
+• The beta DLL is meant for reporting bugs & issues with the client.
 
 Hence use at your own risk.";
 }
 
-sealed class NotSigned : MessageDialogContent
+sealed class UnpackagedInstallationDetected : MessageDialogContent
 {
-    public override string Title => "⚠️ Not Signed";
+    public override string Title => "⚠️ Unpackaged Installation Detected";
     public override string Primary => "Back";
-    public override string Content => @"The current game installation is unsigned.
+    public override string Content => @"The current Minecraft installation is unpackaged.
 
-• Reinstall the game via the Microsoft Store or Xbox App.
-• Unsigned installations cannot be launched by the launcher.
-• Unsigned installations cannot be updated or downgraded by the launcher.
+• Please reinstall the game via the Microsoft or Xbox App.
+• The launcher can only switch versions if the installation is packaged.
 
 If you need help, join our Discord.";
 }

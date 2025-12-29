@@ -5,6 +5,8 @@ using Flarial.Launcher.Services.Management.Versions;
 using Flarial.Launcher.UI.Controls;
 using ModernWpf.Controls;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
+using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
+using static ModernWpf.Controls.Symbol;
 
 namespace Flarial.Launcher.UI.Pages;
 
@@ -52,9 +54,9 @@ sealed class VersionsPage : Grid
                     return;
                 }
 
-                if (!Minecraft.IsSigned)
+                if (!Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(MessageDialogContent._notSigned);
+                    await MessageDialog.ShowAsync(MessageDialogContent._unpackagedInstallationDetected);
                     return;
                 }
 
@@ -64,51 +66,44 @@ sealed class VersionsPage : Grid
                 _control._progressBar.IsIndeterminate = true;
 
                 _control._icon.Visibility = Visibility.Visible;
-                _control._icon.Symbol = Symbol.Refresh;
+                _control._icon.Symbol = Refresh;
 
                 try
                 {
                     var entry = catalog[(string)_listBox.SelectedItem];
 
-                    _request = await entry.InstallAsync((sender, args) => Dispatcher.Invoke(() =>
+                    _request = await entry.InstallAsync((state, value) => Dispatcher.Invoke(() =>
                     {
-                        if (_control._progressBar.Value == args) return;
+                        if (_control._progressBar.Value == value) return;
 
-                        if (sender is AppInstallState.Downloading) _control._icon.Symbol = Symbol.Download;
-                        else if (sender is AppInstallState.Installing) _control._icon.Symbol = Symbol.Save;
+                        switch (state)
+                        {
+                            case Installing: _control._icon.Symbol = Save; break;
+                            case Downloading: _control._icon.Symbol = Download; break;
+                        }
 
-                        _control._progressBar.Value = args;
+                        _control._progressBar.Value = value;
                         _control._progressBar.IsIndeterminate = false;
                     }));
 
-                    if (!await _request) Application.Current.Shutdown();
+                    await _request;
                 }
-                finally
-                {
-                    _request?.Dispose();
-                    _request = null;
-                }
+                finally { _request = null; }
 
             }
             finally
             {
                 _control._progressBar.IsIndeterminate = false;
-                _control._button.Visibility = Visibility.Visible;
-
-
-                _control._icon.Visibility = Visibility.Collapsed;
-                _control._icon.Symbol = Symbol.Refresh;
-
                 _control._progressBar.Visibility = Visibility.Hidden;
 
+                _control._icon.Visibility = Visibility.Collapsed;
+                _control._icon.Symbol = Refresh;
+
+                _control._button.Visibility = Visibility.Visible;
                 IsEnabled = true;
             }
         };
 
-        Application.Current.MainWindow.Closing += (sender, args) =>
-        {
-            args.Cancel = _request?.Cancel() ?? false;
-            if (args.Cancel) ((Window)sender).Hide();
-        };
+        Application.Current.MainWindow.Closing += (sender, args) => { args.Cancel = _request?.State is Installing; };
     }
 }

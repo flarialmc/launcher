@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
 using System.Diagnostics;
+using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher.App;
 
@@ -18,13 +19,11 @@ static class Sponsorship
 
     const string BannerUri = "https://litebyte.co/images/flarial.png";
 
-    static readonly HttpClient s_client = new();
-
     static async Task<ImageSource?> GetSourceAsync()
     {
         try
         {
-            using MemoryStream stream = new(await s_client.GetByteArrayAsync(BannerUri));
+            using MemoryStream stream = new(await HttpService.GetAsync<byte[]>(BannerUri));
             return BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
         }
         catch { return null; }

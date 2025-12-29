@@ -165,7 +165,7 @@ public partial class MainWindow
     {
         try
         {
-            VersionLabel.Text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.Version}";
+            VersionLabel.Text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.PackageVersion}";
             VersionTextBorder.Background = VersionCatalog.IsCompatible ? _darkGreen : _darkRed;
         }
         catch

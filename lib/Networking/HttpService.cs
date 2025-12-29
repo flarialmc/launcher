@@ -31,17 +31,18 @@ public class HttpService
 
     internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
-    internal static async Task<T> GetAsync<T>(string uri)
+    public static async Task<T> GetAsync<T>(string uri)
     {
         return (T)(object)(typeof(T) switch
         {
             var @_ when _ == typeof(string) => await HttpClient.GetStringAsync(uri),
             var @_ when _ == typeof(Stream) => await HttpClient.GetStreamAsync(uri),
+            var @_ when _ == typeof(byte[]) => await HttpClient.GetByteArrayAsync(uri),
             _ => throw new NotImplementedException()
         });
     }
 
-    internal static async Task DownloadAsync(string uri, string path, Action<int> action, [Optional] CancellationToken token)
+    internal static async Task DownloadAsync(string uri, string path, Action<int> action)
     {
         using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
         message.EnsureSuccessStatusCode();
@@ -53,7 +54,7 @@ public class HttpService
         var buffer = new byte[s_length];
         var length = message.Content.Headers.ContentLength ?? 0;
 
-        while (!token.IsCancellationRequested && (count = await source.ReadAsync(buffer, 0, s_length)) != 0)
+        while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {
             await destination.WriteAsync(buffer, 0, count);
             if (length > 0) action((int)((value += count) / length * 100));
