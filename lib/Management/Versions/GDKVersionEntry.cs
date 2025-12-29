@@ -19,7 +19,7 @@ sealed class GDKVersionEntry : VersionEntry
 
     GDKVersionEntry(string[] urls) : base() => _urls = urls;
 
-    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(HashSet<string> supported) => await Task.Run(async () =>
+    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(SortedSet<string> supported) => await Task.Run(async () =>
     {
         Dictionary<string, VersionEntry> entries = [];
         Dictionary<string, Dictionary<string, string[]>> collection;

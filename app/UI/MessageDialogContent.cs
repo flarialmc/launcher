@@ -1,3 +1,5 @@
+using System;
+
 namespace Flarial.Launcher.UI;
 
 abstract class MessageDialogContent
@@ -10,8 +12,6 @@ abstract class MessageDialogContent
     internal static readonly ConnectionFailure _connectionFailure = new();
 
     internal static readonly NotInstalled _notInstalled = new();
-
-    internal static readonly UnsupportedVersion _unsupportedVersion = new();
 
     internal static readonly InvalidCustomDll _invalidCustomDll = new();
 
@@ -34,18 +34,6 @@ sealed class NotInstalled : MessageDialogContent
 
 • Install the game via the Microsoft Store or Xbox App.
 • Ensure the installed version is supported by Flarial.
-
-If you need help, join our Discord.";
-}
-
-sealed class UnsupportedVersion : MessageDialogContent
-{
-    public override string Primary => "Back";
-    public override string Title => "⚠️ Unsupported Version";
-    public override string Content => @"The currently installed game version isn't supported by Flarial.
-
-• Install a game version that is supported by Flarial via the launcher.
-• Try using the beta build of client by enabling in the launcher's settings.
 
 If you need help, join our Discord.";
 }

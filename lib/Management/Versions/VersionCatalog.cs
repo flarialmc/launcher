@@ -6,27 +6,29 @@ using System.Threading.Tasks;
 using System.Collections;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Networking;
+using System.Linq;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
 public sealed class VersionCatalog
 {
-    VersionCatalog(HashSet<string> supported, SortedDictionary<string, VersionEntry> entries) => (_supported, _entries) = (supported, entries);
+    VersionCatalog(SortedSet<string> supported, SortedDictionary<string, VersionEntry> entries) => (_supported, _entries) = (supported, entries);
 
     static readonly Comparer s_comparer = new();
     const string Uri = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
-    readonly HashSet<string> _supported;
+    readonly SortedSet<string> _supported;
     readonly SortedDictionary<string, VersionEntry> _entries;
 
+    public string LatestSupportedVersion => _supported.First();
     public VersionEntry this[string version] => _entries[version];
     public IEnumerable<string> InstallableVersions => _entries.Keys;
     public bool IsSupported => _supported.Contains(Minecraft.Version);
 
-    static async Task<HashSet<string>> SupportedAsync()
+    static async Task<SortedSet<string>> SupportedAsync()
     {
         string @string;
-        HashSet<string> supported = [];
+        SortedSet<string> supported = new(s_comparer);
 
         using StreamReader reader = new(await HttpService.GetAsync<Stream>(Uri));
         while ((@string = await reader.ReadLineAsync()) is { }) supported.Add(@string.Trim());

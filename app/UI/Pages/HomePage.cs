@@ -53,6 +53,18 @@ sealed class HomePage : Grid
         Margin = new(0, 120, 0, 0)
     };
 
+    sealed class UnsupportedVersion(string installed, string supported) : MessageDialogContent
+    {
+        public override string Title => "⚠️ Unsupported Version";
+        public override string Primary => "Back";
+        public override string Content => $@"Minecraft v{installed} isn't compatible with Flarial Client.
+
+• Please switch to Minecraft v{supported} for the best experience.
+• You may switch versions by going to the [Versions] page in the launcher.
+
+If you need help, join our Discord.";
+    }
+
     internal HomePage(Configuration configuration, VersionCatalog catalog, Image? banner)
     {
         Children.Add(_logo);
@@ -92,7 +104,7 @@ sealed class HomePage : Grid
 
                 if (!custom && !beta && !catalog.IsSupported)
                 {
-                    await MessageDialog.ShowAsync(MessageDialogContent._unsupportedVersion);
+                    await MessageDialog.ShowAsync(new UnsupportedVersion(Minecraft.Version, catalog.LatestSupportedVersion));
                     return;
                 }
 

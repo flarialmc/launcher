@@ -38,7 +38,7 @@ sealed class UWPVersionEntry : VersionEntry
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(HashSet<string> supported) => await Task.Run(async () =>
+    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(SortedSet<string> supported) => await Task.Run(async () =>
     {
         string[][] collection;
         Dictionary<string, VersionEntry> entries = [];
