@@ -40,9 +40,20 @@ If you need help, join our Discord.";
 
 sealed class UnsupportedVersion : MessageDialogContent
 {
+    readonly string _currentVersion;
+    readonly string _latestSupportedVersion;
+
+    public UnsupportedVersion() : this("Unknown", "Unknown") { }
+
+    public UnsupportedVersion(string currentVersion, string latestSupportedVersion)
+    {
+        _currentVersion = currentVersion;
+        _latestSupportedVersion = latestSupportedVersion;
+    }
+
     public override string Primary => "Back";
     public override string Title => "⚠️ Unsupported Version";
-    public override string Content => @"The currently installed game version isn't supported by Flarial.
+    public override string Content => $@"Your currently installed Minecraft version ({_currentVersion}) is not compatible with Flarial Client, please change your version to {_latestSupportedVersion} for the best experience.
 
 • Install a game version that is supported by Flarial via the launcher.
 • Try using the beta build of client by enabling in the launcher's settings.

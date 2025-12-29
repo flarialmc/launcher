@@ -330,7 +330,7 @@ If you need help, join our Discord.", ("Update", true), ("Later", false)))
 
             if (!beta && !VersionCatalog.IsCompatible)
             {
-                await DialogBox.ShowAsync("⚠️ Unsupported Version", @"The currently installed version is unsupported by the client.
+                await DialogBox.ShowAsync("⚠️ Unsupported Version", $@"Your currently installed Minecraft version ({Minecraft.Version}) is not compatible with Flarial Client, please change your version to {VersionCatalog.LatestSupportedVersion} for the best experience.
 
 • Try switching to a version supported by the client.
 • Try using the beta build of client via [Settings] -> [General].

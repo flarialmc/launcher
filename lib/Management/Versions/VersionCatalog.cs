@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections;
@@ -22,6 +23,7 @@ public sealed class VersionCatalog
     public VersionEntry this[string version] => _entries[version];
     public IEnumerable<string> InstallableVersions => _entries.Keys;
     public bool IsSupported => _supported.Contains(Minecraft.Version);
+    public string LatestSupportedVersion => _supported.OrderByDescending(v => new Version(v)).FirstOrDefault() ?? "Unknown";
 
     static async Task<HashSet<string>> SupportedAsync()
     {

@@ -92,7 +92,8 @@ sealed class HomePage : Grid
 
                 if (!custom && !beta && !catalog.IsSupported)
                 {
-                    await MessageDialog.ShowAsync(MessageDialogContent._unsupportedVersion);
+                    var unsupportedVersion = new UnsupportedVersion(Minecraft.Version, catalog.LatestSupportedVersion);
+                    await MessageDialog.ShowAsync(unsupportedVersion);
                     return;
                 }
 
