@@ -90,7 +90,7 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                if (!Minecraft.IsSigned)
+                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsSigned)
                 {
                     await MessageDialog.ShowAsync(MessageDialogContent._notSigned);
                     return;
