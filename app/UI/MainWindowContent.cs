@@ -84,19 +84,21 @@ sealed class MainWindowContent : NavigationView
 
             var task1 = VersionCatalog.CreateAsync();
             var task2 = Sponsorship.GetAsync();
-            await Task.WhenAll(task1, task2);
+            await Task.WhenAny(task1, task2);
 
-            var catalog = await task1; _versionsPage = new(catalog);
-            _homePage = new(configuration, catalog, await task2);
+            var catalog = await task1;
+            _versionsPage = new(catalog);
+            _homePage = new(configuration, catalog, task2);
 
             foreach (var version in catalog.InstallableVersions)
             {
                 _versionsPage._listBox.Items.Add(version);
                 await Dispatcher.Yield();
             }
-
             _versionsPage._listBox.SelectedIndex = 0;
-            Content = _homePage; IsEnabled = true;
+            
+            Content = _homePage;
+            IsEnabled = true;
         }, DispatcherPriority.Send);
     }
 }

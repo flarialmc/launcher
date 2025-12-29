@@ -63,7 +63,7 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    internal HomePage(Configuration configuration, VersionCatalog catalog, Image? sponsorship)
+    internal HomePage(Configuration configuration, VersionCatalog catalog, Task<Image?> sponsorship)
     {
         Children.Add(_logo);
         Children.Add(_progressBar);
@@ -89,7 +89,11 @@ If you need help, join our Discord.";
             Margin = new(0, 0, 12, 12)
         });
 
-        if (sponsorship is {}) Children.Add(sponsorship);
+        Dispatcher.InvokeAsync(async () =>
+        {
+            var image = await sponsorship;
+            if (image is { }) Children.Add(image);
+        });
 
         _button.Click += async (_, _) =>
         {
