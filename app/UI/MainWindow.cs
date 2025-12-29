@@ -1,8 +1,4 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
 using Flarial.Launcher.App;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;

@@ -22,7 +22,7 @@ public sealed class Catalog : IEnumerable<string>
 
     Catalog(VersionCatalog catalog) => _catalog = catalog;
 
-    public static async Task<Catalog> GetAsync() => new(await VersionCatalog.GetAsync());
+    public static async Task<Catalog> GetAsync() => new(await VersionCatalog.CreateAsync());
 
     public async Task<Uri> UriAsync(string version) => new(await _catalog[version].GetAsync());
 

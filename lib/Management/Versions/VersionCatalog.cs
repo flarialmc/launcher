@@ -7,27 +7,40 @@ using System.Collections;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Networking;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
 public sealed class VersionCatalog
 {
-    VersionCatalog(SortedSet<string> supported, SortedDictionary<string, VersionEntry> entries) => (_supported, _entries) = (supported, entries);
+    VersionCatalog(ConcurrentDictionary<string, VersionEntry?> entries) => _entries = entries;
 
+    [Obsolete("", true)]
     static readonly Comparer s_comparer = new();
+
     const string Uri = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
-    readonly SortedSet<string> _supported;
-    readonly SortedDictionary<string, VersionEntry> _entries;
+    readonly ConcurrentDictionary<string, VersionEntry?> _entries;
 
-    public string LatestSupportedVersion => _supported.First();
-   
-    public VersionEntry this[string version] => _entries[version];
-   
+    public string SupportedVersion => _entries.Keys.First();
+
+    public VersionEntry this[string version] => _entries[version] ?? throw new KeyNotFoundException();
+
     public IEnumerable<string> InstallableVersions => _entries.Keys;
-   
-    public bool IsSupported => _supported.Contains(Minecraft.PackageVersion);
 
+    public bool IsSupported => _entries.ContainsKey(Minecraft.PackageVersion);
+
+    static async Task<ConcurrentDictionary<string, VersionEntry?>> GetAsync()
+    {
+        ConcurrentDictionary<string, VersionEntry?> entires = [];
+
+        using StreamReader reader = new(await HttpService.GetAsync<Stream>(Uri));
+        string _; while ((_ = await reader.ReadLineAsync()) is { }) entires.TryAdd(_.Trim(), null);
+
+        return entires;
+    }
+
+    [Obsolete("", true)]
     static async Task<SortedSet<string>> SupportedAsync()
     {
         string @string;
@@ -39,22 +52,14 @@ public sealed class VersionCatalog
         return supported;
     }
 
-    public static async Task<VersionCatalog> GetAsync()
+    public static async Task<VersionCatalog> CreateAsync() => await Task.Run(async () =>
     {
-        var supported = await SupportedAsync();
+        var entries = await GetAsync();
+        await Task.WhenAll(UWPVersionEntry.GetAsync(entries), GDKVersionEntry.GetAsync(entries));
+        return new VersionCatalog(entries);
+    });
 
-        var tasks = new Task<Dictionary<string, VersionEntry>>[2];
-        tasks[0] = UWPVersionEntry.GetAsync(supported);
-        tasks[1] = GDKVersionEntry.GetAsync(supported);
-        await Task.WhenAll(tasks);
-
-        SortedDictionary<string, VersionEntry> entries = new(s_comparer);
-        foreach (var item in await tasks[0]) entries.Add(item.Key, item.Value);
-        foreach (var item in await tasks[1]) entries.Add(item.Key, item.Value);
-
-        return new(supported, entries);
-    }
-
+    [Obsolete("", true)]
     sealed class Comparer : IComparer<string>
     {
         public int Compare(string x, string y) => new Version(y).CompareTo(new Version(x));

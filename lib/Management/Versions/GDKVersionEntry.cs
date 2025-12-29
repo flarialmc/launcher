@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -19,28 +20,16 @@ sealed class GDKVersionEntry : VersionEntry
 
     GDKVersionEntry(string[] urls) : base() => _urls = urls;
 
-    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(SortedSet<string> supported) => await Task.Run(async () =>
+    internal static async Task GetAsync(ConcurrentDictionary<string, VersionEntry?> entries) => await Task.Run(async () =>
     {
-        Dictionary<string, VersionEntry> entries = [];
-        Dictionary<string, Dictionary<string, string[]>> collection;
+        using var stream = await HttpService.GetAsync<Stream>(PackagesUri);
+        var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(stream);
 
-        using (var stream = await HttpService.GetAsync<Stream>(PackagesUri))
+        foreach (var item in items["release"])
         {
-            var @object = s_serializer.ReadObject(stream);
-            collection = (Dictionary<string, Dictionary<string, string[]>>)@object;
+            var key = item.Key.Substring(0, item.Key.LastIndexOf('.'));
+            entries.TryUpdate(key, new GDKVersionEntry(item.Value), null);
         }
-
-        foreach (var item in collection["release"])
-        {
-            var version = item.Key;
-            var index = version.LastIndexOf('.');
-
-            version = version.Substring(0, index);
-            if (!supported.Contains(version)) continue;
-            entries.Add(version, new GDKVersionEntry(item.Value));
-        }
-
-        return entries;
     });
 
     internal override async Task<string> GetAsync() => _urls[0];

@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Flarial.Launcher.App;
 using Flarial.Launcher.Services.Management;
 using Flarial.Launcher.Services.Management.Versions;
@@ -67,7 +69,7 @@ sealed class MainWindowContent : NavigationView
             }
         };
 
-        Application.Current.MainWindow.ContentRendered += async (_, _) =>
+        Dispatcher.InvokeAsync(async () =>
         {
             if (!await HttpService.IsAvailableAsync() &&
                 !await MessageDialog.ShowAsync(MessageDialogContent._connectionFailure))
@@ -80,24 +82,21 @@ sealed class MainWindowContent : NavigationView
                 return;
             }
 
-            var task1 = Sponsorship.GetImageAsync();
-            var task2 = VersionCatalog.GetAsync();
+            var task1 = VersionCatalog.CreateAsync();
+            var task2 = Sponsorship.GetAsync();
             await Task.WhenAll(task1, task2);
 
-            var banner = await task1;
-            var catalog = await task2;
-
-            _versionsPage = new(catalog);
-            _homePage = new(configuration, catalog, banner);
+            var catalog = await task1; _versionsPage = new(catalog);
+            _homePage = new(configuration, catalog, await task2);
 
             foreach (var version in catalog.InstallableVersions)
             {
                 _versionsPage._listBox.Items.Add(version);
-                await System.Windows.Threading.Dispatcher.Yield();
+                await Dispatcher.Yield();
             }
 
             _versionsPage._listBox.SelectedIndex = 0;
             Content = _homePage; IsEnabled = true;
-        };
+        }, DispatcherPriority.Send);
     }
 }

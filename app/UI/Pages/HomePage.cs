@@ -63,15 +63,12 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    internal HomePage(Configuration configuration, VersionCatalog catalog, Image? banner)
+    internal HomePage(Configuration configuration, VersionCatalog catalog, Image? sponsorship)
     {
         Children.Add(_logo);
         Children.Add(_progressBar);
         Children.Add(_textBlock);
         Children.Add(_button);
-
-        if (banner is { })
-            Children.Add(banner);
 
         Children.Add(new HyperlinkButton
         {
@@ -84,7 +81,6 @@ If you need help, join our Discord.";
             Margin = new(12, 0, 0, 12)
         });
 
-
         Children.Add(new TextBlock
         {
             Text = ApplicationManifest.Version,
@@ -92,6 +88,8 @@ If you need help, join our Discord.";
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new(0, 0, 12, 12)
         });
+
+        if (sponsorship is {}) Children.Add(sponsorship);
 
         _button.Click += async (_, _) =>
         {
@@ -122,7 +120,7 @@ If you need help, join our Discord.";
 
                 if (!custom && !beta && !catalog.IsSupported)
                 {
-                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, catalog.LatestSupportedVersion));
+                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, catalog.SupportedVersion));
                     return;
                 }
 

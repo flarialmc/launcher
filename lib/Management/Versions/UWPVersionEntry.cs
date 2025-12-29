@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
@@ -38,31 +39,18 @@ sealed class UWPVersionEntry : VersionEntry
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task<Dictionary<string, VersionEntry>> GetAsync(SortedSet<string> supported) => await Task.Run(async () =>
+    internal static async Task GetAsync(ConcurrentDictionary<string, VersionEntry?> entries)
     {
-        string[][] collection;
-        Dictionary<string, VersionEntry> entries = [];
+        using var stream = await HttpService.GetAsync<Stream>(PackagesUri);
+        var items = (string[][])s_serializer.ReadObject(stream);
 
-        using (var stream = await HttpService.GetAsync<Stream>(PackagesUri))
-        {
-            var @object = s_serializer.ReadObject(stream);
-            collection = (string[][])@object;
-        }
-
-        foreach (var item in collection)
+        foreach (var item in items)
         {
             if (item[2] != "0") continue;
-
-            var version = item[0];
-            var index = version.LastIndexOf('.');
-
-            version = version.Substring(0, index);
-            if (!supported.Contains(version)) continue;
-            entries.Add(version, new UWPVersionEntry(item[1]));
+            var key = item[0].Substring(0, item[0].LastIndexOf('.'));
+            entries.TryUpdate(key, new UWPVersionEntry(item[1]), null);
         }
-
-        return entries;
-    });
+    }
 
     internal override async Task<string> GetAsync() => await Task.Run(async () =>
     {
