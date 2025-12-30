@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <TargetFramework>net481</TargetFramework>
 
     <Nullable>enable</Nullable>

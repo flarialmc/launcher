@@ -30,12 +30,13 @@ sealed class MainWindowContent : NavigationView
         PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
-        Content = new ProgressRing()
+        Content = new ModernWpf.Controls.ProgressBar()
         {
-            Width = 50,
-            Height = 50,
-            IsActive = true,
-            Foreground = new SolidColorBrush(Colors.White)
+            Width = ApplicationManifest.Icon.Width * 2,
+            Foreground = new SolidColorBrush(Colors.White),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            IsIndeterminate = true
         };
 
         MenuItems.Add(new NavigationViewItem

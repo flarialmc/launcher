@@ -10,6 +10,8 @@ using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using System.Windows.Threading;
 using System.Linq;
+using Windows.ApplicationModel;
+using System;
 
 namespace Flarial.Launcher.UI.Pages;
 
@@ -34,7 +36,7 @@ sealed class HomePage : Grid
         Visibility = Visibility.Hidden
     };
 
-    readonly TextBlock _textBlock = new()
+    readonly TextBlock _status = new()
     {
         Text = "Preparing...",
         VerticalAlignment = VerticalAlignment.Center,
@@ -52,6 +54,14 @@ sealed class HomePage : Grid
         Margin = new(0, 120, 0, 0)
     };
 
+    readonly TextBlock _version = new()
+    {
+        Text = "0.0.0",
+        VerticalAlignment = VerticalAlignment.Bottom,
+        HorizontalAlignment = HorizontalAlignment.Left,
+        Margin = new(12, 0, 0, 12)
+    };
+
     sealed class UnsupportedVersionDetected(string installed, string supported) : MessageDialogContent
     {
         public override string Title => "⚠️ Unsupported Version Detected";
@@ -64,37 +74,53 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
+    readonly PackageCatalog _packageCatalog = PackageCatalog.OpenForCurrentUser();
+    void PackageStatusChanged(VersionCatalog catalog) => Dispatcher.Invoke(() =>
+    {
+        try { _version.Text = $"{(catalog.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}"; }
+        catch { _version.Text = "0.0.0"; }
+    }, DispatcherPriority.Send);
+
     internal HomePage(Configuration configuration, VersionCatalog catalog, Task<Image?> sponsorship)
     {
         Children.Add(_logo);
         Children.Add(_progressBar);
-        Children.Add(_textBlock);
+        Children.Add(_status);
         Children.Add(_button);
-
-        Children.Add(new HyperlinkButton
-        {
-            Foreground = new SolidColorBrush(Colors.White),
-            Content = "Discord",
-            NavigateUri = new("https://flarial.xyz/discord"),
-            Padding = new(),
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Left,
-            Margin = new(12, 0, 0, 12)
-        });
-
+        Children.Add(_version);
         Children.Add(new TextBlock
         {
-            Text = $"v{ApplicationManifest.Version}",
+            Text = ApplicationManifest.Version,
             VerticalAlignment = VerticalAlignment.Bottom,
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new(0, 0, 12, 12)
         });
 
-        Dispatcher.InvokeAsync(async () =>
+        PackageStatusChanged(catalog);
+
+        _packageCatalog.PackageUpdating += (sender, args) =>
+        {
+            if (args.IsComplete)
+                PackageStatusChanged(catalog);
+        };
+
+        _packageCatalog.PackageInstalling += (sender, args) =>
+        {
+            if (args.IsComplete)
+                PackageStatusChanged(catalog);
+        };
+
+        _packageCatalog.PackageUninstalling += (sender, args) =>
+        {
+            if (args.IsComplete)
+                PackageStatusChanged(catalog);
+        };
+
+        Dispatcher.Invoke(async () =>
         {
             var image = await sponsorship;
             if (image is { }) Children.Add(image);
-        });
+        }, DispatcherPriority.Send);
 
         _button.Click += async (_, _) =>
         {
@@ -105,7 +131,7 @@ If you need help, join our Discord.";
                 _progressBar.IsIndeterminate = true;
                 _progressBar.Visibility = Visibility.Visible;
 
-                _textBlock.Visibility = Visibility.Visible;
+                _status.Visibility = Visibility.Visible;
 
                 if (!Minecraft.IsInstalled)
                 {
@@ -145,7 +171,7 @@ If you need help, join our Discord.";
                         return;
                     }
 
-                    _textBlock.Text = "Launching...";
+                    _status.Text = "Launching...";
 
                     if (await Task.Run(() => Injector.Launch(configuration.WaitForInitialization, library)) is null)
                     {
@@ -156,12 +182,12 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                _textBlock.Text = "Verifying...";
+                _status.Text = "Verifying...";
 
                 if (!await client.DownloadAsync(_ => Dispatcher.Invoke(() =>
                 {
                     if (_progressBar.Value == _) return;
-                    _textBlock.Text = "Downloading...";
+                    _status.Text = "Downloading...";
 
                     _progressBar.Value = _;
                     _progressBar.IsIndeterminate = false;
@@ -171,7 +197,7 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                _textBlock.Text = "Launching...";
+                _status.Text = "Launching...";
                 _progressBar.IsIndeterminate = true;
 
                 if (beta && await MessageDialog.ShowAsync(MessageDialogContent._betaDllEnabled))
@@ -188,8 +214,8 @@ If you need help, join our Discord.";
                 _progressBar.IsIndeterminate = false;
                 _progressBar.Visibility = Visibility.Hidden;
 
-                _textBlock.Text = "Preparing...";
-                _textBlock.Visibility = Visibility.Hidden;
+                _status.Text = "Preparing...";
+                _status.Visibility = Visibility.Hidden;
 
                 _button.Visibility = Visibility.Visible;
             }
