@@ -78,10 +78,7 @@ jobs:
 
       - name: Build
         run: |
-          ls
-          cd app
-          cat AssemblyVersion.cs
-      
+          cd app      
           msbuild -t:Restore Flarial.Launcher.csproj
           msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
