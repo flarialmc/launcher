@@ -35,7 +35,6 @@ sealed class NotInstalled : MessageDialogContent
     public override string Content => @"Minecraft: Bedrock Edition isn't installed.
 
 • Install Minecraft: Bedrock Edition via the Microsoft Store or Xbox App.
-• Ensure the installed version is supported by Flarial.
 
 If you need help, join our Discord.";
 }
