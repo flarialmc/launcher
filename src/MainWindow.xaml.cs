@@ -226,7 +226,7 @@ If you need help, join our Discord.", ("Exit", true), ("Continue", false))) { Cl
 • Updating the launcher provides new bug fixes & features.
 • Newer versions of the client & game might require a launcher update.
 
-If you need help, join our Discord.", ("Update", true), ("Later", false)))
+If you need help, join our Discord.", ("Update", true)))
         {
             updateTextEnabled = true;
 
