@@ -9,6 +9,7 @@ using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using System.Windows.Threading;
+using System.Linq;
 
 namespace Flarial.Launcher.UI.Pages;
 
@@ -83,7 +84,7 @@ If you need help, join our Discord.";
 
         Children.Add(new TextBlock
         {
-            Text = ApplicationManifest.Version,
+            Text = $"v{ApplicationManifest.Version}",
             VerticalAlignment = VerticalAlignment.Bottom,
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new(0, 0, 12, 12)
@@ -124,7 +125,7 @@ If you need help, join our Discord.";
 
                 if (!custom && !beta && !catalog.IsSupported)
                 {
-                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, catalog.SupportedVersion));
+                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, catalog.First().Key));
                     return;
                 }
 
@@ -164,7 +165,7 @@ If you need help, join our Discord.";
 
                     _progressBar.Value = _;
                     _progressBar.IsIndeterminate = false;
-                })))
+                }, DispatcherPriority.Send)))
                 {
                     await MessageDialog.ShowAsync(MessageDialogContent._clientUpdateFailure);
                     return;

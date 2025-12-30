@@ -15,12 +15,13 @@ namespace Flarial.Launcher.UI;
 sealed class MainWindowContent : NavigationView
 {
     HomePage? _homePage = null;
-    VersionsPage? _versionsPage = null;
+    readonly VersionsPage? _versionsPage = null;
     readonly SettingsPage _settingsPage;
 
     internal MainWindowContent(Configuration configuration)
     {
         _settingsPage = new(configuration);
+        _versionsPage = new();
 
         IsEnabled = false;
         IsPaneOpen = false;
@@ -69,7 +70,7 @@ sealed class MainWindowContent : NavigationView
             }
         };
 
-        Dispatcher.InvokeAsync(async () =>
+        Dispatcher.Invoke(async () =>
         {
             if (!await HttpService.IsAvailableAsync() &&
                 !await MessageDialog.ShowAsync(MessageDialogContent._connectionFailure))
@@ -82,23 +83,18 @@ sealed class MainWindowContent : NavigationView
                 return;
             }
 
-            var task1 = VersionCatalog.CreateAsync();
-            var task2 = Sponsorship.GetAsync();
-            await Task.WhenAny(task1, task2);
+            var sponsorship = Sponsorship.GetAsync();
+            var catalog = VersionCatalog.CreateAsync();
+            _homePage = new(configuration, await catalog, sponsorship);
 
-            var catalog = await task1;
-            _versionsPage = new(catalog);
-            _homePage = new(configuration, catalog, task2);
-
-            foreach (var version in catalog.InstallableVersions)
+            foreach (var entry in await catalog)
             {
-                _versionsPage._listBox.Items.Add(version);
-                await Dispatcher.Yield();
+                await Dispatcher.Yield(); if (entry.Value is null) continue;
+                _versionsPage._listBox.Items.Add(new ListBoxItem { Content = entry.Key, Tag = entry.Value });
             }
+
             _versionsPage._listBox.SelectedIndex = 0;
-            
-            Content = _homePage;
-            IsEnabled = true;
+            Content = _homePage; IsEnabled = true;
         }, DispatcherPriority.Send);
     }
 }

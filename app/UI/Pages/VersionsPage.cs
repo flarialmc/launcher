@@ -3,10 +3,9 @@ using System.Windows.Controls;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Management.Versions;
 using Flarial.Launcher.UI.Controls;
-using ModernWpf.Controls;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
 using static ModernWpf.Controls.Symbol;
+using System.Windows.Threading;
 
 namespace Flarial.Launcher.UI.Pages;
 
@@ -27,7 +26,7 @@ sealed class VersionsPage : Grid
 
     InstallRequest? _request = null;
 
-    internal VersionsPage(VersionCatalog catalog)
+    internal VersionsPage()
     {
         Margin = new(12);
 
@@ -63,14 +62,15 @@ sealed class VersionsPage : Grid
                 _control._button.Visibility = Visibility.Hidden;
 
                 _control._progressBar.Visibility = Visibility.Visible;
-                _control._progressBar.IsIndeterminate = true;
+                _control._progressBar.IsIndeterminate = false;
 
                 _control._icon.Visibility = Visibility.Visible;
-                _control._icon.Symbol = Refresh;
+                _control._icon.Symbol = Download;
 
                 try
                 {
-                    var entry = catalog[(string)_listBox.SelectedItem];
+                    var item = (ListBoxItem)_listBox.SelectedItem;
+                    var entry = (VersionEntry)item.Tag;
 
                     _request = await entry.InstallAsync((state, value) => Dispatcher.Invoke(() =>
                     {
@@ -83,8 +83,7 @@ sealed class VersionsPage : Grid
                         }
 
                         _control._progressBar.Value = value;
-                        _control._progressBar.IsIndeterminate = false;
-                    }));
+                    }, DispatcherPriority.Send));
 
                     await _request;
                 }
@@ -93,17 +92,17 @@ sealed class VersionsPage : Grid
             }
             finally
             {
-                _control._progressBar.IsIndeterminate = false;
+                _control._progressBar.Value = 0;
                 _control._progressBar.Visibility = Visibility.Hidden;
 
                 _control._icon.Visibility = Visibility.Collapsed;
-                _control._icon.Symbol = Refresh;
+                _control._icon.Symbol = Download;
 
                 _control._button.Visibility = Visibility.Visible;
                 IsEnabled = true;
             }
         };
 
-        Application.Current.MainWindow.Closing += (sender, args) => { args.Cancel = _request?.State is Installing; };
+        Application.Current.MainWindow.Closing += (sender, args) => args.Cancel = _request?.State is Installing;
     }
 }

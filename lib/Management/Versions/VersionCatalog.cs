@@ -11,22 +11,13 @@ using System.Collections.Concurrent;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-public sealed class VersionCatalog
+public sealed class VersionCatalog : IEnumerable<KeyValuePair<string, VersionEntry?>>
 {
     VersionCatalog(ConcurrentDictionary<string, VersionEntry?> entries) => _entries = entries;
-
-    [Obsolete("", true)]
-    static readonly Comparer s_comparer = new();
 
     const string Uri = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
     readonly ConcurrentDictionary<string, VersionEntry?> _entries;
-
-    public string SupportedVersion => _entries.Keys.First();
-
-    public VersionEntry this[string version] => _entries[version] ?? throw new KeyNotFoundException();
-
-    public IEnumerable<string> InstallableVersions => _entries.Keys;
 
     public bool IsSupported => _entries.ContainsKey(Minecraft.PackageVersion);
 
@@ -40,6 +31,17 @@ public sealed class VersionCatalog
         return entires;
     }
 
+    public static async Task<VersionCatalog> CreateAsync() => await Task.Run(async () =>
+    {
+        var entries = await GetAsync();
+        await Task.WhenAll(UWPVersionEntry.GetAsync(entries), GDKVersionEntry.GetAsync(entries));
+        return new VersionCatalog(entries);
+    });
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public IEnumerator<KeyValuePair<string, VersionEntry?>> GetEnumerator() => _entries.GetEnumerator();
+
     [Obsolete("", true)]
     static async Task<SortedSet<string>> SupportedAsync()
     {
@@ -52,12 +54,17 @@ public sealed class VersionCatalog
         return supported;
     }
 
-    public static async Task<VersionCatalog> CreateAsync() => await Task.Run(async () =>
-    {
-        var entries = await GetAsync();
-        await Task.WhenAll(UWPVersionEntry.GetAsync(entries), GDKVersionEntry.GetAsync(entries));
-        return new VersionCatalog(entries);
-    });
+    [Obsolete]
+    public VersionEntry this[string version] => _entries[version] ?? throw new KeyNotFoundException();
+
+    [Obsolete]
+    public IEnumerable<string> InstallableVersions => _entries.Keys;
+
+    [Obsolete]
+    public string SupportedVersion => _entries.Keys.First();
+
+    [Obsolete("", true)]
+    static readonly Comparer s_comparer = new();
 
     [Obsolete("", true)]
     sealed class Comparer : IComparer<string>

@@ -6,15 +6,13 @@ using Flarial.Launcher.Services.Networking;
 using Windows.Management.Deployment;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static System.Threading.Tasks.TaskContinuationOptions;
-using static Windows.Foundation.AsyncStatus;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Windows.Foundation;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
 public sealed class InstallRequest
 {
-    const DeploymentOptions Options = ForceApplicationShutdown | ForceUpdateFromAnyVersion;
-
     static readonly PackageManager s_manager = new();
     static readonly string s_path = Path.GetTempPath();
 
@@ -24,22 +22,20 @@ public sealed class InstallRequest
     static async Task InstallAsync(InstallRequest request, string uri, string path, Action<AppInstallState, int> action)
     {
         request.State = AppInstallState.Downloading;
-        await HttpService.DownloadAsync(uri, path, (_) => action(request.State, _));
-
-        TaskCompletionSource<bool> source = new();
-        var operation = s_manager.AddPackageAsync(new(path), null, Options);
+        await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _));
 
         request.State = AppInstallState.Installing;
-        operation.Progress += (sender, args) => action(request.State, (int)args.percentage);
+        var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
+        TaskCompletionSource<bool> source = new();
+        operation.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
         operation.Completed += (sender, args) =>
         {
-            if (sender.Status != Error) source.TrySetResult(true);
+            if (sender.Status != AsyncStatus.Error) source.TrySetResult(true);
             else source.TrySetException(sender.ErrorCode);
         };
 
         await source.Task;
-        request.State = AppInstallState.Completed;
     }
 
     internal InstallRequest(string uri, Action<AppInstallState, int> action)
