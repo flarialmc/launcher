@@ -11,21 +11,36 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _connectionFailure = new ConnectionFailure();
 
-    internal static readonly  MessageDialogContent _notInstalled = new NotInstalled();
+    internal static readonly MessageDialogContent _notInstalled = new NotInstalled();
 
-    internal static readonly  MessageDialogContent _invalidCustomDll = new InvalidCustomDll();
+    internal static readonly MessageDialogContent _invalidCustomDll = new InvalidCustomDll();
 
-    internal static readonly  MessageDialogContent _launchFailure = new LaunchFailure();
+    internal static readonly MessageDialogContent _launchFailure = new LaunchFailure();
 
-    internal static readonly  MessageDialogContent _clientUpdateFailure = new LauncherUpdateAvailable();
+    internal static readonly MessageDialogContent _clientUpdateFailure = new LauncherUpdateAvailable();
 
-    internal static readonly  MessageDialogContent _launcherUpdateAvailable = new LauncherUpdateAvailable();
+    internal static readonly MessageDialogContent _launcherUpdateAvailable = new LauncherUpdateAvailable();
 
-    internal static readonly  MessageDialogContent _betaDllEnabled = new BetaDllEnabled();
+    internal static readonly MessageDialogContent _betaDllEnabled = new BetaDllEnabled();
 
-    internal static readonly  MessageDialogContent _unpackagedInstallationDetected = new UnpackagedInstallationDetected();
+    internal static readonly MessageDialogContent _unpackagedInstallationDetected = new UnpackagedInstallationDetected();
 
-    internal static readonly  MessageDialogContent _unsignedInstallationDetected = new UnsignedInstallationDetected();
+    internal static readonly MessageDialogContent _unsignedInstallationDetected = new UnsignedInstallationDetected();
+
+    internal static readonly MessageDialogContent _folderNotFound = new FolderNotFound();
+
+    sealed class FolderNotFound : MessageDialogContent
+    {
+        public override string Title => "⚠️ Folder Not Found";
+
+        public override string Content => @"The client's folder cannot be found.
+
+• Try launching the client at least once to generate its folder.
+
+If you need help, join our Discord.";
+
+        public override string Primary => "Back";
+    }
 
     sealed class NotInstalled : MessageDialogContent
     {

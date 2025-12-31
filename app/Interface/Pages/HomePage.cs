@@ -161,7 +161,7 @@ If you need help, join our Discord.";
 
     void InvokeOnDownloadProgress(int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnDownloadProgress, value);
 
-    async void OnDownloadProgress(int value)
+    void OnDownloadProgress(int value)
     {
         if (_progressBar.Value == value) return;
         _statusTextBlock.Text = "Downloading...";
@@ -233,6 +233,9 @@ If you need help, join our Discord.";
                 return;
             }
 
+            if (beta && await MessageDialog.ShowAsync(_betaDllEnabled))
+                return;
+
             _statusTextBlock.Text = "Verifying...";
 
             if (!await client.DownloadAsync(InvokeOnDownloadProgress))
@@ -243,9 +246,6 @@ If you need help, join our Discord.";
 
             _statusTextBlock.Text = "Launching...";
             _progressBar.IsIndeterminate = true;
-
-            if (beta && await MessageDialog.ShowAsync(_betaDllEnabled))
-                return;
 
             if (!await Task.Run(() => client.Launch(initialized)))
             {

@@ -2,10 +2,11 @@ using System.Windows;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Interface.Controls;
 using ModernWpf.Controls;
+using System.Windows.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 
-sealed class SettingsPage : SimpleStackPanel
+sealed class SettingsPage : Grid
 {
     readonly RadioButtons _dllBuild = new()
     {
@@ -36,7 +37,6 @@ sealed class SettingsPage : SimpleStackPanel
 
     internal SettingsPage(Configuration configuration)
     {
-        Spacing = 12;
         Margin = new(12);
 
         _customDllPath = new(configuration);
@@ -44,11 +44,6 @@ sealed class SettingsPage : SimpleStackPanel
         _dllBuild.Items.Add("Use the release DLL of the client which is stable.");
         _dllBuild.Items.Add("Use the beta DLL of the client which is unstable.");
         _dllBuild.Items.Add("Specify your own custom DLL to be used with the game.");
-
-        Children.Add(_dllBuild);
-        Children.Add(_customDllPath);
-        Children.Add(_waitForInitialization);
-        Children.Add(_hardwareAcceleration);
 
         _dllBuild.SelectionChanged += (_, _) =>
         {
@@ -63,5 +58,23 @@ sealed class SettingsPage : SimpleStackPanel
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
         _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
         _waitForInitialization.IsOn = configuration.WaitForInitialization;
+
+        SimpleStackPanel panel = new() { Spacing = 12 };
+        panel.Children.Add(_dllBuild);
+        panel.Children.Add(_customDllPath);
+        panel.Children.Add(_waitForInitialization);
+        panel.Children.Add(_hardwareAcceleration);
+
+        RowDefinitions.Add(new());
+        RowDefinitions.Add(new() { Height = GridLength.Auto });
+
+        SetColumn(panel, 0);
+        SetRow(panel, 0);
+        Children.Add(panel);
+
+        FolderButtonsControl control = new();
+        SetColumn(control, 0);
+        SetRow(control, 1);
+        Children.Add(control);
     }
 }
