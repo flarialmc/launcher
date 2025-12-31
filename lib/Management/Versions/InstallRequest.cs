@@ -9,7 +9,6 @@ using static System.Threading.Tasks.TaskContinuationOptions;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 using static Windows.Win32.PInvoke;
-using System.Threading;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
@@ -23,11 +22,9 @@ public sealed class InstallRequest
     readonly Action<AppInstallState, int> _action;
     readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    async Task CreateRequestAsync()
+    async Task CreateAsync()
     {
         await HttpService.DownloadAsync(_uri, _path, OnDownloadProgress);
-
-        State = AppInstallState.Installing;
         var item = s_manager.AddPackageAsync(new(_path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
         unsafe
@@ -45,14 +42,9 @@ public sealed class InstallRequest
                 item.Completed += (_, _) => SetEvent(@event);
 
                 WaitForSingleObject(@event, INFINITE);
-                if (item.Status is AsyncStatus.Error)
-                    throw item.ErrorCode;
+                if (item.Status is AsyncStatus.Error) throw item.ErrorCode;
             }
-            finally
-            {
-                CloseHandle(@event);
-                item.Close();
-            }
+            finally { CloseHandle(@event); item.Close(); }
         }
     }
 
@@ -66,9 +58,10 @@ public sealed class InstallRequest
         _action(AppInstallState.Installing, (int)args.percentage);
     }
 
-    void CleanupRequest(Task task)
+    void Cleanup(Task task)
     {
-        try { File.Delete(_path); } finally { }
+        try { File.Delete(_path); }
+        catch { }
     }
 
     internal InstallRequest(string uri, Action<AppInstallState, int> action)
@@ -76,29 +69,9 @@ public sealed class InstallRequest
         _uri = uri;
         _action = action;
 
-        _task = Task.Run(CreateRequestAsync);
-        _task.ContinueWith(CleanupRequest, ExecuteSynchronously);
+        _task = Task.Run(CreateAsync);
+        _task.ContinueWith(Cleanup, ExecuteSynchronously);
     }
 
     public TaskAwaiter GetAwaiter() => _task.GetAwaiter();
-
-    public unsafe AppInstallState State
-    {
-        get
-        {
-            fixed (AppInstallState* _ = &field)
-            {
-                var value = Volatile.Read(ref *(int*)_);
-                return *(AppInstallState*)&value;
-            }
-        }
-
-        private set
-        {
-            fixed (AppInstallState* _ = &field)
-                Interlocked.Exchange(ref *(int*)_, *(int*)&value);
-        }
-    } = AppInstallState.Downloading;
-
-    ~InstallRequest() { try { File.Delete(_path); } catch { } }
 }

@@ -16,74 +16,86 @@ namespace Flarial.Launcher.Interface;
 sealed class MainWindowContent : NavigationView
 {
     HomePage? _homePage = null;
-    readonly VersionsPage _versionsPage = new();
+    readonly VersionsPage _versionsPage;
     readonly SettingsPage _settingsPage;
+
+    internal readonly NavigationViewItem _homePageItem = new()
+    {
+        Icon = new SymbolIcon(Symbol.Home),
+        Content = "Home",
+        Tag = Symbol.Home,
+        IsSelected = true
+    };
+
+    internal readonly NavigationViewItem _versionsPageItem = new()
+    {
+        Icon = new SymbolIcon(Symbol.BrowsePhotos),
+        Content = "Versions",
+        Tag = Symbol.BrowsePhotos,
+    };
+
+    internal readonly NavigationViewItem _settingsPageItem = new()
+    {
+        Icon = new SymbolIcon(Symbol.Setting),
+        Content = "Settings",
+        Tag = Symbol.Setting,
+    };
+
+    readonly ModernWpf.Controls.ProgressBar _progressBar = new()
+    {
+        Width = ApplicationManifest.Icon.Width * 2,
+        Foreground = new SolidColorBrush(Colors.White),
+        VerticalAlignment = VerticalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        IsIndeterminate = true
+    };
 
     internal MainWindowContent(Configuration configuration)
     {
-        _settingsPage = new(configuration);
-
-        IsEnabled = false;
+        IsPaneVisible = false;
         IsPaneOpen = false;
         IsSettingsVisible = false;
 
         PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
-        Content = new ModernWpf.Controls.ProgressBar()
-        {
-            Width = ApplicationManifest.Icon.Width * 2,
-            Foreground = new SolidColorBrush(Colors.White),
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            IsIndeterminate = true
-        };
+        Content = _progressBar;
 
-        MenuItems.Add(new NavigationViewItem
-        {
-            Icon = new SymbolIcon(Symbol.Home),
-            Content = "Home",
-            Tag = Symbol.Home,
-            IsSelected = true
-        });
-
-        MenuItems.Add(new NavigationViewItem
-        {
-            Icon = new SymbolIcon(Symbol.BrowsePhotos),
-            Content = "Versions",
-            Tag = Symbol.BrowsePhotos,
-        });
-
-        FooterMenuItems.Add(new NavigationViewItem
-        {
-            Icon = new SymbolIcon(Symbol.Setting),
-            Content = "Settings",
-            Tag = Symbol.Setting,
-        });
+        MenuItems.Add(_homePageItem);
+        MenuItems.Add(_versionsPageItem);
+        FooterMenuItems.Add(_settingsPageItem);
 
         ItemInvoked += (sender, args) =>
         {
             switch ((Symbol)args.InvokedItemContainer.Tag)
             {
-                case Symbol.Home:
-                    Content = _homePage;
-                    break;
-
-                case Symbol.BrowsePhotos:
-                    Content = _versionsPage;
-                    break;
-
-                case Symbol.Setting:
-                    Content = _settingsPage;
-                    break;
+                case Symbol.Home: Content = _homePage; break;
+                case Symbol.BrowsePhotos: Content = _versionsPage; break;
+                case Symbol.Setting: Content = _settingsPage; break;
             }
         };
+
+        _versionsPage = new(this);
+        _settingsPage = new(configuration);
 
         Dispatcher.Invoke(DispatcherPriority.Send, InitializeAsync, configuration);
     }
 
+    void InvokeOnDownloadProgress(int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnDownloadProgress, value);
+
+    void OnDownloadProgress(int value)
+    {
+        if (_progressBar.Value == value)
+            return;
+
+        _progressBar.Value = value;
+        _progressBar.IsIndeterminate = false;
+    }
+
     async void InitializeAsync(Configuration configuration)
     {
+        var sponsorship = Sponsorship.GetAsync();
+
         if (!await HttpService.IsAvailableAsync() &&
             !await MessageDialog.ShowAsync(_connectionFailure))
             Application.Current.Shutdown();
@@ -91,11 +103,10 @@ sealed class MainWindowContent : NavigationView
         if (await LauncherUpdater.CheckAsync() &&
             await MessageDialog.ShowAsync(_launcherUpdateAvailable))
         {
-            await LauncherUpdater.DownloadAsync(delegate { });
+            await LauncherUpdater.DownloadAsync(InvokeOnDownloadProgress);
             return;
         }
 
-        var sponsorship = Sponsorship.GetAsync();
         var catalog = VersionEntries.CreateAsync();
         _homePage = new(configuration, await catalog, sponsorship);
 
@@ -113,6 +124,6 @@ sealed class MainWindowContent : NavigationView
         _versionsPage._listBox.SelectedIndex = 0;
 
         Content = _homePage;
-        IsEnabled = true;
+        IsPaneVisible = true;
     }
 }

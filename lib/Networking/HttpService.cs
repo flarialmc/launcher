@@ -25,7 +25,11 @@ public class HttpService
 
     public static bool UseProxy { get; set; }
 
-    public static bool UseDnsOverHttps { get => HttpServiceHandler.UseDnsOverHttps; set => HttpServiceHandler.UseDnsOverHttps = value; }
+    public static bool UseDnsOverHttps
+    {
+        get => HttpServiceHandler.UseDnsOverHttps;
+        set => HttpServiceHandler.UseDnsOverHttps = value;
+    }
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri) => await HttpClient.GetAsync(uri);
 

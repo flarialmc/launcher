@@ -17,8 +17,8 @@ sealed class MainWindow : Window
         Width = 960; Height = 540;
         UseLayoutRounding = SnapsToDevicePixels = true;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        ResizeMode = ResizeMode.NoResize;
+        ResizeMode = ResizeMode.CanMinimize;
 
-        Content = new MainWindowContent(configuration) { IsEnabled = false };
+        Content = new MainWindowContent(configuration);
     }
 }

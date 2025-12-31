@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using static Flarial.Launcher.Interface.MessageDialogContent;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -28,9 +29,12 @@ sealed class VersionsPage : Grid
     };
 
     InstallRequest? _request = null;
+    readonly MainWindowContent _content;
 
-    internal VersionsPage()
+    internal VersionsPage(MainWindowContent content)
     {
+        _content = content;
+
         Margin = new(12);
 
         RowDefinitions.Add(new());
@@ -48,7 +52,14 @@ sealed class VersionsPage : Grid
         Application.Current.MainWindow.Closing += OnWindowClosing;
     }
 
-    void OnWindowClosing(object sender, CancelEventArgs args) => args.Cancel = _request?.State is Installing;
+    void OnWindowClosing(object sender, CancelEventArgs args)
+    {
+        if (args.Cancel = _request is { })
+        {
+            _content.Content = this;
+            _content._versionsPageItem.IsSelected = true;
+        }
+    }
 
     void InvokeOnInstallProgress(AppInstallState state, int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnInstallProgress, state, value);
 
@@ -81,13 +92,13 @@ sealed class VersionsPage : Grid
 
             if (!Minecraft.IsInstalled)
             {
-                await MessageDialog.ShowAsync(MessageDialogContent._notInstalled);
+                await MessageDialog.ShowAsync(_notInstalled);
                 return;
             }
 
             if (!Minecraft.IsPackaged)
             {
-                await MessageDialog.ShowAsync(MessageDialogContent._unpackagedInstallationDetected);
+                await MessageDialog.ShowAsync(_unpackagedInstallationDetected);
                 return;
             }
 
@@ -101,11 +112,8 @@ sealed class VersionsPage : Grid
 
             try
             {
-                var item = (ListBoxItem)_listBox.SelectedItem;
-                var entry = (VersionEntry)item.Tag;
-
-                _request = await entry.InstallAsync(InvokeOnInstallProgress);
-                await _request;
+                var entry = (VersionEntry)((ListBoxItem)_listBox.SelectedItem).Tag;
+                await (_request = await entry.InstallAsync(InvokeOnInstallProgress));
             }
             finally { _request = null; }
 
