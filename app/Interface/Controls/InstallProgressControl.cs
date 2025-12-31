@@ -2,7 +2,8 @@ using ModernWpf.Controls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-namespace Flarial.Launcher.UI.Controls;
+
+namespace Flarial.Launcher.Interface.Controls;
 
 sealed class InstallProgressControl : Grid
 {

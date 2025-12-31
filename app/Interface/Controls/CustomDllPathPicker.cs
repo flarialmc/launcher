@@ -5,7 +5,7 @@ using Flarial.Launcher.Management;
 using Microsoft.Win32;
 using ModernWpf.Controls;
 
-namespace Flarial.Launcher.UI.Controls;
+namespace Flarial.Launcher.Interface.Controls;
 
 sealed class CustomDllPathPicker : SimpleStackPanel
 {

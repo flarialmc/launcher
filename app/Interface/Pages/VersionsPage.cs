@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Management.Versions;
-using Flarial.Launcher.UI.Controls;
 using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
 using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
@@ -10,6 +9,7 @@ using System.ComponentModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using ModernWpf.Controls;
+using Flarial.Launcher.Interface.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 

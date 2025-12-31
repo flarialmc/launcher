@@ -8,7 +8,6 @@ using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
-using Flarial.Launcher.UI;
 using ModernWpf;
 using ModernWpf.Controls;
 using static System.IO.Directory;

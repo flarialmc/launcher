@@ -124,6 +124,8 @@ sealed class MainWindowContent : NavigationView
         _versionsPage._listBox.SelectedIndex = 0;
 
         Content = _homePage;
+        _progressBar.IsIndeterminate = false;
+
         IsPaneVisible = true;
     }
 }

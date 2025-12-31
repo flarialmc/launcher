@@ -1,6 +1,6 @@
 using System.Windows;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.UI.Controls;
+using Flarial.Launcher.Interface.Controls;
 using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
