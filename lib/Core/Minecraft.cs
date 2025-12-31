@@ -17,21 +17,26 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
+    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
     static readonly PackageManager s_manager = new();
-    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
     protected static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
+
     static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
 
-
     public bool IsRunning => Window is { };
+
     protected abstract string WindowClass { get; }
 
     protected abstract uint? Activate();
+
     public abstract uint? Launch(bool initialized);
 
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
+
     public static bool IsInstalled => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit

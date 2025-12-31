@@ -1,9 +1,9 @@
 using System.Windows;
-using Flarial.Launcher.App;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.UI.Controls;
 using ModernWpf.Controls;
 
-namespace Flarial.Launcher.UI.Pages;
+namespace Flarial.Launcher.Interface.Pages;
 
 sealed class SettingsPage : SimpleStackPanel
 {

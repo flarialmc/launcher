@@ -12,7 +12,7 @@ using System.Diagnostics;
 using Flarial.Launcher.Services.Networking;
 using System;
 
-namespace Flarial.Launcher.App;
+namespace Flarial.Launcher.Management;
 
 static class Sponsorship
 {

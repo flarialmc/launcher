@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ModernWpf.Controls;
 
-namespace Flarial.Launcher.UI;
+namespace Flarial.Launcher.Interface;
 
 static class MessageDialog
 {

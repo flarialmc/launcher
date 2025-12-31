@@ -8,6 +8,8 @@ using static Windows.Management.Deployment.DeploymentOptions;
 using static System.Threading.Tasks.TaskContinuationOptions;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
+using static Windows.Win32.PInvoke;
+using System.Threading;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
@@ -17,36 +19,86 @@ public sealed class InstallRequest
     static readonly string s_path = Path.GetTempPath();
 
     readonly Task _task;
+    readonly string _uri;
+    readonly Action<AppInstallState, int> _action;
     readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
 
-    static async Task InstallAsync(InstallRequest request, string uri, string path, Action<AppInstallState, int> action)
+    async Task CreateRequestAsync()
     {
-        request.State = AppInstallState.Downloading;
-        await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _));
+        await HttpService.DownloadAsync(_uri, _path, OnDownloadProgress);
 
-        request.State = AppInstallState.Installing;
-        var operation = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+        State = AppInstallState.Installing;
+        var item = s_manager.AddPackageAsync(new(_path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
-        TaskCompletionSource<bool> source = new();
-        operation.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
-        operation.Completed += (sender, args) =>
+        unsafe
         {
-            if (sender.Status != AsyncStatus.Error) source.TrySetResult(true);
-            else source.TrySetException(sender.ErrorCode);
-        };
+            /*
+                - Workaround this issue: https://github.com/microsoft/CsWinRT/issues/1720
+                - We wrap the asynchronous operation as a synchronous operation & proxy it to 'Task.Run()'.
+            */
 
-        await source.Task;
+            var @event = CreateEvent(null, true, false, null);
+
+            try
+            {
+                item.Progress += OnInstallProgress;
+                item.Completed += (_, _) => SetEvent(@event);
+
+                WaitForSingleObject(@event, INFINITE);
+                if (item.Status is AsyncStatus.Error)
+                    throw item.ErrorCode;
+            }
+            finally
+            {
+                CloseHandle(@event);
+                item.Close();
+            }
+        }
+    }
+
+    void OnDownloadProgress(int value)
+    {
+        _action(AppInstallState.Downloading, value);
+    }
+
+    void OnInstallProgress(IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> sender, DeploymentProgress args)
+    {
+        _action(AppInstallState.Installing, (int)args.percentage);
+    }
+
+    void CleanupRequest(Task task)
+    {
+        try { File.Delete(_path); } finally { }
     }
 
     internal InstallRequest(string uri, Action<AppInstallState, int> action)
     {
-        _task = InstallAsync(this, uri, _path, action);
-        _task.ContinueWith(_ => { try { File.Delete(_path); } catch { } }, ExecuteSynchronously);
+        _uri = uri;
+        _action = action;
+
+        _task = Task.Run(CreateRequestAsync);
+        _task.ContinueWith(CleanupRequest, ExecuteSynchronously);
     }
 
     public TaskAwaiter GetAwaiter() => _task.GetAwaiter();
 
-    public AppInstallState State { get; private set; } = AppInstallState.Pending;
+    public unsafe AppInstallState State
+    {
+        get
+        {
+            fixed (AppInstallState* _ = &field)
+            {
+                var value = Volatile.Read(ref *(int*)_);
+                return *(AppInstallState*)&value;
+            }
+        }
+
+        private set
+        {
+            fixed (AppInstallState* _ = &field)
+                Interlocked.Exchange(ref *(int*)_, *(int*)&value);
+        }
+    } = AppInstallState.Downloading;
 
     ~InstallRequest() { try { File.Delete(_path); } catch { } }
 }

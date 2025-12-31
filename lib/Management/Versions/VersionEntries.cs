@@ -11,9 +11,9 @@ using System.Collections.Concurrent;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-public sealed class VersionCatalog : IEnumerable<KeyValuePair<string, VersionEntry?>>
+public sealed class VersionEntries : IEnumerable<KeyValuePair<string, VersionEntry?>>
 {
-    VersionCatalog(ConcurrentDictionary<string, VersionEntry?> entries) => _entries = entries;
+    VersionEntries(ConcurrentDictionary<string, VersionEntry?> entries) => _entries = entries;
 
     const string Uri = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
@@ -31,11 +31,11 @@ public sealed class VersionCatalog : IEnumerable<KeyValuePair<string, VersionEnt
         return entires;
     }
 
-    public static async Task<VersionCatalog> CreateAsync() => await Task.Run(async () =>
+    public static async Task<VersionEntries> CreateAsync() => await Task.Run(static async () =>
     {
         var entries = await GetAsync();
         await Task.WhenAll(UWPVersionEntry.GetAsync(entries), GDKVersionEntry.GetAsync(entries));
-        return new VersionCatalog(entries);
+        return new VersionEntries(entries);
     });
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

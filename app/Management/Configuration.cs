@@ -6,7 +6,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xml;
 
-namespace Flarial.Launcher.App;
+namespace Flarial.Launcher.Management;
 
 enum DllBuild { Release, Beta, Custom }
 

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
-using Flarial.Launcher.App;
+using Flarial.Launcher.Interface;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Flarial.Launcher.UI;
 using ModernWpf;
 using ModernWpf.Controls;
+using static System.IO.Directory;
+using static System.Environment;
 using static System.Environment.SpecialFolder;
 
 namespace Flarial.Launcher;
@@ -30,7 +33,7 @@ Exception: {1}
 
     static Program()
     {
-        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+        AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
             var version = ApplicationManifest.Version;
 
@@ -49,19 +52,23 @@ Exception: {1}
             Environment.Exit(1);
         };
 
-        AppDomain.CurrentDomain.ProcessExit += (_, _) => { GC.Collect(); GC.WaitForPendingFinalizers(); };
+        AppDomain.CurrentDomain.ProcessExit += static (_, _) =>
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        };
     }
 
     [STAThread]
     static void Main(string[] arguments)
     {
-        using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var value))
+        using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created))
         {
-            if (!value) return;
+            if (!created) return;
 
-            var path = Environment.GetFolderPath(LocalApplicationData);
+            var path = GetFolderPath(LocalApplicationData);
             path = Path.Combine(path, @"Flarial\Launcher");
-            Environment.CurrentDirectory = Directory.CreateDirectory(path).FullName;
+            CurrentDirectory = CreateDirectory(path).FullName;
 
             var configuration = Configuration.Get();
 

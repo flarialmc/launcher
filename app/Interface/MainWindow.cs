@@ -1,9 +1,9 @@
 using System.Windows;
-using Flarial.Launcher.App;
+using Flarial.Launcher.Management;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
 
-namespace Flarial.Launcher.UI;
+namespace Flarial.Launcher.Interface;
 
 sealed class MainWindow : Window
 {
