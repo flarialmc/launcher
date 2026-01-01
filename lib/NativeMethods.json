@@ -3,9 +3,6 @@
     "useSafeHandles": false,
     "wideCharOnly": true,
     "emitSingleFile": true,
-    "comInterop": {
-        "useIntPtrForComOutPointers": true
-    },
     "friendlyOverloads": {
         "enabled": false
     }
