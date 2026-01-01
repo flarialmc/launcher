@@ -59,7 +59,7 @@ sealed class HomePage : Grid
 
     readonly TextBlock _packageVersionTextBlock = new()
     {
-        Text = "0.0.0",
+        Text = "❌ 0.0.0",
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Left,
         Margin = new(12, 0, 0, 12)
@@ -85,8 +85,7 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    readonly VersionEntries _entries;
-    readonly Configuration _configuration;
+
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
     internal HomePage(Configuration configuration, VersionEntries entries, Task<Image?> sponsorship)
@@ -98,168 +97,122 @@ If you need help, join our Discord.";
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
 
-        _entries = entries;
-        _configuration = configuration;
-
-        UpdatePackageVersionText();
-        _catalog.PackageUpdating += OnPackageUpdating;
-        _catalog.PackageInstalling += OnPackageInstalling;
-        _catalog.PackageUninstalling += OnPackageUninstalling;
-
-        _launchButton.Click += OnLaunchButtonClick;
-
-        Dispatcher.Invoke(DispatcherPriority.Send, InitializeAsync, sponsorship);
-    }
-
-    async void InitializeAsync(Task<Image?> sponsorship)
-    {
-        var image = await sponsorship;
-        if (image is { }) Children.Add(image);
-    }
-
-    void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
-    {
-        if (args.IsComplete)
-            HasPackageStatusChanged(args.Package);
-    }
-
-    void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
-    {
-        if (args.IsComplete)
-            HasPackageStatusChanged(args.TargetPackage);
-    }
-
-    void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
-    {
-        if (args.IsComplete)
-            HasPackageStatusChanged(args.Package);
-    }
-
-    void HasPackageStatusChanged(Package package)
-    {
-        if (package.Id.FamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
-            Dispatcher.Invoke(DispatcherPriority.Send, UpdatePackageVersionText);
-    }
-
-    void UpdatePackageVersionText()
-    {
-        try
+        void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
         {
-            var supported = _entries.IsSupported ? "✔️" : "❌";
-            var packageVersion = Minecraft.PackageVersion;
+            if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase)) return;
+            try { _packageVersionTextBlock.Text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}"; }
+            catch { _packageVersionTextBlock.Text = "❌ 0.0.0"; }
+        }, DispatcherPriority.Send);
 
-            StringBuilder builder = new();
+        _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName); };
+        _catalog.PackageInstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
+        _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
 
-            builder.Append(supported);
-            builder.Append(" ");
-            builder.Append(packageVersion);
+        OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-            _packageVersionTextBlock.Text = $"{builder}";
-        }
-        catch { _packageVersionTextBlock.Text = "0.0.0"; }
-    }
-
-    void InvokeOnDownloadProgress(int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnDownloadProgress, value);
-
-    void OnDownloadProgress(int value)
-    {
-        if (_progressBar.Value == value) return;
-        _statusTextBlock.Text = "Downloading...";
-
-        _progressBar.Value = value;
-        _progressBar.IsIndeterminate = false;
-    }
-
-    async void OnLaunchButtonClick(object sender, RoutedEventArgs args)
-    {
-        try
+        Dispatcher.Invoke(async () =>
         {
-            _launchButton.Visibility = Visibility.Hidden;
-            _progressBar.IsIndeterminate = true;
-            _progressBar.Visibility = Visibility.Visible;
-            _statusTextBlock.Visibility = Visibility.Visible;
+            var image = await sponsorship;
+            if (image is { }) Children.Add(image);
+        }, DispatcherPriority.Send);
 
-            if (!Minecraft.IsInstalled)
+        _launchButton.Click += async (_, _) =>
+        {
+            try
             {
-                await MessageDialog.ShowAsync(_notInstalled);
-                return;
-            }
+                _launchButton.Visibility = Visibility.Hidden;
+                _progressBar.IsIndeterminate = true;
+                _progressBar.Visibility = Visibility.Visible;
+                _statusTextBlock.Visibility = Visibility.Visible;
 
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
-            {
-                await MessageDialog.ShowAsync(_unsignedInstallationDetected);
-                return;
-            }
-
-            var path = _configuration.CustomDllPath;
-            var beta = _configuration.DllBuild is DllBuild.Beta;
-            var custom = _configuration.DllBuild is DllBuild.Custom;
-            var initialized = _configuration.WaitForInitialization;
-            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
-
-            if (!custom && !beta && !_entries.IsSupported)
-            {
-                var packageVersion = Minecraft.PackageVersion;
-                var supportedVersion = _entries.First().Key;
-
-                UnsupportedVersionDetected unsupportedVersionDetected = new(packageVersion, supportedVersion);
-                await MessageDialog.ShowAsync(unsupportedVersionDetected); return;
-            }
-
-            if (custom)
-            {
-                if (string.IsNullOrWhiteSpace(path))
+                if (!Minecraft.IsInstalled)
                 {
-                    await MessageDialog.ShowAsync(_invalidCustomDll);
+                    await MessageDialog.ShowAsync(_notInstalled);
                     return;
                 }
 
-                ModificationLibrary library = new(path!);
-
-                if (!library.IsValid)
+                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(_invalidCustomDll);
+                    await MessageDialog.ShowAsync(_unsignedInstallationDetected);
+                    return;
+                }
+
+                var path = configuration.CustomDllPath;
+                var beta = configuration.DllBuild is DllBuild.Beta;
+                var custom = configuration.DllBuild is DllBuild.Custom;
+                var initialized = configuration.WaitForInitialization;
+                var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+
+                if (!custom && !beta && !entries.IsSupported)
+                {
+                    var packageVersion = Minecraft.PackageVersion;
+                    var supportedVersion = entries.First().Key;
+
+                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, entries.First().Key)); return;
+                }
+
+                if (custom)
+                {
+                    if (string.IsNullOrWhiteSpace(path))
+                    {
+                        await MessageDialog.ShowAsync(_invalidCustomDll);
+                        return;
+                    }
+
+                    ModificationLibrary library = new(path!);
+
+                    if (!library.IsValid)
+                    {
+                        await MessageDialog.ShowAsync(_invalidCustomDll);
+                        return;
+                    }
+
+                    _statusTextBlock.Text = "Launching...";
+
+                    if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
+                    {
+                        await MessageDialog.ShowAsync(_launchFailure);
+                        return;
+                    }
+
+                    return;
+                }
+
+                if (beta && await MessageDialog.ShowAsync(_betaDllEnabled))
+                    return;
+
+                _statusTextBlock.Text = "Verifying...";
+
+                if (!await client.DownloadAsync((_) => Dispatcher.Invoke(() =>
+                {
+                    if (_progressBar.Value == _) return;
+                    _statusTextBlock.Text = "Downloading...";
+
+                    _progressBar.Value = _;
+                    _progressBar.IsIndeterminate = false;
+                }, DispatcherPriority.Send)))
+                {
+                    await MessageDialog.ShowAsync(_clientUpdateFailure);
                     return;
                 }
 
                 _statusTextBlock.Text = "Launching...";
+                _progressBar.IsIndeterminate = true;
 
-                if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
+                if (!await Task.Run(() => client.Launch(initialized)))
                 {
                     await MessageDialog.ShowAsync(_launchFailure);
                     return;
                 }
-
-                return;
             }
-
-            if (beta && await MessageDialog.ShowAsync(_betaDllEnabled))
-                return;
-
-            _statusTextBlock.Text = "Verifying...";
-
-            if (!await client.DownloadAsync(InvokeOnDownloadProgress))
+            finally
             {
-                await MessageDialog.ShowAsync(_clientUpdateFailure);
-                return;
+                _statusTextBlock.Text = "Preparing...";
+                _progressBar.IsIndeterminate = false;
+                _progressBar.Visibility = Visibility.Hidden;
+                _statusTextBlock.Visibility = Visibility.Hidden;
+                _launchButton.Visibility = Visibility.Visible;
             }
-
-            _statusTextBlock.Text = "Launching...";
-            _progressBar.IsIndeterminate = true;
-
-            if (!await Task.Run(() => client.Launch(initialized)))
-            {
-                await MessageDialog.ShowAsync(_launchFailure);
-                return;
-            }
-        }
-        finally
-        {
-            _statusTextBlock.Text = "Preparing...";
-            _progressBar.IsIndeterminate = false;
-            _progressBar.Visibility = Visibility.Hidden;
-            _statusTextBlock.Visibility = Visibility.Hidden;
-            _launchButton.Visibility = Visibility.Visible;
-        }
+        };
     }
 }

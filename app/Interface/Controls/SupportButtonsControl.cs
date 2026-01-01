@@ -17,11 +17,11 @@ using Windows.Management.Core;
 
 namespace Flarial.Launcher.Interface.Controls;
 
-sealed class FolderButtonsControl : UniformGrid
+sealed class SupportButtonsControl : UniformGrid
 {
     readonly Button _clientFolderButton = new()
     {
-        Content = new FolderButtonContent("Open Client Folder"),
+        Content = new SupportButtonContent(Symbol.MoveToFolder, "Open Client Folder"),
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(0, 0, 6, 0)
@@ -29,25 +29,27 @@ sealed class FolderButtonsControl : UniformGrid
 
     readonly Button _launcherFolderButton = new()
     {
-        Content = new FolderButtonContent("Open Launcher Folder"),
+        Content = new SupportButtonContent(Symbol.MoveToFolder, "Open Launcher Folder"),
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(6, 0, 0, 0)
     };
 
-    sealed class FolderButtonContent : SimpleStackPanel
+    sealed class SupportButtonContent : SimpleStackPanel
     {
-        internal FolderButtonContent(string text)
+        internal SupportButtonContent(Symbol symbol, string text)
         {
             Spacing = 12;
             Orientation = Orientation.Horizontal;
 
-            Children.Add(new SymbolIcon(Symbol.MoveToFolder));
+            Children.Add(new SymbolIcon(symbol));
             Children.Add(new TextBlock { Text = text });
         }
     }
 
-    internal FolderButtonsControl()
+    readonly string _gdk = Path.Combine(CurrentDirectory, @"..\Client");
+
+    internal SupportButtonsControl()
     {
         Rows = 1;
         Columns = 2;
@@ -55,10 +57,19 @@ sealed class FolderButtonsControl : UniformGrid
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _launcherFolderButton.Click += OnLauncherFolderButtonClick;
-        _clientFolderButton.Click += OnClientFolderButtonClick;
+        _launcherFolderButton.Click += (_, _) => { using (Process.Start(CurrentDirectory)) { } };
+
+        _clientFolderButton.Click += async (_, _) =>
+        {
+            if (!IsInstalled) { await MessageDialog.ShowAsync(_notInstalled); return; }
+            var path = UsingGameDevelopmentKit ? _gdk : Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
+
+            if (!Directory.Exists(path)) { await MessageDialog.ShowAsync(_folderNotFound); return; }
+            using (Process.Start(path)) { }
+        };
     }
 
+    [Obsolete("", true)]
     void OnLauncherFolderButtonClick(object sender, RoutedEventArgs args)
     {
         using (Process.Start(CurrentDirectory)) { }

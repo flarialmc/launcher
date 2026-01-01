@@ -5,10 +5,7 @@ using Flarial.Launcher.Services.Management.Versions;
 using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
 using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
-using System.ComponentModel;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using static Flarial.Launcher.Interface.MessageDialogContent;
-using ModernWpf.Controls;
 using Flarial.Launcher.Interface.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
@@ -29,12 +26,9 @@ sealed class VersionsPage : Grid
     };
 
     InstallRequest? _request = null;
-    readonly MainWindowContent _content;
 
     internal VersionsPage(MainWindowContent content)
     {
-        _content = content;
-
         Margin = new(12);
 
         RowDefinitions.Add(new());
@@ -48,87 +42,79 @@ sealed class VersionsPage : Grid
         SetColumn(_control, 0);
         Children.Add(_control);
 
-        _control._button.Click += OnInstallButtonClick;
-        Application.Current.MainWindow.Closing += OnWindowClosing;
-    }
-
-    void OnWindowClosing(object sender, CancelEventArgs args)
-    {
-        if (args.Cancel = _request is { })
+        Application.Current.MainWindow.Closing += (sender, args) =>
         {
-            _content.Content = this;
-            _content._versionsPageItem.IsSelected = true;
-        }
-    }
-
-    void InvokeOnInstallProgress(AppInstallState state, int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnInstallProgress, state, value);
-
-    void OnInstallProgress(AppInstallState state, int value)
-    {
-        switch (state)
-        {
-            case Installing: _control._icon.Symbol = Upload; break;
-            case Downloading: _control._icon.Symbol = Download; break;
-        }
-
-        if (value <= 0)
-        {
-            _control._progressBar.Value = 0;
-            _control._progressBar.IsIndeterminate = true;
-        }
-
-        if (_control._progressBar.Value != value)
-        {
-            _control._progressBar.Value = value;
-            _control._progressBar.IsIndeterminate = false;
-        }
-    }
-
-    async void OnInstallButtonClick(object sender, RoutedEventArgs args)
-    {
-        try
-        {
-            IsEnabled = false;
-
-            if (!Minecraft.IsInstalled)
+            if (args.Cancel = _request is { })
             {
-                await MessageDialog.ShowAsync(_notInstalled);
-                return;
+                content.Content = this;
+                content._versionsPageItem.IsSelected = true;
             }
+        };
 
-            if (!Minecraft.IsPackaged)
-            {
-                await MessageDialog.ShowAsync(_unpackagedInstallationDetected);
-                return;
-            }
-
-            _control._icon.Symbol = Download;
-            _control._icon.Visibility = Visibility.Visible;
-
-            _control._progressBar.Visibility = Visibility.Visible;
-            _control._progressBar.IsIndeterminate = true;
-
-            _control._button.Visibility = Visibility.Hidden;
-
+        _control._button.Click += async (_, _) =>
+        {
             try
             {
-                var entry = (VersionEntry)((ListBoxItem)_listBox.SelectedItem).Tag;
-                await (_request = await entry.InstallAsync(InvokeOnInstallProgress));
+                IsEnabled = false;
+
+                if (!Minecraft.IsInstalled)
+                {
+                    await MessageDialog.ShowAsync(_notInstalled);
+                    return;
+                }
+
+                if (!Minecraft.IsPackaged)
+                {
+                    await MessageDialog.ShowAsync(_unpackagedInstallationDetected);
+                    return;
+                }
+
+                _control._icon.Symbol = Download;
+                _control._icon.Visibility = Visibility.Visible;
+
+                _control._progressBar.Visibility = Visibility.Visible;
+                _control._progressBar.IsIndeterminate = true;
+
+                _control._button.Visibility = Visibility.Hidden;
+
+                try
+                {
+                    var entry = (VersionEntry)((ListBoxItem)_listBox.SelectedItem).Tag;
+                    await (_request = await entry.InstallAsync((state, value) => Dispatcher.Invoke(() =>
+                    {
+                        switch (state)
+                        {
+                            case Installing: _control._icon.Symbol = Upload; break;
+                            case Downloading: _control._icon.Symbol = Download; break;
+                        }
+
+                        if (value <= 0)
+                        {
+                            _control._progressBar.Value = 0;
+                            _control._progressBar.IsIndeterminate = true;
+                        }
+
+                        if (_control._progressBar.Value != value)
+                        {
+                            _control._progressBar.Value = value;
+                            _control._progressBar.IsIndeterminate = false;
+                        }
+                    }, DispatcherPriority.Send)));
+                }
+                finally { _request = null; }
             }
-            finally { _request = null; }
+            finally
+            {
+                _control._progressBar.Value = 0;
+                _control._progressBar.IsIndeterminate = false;
+                _control._progressBar.Visibility = Visibility.Hidden;
 
-        }
-        finally
-        {
-            _control._progressBar.Value = 0;
-            _control._progressBar.IsIndeterminate = false;
-            _control._progressBar.Visibility = Visibility.Hidden;
+                _control._icon.Symbol = Download;
+                _control._icon.Visibility = Visibility.Collapsed;
 
-            _control._icon.Symbol = Download;
-            _control._icon.Visibility = Visibility.Collapsed;
-
-            _control._button.Visibility = Visibility.Visible;
-            IsEnabled = true;
-        }
+                _control._button.Visibility = Visibility.Visible;
+                IsEnabled = true;
+            }
+        };
     }
 }

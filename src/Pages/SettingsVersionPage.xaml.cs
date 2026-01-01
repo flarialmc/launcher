@@ -25,7 +25,7 @@ public partial class SettingsVersionPage : Page
 
         string[] files = await Task.Run(() => Directory.GetFiles(VersionManagement.launcherPath + "\\Versions"));
 
-        foreach (var name in MainWindow.VersionCatalog.Reverse())
+        foreach (var name in MainWindow.VersionCatalog)
         {
             VersionItem versionItem = new();
             VersionItemStackPanel.Children.Add(versionItem);

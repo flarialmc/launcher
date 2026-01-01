@@ -72,7 +72,7 @@ sealed class SettingsPage : Grid
         SetRow(panel, 0);
         Children.Add(panel);
 
-        FolderButtonsControl control = new();
+        SupportButtonsControl control = new();
         SetColumn(control, 0);
         SetRow(control, 1);
         Children.Add(control);

@@ -10,6 +10,7 @@ using Flarial.Launcher.Services.Management.Versions;
 using Flarial.Launcher.Services.Networking;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using ModernWpf.Controls;
+using System;
 
 namespace Flarial.Launcher.Interface;
 
@@ -78,54 +79,40 @@ sealed class MainWindowContent : NavigationView
         _versionsPage = new(this);
         _settingsPage = new(configuration);
 
-        Dispatcher.Invoke(DispatcherPriority.Send, InitializeAsync, configuration);
-    }
-
-    void InvokeOnDownloadProgress(int value) => Dispatcher.Invoke(DispatcherPriority.Send, OnDownloadProgress, value);
-
-    void OnDownloadProgress(int value)
-    {
-        if (_progressBar.Value == value)
-            return;
-
-        _progressBar.Value = value;
-        _progressBar.IsIndeterminate = false;
-    }
-
-    async void InitializeAsync(Configuration configuration)
-    {
-        var sponsorship = Sponsorship.GetAsync();
-
-        if (!await HttpService.IsAvailableAsync() &&
-            !await MessageDialog.ShowAsync(_connectionFailure))
-            Application.Current.Shutdown();
-
-        if (await LauncherUpdater.CheckAsync() &&
-            await MessageDialog.ShowAsync(_launcherUpdateAvailable))
+        Dispatcher.Invoke(async () =>
         {
-            await LauncherUpdater.DownloadAsync(InvokeOnDownloadProgress);
-            return;
-        }
+            var sponsorship = Sponsorship.GetAsync();
 
-        var catalog = VersionEntries.CreateAsync();
-        _homePage = new(configuration, await catalog, sponsorship);
+            if (!await HttpService.IsAvailableAsync() &&
+                !await MessageDialog.ShowAsync(_connectionFailure))
+                Application.Current.Shutdown();
 
-        foreach (var entry in await catalog)
-        {
-            await Dispatcher.Yield();
-            if (entry.Value is null) continue;
-
-            _versionsPage._listBox.Items.Add(new ListBoxItem
+            if (await LauncherUpdater.CheckAsync() &&
+                await MessageDialog.ShowAsync(_launcherUpdateAvailable))
             {
-                Content = entry.Key,
-                Tag = entry.Value
-            });
-        }
-        _versionsPage._listBox.SelectedIndex = 0;
+                await LauncherUpdater.DownloadAsync((_) => Dispatcher.Invoke(() =>
+                {
+                    if (_progressBar.Value == _) return;
+                    _progressBar.Value = _;
+                    _progressBar.IsIndeterminate = false;
+                }));
+                return;
+            }
 
-        Content = _homePage;
-        _progressBar.IsIndeterminate = false;
+            var catalog = VersionEntries.CreateAsync();
+            _homePage = new(configuration, await catalog, sponsorship);
 
-        IsPaneVisible = true;
+            foreach (var entry in await catalog)
+            {
+                await Dispatcher.Yield(); if (entry.Value is null) continue;
+                _versionsPage._listBox.Items.Add(new ListBoxItem { Content = entry.Key, Tag = entry.Value });
+            }
+            _versionsPage._listBox.SelectedIndex = 0;
+
+            Content = _homePage;
+            _progressBar.IsIndeterminate = false;
+
+            IsPaneVisible = true;
+        }, DispatcherPriority.Send);
     }
 }

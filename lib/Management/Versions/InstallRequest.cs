@@ -18,59 +18,40 @@ public sealed class InstallRequest
     static readonly string s_path = Path.GetTempPath();
 
     readonly Task _task;
-    readonly string _uri;
-    readonly Action<AppInstallState, int> _action;
-    readonly string _path = Path.Combine(s_path, Path.GetRandomFileName());
-
-    async Task CreateAsync()
-    {
-        await HttpService.DownloadAsync(_uri, _path, OnDownloadProgress);
-        var item = s_manager.AddPackageAsync(new(_path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
-
-        unsafe
-        {
-            /*
-                - Workaround this issue: https://github.com/microsoft/CsWinRT/issues/1720
-                - We wrap the asynchronous operation as a synchronous operation & proxy it to 'Task.Run()'.
-            */
-
-            var @event = CreateEvent(null, true, false, null);
-
-            try
-            {
-                item.Progress += OnInstallProgress;
-                item.Completed += (_, _) => SetEvent(@event);
-
-                WaitForSingleObject(@event, INFINITE);
-                if (item.Status is AsyncStatus.Error) throw item.ErrorCode;
-            }
-            finally { CloseHandle(@event); item.Close(); }
-        }
-    }
-
-    void OnDownloadProgress(int value)
-    {
-        _action(AppInstallState.Downloading, value);
-    }
-
-    void OnInstallProgress(IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> sender, DeploymentProgress args)
-    {
-        _action(AppInstallState.Installing, (int)args.percentage);
-    }
-
-    void Cleanup(Task task)
-    {
-        try { File.Delete(_path); }
-        catch { }
-    }
 
     internal InstallRequest(string uri, Action<AppInstallState, int> action)
     {
-        _uri = uri;
-        _action = action;
+        var path = Path.Combine(s_path, Path.GetRandomFileName());
 
-        _task = Task.Run(CreateAsync);
-        _task.ContinueWith(Cleanup, ExecuteSynchronously);
+        _task = Task.Run(async () =>
+        {
+            await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _));
+            var item = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+
+            unsafe
+            {
+                /*
+                    - Workaround this issue: https://github.com/microsoft/CsWinRT/issues/1720
+                    - We wrap the asynchronous operation as a synchronous operation & proxy it to 'Task.Run()'.
+                */
+
+                var @event = CreateEvent(null, true, false, null); try
+                {
+                    item.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
+                    item.Completed += (_, _) => SetEvent(@event);
+
+                    WaitForSingleObject(@event, INFINITE);
+                    if (item.Status is AsyncStatus.Error) throw item.ErrorCode;
+                }
+                finally { CloseHandle(@event); item.Close(); }
+            }
+        });
+
+        _task.ContinueWith(_ =>
+        {
+            try { File.Delete(path); }
+            catch { }
+        }, ExecuteSynchronously);
     }
 
     public TaskAwaiter GetAwaiter() => _task.GetAwaiter();
