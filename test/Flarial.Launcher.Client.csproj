@@ -15,6 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../deps/Flarial.Launcher.Services/Flarial.Launcher.Services.csproj" />
+    <ProjectReference Include="../lib/Flarial.Launcher.Services.csproj" />
   </ItemGroup>
 </Project>
