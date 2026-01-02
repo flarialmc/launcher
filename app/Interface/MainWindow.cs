@@ -19,6 +19,6 @@ sealed class MainWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         ResizeMode = ResizeMode.CanMinimize;
 
-        Content = new MainWindowContent(configuration);
+        Content = new MainWindowContent(configuration, new(this));
     }
 }

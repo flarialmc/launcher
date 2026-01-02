@@ -8,9 +8,8 @@ using static System.Windows.Media.Imaging.BitmapCacheOption;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
-using System.Diagnostics;
 using Flarial.Launcher.Services.Networking;
-using System;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Management;
 
@@ -20,7 +19,7 @@ static class Sponsorship
 
     const string BannerUri = "https://litebyte.co/images/flarial.png";
 
-    internal static async Task<Image?> GetAsync()
+    internal static async Task<Image?> GetAsync(WindowInteropHelper helper)
     {
         try
         {
@@ -37,7 +36,7 @@ static class Sponsorship
                 Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad)
             };
 
-            image.MouseLeftButtonDown += (_, _) => { try { using (Process.Start(CampaignUri)) { } } catch { } };
+            image.MouseLeftButtonDown += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), CampaignUri);
             return image;
         }
         catch { return null; }

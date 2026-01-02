@@ -11,6 +11,7 @@ using Flarial.Launcher.Services.Networking;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using ModernWpf.Controls;
 using System;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface;
 
@@ -44,14 +45,14 @@ sealed class MainWindowContent : NavigationView
 
     readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
-        Width = ApplicationManifest.Icon.Width * 2,
+        Width = ApplicationManifest.Icon.Width ,
         Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
         IsIndeterminate = true
     };
 
-    internal MainWindowContent(Configuration configuration)
+    internal MainWindowContent(Configuration configuration, WindowInteropHelper helper)
     {
         IsPaneVisible = false;
         IsPaneOpen = false;
@@ -77,11 +78,11 @@ sealed class MainWindowContent : NavigationView
         };
 
         _versionsPage = new(this);
-        _settingsPage = new(configuration);
+        _settingsPage = new(configuration, helper);
 
         Dispatcher.Invoke(async () =>
         {
-            var sponsorship = Sponsorship.GetAsync();
+            var sponsorship = Sponsorship.GetAsync(helper);
 
             if (!await HttpService.IsAvailableAsync() &&
                 !await MessageDialog.ShowAsync(_connectionFailure))

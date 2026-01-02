@@ -3,6 +3,7 @@ using Flarial.Launcher.Management;
 using Flarial.Launcher.Interface.Controls;
 using ModernWpf.Controls;
 using System.Windows.Controls;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -35,7 +36,7 @@ sealed class SettingsPage : Grid
 
     readonly CustomDllPathPicker _customDllPath;
 
-    internal SettingsPage(Configuration configuration)
+    internal SettingsPage(Configuration configuration, WindowInteropHelper helper)
     {
         Margin = new(12);
 
@@ -72,7 +73,7 @@ sealed class SettingsPage : Grid
         SetRow(panel, 0);
         Children.Add(panel);
 
-        SupportButtonsControl control = new();
+        SupportButtonsControl control = new(helper);
         SetColumn(control, 0);
         SetRow(control, 1);
         Children.Add(control);

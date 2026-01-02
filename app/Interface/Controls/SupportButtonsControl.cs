@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +7,7 @@ using static Flarial.Launcher.Interface.MessageDialogContent;
 using static Windows.Management.Core.ApplicationDataManager;
 using static Flarial.Launcher.Services.Core.Minecraft;
 using ModernWpf.Controls;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface.Controls;
 
@@ -50,9 +49,11 @@ sealed class SupportButtonsControl : UniformGrid
         }
     }
 
-    readonly string _gdk = Path.Combine(CurrentDirectory, @"..\Client");
+    string UWP => Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
 
-    internal SupportButtonsControl()
+    readonly string _launcher = CurrentDirectory, _gdk = Path.Combine(CurrentDirectory, @"..\Client");
+
+    internal SupportButtonsControl(WindowInteropHelper helper)
     {
         Rows = 1;
 
@@ -60,45 +61,27 @@ sealed class SupportButtonsControl : UniformGrid
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _discordLinkButton.Click += (_, _) => { using (Process.Start("https://flarial.xyz/discord")) { } };
+        _discordLinkButton.Click += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), "https://flarial.xyz/discord");
 
-        _launcherFolderButton.Click += (_, _) => { using (Process.Start(CurrentDirectory)) { } };
+        _launcherFolderButton.Click += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), _launcher);
 
         _clientFolderButton.Click += async (_, _) =>
         {
-            if (!IsInstalled) { await MessageDialog.ShowAsync(_notInstalled); return; }
-            var path = UsingGameDevelopmentKit ? _gdk : Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
+            if (!IsInstalled)
+            {
+                await MessageDialog.ShowAsync(_notInstalled);
+                return;
+            }
 
-            if (!Directory.Exists(path)) { await MessageDialog.ShowAsync(_folderNotFound); return; }
-            using (Process.Start(path)) { }
+            var path = UsingGameDevelopmentKit ? _gdk : UWP;
+
+            if (!Directory.Exists(path))
+            {
+                await MessageDialog.ShowAsync(_folderNotFound);
+                return;
+            }
+
+            PInvoke.ShellExecute(helper.EnsureHandle(), path);
         };
-    }
-
-    [Obsolete("", true)]
-    void OnLauncherFolderButtonClick(object sender, RoutedEventArgs args)
-    {
-        using (Process.Start(CurrentDirectory)) { }
-    }
-
-    async void OnClientFolderButtonClick(object sender, RoutedEventArgs args)
-    {
-        if (!IsInstalled)
-        {
-            await MessageDialog.ShowAsync(_notInstalled);
-            return;
-        }
-
-        var gdk = Path.Combine(CurrentDirectory, @"..\Client");
-        var uwp = Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
-
-        var path = UsingGameDevelopmentKit ? gdk : uwp;
-
-        if (!Directory.Exists(path))
-        {
-            await MessageDialog.ShowAsync(_folderNotFound);
-            return;
-        }
-
-        using (Process.Start(path)) { }
     }
 }

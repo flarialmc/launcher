@@ -69,7 +69,7 @@ sealed class VersionsPage : Grid
                     return;
                 }
 
-                if (!await MessageDialog.ShowAsync(_versionInstallation))
+                if (!await MessageDialog.ShowAsync(_installVersion))
                     return;
 
                 _control._icon.Symbol = Download;

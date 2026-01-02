@@ -29,11 +29,11 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _folderNotFound = new FolderNotFound();
 
-    internal static readonly MessageDialogContent _versionInstallation = new VersionInstallation();
+    internal static readonly MessageDialogContent _installVersion = new InstallVersion();
 
-    sealed class VersionInstallation : MessageDialogContent
+    sealed class InstallVersion : MessageDialogContent
     {
-        public override string Title => "💡 Version Installation";
+        public override string Title => "💡 Install Version";
 
         public override string Content => @"The selected Minecraft version will be now installed.
 
