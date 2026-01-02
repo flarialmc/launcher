@@ -3,4 +3,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("Flarial")]
 [assembly: AssemblyProduct("Launcher")]
 [assembly: AssemblyTitle("Flarial Launcher")]
-[assembly: AssemblyCopyright("Copyright © Flarial 2025")]
+[assembly: AssemblyCopyright("Copyright © Flarial 2025 - 2026")]
