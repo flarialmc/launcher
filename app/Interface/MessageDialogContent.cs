@@ -23,11 +23,29 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _betaDllEnabled = new BetaDllEnabled();
 
-    internal static readonly MessageDialogContent _unpackagedInstallationDetected = new UnpackagedInstallationDetected();
+    internal static readonly MessageDialogContent _unpackagedInstallation = new UnpackagedInstallation();
 
-    internal static readonly MessageDialogContent _unsignedInstallationDetected = new UnsignedInstallationDetected();
+    internal static readonly MessageDialogContent _unsignedInstallation = new UnsignedInstallation();
 
     internal static readonly MessageDialogContent _folderNotFound = new FolderNotFound();
+
+    internal static readonly MessageDialogContent _versionInstallation = new VersionInstallation();
+
+    sealed class VersionInstallation : MessageDialogContent
+    {
+        public override string Title => "💡 Version Installation";
+
+        public override string Content => @"The selected Minecraft version will be now installed.
+
+• A high speed internet connection is recommended for this.
+• Once the installation starts, you won't able to cancel it.
+
+If you need help, join our Discord.";
+
+        public override string Primary => "Install";
+
+        public override string? Close => "Cancel";
+    }
 
     sealed class FolderNotFound : MessageDialogContent
     {
@@ -67,9 +85,9 @@ If you need help, join our Discord.";
 If you need help, join our Discord.";
     }
 
-    sealed class UnsignedInstallationDetected : MessageDialogContent
+    sealed class UnsignedInstallation : MessageDialogContent
     {
-        public override string Title => "⚠️ Unsigned Installation Detected";
+        public override string Title => "⚠️ Unsigned Installation";
 
         public override string Content => @"An unsigned Minecraft installation has been detected.
 
@@ -143,9 +161,9 @@ If you need help, join our Discord.";
 Hence use at your own risk.";
     }
 
-    sealed class UnpackagedInstallationDetected : MessageDialogContent
+    sealed class UnpackagedInstallation : MessageDialogContent
     {
-        public override string Title => "⚠️ Unpackaged Installation Detected";
+        public override string Title => "⚠️ Unpackaged Installation";
         public override string Primary => "Back";
         public override string Content => @"The current Minecraft installation is unpackaged.
 

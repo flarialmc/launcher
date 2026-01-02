@@ -11,7 +11,7 @@ static class MessageDialog
     static readonly ContentDialog s_dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
 
-    internal static async Task<bool> ShowAsync(string title, string content, string primary, [Optional] string? close)
+    static async Task<bool> ShowAsync(string title, string content, string primary, [Optional] string? close)
     {
         await s_semaphore.WaitAsync(); try
         {

@@ -1,35 +1,38 @@
 using System;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using Flarial.Launcher.Services.Core;
 using static System.Environment;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using static Windows.Management.Core.ApplicationDataManager;
 using static Flarial.Launcher.Services.Core.Minecraft;
-using ModernWpf;
 using ModernWpf.Controls;
-using Windows.Management.Core;
 
 namespace Flarial.Launcher.Interface.Controls;
 
 sealed class SupportButtonsControl : UniformGrid
 {
-    readonly Button _clientFolderButton = new()
+    readonly Button _discordLinkButton = new()
     {
-        Content = new SupportButtonContent(Symbol.MoveToFolder, "Open Client Folder"),
+        Content = new SupportButtonContent(Symbol.Globe, "Discord"),
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(0, 0, 6, 0)
     };
 
+    readonly Button _clientFolderButton = new()
+    {
+        Content = new SupportButtonContent(Symbol.MoveToFolder, "Client"),
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        Margin = new(6, 0, 6, 0)
+    };
+
     readonly Button _launcherFolderButton = new()
     {
-        Content = new SupportButtonContent(Symbol.MoveToFolder, "Open Launcher Folder"),
+        Content = new SupportButtonContent(Symbol.MoveToFolder, "Launcher"),
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(6, 0, 0, 0)
@@ -52,10 +55,12 @@ sealed class SupportButtonsControl : UniformGrid
     internal SupportButtonsControl()
     {
         Rows = 1;
-        Columns = 2;
 
+        Children.Add(_discordLinkButton);
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
+
+        _discordLinkButton.Click += (_, _) => { using (Process.Start("https://flarial.xyz/discord")) { } };
 
         _launcherFolderButton.Click += (_, _) => { using (Process.Start(CurrentDirectory)) { } };
 

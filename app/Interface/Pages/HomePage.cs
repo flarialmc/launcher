@@ -73,13 +73,13 @@ sealed class HomePage : Grid
         Margin = new(0, 0, 12, 12)
     };
 
-    sealed class UnsupportedVersionDetected(string packageVersion, string supportedVersion) : MessageDialogContent
+    sealed class UnsupportedVersion(string packageVersion, string supportedVersion) : MessageDialogContent
     {
-        public override string Title => "⚠️ Unsupported Version Detected";
+        public override string Title => "⚠️ Unsupported Version";
         public override string Primary => "Back";
-        public override string Content => $@"Minecraft v{packageVersion} isn't compatible with Flarial Client.
+        public override string Content => $@"Minecraft {packageVersion} isn't compatible with Flarial Client.
 
-• Please switch to Minecraft v{supportedVersion} for the best experience.
+• Please switch to Minecraft {supportedVersion} for the best experience.
 • You may switch versions by going to the [Versions] page in the launcher.
 
 If you need help, join our Discord.";
@@ -133,7 +133,7 @@ If you need help, join our Discord.";
 
                 if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(_unsignedInstallationDetected);
+                    await MessageDialog.ShowAsync(_unsignedInstallation);
                     return;
                 }
 
@@ -148,7 +148,7 @@ If you need help, join our Discord.";
                     var packageVersion = Minecraft.PackageVersion;
                     var supportedVersion = entries.First().Key;
 
-                    await MessageDialog.ShowAsync(new UnsupportedVersionDetected(Minecraft.PackageVersion, entries.First().Key)); return;
+                    await MessageDialog.ShowAsync(new UnsupportedVersion(Minecraft.PackageVersion, entries.First().Key)); return;
                 }
 
                 if (custom)

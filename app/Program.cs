@@ -48,7 +48,7 @@ Exception: {1}
             var text = string.Format(Format, version, name, message, trace);
             MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
-            Environment.Exit(1);
+            Exit(1);
         };
 
         AppDomain.CurrentDomain.ProcessExit += static (_, _) =>
@@ -84,7 +84,7 @@ Exception: {1}
                         ArraySegment<string> segment = new(arguments, offset, count);
 
                         Injector.Launch(true, segment.First());
-                        Environment.Exit(0);
+                        Exit(0);
                         break;
 
                     case "--no-hardware-acceleration":

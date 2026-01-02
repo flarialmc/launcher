@@ -65,9 +65,12 @@ sealed class VersionsPage : Grid
 
                 if (!Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(_unpackagedInstallationDetected);
+                    await MessageDialog.ShowAsync(_unpackagedInstallation);
                     return;
                 }
+
+                if (!await MessageDialog.ShowAsync(_versionInstallation))
+                    return;
 
                 _control._icon.Symbol = Download;
                 _control._icon.Visibility = Visibility.Visible;
