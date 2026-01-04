@@ -32,6 +32,8 @@ Exception: {1}
 
     static Program()
     {
+        PInvoke.SetErrorMode();
+
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
             var version = ApplicationManifest.Version;

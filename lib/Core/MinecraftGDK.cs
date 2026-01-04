@@ -45,8 +45,7 @@ unsafe partial class MinecraftGDK : Minecraft
             - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
         */
 
-        if (ProcessId is { } processId)
-            return processId;
+        if (ProcessId is { } processId) return processId;
 
         using var _ = PowerShell.Create();
         _.AddCommand("Invoke-CommandInDesktopPackage");

@@ -130,7 +130,7 @@ If you need help, join our Discord.";
         {
             try
             {
-                _playButton.Visibility = Visibility.Hidden;
+                _playButton.Visibility = Visibility.Hidden;                
                 _progressBar.IsIndeterminate = true;
                 _progressBar.Visibility = Visibility.Visible;
                 _statusTextBlock.Visibility = Visibility.Visible;
