@@ -8,11 +8,13 @@ using static Windows.Management.Core.ApplicationDataManager;
 using static Flarial.Launcher.Services.Core.Minecraft;
 using ModernWpf.Controls;
 using System.Windows.Interop;
+using System;
 
 namespace Flarial.Launcher.Interface.Controls;
 
 sealed class SupportButtonsControl : UniformGrid
 {
+    [Obsolete("", true)]
     readonly Button _discordLinkButton = new()
     {
         Content = new SupportButtonContent(Symbol.Globe, "Discord"),
@@ -49,19 +51,14 @@ sealed class SupportButtonsControl : UniformGrid
         }
     }
 
-    string UWP => Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
-
     readonly string _launcher = CurrentDirectory, _gdk = Path.Combine(CurrentDirectory, @"..\Client");
 
     internal SupportButtonsControl(WindowInteropHelper helper)
     {
         Rows = 1;
 
-        Children.Add(_discordLinkButton);
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
-
-        _discordLinkButton.Click += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), "https://flarial.xyz/discord");
 
         _launcherFolderButton.Click += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), _launcher);
 
@@ -73,7 +70,7 @@ sealed class SupportButtonsControl : UniformGrid
                 return;
             }
 
-            var path = UsingGameDevelopmentKit ? _gdk : UWP;
+            var path = UsingGameDevelopmentKit ? _gdk : Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
 
             if (!Directory.Exists(path))
             {

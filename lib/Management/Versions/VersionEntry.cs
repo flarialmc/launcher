@@ -10,11 +10,12 @@ using Windows.Management.Deployment;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 
-
 namespace Flarial.Launcher.Services.Management.Versions;
 
 public abstract class VersionEntry
 {
+    internal VersionEntry() { }
+
     static readonly string s_path = Path.GetTempPath();
     private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 

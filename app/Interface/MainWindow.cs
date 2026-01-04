@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Media;
 using Flarial.Launcher.Management;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
@@ -12,12 +13,19 @@ sealed class MainWindow : Window
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 
-        Icon = ApplicationManifest.Icon;
+        Width = 960;
+        Height = 540;
         Title = $"Flarial Launcher";
-        Width = 960; Height = 540;
-        UseLayoutRounding = SnapsToDevicePixels = true;
+        Icon = ApplicationManifest.Icon;
+
+        ResizeMode = ResizeMode.NoResize;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        ResizeMode = ResizeMode.CanMinimize;
+
+        UseLayoutRounding = true;
+        SnapsToDevicePixels = true;
+
+        RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+        RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
         Content = new MainWindowContent(configuration, new(this));
     }

@@ -17,35 +17,24 @@ namespace Flarial.Launcher.Interface;
 
 sealed class MainWindowContent : NavigationView
 {
-    HomePage? _homePage = null;
-    readonly VersionsPage _versionsPage;
     readonly SettingsPage _settingsPage;
 
     internal readonly NavigationViewItem _homePageItem = new()
     {
         Icon = new SymbolIcon(Symbol.Home),
         Content = "Home",
-        Tag = Symbol.Home,
         IsSelected = true
     };
 
     internal readonly NavigationViewItem _versionsPageItem = new()
     {
-        Icon = new SymbolIcon(Symbol.BrowsePhotos),
-        Content = "Versions",
-        Tag = Symbol.BrowsePhotos,
-    };
-
-    internal readonly NavigationViewItem _settingsPageItem = new()
-    {
-        Icon = new SymbolIcon(Symbol.Setting),
-        Content = "Settings",
-        Tag = Symbol.Setting,
+        Icon = new SymbolIcon(Symbol.AllApps),
+        Content = "Versions"
     };
 
     readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
-        Width = ApplicationManifest.Icon.Width ,
+        Width = ApplicationManifest.Icon.Width,
         Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
@@ -54,31 +43,25 @@ sealed class MainWindowContent : NavigationView
 
     internal MainWindowContent(Configuration configuration, WindowInteropHelper helper)
     {
-        IsPaneVisible = false;
         IsPaneOpen = false;
-        IsSettingsVisible = false;
+        IsPaneVisible = false;
 
-        PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
         Content = _progressBar;
 
         MenuItems.Add(_homePageItem);
         MenuItems.Add(_versionsPageItem);
-        FooterMenuItems.Add(_settingsPageItem);
 
         ItemInvoked += (sender, args) =>
         {
-            switch ((Symbol)args.InvokedItemContainer.Tag)
-            {
-                case Symbol.Home: Content = _homePage; break;
-                case Symbol.BrowsePhotos: Content = _versionsPage; break;
-                case Symbol.Setting: Content = _settingsPage; break;
-            }
+            if (args.IsSettingsInvoked) Content = _settingsPage; 
+            else Content = args.InvokedItemContainer.Tag;
         };
 
-        _versionsPage = new(this);
         _settingsPage = new(configuration, helper);
+        _versionsPageItem.Tag = new VersionsPage(this);
 
         Dispatcher.Invoke(async () =>
         {
@@ -100,17 +83,20 @@ sealed class MainWindowContent : NavigationView
                 return;
             }
 
-            var catalog = VersionEntries.CreateAsync();
-            _homePage = new(configuration, await catalog, sponsorship);
+            var catalog = await VersionEntries.CreateAsync();
+            _homePageItem.Tag = new HomePage(configuration, catalog, sponsorship);
 
-            foreach (var entry in await catalog)
+            var versionsPage = (VersionsPage)_versionsPageItem.Tag;
+
+            foreach (var entry in catalog)
             {
                 await Dispatcher.Yield(); if (entry.Value is null) continue;
-                _versionsPage._listBox.Items.Add(new ListBoxItem { Content = entry.Key, Tag = entry.Value });
+                versionsPage._listBox.Items.Add(new ListBoxItem { Tag = entry.Value, Content = entry.Key });
             }
-            _versionsPage._listBox.SelectedIndex = 0;
 
-            Content = _homePage;
+            versionsPage._listBox.SelectedIndex = 0;
+
+            Content = _homePageItem.Tag;
             _progressBar.IsIndeterminate = false;
 
             IsPaneVisible = true;

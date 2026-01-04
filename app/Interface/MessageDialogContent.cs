@@ -1,5 +1,3 @@
-using System;
-
 namespace Flarial.Launcher.Interface;
 
 abstract class MessageDialogContent

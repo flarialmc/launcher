@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Media;
-using ModernWpf.Controls;
 using System.Windows.Controls;
 using Flarial.Launcher.Services.Management.Versions;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ using Windows.ApplicationModel;
 using System;
 using Flarial.Launcher.Management;
 using static System.StringComparison;
-using System.Text;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -48,11 +47,11 @@ sealed class HomePage : Grid
         Visibility = Visibility.Hidden
     };
 
-    readonly Button _launchButton = new()
+    readonly Button _playButton = new()
     {
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Content = "Launch",
+        Content = "Play",
         Width = ApplicationManifest.Icon.Width,
         Margin = new(0, 120, 0, 0)
     };
@@ -68,9 +67,20 @@ sealed class HomePage : Grid
     readonly TextBlock _launcherVersionTextBlock = new()
     {
         Text = ApplicationManifest.Version,
+        Margin = new(0, 0, 12, 12),
         VerticalAlignment = VerticalAlignment.Bottom,
+        HorizontalAlignment = HorizontalAlignment.Right
+    };
+
+    readonly HyperlinkButton _discordLinkButton = new()
+    {
+        Content = "Discord",
+        Foreground = new SolidColorBrush(Colors.White),
+        Padding = new(),
+        NavigateUri = new("https://flarial.xyz/discord"),
+        VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Right,
-        Margin = new(0, 0, 12, 12)
+        Margin = new(0, 12, 12, 0)
     };
 
     sealed class UnsupportedVersion(string packageVersion, string supportedVersion) : MessageDialogContent
@@ -92,7 +102,8 @@ If you need help, join our Discord.";
         Children.Add(_logoImage);
         Children.Add(_progressBar);
         Children.Add(_statusTextBlock);
-        Children.Add(_launchButton);
+        Children.Add(_discordLinkButton);
+        Children.Add(_playButton);
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
 
@@ -115,11 +126,11 @@ If you need help, join our Discord.";
             if (image is { }) Children.Add(image);
         }, DispatcherPriority.Send);
 
-        _launchButton.Click += async (_, _) =>
+        _playButton.Click += async (_, _) =>
         {
             try
             {
-                _launchButton.Visibility = Visibility.Hidden;
+                _playButton.Visibility = Visibility.Hidden;
                 _progressBar.IsIndeterminate = true;
                 _progressBar.Visibility = Visibility.Visible;
                 _statusTextBlock.Visibility = Visibility.Visible;
@@ -210,7 +221,7 @@ If you need help, join our Discord.";
                 _progressBar.IsIndeterminate = false;
                 _progressBar.Visibility = Visibility.Hidden;
                 _statusTextBlock.Visibility = Visibility.Hidden;
-                _launchButton.Visibility = Visibility.Visible;
+                _playButton.Visibility = Visibility.Visible;
             }
         };
     }
