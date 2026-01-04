@@ -13,8 +13,8 @@ unsafe sealed class MinecraftUWP : Minecraft
     internal MinecraftUWP() : base() { }
     protected override string WindowClass => "MSCTFIME UI";
 
-    static readonly IPackageDebugSettings s_settings = (IPackageDebugSettings)new PackageDebugSettings();
-    static readonly IApplicationActivationManager s_manager = (IApplicationActivationManager)new ApplicationActivationManager();
+    static readonly IPackageDebugSettings s_package = (IPackageDebugSettings)new PackageDebugSettings();
+    static readonly IApplicationActivationManager s_application = (IApplicationActivationManager)new ApplicationActivationManager();
 
     /*
         - We request the OS to start the game & return its process identifier.
@@ -26,8 +26,8 @@ unsafe sealed class MinecraftUWP : Minecraft
         fixed (char* pfn = Package.Id.FullName)
         fixed (char* aumid = "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App")
         {
-            s_settings.EnableDebugging(pfn, null, null);
-            s_manager.ActivateApplication(aumid, null, ACTIVATEOPTIONS.AO_NONE, out var processId);
+            s_package.EnableDebugging(pfn, null, null);
+            s_application.ActivateApplication(aumid, null, ACTIVATEOPTIONS.AO_NONE, out var processId);
             return processId;
         }
     }

@@ -7,6 +7,7 @@ using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using Flarial.Launcher.Interface.Controls;
+using System.Threading.Tasks;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -25,7 +26,7 @@ sealed class VersionsPage : Grid
         HorizontalAlignment = HorizontalAlignment.Stretch
     };
 
-    InstallRequest? _request = null;
+    Task? _task = null;
 
     internal VersionsPage(MainWindowContent content)
     {
@@ -44,11 +45,9 @@ sealed class VersionsPage : Grid
 
         Application.Current.MainWindow.Closing += (sender, args) =>
         {
-            if (args.Cancel = _request is { })
-            {
-                content.Content = this;
-                content._versionsPageItem.IsSelected = true;
-            }
+            if (_task is null) return;
+            args.Cancel = true; content.Content = this;
+            content._versionsPageItem.IsSelected = true;
         };
 
         _control._button.Click += async (_, _) =>
@@ -83,7 +82,7 @@ sealed class VersionsPage : Grid
                 try
                 {
                     var entry = (VersionEntry)((ListBoxItem)_listBox.SelectedItem).Tag;
-                    await (_request = await entry.InstallAsync((state, value) => Dispatcher.Invoke(() =>
+                    await (_task = entry.InstallAsync((state, value) => Dispatcher.Invoke(() =>
                     {
                         switch (state)
                         {
@@ -104,7 +103,7 @@ sealed class VersionsPage : Grid
                         }
                     }, DispatcherPriority.Send)));
                 }
-                finally { _request = null; }
+                finally { _task = null; }
             }
             finally
             {

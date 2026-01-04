@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Networking;
-using System.Linq;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
@@ -40,5 +39,5 @@ public sealed class VersionEntries : IEnumerable<KeyValuePair<string, VersionEnt
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IEnumerator<KeyValuePair<string, VersionEntry?>> GetEnumerator() => _entries.GetEnumerator();
+    public IEnumerator<KeyValuePair<string, VersionEntry?>> GetEnumerator() => _entries.OrderByDescending(static _ => new Version(_.Key)).GetEnumerator();
 }

@@ -2,17 +2,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-
 sealed class GDKVersionEntry : VersionEntry
 {
-    const string PackagesUri = "https://raw.githubusercontent.com/MinecraftBedrockArchiver/GdkLinks/refs/heads/master/urls.json";
+    const string PackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@refs/heads/master/urls.json";
 
     static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, Dictionary<string, string[]>>), s_settings);
 

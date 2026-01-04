@@ -22,7 +22,6 @@ sealed class UWPVersionEntry : VersionEntry
     const string StoreUri = "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
     const string PackagesUri = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
 
-
     readonly string _content;
     static readonly string s_content;
     static readonly DataContractJsonSerializer s_serializer = new(typeof(string[][]), s_settings);

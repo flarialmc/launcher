@@ -37,8 +37,9 @@ abstract class MessageDialogContent
 
         public override string Content => @"The selected Minecraft version will be now installed.
 
-• A high speed internet connection is recommended for this.
 • Once the installation starts, you won't able to cancel it.
+• A high speed internet connection is recommended for this.
+• Free up disk space before proceeding with the installation.
 
 If you need help, join our Discord.";
 

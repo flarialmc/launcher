@@ -29,6 +29,7 @@ VirtualFreeEx
 CreateMutex
 DuplicateHandle
 CoCreateInstance
+DeleteFile
 INFINITE
 INVALID_HANDLE_VALUE
 INVALID_FILE_ATTRIBUTES

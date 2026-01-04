@@ -19,7 +19,7 @@ public unsafe abstract class Minecraft
 
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    static readonly PackageManager s_manager = new();
+    internal static readonly PackageManager s_manager = new();
 
     protected static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
