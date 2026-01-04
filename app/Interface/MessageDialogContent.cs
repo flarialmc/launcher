@@ -104,7 +104,7 @@ If you need help, join our Discord.";
         public override string Title => "⚠️ Invalid Custom DLL";
         public override string Content => @"The specified custom DLL is invalid.
 
-• Specify a DLL that exists and valid.
+• Specify a DLL that is valid and exists.
 • If you didn't intend to use a custom DLL, disable it in the launcher's settings.
 
 If you need help, join our Discord.";

@@ -36,11 +36,11 @@ public unsafe static class Injector
     public static uint? Launch(bool initialized, ModificationLibrary library)
     {
         if (!library.IsValid)
-            throw new FileLoadException(null, library.FileName);
+            throw new FileLoadException(null, library._path);
 
-        var security = File.GetAccessControl(library.FileName);
+        var security = File.GetAccessControl(library._path);
         security.SetAccessRule(s_rule);
-        File.SetAccessControl(library.FileName, security);
+        File.SetAccessControl(library._path, security);
 
         if (Minecraft.Current.Launch(initialized) is not { } processId) return null;
         if (Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
@@ -49,10 +49,10 @@ public unsafe static class Injector
         {
             HANDLE thread = Null; void* address = null; try
             {
-                var size = (nuint)(library.FileName.Length + 1) * sizeof(char);
+                var size = (nuint)(library._path.Length + 1) * sizeof(char);
 
                 address = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                fixed (char* buffer = library.FileName) WriteProcessMemory(process, address, buffer, size, null);
+                fixed (char* buffer = library._path) WriteProcessMemory(process, address, buffer, size, null);
 
                 thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
                 WaitForSingleObject(thread, INFINITE);
