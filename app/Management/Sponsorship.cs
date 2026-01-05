@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using Flarial.Launcher.Services.Networking;
 using System.Windows.Interop;
+using static Flarial.Launcher.PInvoke;
 
 namespace Flarial.Launcher.Management;
 
@@ -36,7 +37,7 @@ static class Sponsorship
                 Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad)
             };
 
-            image.MouseLeftButtonDown += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), CampaignUri);
+            image.MouseLeftButtonDown += (_, _) => ShellExecute(helper.EnsureHandle(), lpFile: CampaignUri, nShowCmd: SW_NORMAL);
             return image;
         }
         catch { return null; }

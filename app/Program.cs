@@ -13,6 +13,7 @@ using ModernWpf.Controls;
 using static System.IO.Directory;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
+using static Flarial.Launcher.PInvoke;
 
 namespace Flarial.Launcher;
 
@@ -32,7 +33,7 @@ Exception: {1}
 
     static Program()
     {
-        PInvoke.SetErrorMode();
+        SetErrorMode(SEM_FAILCRITICALERRORS);
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {

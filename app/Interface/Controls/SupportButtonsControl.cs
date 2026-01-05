@@ -9,6 +9,7 @@ using static Flarial.Launcher.Services.Core.Minecraft;
 using ModernWpf.Controls;
 using System.Windows.Interop;
 using System;
+using static Flarial.Launcher.PInvoke;
 
 namespace Flarial.Launcher.Interface.Controls;
 
@@ -60,7 +61,7 @@ sealed class SupportButtonsControl : UniformGrid
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _launcherFolderButton.Click += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), _launcher);
+        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), lpFile: _launcher, nShowCmd: SW_NORMAL);
 
         _clientFolderButton.Click += async (_, _) =>
         {
@@ -78,7 +79,7 @@ sealed class SupportButtonsControl : UniformGrid
                 return;
             }
 
-            PInvoke.ShellExecute(helper.EnsureHandle(), path);
+            ShellExecute(helper.EnsureHandle(), lpFile: path, nShowCmd: SW_NORMAL);
         };
     }
 }

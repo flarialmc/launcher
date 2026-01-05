@@ -56,7 +56,7 @@ sealed class MainWindowContent : NavigationView
 
         ItemInvoked += (sender, args) =>
         {
-            if (args.IsSettingsInvoked) Content = _settingsPage; 
+            if (args.IsSettingsInvoked) Content = _settingsPage;
             else Content = args.InvokedItemContainer.Tag;
         };
 
@@ -79,7 +79,7 @@ sealed class MainWindowContent : NavigationView
                     if (_progressBar.Value == _) return;
                     _progressBar.Value = _;
                     _progressBar.IsIndeterminate = false;
-                }));
+                }, DispatcherPriority.Send));
                 return;
             }
 

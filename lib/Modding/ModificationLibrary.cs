@@ -6,8 +6,9 @@ using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 namespace Flarial.Launcher.Services.Modding;
 
 /*
-    - Ensure the caller invokes SetErrorMode before using `ModificationLibrary`.
-    - This will prevent the caller from hanging up.
+    - The caller should apply `SEM_FAILCRITICALERRORS` to prevent hangs.
+    - To perform validation, the library is loaded as a stub.
+    - This class is meant to be shorted lived & not cached.
 */
 
 public unsafe sealed class ModificationLibrary
