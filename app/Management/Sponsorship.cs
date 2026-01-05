@@ -37,7 +37,7 @@ static class Sponsorship
                 Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad)
             };
 
-            image.MouseLeftButtonDown += (_, _) => ShellExecute(helper.EnsureHandle(), lpFile: CampaignUri, nShowCmd: SW_NORMAL);
+            image.MouseLeftButtonDown += (_, _) => ShellExecute(helper.EnsureHandle(), null!, CampaignUri, null!, null!, SW_NORMAL);
             return image;
         }
         catch { return null; }

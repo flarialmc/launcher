@@ -33,6 +33,8 @@ Exception: {1}
 
     static Program()
     {
+        SetErrorMode(GetErrorMode() | SEM_FAILCRITICALERRORS);
+
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
             var version = ApplicationManifest.Version;

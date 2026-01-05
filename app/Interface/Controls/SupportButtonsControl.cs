@@ -61,7 +61,7 @@ sealed class SupportButtonsControl : UniformGrid
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), lpFile: _launcher, nShowCmd: SW_NORMAL);
+        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), null!, null!, _launcher, null!, SW_NORMAL);
 
         _clientFolderButton.Click += async (_, _) =>
         {
@@ -79,7 +79,7 @@ sealed class SupportButtonsControl : UniformGrid
                 return;
             }
 
-            ShellExecute(helper.EnsureHandle(), lpFile: path, nShowCmd: SW_NORMAL);
+            ShellExecute(helper.EnsureHandle(), null!, path, null!, null!, SW_NORMAL);
         };
     }
 }
