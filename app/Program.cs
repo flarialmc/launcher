@@ -33,8 +33,6 @@ Exception: {1}
 
     static Program()
     {
-        SetErrorMode(SEM_FAILCRITICALERRORS);
-
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
             var version = ApplicationManifest.Version;
@@ -86,7 +84,7 @@ Exception: {1}
                         var offset = index + 1; var count = arguments.Length - offset;
                         ArraySegment<string> segment = new(arguments, offset, count);
 
-                        Injector.Launch(true, segment.First());
+                        Injector.Launch(true, new(segment.First()));
                         Exit(0);
                         break;
 
