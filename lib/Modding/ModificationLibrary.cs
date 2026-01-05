@@ -6,8 +6,8 @@ using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 namespace Flarial.Launcher.Services.Modding;
 
 /*
-    - A caller should apply `SEM_FAILCRITICALERRORS` to prevent hangs.
-    - This will ensure the `ModificationLibrary` class works as intended.
+    - A caller should apply `SEM_FAILCRITICALERRORS` via `SetErrorMode()`.
+    - This will prevent the `ModificationLibrary` class from blocking the caller.
 */
 
 public unsafe sealed class ModificationLibrary
