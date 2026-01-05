@@ -15,7 +15,7 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _launchFailure = new LaunchFailure();
 
-    internal static readonly MessageDialogContent _clientUpdateFailure = new LauncherUpdateAvailable();
+    internal static readonly MessageDialogContent _clientUpdateFailure = new ClientUpdateFailure();
 
     internal static readonly MessageDialogContent _launcherUpdateAvailable = new LauncherUpdateAvailable();
 
@@ -128,7 +128,7 @@ If you need help, join our Discord.";
         public override string Title => "⚠️ Client Update Failure";
         public override string Content => @"A client update couldn't be downloaded.
 
-• Try closing Minecraft & click on [Launch] to update the client.
+• Try closing Minecraft & click on [Play] to update the client.
 • Try rebooting your machine & see if that resolves the issue.
 
 If you need help, join our Discord.";
