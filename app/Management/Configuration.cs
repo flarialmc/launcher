@@ -17,11 +17,15 @@ sealed class Configuration
     internal DllBuild DllBuild { get; set; } = DllBuild.Release;
 
     [DataMember]
-    internal string? CustomDllPath
+    internal string CustomDllPath
     {
         get => field;
-        set => field = value?.Trim();
-    } = null;
+        set
+        {
+            try { field = value.Trim(); }
+            catch { field = string.Empty; }
+        }
+    } = string.Empty;
 
     [DataMember]
     internal bool WaitForInitialization { get; set; } = true;
@@ -40,10 +44,10 @@ sealed class Configuration
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
     {
-        DllBuild = DllBuild.Release;
-        CustomDllPath = null;
-        WaitForInitialization = true;
         HardwareAcceleration = true;
+        DllBuild = DllBuild.Release;
+        CustomDllPath = string.Empty;
+        WaitForInitialization = true;
     }
 
     internal static Configuration Get()

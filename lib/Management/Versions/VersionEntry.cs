@@ -60,6 +60,6 @@ public abstract class VersionEntry
                 finally { CloseHandle(@event); item.Close(); }
             }
         }
-        finally { unsafe { fixed (char* buffer = path) DeleteFile(buffer); } }
+        finally { try { File.Delete(path); } catch { } }
     });
 }

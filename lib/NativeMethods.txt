@@ -19,7 +19,6 @@ GetWindowThreadProcessId
 SwitchToThisWindow
 GetFileAttributes
 CreateRemoteThread
-ResumeThread
 LoadLibraryEx
 GetModuleHandle
 GetProcAddress
@@ -28,7 +27,6 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
-DeleteFile
 INFINITE
 INVALID_HANDLE_VALUE
 INVALID_FILE_ATTRIBUTES

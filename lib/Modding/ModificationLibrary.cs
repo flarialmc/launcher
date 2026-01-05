@@ -23,7 +23,7 @@ public unsafe sealed class ModificationLibrary
             - The file should exist and have an extension.
         */
 
-        try { _path = Path.GetFullPath(path); } catch { return; }
+        try { _path = Path.GetFullPath(path.Trim()); } catch { return; }
         if (!Path.HasExtension(_path) || !File.Exists(_path)) return;
 
         /*

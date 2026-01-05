@@ -130,7 +130,7 @@ If you need help, join our Discord.";
         {
             try
             {
-                _playButton.Visibility = Visibility.Hidden;                
+                _playButton.Visibility = Visibility.Hidden;
                 _progressBar.IsIndeterminate = true;
                 _progressBar.Visibility = Visibility.Visible;
                 _statusTextBlock.Visibility = Visibility.Visible;
@@ -155,20 +155,12 @@ If you need help, join our Discord.";
 
                 if (!custom && !beta && !entries.IsSupported)
                 {
-                    var packageVersion = Minecraft.PackageVersion;
-                    var supportedVersion = entries.First().Key;
-
-                    await MessageDialog.ShowAsync(new UnsupportedVersion(Minecraft.PackageVersion, entries.First().Key)); return;
+                    await MessageDialog.ShowAsync(new UnsupportedVersion(Minecraft.PackageVersion, entries.First().Key));
+                    return;
                 }
 
                 if (custom)
                 {
-                    if (string.IsNullOrWhiteSpace(path))
-                    {
-                        await MessageDialog.ShowAsync(_invalidCustomDll);
-                        return;
-                    }
-
                     ModificationLibrary library = new(path!);
 
                     if (!library.IsValid)
