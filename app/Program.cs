@@ -33,7 +33,14 @@ Exception: {1}
 
     static Program()
     {
-        SetErrorMode(GetErrorMode() | SEM_FAILCRITICALERRORS);
+        /*
+            - Prevent the operating system from handling errors for us.
+            - Setup exception & process exit handlers.
+        */
+
+        SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
+
+        AppDomain.CurrentDomain.ProcessExit += static (_, _) => { GC.Collect(); GC.WaitForPendingFinalizers(); };
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
@@ -53,16 +60,10 @@ Exception: {1}
 
             Exit(1);
         };
-
-        AppDomain.CurrentDomain.ProcessExit += static (_, _) =>
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-        };
     }
 
     [STAThread]
-    static void Main(string[] arguments)
+    static void Main(string[] args)
     {
         using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created))
         {
@@ -74,33 +75,19 @@ Exception: {1}
 
             var configuration = Configuration.Get();
 
-            for (var index = 0; index < arguments.Length; index++)
+            for (var index = 0; index < args.Length; index++)
             {
-                var argument = arguments[index];
+                var argument = args[index];
                 switch (argument)
                 {
                     case "--inject":
-                        if (!(index + 1 < arguments.Length))
-                            continue;
+                        if (!(index + 1 < args.Length)) continue;
+                        Injector.Launch(true, new(args[index + 1]));
+                        return;
 
-                        var offset = index + 1; var count = arguments.Length - offset;
-                        ArraySegment<string> segment = new(arguments, offset, count);
-
-                        Injector.Launch(true, new(segment.First()));
-                        Exit(0);
-                        break;
-
-                    case "--no-hardware-acceleration":
-                        configuration.HardwareAcceleration = false;
-                        break;
-
-                    case "--use-proxy":
-                        HttpService.UseProxy = true;
-                        break;
-
-                    case "--use-dns-over-https":
-                        HttpService.UseDnsOverHttps = true;
-                        break;
+                    case "--use-proxy": HttpService.UseProxy = true; break;
+                    case "--use-dns-over-https": HttpService.UseDnsOverHttps = true; break;
+                    case "--no-hardware-acceleration": configuration.HardwareAcceleration = false; break;
                 }
             }
 

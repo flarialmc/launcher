@@ -7,10 +7,13 @@ static class PInvoke
 {
     internal const int SW_NORMAL = 1;
 
+    internal const uint SEM_NOGPFAULTERRORBOX = 0x0002;
+
     internal const uint SEM_FAILCRITICALERRORS = 0x0001;
 
-    [DllImport("Kernel32")]
-    internal static extern uint GetErrorMode();
+    internal const uint SEM_NOOPENFILEERRORBOX = 0x8000;
+
+    internal const uint SEM_NOALIGNMENTFAULTEXCEPT = 0x0004;
 
     [DllImport("Kernel32", SetLastError = true)]
     internal static extern uint SetErrorMode(uint uMode);

@@ -19,7 +19,7 @@ public unsafe sealed class ModificationLibrary
     public ModificationLibrary(string path)
     {
         /*
-            - Ensure the provided path is correctly formated.
+            - Ensure the provided path is correctly formatted.
             - The file should exist and have an extension.
         */
 
