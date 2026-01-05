@@ -7,7 +7,7 @@ namespace Flarial.Launcher.Services.Modding;
 
 /*
     - A caller should apply `SEM_FAILCRITICALERRORS` to prevent hangs.
-    - This will ensure the `ModificationLibrary` works as intended.
+    - This will ensure the `ModificationLibrary` class works as intended.
 */
 
 public unsafe sealed class ModificationLibrary
