@@ -39,7 +39,7 @@ public abstract class FlarialClient
             return Minecraft.Current.Launch(false) is { };
         }
 
-        if (Injector.Launch(initialized, Library) is not { } processId) return false;
+        if (Injector.Launch(initialized, new(Library)) is not { } processId) return false;
         using NativeMutex mutex = new(Identifer); return mutex.Duplicate(processId);
     }
 

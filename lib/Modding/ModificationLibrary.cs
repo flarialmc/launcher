@@ -6,9 +6,8 @@ using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 namespace Flarial.Launcher.Services.Modding;
 
 /*
-    - The caller should apply `SEM_FAILCRITICALERRORS` to prevent hangs.
-    - To perform validation, the library is loaded as a stub.
-    - This class is meant to be shorted lived & not cached.
+    - A caller should apply `SEM_FAILCRITICALERRORS` to prevent hangs.
+    - This will ensure the `ModificationLibrary` works as intended.
 */
 
 public unsafe sealed class ModificationLibrary
@@ -19,22 +18,20 @@ public unsafe sealed class ModificationLibrary
 
     public ModificationLibrary(string path)
     {
-        try
-        {
-            fixed (char* buffer = _path = Path.GetFullPath(path))
-            {
-                if (!File.Exists(_path) || !Path.HasExtension(_path)) return;
+        /*
+            - Ensure the provided path is correctly formated.
+            - The file should exist and have an extension.
+        */
 
-                /*
-                    - Use `DONT_RESOLVE_DLL_REFERENCES` to the library as stub.
-                    - This is done to perform load validation and to ensure no code is executed.
-                */
+        try { _path = Path.GetFullPath(path); } catch { return; }
+        if (!Path.HasExtension(_path) || !File.Exists(_path)) return;
 
-                IsValid = FreeLibrary(LoadLibraryEx(buffer, Null, DONT_RESOLVE_DLL_REFERENCES));
-            }
-        }
-        catch { }
+        /*
+            - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
+            - This is done to perform load validation and to ensure no code is executed.
+        */
+
+        fixed (char* value = _path)
+            IsValid = FreeLibrary(LoadLibraryEx(value, Null, DONT_RESOLVE_DLL_REFERENCES));
     }
-
-    public static implicit operator ModificationLibrary(string @this) => new(@this);
 }
