@@ -55,7 +55,7 @@ sealed class Configuration
 
             try
             {
-                var path = configuration.CustomDllPath;
+                var path = configuration.CustomDllPath.Trim();
                 configuration.CustomDllPath = Path.GetFullPath(path);
             }
             catch { configuration.CustomDllPath = string.Empty; }

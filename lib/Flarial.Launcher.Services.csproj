@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
     <TargetFramework>net481</TargetFramework>
 
     <Nullable>enable</Nullable>

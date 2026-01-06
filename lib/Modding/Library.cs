@@ -4,6 +4,11 @@ using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 using System.IO;
+using Windows.Win32.System.SystemServices;
+using Windows.Win32;
+using Windows.Win32.System.Diagnostics.Debug;
+using static Windows.Win32.System.Diagnostics.Debug.IMAGE_FILE_CHARACTERISTICS;
+using System;
 
 namespace Flarial.Launcher.Services.Modding;
 
@@ -20,7 +25,7 @@ public unsafe sealed class Library
     {
         get
         {
-            var library = HMODULE.Null;
+            var module = HMODULE.Null;
             try
             {
                 fixed (char* path = _path)
@@ -30,16 +35,32 @@ public unsafe sealed class Library
                         - This is done to perform load validation and to ensure no code is executed.
                     */
 
-                    library = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
-                    return library != HMODULE.Null;
+                    if (!(module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES)).IsNull)
+                        return false;
                 }
+
+                /*
+                    - Ensure the loaded library is actually a DLL.
+                    - This can be done by inspecting the image header.
+                */
+
+                var dos = (IMAGE_DOS_HEADER*)module;
+                var nt = (IMAGE_NT_HEADERS64*)((nint)dos + dos->e_lfanew);
+
+                return nt->FileHeader.Characteristics.HasFlag(IMAGE_FILE_DLL);
+
             }
-            finally { FreeLibrary(library); }
+            finally { FreeLibrary(module); }
         }
     }
 
     public Library(string path)
     {
+        /*
+            - Peform path validation.
+            - Ensure the path has an extension & exists.
+        */
+
         _path = Path.GetFullPath(path);
 
         if (!Path.HasExtension(_path))
