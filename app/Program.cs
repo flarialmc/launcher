@@ -14,6 +14,7 @@ using static System.IO.Directory;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static Flarial.Launcher.PInvoke;
+using static System.IO.Path;
 
 namespace Flarial.Launcher;
 
@@ -67,11 +68,10 @@ Exception: {1}
     {
         using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created))
         {
-            if (!created) return;
+            if (!created)
+                return;
 
-            var path = GetFolderPath(LocalApplicationData);
-            path = Path.Combine(path, @"Flarial\Launcher");
-            CurrentDirectory = CreateDirectory(path).FullName;
+            CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
 
             var configuration = Configuration.Get();
 
@@ -81,13 +81,22 @@ Exception: {1}
                 switch (argument)
                 {
                     case "--inject":
-                        if (!(index + 1 < args.Length)) continue;
+                        if (!(index + 1 < args.Length))
+                            continue;
+
                         Injector.Launch(true, new(args[index + 1]));
                         return;
 
-                    case "--use-proxy": HttpService.UseProxy = true; break;
-                    case "--use-dns-over-https": HttpService.UseDnsOverHttps = true; break;
-                    case "--no-hardware-acceleration": configuration.HardwareAcceleration = false; break;
+                    case "--use-proxy":
+                        HttpService.UseProxy = true; break;
+
+                    case "--use-dns-over-https":
+                        HttpService.UseDnsOverHttps = true;
+                        break;
+
+                    case "--no-hardware-acceleration":
+                        configuration.HardwareAcceleration = false;
+                        break;
                 }
             }
 

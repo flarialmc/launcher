@@ -15,15 +15,6 @@ namespace Flarial.Launcher.Interface.Controls;
 
 sealed class SupportButtonsControl : UniformGrid
 {
-    [Obsolete("", true)]
-    readonly Button _discordLinkButton = new()
-    {
-        Content = new SupportButtonContent(Symbol.Globe, "Discord"),
-        VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch,
-        Margin = new(0, 0, 6, 0)
-    };
-
     readonly Button _clientFolderButton = new()
     {
         Content = new SupportButtonContent(Symbol.MoveToFolder, "Client"),
@@ -61,7 +52,7 @@ sealed class SupportButtonsControl : UniformGrid
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), null!, null!, _launcher, null!, SW_NORMAL);
+        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), null!, _launcher, null!, null!, SW_NORMAL);
 
         _clientFolderButton.Click += async (_, _) =>
         {

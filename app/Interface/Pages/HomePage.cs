@@ -161,9 +161,13 @@ If you need help, join our Discord.";
 
                 if (custom)
                 {
-                    ModificationLibrary library = new(path!);
+                    if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
+                    {
+                        await MessageDialog.ShowAsync(_invalidCustomDll);
+                        return;
+                    }
 
-                    if (!library.IsValid)
+                    Library library = new(path); if (!library.IsLoadable)
                     {
                         await MessageDialog.ShowAsync(_invalidCustomDll);
                         return;

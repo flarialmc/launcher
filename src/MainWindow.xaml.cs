@@ -306,15 +306,13 @@ If you need help, join our Discord.", ("Update", true)))
 
             if (custom)
             {
-                if (string.IsNullOrWhiteSpace(path))
+                if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
                     CreateMessageBox("⚠️ Please specify a Custom DLL.");
                     return;
                 }
 
-                ModificationLibrary library = new(path);
-
-                if (!library.IsValid)
+                Library library = new(path); if (!library.IsLoadable)
                 {
                     CreateMessageBox("⚠️ The specified Custom DLL is potentially invalid or doesn't exist.");
                     return;

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Windows.Automation.Peers;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xml;
@@ -17,15 +18,7 @@ sealed class Configuration
     internal DllBuild DllBuild { get; set; } = DllBuild.Release;
 
     [DataMember]
-    internal string CustomDllPath
-    {
-        get => field;
-        set
-        {
-            try { field = value.Trim(); }
-            catch { field = string.Empty; }
-        }
-    } = string.Empty;
+    internal string CustomDllPath { get; set; } = string.Empty;
 
     [DataMember]
     internal bool WaitForInitialization { get; set; } = true;
@@ -55,12 +48,19 @@ sealed class Configuration
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.xml");
-            var s_configuration = (Configuration)s_serializer.ReadObject(stream);
+            var configuration = (Configuration)s_serializer.ReadObject(stream);
 
-            if (!Enum.IsDefined(typeof(DllBuild), s_configuration.DllBuild))
-                s_configuration.DllBuild = default;
+            if (!Enum.IsDefined(typeof(DllBuild), configuration.DllBuild))
+                configuration.DllBuild = DllBuild.Release;
 
-            return s_configuration;
+            try
+            {
+                var path = configuration.CustomDllPath;
+                configuration.CustomDllPath = Path.GetFullPath(path);
+            }
+            catch { configuration.CustomDllPath = string.Empty; }
+
+            return configuration;
         }
         catch { return new(); }
     }

@@ -45,16 +45,18 @@ unsafe partial class MinecraftGDK : Minecraft
             - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
         */
 
-        if (ProcessId is { } processId) return processId;
+        if (ProcessId is { } processId)
+            return processId;
 
-        using var _ = PowerShell.Create();
-        _.AddCommand("Invoke-CommandInDesktopPackage");
+        using var shell = PowerShell.Create();
+        shell.AddCommand("Invoke-CommandInDesktopPackage");
 
-        _.AddParameter(nameof(AppId), AppId);
-        _.AddParameter(nameof(Command), Command);
-        _.AddParameter(nameof(PackageFamilyName), PackageFamilyName);
+        shell.AddParameter(nameof(AppId), AppId);
+        shell.AddParameter(nameof(Command), Command);
+        shell.AddParameter(nameof(PackageFamilyName), PackageFamilyName);
 
-        _.Invoke(); return ProcessId;
+        shell.Invoke();
+        return ProcessId;
     }
 
     public override uint? Launch(bool initialized)
@@ -65,8 +67,11 @@ unsafe partial class MinecraftGDK : Minecraft
             return window.ProcessId;
         }
 
-        if (Activate() is not { } processId) return null;
-        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+        if (Activate() is not { } processId)
+            return null;
+
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
+            return null;
 
         /*
             - The initialization logic is derived from the UWP builds of the game.
@@ -101,7 +106,8 @@ unsafe partial class MinecraftGDK : Minecraft
             fixed (char* pfn = PackageFamilyName) fixed (char* name = "Minecraft.Windows.exe")
             {
                 uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
-                WTS_PROCESS_INFOW* information = null; var buffer = stackalloc char[(int)length];
+                WTS_PROCESS_INFOW* information = null;
+                var buffer = stackalloc char[(int)length];
 
                 try
                 {
@@ -109,13 +115,21 @@ unsafe partial class MinecraftGDK : Minecraft
                         for (var index = 0; index < count; index++)
                         {
                             var entry = information[index];
-                            if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL) continue;
-                            if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
+
+                            if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL)
+                                continue;
+
+                            if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
+                                continue;
 
                             using (process)
                             {
-                                if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
-                                if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
+                                if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS)
+                                    continue;
+
+                                if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL)
+                                    continue;
+
                                 return entry.ProcessId;
                             }
                         }

@@ -33,10 +33,10 @@ public unsafe static class Injector
         }
     }
 
-    public static uint? Launch(bool initialized, ModificationLibrary library)
+    public static uint? Launch(bool initialized, Library library)
     {
-        if (!library.IsValid)
-            throw new FileLoadException(null, library._path);
+        if (!library.IsLoadable)
+            throw new FileLoadException();
 
         var security = File.GetAccessControl(library._path);
         security.SetAccessRule(s_rule);
