@@ -35,7 +35,9 @@ public unsafe sealed class Library
                         - This is done to perform load validation and to ensure no code is executed.
                     */
 
-                    if (!(module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES)).IsNull)
+                    module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
+
+                    if (module.IsNull)
                         return false;
                 }
 
