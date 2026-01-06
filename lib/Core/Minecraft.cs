@@ -8,6 +8,7 @@ using Windows.Win32.Globalization;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
+using System;
 
 namespace Flarial.Launcher.Services.Core;
 
@@ -23,7 +24,7 @@ public unsafe abstract class Minecraft
 
     protected static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
+    internal static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
 
     static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
 
@@ -34,6 +35,15 @@ public unsafe abstract class Minecraft
     protected abstract uint? Activate();
 
     public abstract uint? Launch(bool initialized);
+
+    public static bool AllowUnsignedInstalls
+    {
+        get; set
+        {
+            if (field) throw new InvalidOperationException();
+            field = value;
+        }
+    }
 
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
 

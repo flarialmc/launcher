@@ -163,7 +163,9 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
+                if (!Minecraft.AllowUnsignedInstalls && 
+                    Minecraft.UsingGameDevelopmentKit && 
+                    !Minecraft.IsPackaged)
                 {
                     await MessageDialog.ShowAsync(_unsignedInstallation);
                     return;

@@ -15,6 +15,7 @@ using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static Flarial.Launcher.PInvoke;
 using static System.IO.Path;
+using Flarial.Launcher.Services.Core;
 
 namespace Flarial.Launcher;
 
@@ -96,6 +97,10 @@ Exception: {1}
 
                     case "--no-hardware-acceleration":
                         configuration.HardwareAcceleration = false;
+                        break;
+
+                    case "--allow-unsigned-installs":
+                        Minecraft.AllowUnsignedInstalls = true;
                         break;
                 }
             }

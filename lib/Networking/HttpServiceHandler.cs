@@ -18,7 +18,15 @@ namespace Flarial.Launcher.Services.Networking;
 
 sealed partial class HttpServiceHandler : HttpClientHandler
 {
-    internal static bool UseDnsOverHttps { get; set; }
+    internal static bool UseDnsOverHttps
+    {
+        get => field;
+        set
+        {
+            if (field) throw new InvalidOperationException();
+            field = value;
+        }
+    }
 
     internal HttpServiceHandler() { AllowAutoRedirect = true; AutomaticDecompression = GZip | Deflate; }
 

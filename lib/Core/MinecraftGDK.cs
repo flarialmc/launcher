@@ -29,7 +29,6 @@ unsafe partial class MinecraftGDK : Minecraft
     string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
-
     protected override uint? Activate()
     {
         /*
@@ -37,7 +36,7 @@ unsafe partial class MinecraftGDK : Minecraft
             - This allows the launcher ensure the launch contract works as intended.
         */
 
-        if (!IsPackaged)
+        if (!AllowUnsignedInstalls && !IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         /*

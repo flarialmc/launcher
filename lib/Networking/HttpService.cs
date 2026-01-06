@@ -23,7 +23,14 @@ public class HttpService
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool UseProxy { get; set; }
+    public static bool UseProxy
+    {
+        get; set
+        {
+            if (field) throw new InvalidOperationException();
+            field = value;
+        }
+    }
 
     public static bool UseDnsOverHttps
     {

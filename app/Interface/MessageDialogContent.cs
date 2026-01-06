@@ -101,9 +101,9 @@ If you need help, join our Discord.";
 
     sealed class UnsignedInstallation : MessageDialogContent
     {
-        public override string Title => "⚠️ Unsigned Installation";
+        public override string Title => "⚠️ Unsigned Install";
 
-        public override string Content => @"An unsigned Minecraft installation has been detected.
+        public override string Content => @"An unsigned Minecraft install has been detected.
 
 • Unsigned installs might cause compatibility issues with the client & launcher.
 • Reinstall Minecraft via the Microsoft Store or Xbox App to fix this issue.
