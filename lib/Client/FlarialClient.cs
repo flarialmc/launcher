@@ -9,6 +9,7 @@ using Windows.Data.Json;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.System;
 using static Windows.Win32.PInvoke;
+using Windows.Media.Devices;
 
 namespace Flarial.Launcher.Services.Client;
 
@@ -79,12 +80,8 @@ public abstract class FlarialClient
         if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
             return true;
 
-        unsafe
-        {
-            fixed (char* value = Path)
-                if (!DeleteFile(value))
-                    return false;
-        }
+        try { File.Delete(Path); }
+        catch { return false; }
 
         await HttpService.DownloadAsync(Uri, Path, action);
         return true;

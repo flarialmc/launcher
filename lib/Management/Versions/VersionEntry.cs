@@ -70,13 +70,6 @@ public abstract class VersionEntry
                 finally { CloseHandle(@event); item.Close(); }
             }
         }
-        finally
-        {
-            unsafe
-            {
-                fixed (char* value = path)
-                    DeleteFile(value);
-            }
-        }
+        finally { try { File.Delete(path); } catch { } }
     });
 }
