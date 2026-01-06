@@ -27,6 +27,7 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
+DeleteFile
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64
 INFINITE

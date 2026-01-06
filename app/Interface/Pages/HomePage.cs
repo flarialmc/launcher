@@ -107,18 +107,19 @@ If you need help, join our Discord.";
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
 
-        void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
+        void OnPackageStatusChanged(string packageFamilyName, bool installed) => Dispatcher.Invoke(() =>
         {
-            if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase)) return;
-            try { _packageVersionTextBlock.Text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}"; }
-            catch { _packageVersionTextBlock.Text = "❌ 0.0.0"; }
+            if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
+                return;
+
+            _packageVersionTextBlock.Text = installed ? $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}" : "❌ 0.0.0";
         }, DispatcherPriority.Send);
 
-        _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName); };
-        _catalog.PackageInstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
-        _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
+        _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName, true); };
+        _catalog.PackageInstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName, true); };
+        _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName, false); };
 
-        OnPackageStatusChanged(Minecraft.PackageFamilyName);
+        OnPackageStatusChanged(Minecraft.PackageFamilyName, Minecraft.IsInstalled);
 
         Dispatcher.Invoke(async () =>
         {

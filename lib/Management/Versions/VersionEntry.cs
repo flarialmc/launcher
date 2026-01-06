@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
@@ -7,8 +8,10 @@ using Flarial.Launcher.Services.Networking;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 using Windows.Management.Deployment;
+using Windows.Win32.Foundation;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
@@ -34,14 +37,18 @@ public abstract class VersionEntry
 
     public async Task InstallAsync(Action<AppInstallState, int> action) => await Task.Run(async () =>
     {
+        if (!Minecraft.IsInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+
+        if (!Minecraft.IsPackaged)
+            throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
+
         var uri = await GetAsync();
         var path = Path.Combine(s_path, Path.GetRandomFileName());
 
         try
         {
             await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _));
-            var item = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
-
             unsafe
             {
                 /*
@@ -49,7 +56,10 @@ public abstract class VersionEntry
                     - We wrap the asynchronous operation as a synchronous operation & proxy it to 'Task.Run()'.
                 */
 
-                var @event = CreateEvent(null, true, false, null); try
+                var @event = CreateEvent(null, true, false, null);
+                var item = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+
+                try
                 {
                     item.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
                     item.Completed += (_, _) => SetEvent(@event);
@@ -60,6 +70,13 @@ public abstract class VersionEntry
                 finally { CloseHandle(@event); item.Close(); }
             }
         }
-        finally { try { File.Delete(path); } catch { } }
+        finally
+        {
+            unsafe
+            {
+                fixed (char* value = path)
+                    DeleteFile(value);
+            }
+        }
     });
 }

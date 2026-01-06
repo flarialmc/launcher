@@ -4,7 +4,7 @@ sealed partial class FlarialClientRelease : FlarialClient
 {
     protected override string Build => nameof(Release);
 
-    protected override string Library => $"Flarial.Client.{nameof(Release)}.dll";
+    protected override string Path => $"Flarial.Client.{nameof(Release)}.dll";
 
     protected override string Identifer => "34F45015-6EB6-4213-ABEF-F2967818E628";
 

@@ -4,7 +4,7 @@ sealed partial class FlarialClientBeta : FlarialClient
 {
     protected override string Build => nameof(Beta);
 
-    protected override string Library => $"Flarial.Client.{nameof(Beta)}.dll";
+    protected override string Path => $"Flarial.Client.{nameof(Beta)}.dll";
 
     protected override string Identifer => "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
 

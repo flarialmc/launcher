@@ -31,13 +31,13 @@ public unsafe sealed class Library
             var module = HMODULE.Null;
             try
             {
+                /*
+                    - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
+                    - This is done to perform load validation and to ensure no code is executed.
+                */
+
                 fixed (char* path = _path)
                 {
-                    /*
-                        - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
-                        - This is done to perform load validation and to ensure no code is executed.
-                    */
-
                     module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
 
                     if (module.IsNull)
