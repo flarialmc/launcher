@@ -107,19 +107,40 @@ If you need help, join our Discord.";
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
 
-        void OnPackageStatusChanged(string packageFamilyName, bool installed) => Dispatcher.Invoke(() =>
+        void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
         {
             if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
                 return;
 
-            _packageVersionTextBlock.Text = installed ? $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}" : "❌ 0.0.0";
+            if (!Minecraft.IsInstalled)
+            {
+                _packageVersionTextBlock.Text = "❌ 0.0.0";
+                return;
+            }
+
+            _packageVersionTextBlock.Text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
         }, DispatcherPriority.Send);
 
-        _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName, true); };
-        _catalog.PackageInstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName, true); };
-        _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName, false); };
 
-        OnPackageStatusChanged(Minecraft.PackageFamilyName, Minecraft.IsInstalled);
+        _catalog.PackageUpdating += (sender, args) =>
+        {
+            if (args.IsComplete)
+                OnPackageStatusChanged(args.TargetPackage.Id.FamilyName);
+        };
+
+        _catalog.PackageInstalling += (sender, args) =>
+        {
+            if (args.IsComplete)
+                OnPackageStatusChanged(args.Package.Id.FamilyName);
+        };
+
+        _catalog.PackageUninstalling += (sender, args) =>
+        {
+            if (args.IsComplete)
+                OnPackageStatusChanged(args.Package.Id.FamilyName);
+        };
+
+        OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
         Dispatcher.Invoke(async () =>
         {
