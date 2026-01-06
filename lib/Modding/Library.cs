@@ -25,6 +25,9 @@ public unsafe sealed class Library
     {
         get
         {
+if (_path is null)
+return false;
+
             var module = HMODULE.Null;
             try
             {
