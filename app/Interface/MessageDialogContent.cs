@@ -106,7 +106,7 @@ If you need help, join our Discord.";
         public override string Content => @"An unsigned Minecraft installation has been detected.
 
 • Unsigned installs might cause compatibility issues with the client & launcher.
-• Reinstall Minecraft via the Microsoft or Xbox App to fix this issue.
+• Reinstall Minecraft via the Microsoft Store or Xbox App to fix this issue.
 
 If you need help, join our Discord.";
 
