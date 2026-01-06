@@ -117,12 +117,10 @@ sealed class VersionsPage : Grid
                         }
                     }, DispatcherPriority.Send)));
                 }
-                finally { _task = null; }
+                finally { _task = null; _listBox.SelectedIndex = -1; }
             }
             finally
             {
-                _listBox.SelectedIndex = -1;
-
                 _control._progressBar.Value = 0;
                 _control._progressBar.IsIndeterminate = false;
                 _control._progressBar.Visibility = Visibility.Hidden;
