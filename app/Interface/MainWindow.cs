@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using Flarial.Launcher.Interface.Pages;
 using Flarial.Launcher.Management;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
@@ -23,10 +24,8 @@ sealed class MainWindow : Window
 
         UseLayoutRounding = true;
         SnapsToDevicePixels = true;
-
-        RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
         RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
-        Content = new MainWindowContent(configuration, new(this));
+        Content = new RootPage(configuration, new(this));
     }
 }

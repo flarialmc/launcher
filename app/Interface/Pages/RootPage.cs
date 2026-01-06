@@ -13,9 +13,9 @@ using ModernWpf.Controls;
 using System;
 using System.Windows.Interop;
 
-namespace Flarial.Launcher.Interface;
+namespace Flarial.Launcher.Interface.Pages;
 
-sealed class MainWindowContent : NavigationView
+sealed class RootPage : NavigationView
 {
     readonly SettingsPage _settingsPage;
 
@@ -41,7 +41,7 @@ sealed class MainWindowContent : NavigationView
         IsIndeterminate = true
     };
 
-    internal MainWindowContent(Configuration configuration, WindowInteropHelper helper)
+    internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
         IsPaneOpen = false;
         IsPaneVisible = false;
@@ -54,14 +54,10 @@ sealed class MainWindowContent : NavigationView
         MenuItems.Add(_homePageItem);
         MenuItems.Add(_versionsPageItem);
 
-        ItemInvoked += (sender, args) =>
-        {
-            if (args.IsSettingsInvoked) Content = _settingsPage;
-            else Content = args.InvokedItemContainer.Tag;
-        };
-
         _settingsPage = new(configuration, helper);
         _versionsPageItem.Tag = new VersionsPage(this);
+
+        ItemInvoked += (sender, args) => Content = args.IsSettingsInvoked ? _settingsPage : args.InvokedItemContainer.Tag;
 
         Dispatcher.Invoke(async () =>
         {
@@ -84,20 +80,23 @@ sealed class MainWindowContent : NavigationView
             }
 
             var catalog = await VersionEntries.CreateAsync();
-            _homePageItem.Tag = new HomePage(configuration, catalog, sponsorship);
-
-            var versionsPage = (VersionsPage)_versionsPageItem.Tag;
 
             foreach (var entry in catalog)
             {
-                await Dispatcher.Yield(); if (entry.Value is null) continue;
-                versionsPage._listBox.Items.Add(new ListBoxItem { Tag = entry.Value, Content = entry.Key });
+                await Dispatcher.Yield();
+
+                if (entry.Value is null)
+                    continue;
+
+                ((VersionsPage)_versionsPageItem.Tag)._listBox.Items.Add(new ListBoxItem
+                {
+                    Tag = entry.Value,
+                    Content = entry.Key,
+                    HorizontalContentAlignment = HorizontalAlignment.Center
+                });
             }
 
-            versionsPage._listBox.SelectedIndex = 0;
-
-            Content = _homePageItem.Tag;
-            _progressBar.IsIndeterminate = false;
+            Content = _homePageItem.Tag = new HomePage(configuration, catalog, sponsorship);
 
             IsPaneVisible = true;
         }, DispatcherPriority.Send);

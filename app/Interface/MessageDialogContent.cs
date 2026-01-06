@@ -29,6 +29,21 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _installVersion = new InstallVersion();
 
+    internal static readonly MessageDialogContent _selectVersion = new SelectVersion();
+
+    sealed class SelectVersion : MessageDialogContent
+    {
+        public override string Title => "💡 Select Version";
+
+        public override string Content => @"No Minecraft version is selected.
+
+• Select a Minecraft version from the list that should be installed.
+
+If you need help, join our Discord.";
+
+        public override string Primary => "Back";
+    }
+
     sealed class InstallVersion : MessageDialogContent
     {
         public override string Title => "💡 Install Version";

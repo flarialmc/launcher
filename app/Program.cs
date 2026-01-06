@@ -95,7 +95,7 @@ Exception: {1}
 
             application.Resources.MergedDictionaries.Add(new ThemeResources());
             application.Resources.MergedDictionaries.Add(new XamlControlsResources());
-            application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.Red });
+            application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
 
             application.Exit += (_, _) => configuration.Save();
             application.Run(new MainWindow(configuration));

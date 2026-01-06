@@ -8,6 +8,8 @@ using System.Windows.Threading;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using Flarial.Launcher.Interface.Controls;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using static System.ComponentModel.DependencyPropertyDescriptor;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -28,7 +30,7 @@ sealed class VersionsPage : Grid
 
     Task? _task = null;
 
-    internal VersionsPage(MainWindowContent content)
+    internal VersionsPage(RootPage @this)
     {
         Margin = new(12);
 
@@ -43,11 +45,17 @@ sealed class VersionsPage : Grid
         SetColumn(_control, 0);
         Children.Add(_control);
 
+        FromProperty(ContentControl.ContentProperty, typeof(ContentControl)).AddValueChanged(@this, (_, _) =>
+        {
+            if (_listBox.IsEnabled)
+                _listBox.SelectedIndex = -1;
+        });
+
         Application.Current.MainWindow.Closing += (sender, args) =>
         {
             if (_task is null) return;
-            args.Cancel = true; content.Content = this;
-            content._versionsPageItem.IsSelected = true;
+            args.Cancel = true; @this.Content = this;
+            @this._versionsPageItem.IsSelected = true;
         };
 
         _control._button.Click += async (_, _) =>
@@ -65,6 +73,12 @@ sealed class VersionsPage : Grid
                 if (!Minecraft.IsPackaged)
                 {
                     await MessageDialog.ShowAsync(_unpackagedInstallation);
+                    return;
+                }
+
+                if (_listBox.SelectedItem is null)
+                {
+                    await MessageDialog.ShowAsync(_selectVersion);
                     return;
                 }
 
@@ -107,6 +121,8 @@ sealed class VersionsPage : Grid
             }
             finally
             {
+                _listBox.SelectedIndex = -1;
+
                 _control._progressBar.Value = 0;
                 _control._progressBar.IsIndeterminate = false;
                 _control._progressBar.Visibility = Visibility.Hidden;
@@ -115,6 +131,7 @@ sealed class VersionsPage : Grid
                 _control._icon.Visibility = Visibility.Collapsed;
 
                 _control._button.Visibility = Visibility.Visible;
+
                 IsEnabled = true;
             }
         };
