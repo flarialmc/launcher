@@ -117,7 +117,7 @@ sealed class VersionsPage : Grid
                         }
                     }, DispatcherPriority.Send)));
                 }
-                finally { _task = null; _listBox.SelectedIndex = -1; }
+                finally { _task = null; }
             }
             finally
             {
