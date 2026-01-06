@@ -6,7 +6,7 @@ using Windows.Win32.UI.Shell;
 
 namespace Flarial.Launcher.Services.Core;
 
-using static Native.NativeProcess;
+using static System.NativeProcess;
 
 unsafe sealed class MinecraftUWP : Minecraft
 {

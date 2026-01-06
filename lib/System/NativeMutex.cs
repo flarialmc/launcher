@@ -6,7 +6,7 @@ using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
 
-namespace Flarial.Launcher.Services.Native;
+namespace Flarial.Launcher.Services.System;
 
 using static NativeProcess;
 
@@ -18,7 +18,7 @@ readonly unsafe struct NativeMutex : IDisposable
     internal NativeMutex(string identifier)
     {
         fixed (char* name = identifier) _handle = CreateMutex(null, false, name);
-        Exists = _handle != Null && Marshal.GetLastWin32Error() > 0;
+        Exists = !_handle.IsNull && Marshal.GetLastWin32Error() > 0;
     }
 
     internal bool Duplicate(uint processId)

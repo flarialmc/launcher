@@ -1,7 +1,7 @@
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
 
-namespace Flarial.Launcher.Services.Native;
+namespace Flarial.Launcher.Services.System;
 
 unsafe readonly struct NativeWindow
 {

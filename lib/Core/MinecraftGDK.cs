@@ -18,7 +18,7 @@ using System.ComponentModel;
 
 namespace Flarial.Launcher.Services.Core;
 
-using static Native.NativeProcess;
+using static System.NativeProcess;
 
 unsafe partial class MinecraftGDK : Minecraft
 {

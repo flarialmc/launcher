@@ -3,9 +3,8 @@ using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 using Windows.Win32.System.Threading;
-using static Windows.Win32.Foundation.HANDLE;
 
-namespace Flarial.Launcher.Services.Native;
+namespace Flarial.Launcher.Services.System;
 
 readonly struct NativeProcess : IDisposable
 {
@@ -16,7 +15,7 @@ readonly struct NativeProcess : IDisposable
     internal static NativeProcess? Open(PROCESS_ACCESS_RIGHTS access, uint processId)
     {
         var handle = OpenProcess(access, false, processId);
-        return handle != Null ? new(handle) : null;
+        return !handle.IsNull ? new(handle) : null;
     }
 
     internal bool Wait(uint timeout) => WaitForSingleObject(_handle, timeout) is WAIT_TIMEOUT;

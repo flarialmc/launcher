@@ -7,11 +7,11 @@ using static Windows.Win32.PInvoke;
 using Windows.Win32.Globalization;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
-using Flarial.Launcher.Services.Native;
+using Flarial.Launcher.Services.System;
 
 namespace Flarial.Launcher.Services.Core;
 
-using static Native.NativeProcess;
+using static System.NativeProcess;
 
 public unsafe abstract class Minecraft
 {

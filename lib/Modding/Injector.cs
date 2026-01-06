@@ -17,7 +17,7 @@ using Windows.Win32.System.Threading;
 
 namespace Flarial.Launcher.Services.Modding;
 
-using static Native.NativeProcess;
+using static System.NativeProcess;
 
 public unsafe static class Injector
 {

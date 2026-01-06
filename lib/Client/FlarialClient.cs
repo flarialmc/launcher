@@ -7,7 +7,7 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Windows.Data.Json;
 using Flarial.Launcher.Services.Core;
-using Flarial.Launcher.Services.Native;
+using Flarial.Launcher.Services.System;
 
 namespace Flarial.Launcher.Services.Client;
 
