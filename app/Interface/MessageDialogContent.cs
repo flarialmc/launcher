@@ -2,6 +2,7 @@ namespace Flarial.Launcher.Interface;
 
 abstract class MessageDialogContent
 {
+    internal MessageDialogContent() { }
     public abstract string Title { get; }
     public abstract string Content { get; }
     public abstract string Primary { get; }
@@ -23,13 +24,15 @@ abstract class MessageDialogContent
 
     internal static readonly MessageDialogContent _unpackagedInstallation = new UnpackagedInstallation();
 
-    internal static readonly MessageDialogContent _unsignedInstallation = new UnsignedInstallation();
+    internal static readonly MessageDialogContent _unsignedInstall = new UnsignedInstall();
 
     internal static readonly MessageDialogContent _folderNotFound = new FolderNotFound();
 
     internal static readonly MessageDialogContent _installVersion = new InstallVersion();
 
     internal static readonly MessageDialogContent _selectVersion = new SelectVersion();
+
+    internal static readonly MessageDialogContent _allowUnsignedInstalls = new AllowUnsignedInstalls();
 
     sealed class SelectVersion : MessageDialogContent
     {
@@ -99,18 +102,22 @@ If you need help, join our Discord.";
 If you need help, join our Discord.";
     }
 
-    sealed class UnsignedInstallation : MessageDialogContent
+    class UnsignedInstall : MessageDialogContent
     {
         public override string Title => "⚠️ Unsigned Install";
 
         public override string Content => @"An unsigned Minecraft install has been detected.
 
 • Unsigned installs might cause compatibility issues with the client & launcher.
-• Reinstall Minecraft via the Microsoft Store or Xbox App to fix this issue.
 
 If you need help, join our Discord.";
 
         public override string Primary => "Back";
+    }
+
+    sealed class AllowUnsignedInstalls : UnsignedInstall
+    {
+        public override string? Close => "Launch";
     }
 
     sealed class InvalidCustomDll : MessageDialogContent

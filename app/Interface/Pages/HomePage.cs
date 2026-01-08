@@ -163,12 +163,10 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                if (!Minecraft.AllowUnsignedInstalls && 
-                    Minecraft.UsingGameDevelopmentKit && 
-                    !Minecraft.IsPackaged)
+                if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
                 {
-                    await MessageDialog.ShowAsync(_unsignedInstallation);
-                    return;
+                    if (!Minecraft.AllowUnsignedInstalls) { await MessageDialog.ShowAsync(_unsignedInstall); return; }
+                    else if (await MessageDialog.ShowAsync(_allowUnsignedInstalls)) return;
                 }
 
                 var path = configuration.CustomDllPath;

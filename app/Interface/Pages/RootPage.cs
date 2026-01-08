@@ -32,14 +32,6 @@ sealed class RootPage : NavigationView
         Content = "Versions"
     };
 
-    readonly ModernWpf.Controls.ProgressBar _progressBar = new()
-    {
-        Width = ApplicationManifest.Icon.Width,
-        Foreground = new SolidColorBrush(Colors.White),
-        VerticalAlignment = VerticalAlignment.Center,
-        HorizontalAlignment = HorizontalAlignment.Center,
-        IsIndeterminate = true
-    };
 
     internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
@@ -49,7 +41,16 @@ sealed class RootPage : NavigationView
         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
-        Content = _progressBar;
+        ModernWpf.Controls.ProgressBar progressBar = new()
+        {
+            Width = ApplicationManifest.Icon.Width,
+            Foreground = new SolidColorBrush(Colors.White),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            IsIndeterminate = true
+        };
+
+        Content = progressBar;
 
         MenuItems.Add(_homePageItem);
         MenuItems.Add(_versionsPageItem);
@@ -72,10 +73,14 @@ sealed class RootPage : NavigationView
             {
                 await LauncherUpdater.DownloadAsync((_) => Dispatcher.Invoke(() =>
                 {
-                    if (_progressBar.Value == _) return;
-                    _progressBar.Value = _;
-                    _progressBar.IsIndeterminate = false;
+                    if (progressBar.Value == _)
+                        return;
+
+                    progressBar.Value = _;
+                    progressBar.IsIndeterminate = false;
                 }, DispatcherPriority.Send));
+
+                progressBar.IsIndeterminate = true;
                 return;
             }
 

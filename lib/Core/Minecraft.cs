@@ -36,14 +36,7 @@ public unsafe abstract class Minecraft
 
     public abstract uint? Launch(bool initialized);
 
-    public static bool AllowUnsignedInstalls
-    {
-        get; set
-        {
-            if (field) throw new InvalidOperationException();
-            field = value;
-        }
-    }
+    public static bool AllowUnsignedInstalls { get; set { if (!field) field = value; } }
 
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
 

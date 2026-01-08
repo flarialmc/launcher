@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Flarial.Launcher.Services.Networking;
 
-public class HttpService
+public static class HttpService
 {
     static readonly HttpClient s_proxy = new(new HttpServiceHandler
     {
@@ -23,20 +23,9 @@ public class HttpService
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool UseProxy
-    {
-        get; set
-        {
-            if (field) throw new InvalidOperationException();
-            field = value;
-        }
-    }
+    public static bool UseProxy { internal get; set { if (!field) field = value; } }
 
-    public static bool UseDnsOverHttps
-    {
-        get => HttpServiceHandler.UseDnsOverHttps;
-        set => HttpServiceHandler.UseDnsOverHttps = value;
-    }
+    public static bool UseDnsOverHttps { set => HttpServiceHandler.UseDnsOverHttps = value; }
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri) => await HttpClient.GetAsync(uri);
 
