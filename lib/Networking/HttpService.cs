@@ -38,18 +38,6 @@ public static class HttpService
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await HttpClient.GetAsync(uri, ResponseHeadersRead, token);
 
-    [Obsolete("", true)]
-    public static async Task<T> GetAsync<T>(string uri)
-    {
-        return (T)(object)(typeof(T) switch
-        {
-            var @_ when _ == typeof(string) => await HttpClient.GetStringAsync(uri),
-            var @_ when _ == typeof(Stream) => await HttpClient.GetStreamAsync(uri),
-            var @_ when _ == typeof(byte[]) => await HttpClient.GetByteArrayAsync(uri),
-            _ => throw new NotImplementedException()
-        });
-    }
-
     internal static async Task DownloadAsync(string uri, string path, Action<int> action)
     {
         using var message = await GetAsync(uri);
