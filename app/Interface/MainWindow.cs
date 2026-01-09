@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static System.Windows.Media.Imaging.BitmapCreateOptions;
 using static System.Windows.Media.Imaging.BitmapCacheOption;
+using System.IO;
 
 namespace Flarial.Launcher.Interface;
 
@@ -29,6 +30,7 @@ sealed class MainWindow : Window
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
     readonly WindowInteropHelper _helper;
+    readonly Task<MemoryStream?> sponsorship = Sponsorship.StreamAsync();
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
     internal MainWindow(Configuration configuration)
@@ -57,33 +59,14 @@ sealed class MainWindow : Window
         _rootPage._versionsPageItem.Tag = _versionsPage;
         Content = _rootPage;
 
-        /*
-            - Attempt to the load sponsorship banner & fail sliently if required.
-        */
-
-        Dispatcher.InvokeAsync(async () =>
-        {
-            if (await Sponsorship.StreamAsync() is not { } stream) return;
-            _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
-            _homePage._sponsorshipImage.IsEnabled = true;
-        }, DispatcherPriority.Send);
 
         SourceInitialized += async (_, _) =>
         {
             var progressBar = (ModernWpf.Controls.ProgressBar)_rootPage.Content;
 
-            /*
-                - Verify if an internet connection is available.
-            */
-
             if (!await HttpService.IsAvailableAsync() &&
                 !await MessageDialog.ShowAsync(_connectionFailure))
                 Application.Current.Shutdown();
-
-            /*
-                - Check for launcher updates & download them.
-            */
-
 
             if (await LauncherUpdater.CheckAsync() &&
                 await MessageDialog.ShowAsync(_launcherUpdateAvailable))
@@ -111,9 +94,11 @@ sealed class MainWindow : Window
                 });
             }
 
-            /*
-                - Setup package version updates.
-            */
+            if (await sponsorship is { } stream)
+            {
+                _homePage._sponsorshipImage.IsEnabled = true;
+                _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
+            }
 
             void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
             {
@@ -126,13 +111,13 @@ sealed class MainWindow : Window
             _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
             _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName); };
 
-            /*
-                - Finalize initialization.
-            */
-
             OnPackageStatusChanged(Minecraft.PackageFamilyName);
-            _rootPage.IsEnabled = true; _rootPage.IsPaneVisible = true;
-            _rootPage._homePageItem.IsSelected = true; _rootPage.Content = _homePage;
+
+            _rootPage.IsEnabled = true;
+            _rootPage.IsPaneVisible = true;
+
+            _rootPage._homePageItem.IsSelected = true;
+            _rootPage.Content = _homePage;
         };
     }
 }
