@@ -20,7 +20,10 @@ public abstract class VersionEntry
     internal VersionEntry() { }
 
     static readonly string s_path = Path.GetTempPath();
-    private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
+    private protected static readonly DataContractJsonSerializerSettings s_settings = new()
+    {
+        UseSimpleDictionaryFormat = true
+    };
 
     /*
         - Reuse the PackageManager instance from the `Minecraft` class.
@@ -35,7 +38,7 @@ public abstract class VersionEntry
 
     public abstract Task<string> GetAsync();
 
-    public async Task InstallAsync(Action<AppInstallState, int> action) => await Task.Run(async () =>
+    public virtual async Task InstallAsync(Action<AppInstallState, int> action) => await Task.Run(async () =>
     {
         if (!Minecraft.IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);

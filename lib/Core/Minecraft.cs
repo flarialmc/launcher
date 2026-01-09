@@ -22,7 +22,7 @@ public unsafe abstract class Minecraft
 
     internal static readonly PackageManager s_manager = new();
 
-    protected static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
+    internal static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
 
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
 

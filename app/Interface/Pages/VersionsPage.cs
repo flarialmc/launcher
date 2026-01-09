@@ -8,7 +8,6 @@ using System.Windows.Threading;
 using static Flarial.Launcher.Interface.MessageDialogContent;
 using Flarial.Launcher.Interface.Controls;
 using System.Threading.Tasks;
-using System.ComponentModel;
 using static System.ComponentModel.DependencyPropertyDescriptor;
 
 namespace Flarial.Launcher.Interface.Pages;

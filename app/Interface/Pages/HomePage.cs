@@ -108,8 +108,6 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    //    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
-
     internal HomePage(Configuration configuration, WindowInteropHelper helper)
     {
         Children.Add(_logoImage);
