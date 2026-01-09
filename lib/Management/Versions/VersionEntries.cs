@@ -20,20 +20,17 @@ public sealed class VersionEntries : IEnumerable<KeyValuePair<string, VersionEnt
 
     public bool IsSupported => _entries.ContainsKey(Minecraft.PackageVersion);
 
-    static async Task<ConcurrentDictionary<string, VersionEntry?>> GetAsync()
-    {
-        ConcurrentDictionary<string, VersionEntry?> entires = [];
-
-        using StreamReader reader = new(await HttpService.GetAsync<Stream>(Uri));
-        string _; while ((_ = await reader.ReadLineAsync()) is { }) entires.TryAdd(_.Trim(), null);
-
-        return entires;
-    }
-
     public static async Task<VersionEntries> CreateAsync() => await Task.Run(static async () =>
     {
-        var entries = await GetAsync();
-        await Task.WhenAll(UWPVersionEntry.GetAsync(entries), GDKVersionEntry.GetAsync(entries));
+        ConcurrentDictionary<string, VersionEntry?> entries = [];
+
+        using StreamReader reader = new(await HttpService.GetAsync<Stream>(Uri));
+        string _; while ((_ = await reader.ReadLineAsync()) is { }) entries.TryAdd(_.Trim(), null);
+
+        var uwp = UWPVersionEntry.CreateAsync(entries);
+        var gdk = GDKVersionEntry.CreateAsync(entries);
+        await Task.WhenAll(uwp, gdk);
+
         return new VersionEntries(entries);
     });
 

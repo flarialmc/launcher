@@ -18,7 +18,7 @@ sealed class GDKVersionEntry : VersionEntry
 
     GDKVersionEntry(string[] urls) : base() => _urls = urls;
 
-    internal static async Task GetAsync(ConcurrentDictionary<string, VersionEntry?> entries) => await Task.Run(async () =>
+    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionEntry?> entries) => await Task.Run(async () =>
     {
         using var stream = await HttpService.GetAsync<Stream>(PackagesUri);
         var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(stream);
