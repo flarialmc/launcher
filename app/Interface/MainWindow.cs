@@ -30,7 +30,6 @@ sealed class MainWindow : Window
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
     readonly WindowInteropHelper _helper;
-    readonly Task<MemoryStream?> sponsorship = Sponsorship.StreamAsync();
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
     internal MainWindow(Configuration configuration)
@@ -80,7 +79,11 @@ sealed class MainWindow : Window
                 progressBar.IsIndeterminate = true; return;
             }
 
-            var entries = await VersionEntries.CreateAsync();
+            var entriesTask = VersionEntries.CreateAsync();
+            var sponsorshipTask = Sponsorship.StreamAsync();
+            await Task.WhenAll(entriesTask, sponsorshipTask);
+
+            var entries = await entriesTask;
             _homePage.Tag = entries;
 
             foreach (var entry in entries)
@@ -94,7 +97,7 @@ sealed class MainWindow : Window
                 });
             }
 
-            if (await sponsorship is { } stream)
+            if (await sponsorshipTask is { } stream)
             {
                 _homePage._sponsorshipImage.IsEnabled = true;
                 _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
