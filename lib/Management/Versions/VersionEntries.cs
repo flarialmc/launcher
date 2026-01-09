@@ -23,8 +23,9 @@ public sealed class VersionEntries : IEnumerable<KeyValuePair<string, VersionEnt
     public static async Task<VersionEntries> CreateAsync() => await Task.Run(static async () =>
     {
         ConcurrentDictionary<string, VersionEntry?> entries = [];
+using var stream = await HttpService.StreamAsync(Uri);
 
-        using StreamReader reader = new(await HttpService.GetAsync<Stream>(Uri));
+        using StreamReader reader = new(stream);
         string _; while ((_ = await reader.ReadLineAsync()) is { }) entries.TryAdd(_.Trim(), null);
 
         var uwp = UWPVersionEntry.CreateAsync(entries);

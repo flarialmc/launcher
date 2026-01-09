@@ -40,7 +40,7 @@ sealed class UWPVersionEntry : VersionEntry
 
     internal static async Task CreateAsync(ConcurrentDictionary<string, VersionEntry?> entries)
     {
-        using var stream = await HttpService.GetAsync<Stream>(PackagesUri);
+        using var stream = await HttpService.StreamAsync(PackagesUri);
         var items = (string[][])s_serializer.ReadObject(stream);
 
         foreach (var item in items)

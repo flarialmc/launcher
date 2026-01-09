@@ -7,6 +7,7 @@ using System.Net;
 using MihaZupan;
 using System.Runtime.InteropServices;
 using System.Threading;
+using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Launcher.Services.Networking;
 
@@ -27,10 +28,17 @@ public static class HttpService
 
     public static bool UseDnsOverHttps { set => HttpServiceHandler.UseDnsOverHttps = value; }
 
-    internal static async Task<HttpResponseMessage> GetAsync(string uri) => await HttpClient.GetAsync(uri);
+    public static async Task<Stream> StreamAsync(string uri) => await HttpClient.GetStreamAsync(uri);
+
+    internal static async Task<string> StringAsync(string uri) => await HttpClient.GetStringAsync(uri);
+
+    public static async Task<byte[]> BytesAsync(string uri) => await HttpClient.GetByteArrayAsync(uri);
 
     internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await HttpClient.PostAsync(uri, content);
 
+    internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await HttpClient.GetAsync(uri, ResponseHeadersRead, token);
+
+    [Obsolete("", true)]
     public static async Task<T> GetAsync<T>(string uri)
     {
         return (T)(object)(typeof(T) switch
@@ -44,7 +52,7 @@ public static class HttpService
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> action)
     {
-        using var message = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+        using var message = await GetAsync(uri);
         message.EnsureSuccessStatusCode();
 
         using var destination = File.Create(path);
@@ -65,7 +73,11 @@ public static class HttpService
 
     public static async Task<bool> IsAvailableAsync()
     {
-        try { _ = await HttpClient.GetStringAsync(Uri); return true; }
+        try
+        {
+            using var message = await GetAsync(Uri);
+            return message.IsSuccessStatusCode;
+        }
         catch { return false; }
     }
 }

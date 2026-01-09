@@ -30,7 +30,7 @@ sealed class VersionsPage : Grid
 
     Task? _task = null;
 
-    internal VersionsPage(RootPage @this)
+    internal VersionsPage(RootPage rootPage)
     {
         Margin = new(12);
 
@@ -45,7 +45,7 @@ sealed class VersionsPage : Grid
         SetColumn(_control, 0);
         Children.Add(_control);
 
-        FromProperty(ContentControl.ContentProperty, typeof(ContentControl)).AddValueChanged(@this, (_, _) =>
+        FromProperty(ContentControl.ContentProperty, typeof(ContentControl)).AddValueChanged(rootPage, (_, _) =>
         {
             if (_listBox.IsEnabled)
                 _listBox.SelectedIndex = -1;
@@ -54,8 +54,8 @@ sealed class VersionsPage : Grid
         Application.Current.MainWindow.Closing += (sender, args) =>
         {
             if (_task is null) return;
-            args.Cancel = true; @this.Content = this;
-            @this._versionsPageItem.IsSelected = true;
+            args.Cancel = true; rootPage.Content = this;
+            rootPage._versionsPageItem.IsSelected = true;
         };
 
         _control._button.Click += async (_, _) =>

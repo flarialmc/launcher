@@ -16,30 +16,13 @@ namespace Flarial.Launcher.Management;
 
 static class Sponsorship
 {
-    const string CampaignUri = "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
+    internal const string CampaignUri = "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
 
     const string BannerUri = "https://litebyte.co/images/flarial.png";
 
-    internal static async Task<Image?> GetAsync(WindowInteropHelper helper)
+    internal static async Task<MemoryStream?> StreamAsync()
     {
-        try
-        {
-            using MemoryStream stream = new(await HttpService.GetAsync<byte[]>(BannerUri));
-
-            Image image = new()
-            {
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Height = 50,
-                Width = 320,
-                Margin = new(0, 0, 0, 12),
-                Cursor = Cursors.Hand,
-                Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad)
-            };
-
-            image.MouseLeftButtonDown += (_, _) => ShellExecute(helper.EnsureHandle(), null!, CampaignUri, null!, null!, SW_NORMAL);
-            return image;
-        }
+        try { return new(await HttpService.BytesAsync(BannerUri)); }
         catch { return null; }
     }
 }

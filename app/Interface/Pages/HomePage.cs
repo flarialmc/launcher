@@ -14,6 +14,8 @@ using System;
 using Flarial.Launcher.Management;
 using static System.StringComparison;
 using ModernWpf.Controls;
+using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -56,7 +58,7 @@ sealed class HomePage : Grid
         Margin = new(0, 120, 0, 0)
     };
 
-    readonly TextBlock _packageVersionTextBlock = new()
+    internal readonly TextBlock _packageVersionTextBlock = new()
     {
         Text = "❌ 0.0.0",
         VerticalAlignment = VerticalAlignment.Bottom,
@@ -83,6 +85,17 @@ sealed class HomePage : Grid
         Margin = new(0, 12, 12, 0)
     };
 
+    internal readonly Image _sponsorshipImage = new()
+    {
+        VerticalAlignment = VerticalAlignment.Bottom,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Height = 50,
+        Width = 320,
+        Margin = new(0, 0, 0, 12),
+        Cursor = Cursors.Hand,
+        IsEnabled = false
+    };
+
     sealed class UnsupportedVersion(string packageVersion, string supportedVersion) : MessageDialogContent
     {
         public override string Title => "⚠️ Unsupported Version";
@@ -95,9 +108,9 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
+    //    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal HomePage(Configuration configuration, VersionEntries entries, Task<Image?> sponsorship)
+    internal HomePage(Configuration configuration, WindowInteropHelper helper)
     {
         Children.Add(_logoImage);
         Children.Add(_progressBar);
@@ -106,47 +119,9 @@ If you need help, join our Discord.";
         Children.Add(_playButton);
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
+        Children.Add(_sponsorshipImage);
 
-        void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
-        {
-            if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
-                return;
-
-            if (!Minecraft.IsInstalled)
-            {
-                _packageVersionTextBlock.Text = "❌ 0.0.0";
-                return;
-            }
-
-            _packageVersionTextBlock.Text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
-        }, DispatcherPriority.Send);
-
-
-        _catalog.PackageUpdating += (sender, args) =>
-        {
-            if (args.IsComplete)
-                OnPackageStatusChanged(args.TargetPackage.Id.FamilyName);
-        };
-
-        _catalog.PackageInstalling += (sender, args) =>
-        {
-            if (args.IsComplete)
-                OnPackageStatusChanged(args.Package.Id.FamilyName);
-        };
-
-        _catalog.PackageUninstalling += (sender, args) =>
-        {
-            if (args.IsComplete)
-                OnPackageStatusChanged(args.Package.Id.FamilyName);
-        };
-
-        OnPackageStatusChanged(Minecraft.PackageFamilyName);
-
-        Dispatcher.Invoke(async () =>
-        {
-            var image = await sponsorship;
-            if (image is { }) Children.Add(image);
-        }, DispatcherPriority.Send);
+        _sponsorshipImage.MouseLeftButtonDown += (_, _) => PInvoke.ShellExecute(helper.EnsureHandle(), null!, Sponsorship.CampaignUri, null!, null!, PInvoke.SW_NORMAL);
 
         _playButton.Click += async (_, _) =>
         {
@@ -156,6 +131,8 @@ If you need help, join our Discord.";
                 _progressBar.IsIndeterminate = true;
                 _progressBar.Visibility = Visibility.Visible;
                 _statusTextBlock.Visibility = Visibility.Visible;
+
+                var entries = (VersionEntries)Tag;
 
                 if (!Minecraft.IsInstalled)
                 {

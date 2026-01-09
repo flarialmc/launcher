@@ -53,7 +53,7 @@ public abstract class FlarialClient
 
     async Task<string> RemoteHashAsync()
     {
-        var @string = await HttpService.GetAsync<string>(HashesUri);
+        var @string = await HttpService.StringAsync(HashesUri);
         return JsonObject.Parse(@string)[Build].GetString();
     }
 

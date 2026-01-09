@@ -52,7 +52,7 @@ del ""%~f0""
 
     public static async Task<bool> CheckAsync()
     {
-        var input = await HttpService.GetAsync<string>(VersionUri);
+        var input = await HttpService.StringAsync(VersionUri);
         var version = JsonObject.Parse(input)["version"];
         return s_version != version.GetString();
     }
