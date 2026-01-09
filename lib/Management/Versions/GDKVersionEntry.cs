@@ -42,6 +42,7 @@ sealed class GDKVersionEntry : VersionEntry
         {
             var key = item.Key.Substring(0, item.Key.LastIndexOf('.'));
             entries.TryUpdate(key, new GDKVersionEntry(item.Value, array), null);
+            entries.TryAdd(key, new GDKVersionEntry(item.Value, array));
         }
     });
 
