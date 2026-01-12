@@ -84,10 +84,15 @@ unsafe partial class MinecraftGDK : Minecraft
                 using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
+                    NotifyFilter = FileName,
                     EnableRaisingEvents = true,
-                    IncludeSubdirectories = true,
-                    NotifyFilter = FileName
+                    IncludeSubdirectories = true
                 };
+
+                /*
+                    - Use unmanaged events directly.
+                    - This removes the need for boilerplate code.
+                */
 
                 watcher.Deleted += (_, _) => SetEvent(@event);
                 var handles = stackalloc HANDLE[] { @event, process };

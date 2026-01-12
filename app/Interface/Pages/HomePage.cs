@@ -24,8 +24,8 @@ sealed class HomePage : Grid
     readonly Image _logoImage = new()
     {
         Source = ApplicationManifest.Icon,
-        Width = ApplicationManifest.Icon.Width / 3,
-        Height = ApplicationManifest.Icon.Height / 3,
+        Width = ApplicationManifest.Icon.Width / 2.5,
+        Height = ApplicationManifest.Icon.Height / 2.5,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new(0, 0, 0, 120)
     };
@@ -36,7 +36,7 @@ sealed class HomePage : Grid
         Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Margin = new(0, 120, 0, 0),
+        Margin = new(0, 90, 0, 0),
         Visibility = Visibility.Hidden
     };
 
@@ -45,7 +45,7 @@ sealed class HomePage : Grid
         Text = "Preparing...",
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Margin = new(0, 60, 0, 0),
+        Margin = new(0, 30, 0, 0),
         Visibility = Visibility.Hidden
     };
 
@@ -55,7 +55,7 @@ sealed class HomePage : Grid
         HorizontalAlignment = HorizontalAlignment.Center,
         Content = "Play",
         Width = ApplicationManifest.Icon.Width,
-        Margin = new(0, 120, 0, 0)
+        Margin = new(0, 90, 0, 0)
     };
 
     internal readonly TextBlock _packageVersionTextBlock = new()
@@ -125,8 +125,8 @@ If you need help, join our Discord.";
         {
             try
             {
-                _playButton.Visibility = Visibility.Hidden;
                 _progressBar.IsIndeterminate = true;
+                _playButton.Visibility = Visibility.Hidden;
                 _progressBar.Visibility = Visibility.Visible;
                 _statusTextBlock.Visibility = Visibility.Visible;
 
@@ -140,8 +140,13 @@ If you need help, join our Discord.";
 
                 if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
                 {
-                    if (!Minecraft.AllowUnsignedInstalls) { await MessageDialog.ShowAsync(_unsignedInstall); return; }
-                    else if (await MessageDialog.ShowAsync(_allowUnsignedInstalls)) return;
+                    if (!Minecraft.AllowUnsignedInstalls)
+                    {
+                        await MessageDialog.ShowAsync(_unsignedInstall);
+                        return;
+                    }
+                    else if (await MessageDialog.ShowAsync(_allowUnsignedInstalls))
+                        return;
                 }
 
                 var path = configuration.CustomDllPath;

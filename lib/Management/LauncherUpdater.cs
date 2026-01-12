@@ -60,12 +60,20 @@ del ""%~f0""
     public static async Task DownloadAsync(Action<int> action)
     {
         await HttpService.DownloadAsync(LauncherUri, s_source, action);
-        using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
+
+        using (StreamWriter writer = new(s_script))
+            await writer.WriteAsync(s_content);
 
         StringBuilder builder = new(s_arguments);
-        if (HttpService.UseProxy) builder.Append(' ').Append("--use-proxy");
-        if (HttpServiceHandler.UseDnsOverHttps) builder.Append(' ').Append("--use-dns-over-https");
-        if (Minecraft.AllowUnsignedInstalls) builder.Append(' ').Append("--allow-unsigned-installs");
+        
+        if (HttpService.UseProxy)
+            builder.Append(' ').Append("--use-proxy");
+
+        if (HttpServiceHandler.UseDnsOverHttps)
+            builder.Append(' ').Append("--use-dns-over-https");
+
+        if (Minecraft.AllowUnsignedInstalls)
+            builder.Append(' ').Append("--allow-unsigned-installs");
 
         using (Process.Start(new ProcessStartInfo
         {

@@ -1,5 +1,6 @@
 using Flarial.Launcher.Management;
 using ModernWpf.Controls;
+using System;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -23,29 +24,32 @@ sealed class RootPage : NavigationView
         Content = "Versions"
     };
 
+    internal readonly NavigationViewItem _settingsPageItem = new()
+    {
+        Icon = new SymbolIcon(Symbol.Setting),
+        Content = "Settings"
+    };
+
     internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
         Content = new ProgressBar()
         {
+            IsIndeterminate = true,
             Width = ApplicationManifest.Icon.Width,
             Foreground = new SolidColorBrush(Colors.White),
             VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            IsIndeterminate = true
+            HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        _settingsPage = new(configuration, helper);
-
-        IsEnabled = false;
-        IsPaneOpen = false;
-        IsPaneVisible = false;
-
-        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+        PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+        IsSettingsVisible = IsEnabled = IsPaneOpen = IsPaneVisible = false;
 
         MenuItems.Add(_homePageItem);
         MenuItems.Add(_versionsPageItem);
+        FooterMenuItems.Add(_settingsPageItem);
 
-        ItemInvoked += (sender, args) => Content = args.IsSettingsInvoked ? _settingsPage : args.InvokedItemContainer.Tag;
+        _settingsPageItem.Tag = _settingsPage = new(configuration, helper);
+        ItemInvoked += (sender, args) => Content = args.InvokedItemContainer.Tag;
     }
 }

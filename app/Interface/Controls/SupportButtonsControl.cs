@@ -17,7 +17,7 @@ sealed class SupportButtonsControl : UniformGrid
 {
     readonly Button _clientFolderButton = new()
     {
-        Content = new SupportButtonContent(Symbol.MoveToFolder, "Client"),
+        Content = "Open Client Folder",
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(6, 0, 6, 0)
@@ -25,23 +25,11 @@ sealed class SupportButtonsControl : UniformGrid
 
     readonly Button _launcherFolderButton = new()
     {
-        Content = new SupportButtonContent(Symbol.MoveToFolder, "Launcher"),
+        Content = "Open Launcher Folder",
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Margin = new(6, 0, 0, 0)
     };
-
-    sealed class SupportButtonContent : SimpleStackPanel
-    {
-        internal SupportButtonContent(Symbol symbol, string text)
-        {
-            Spacing = 12;
-            Orientation = Orientation.Horizontal;
-
-            Children.Add(new SymbolIcon(symbol));
-            Children.Add(new TextBlock { Text = text });
-        }
-    }
 
     readonly string _launcher = CurrentDirectory, _gdk = Path.Combine(CurrentDirectory, @"..\Client");
 
