@@ -25,7 +25,7 @@ sealed class GDKVersionEntry : VersionEntry
     readonly byte[] _array;
     readonly string[] _uris;
 
-    static string Path => Combine(Minecraft.Package.InstalledPath, "GameLaunchHelper.dll");
+    static string Path => Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
     GDKVersionEntry(string[] uris, byte[] array) => (_uris, _array) = (uris, array);
 
