@@ -12,6 +12,7 @@ using Windows.Win32.Foundation;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WIN32_ERROR;
+using Windows.System.RemoteSystems;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 

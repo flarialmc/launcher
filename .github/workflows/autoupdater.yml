@@ -33,17 +33,17 @@ jobs:
         run: |
           #parsed string
           
-          export old_version=$(cat src/AssemblyVersion.cs|sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
-          export new_version=$(cat src/AssemblyVersion.cs | tail -n 1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' |  awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          export old_version=$(cat AssemblyVersion.cs|sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+          export new_version=$(cat AssemblyVersion.cs | tail -n 1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' |  awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
           echo $old_version
           echo $new_version
           echo "version=$new_version" >> $GITHUB_ENV
           echo "version_no=$new_version" >> "$GITHUB_OUTPUT"
-          sed -i "s/$old_version/$new_version/g" src/AssemblyVersion.cs 
+          sed -i "s/$old_version/$new_version/g" AssemblyVersion.cs 
 
       - name: push to origin
         run: |
-          git add src/AssemblyVersion.cs
+          git add AssemblyVersion.cs
           git commit -m "Update file version"
           git push origin main
 
