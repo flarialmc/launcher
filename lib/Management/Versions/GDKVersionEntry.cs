@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Flarial.Launcher.Services.Core;
 using Flarial.Launcher.Services.Networking;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
-using Windows.Networking.Vpn;
 using static System.IO.Path;
 
 namespace Flarial.Launcher.Services.Management.Versions;

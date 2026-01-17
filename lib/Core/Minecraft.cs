@@ -8,7 +8,6 @@ using Windows.Win32.Globalization;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
-using System;
 
 namespace Flarial.Launcher.Services.Core;
 

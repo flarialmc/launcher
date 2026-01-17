@@ -4,11 +4,14 @@ using Flarial.Launcher.Interface.Controls;
 using ModernWpf.Controls;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using System;
 
 namespace Flarial.Launcher.Interface.Pages;
 
 sealed class SettingsPage : Grid
 {
+    readonly Configuration _configuration;
+
     readonly RadioButtons _dllBuild = new()
     {
         Header = "Select what DLL should be used:",
@@ -34,35 +37,42 @@ sealed class SettingsPage : Grid
         OffContent = "No, speed up injection with risk of game crashes."
     };
 
-    readonly CustomDllPathPicker _customDllPath;
+    void OnDllBuildSelectionChanged(object sender, EventArgs args)
+    {
+        if (_dllBuild.SelectedIndex is -1) return;
+        _configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
+        _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
+    }
+
+    void OnHardwareAccelerationToggled(object sender, EventArgs args) => _configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;
+
+    void OnWaitForInitializationToggled(object sender, EventArgs args) => _configuration.WaitForInitialization = _waitForInitialization.IsOn;
+
+    readonly CustomDllPathPicker _customDllPathPicker;
 
     internal SettingsPage(Configuration configuration, WindowInteropHelper helper)
     {
-        Margin = new(12);
+        _configuration = configuration;
+        _customDllPathPicker = new(configuration);
 
-        _customDllPath = new(configuration);
+        Margin = new(12);
 
         _dllBuild.Items.Add("Use the release DLL of the client which is stable.");
         _dllBuild.Items.Add("Use the beta DLL of the client which is unstable.");
         _dllBuild.Items.Add("Specify your own custom DLL to be used with the game.");
 
-        _dllBuild.SelectionChanged += (_, _) =>
-        {
-            if (_dllBuild.SelectedIndex is -1) return;
-            configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
-            _customDllPath.IsEnabled = configuration.DllBuild is DllBuild.Custom;
-        };
-
-        _hardwareAcceleration.Toggled += (_, _) => configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;
-        _waitForInitialization.Toggled += (_, _) => configuration.WaitForInitialization = _waitForInitialization.IsOn;
+        _dllBuild.SelectionChanged += OnDllBuildSelectionChanged;
+        _hardwareAcceleration.Toggled += OnHardwareAccelerationToggled;
+        _waitForInitialization.Toggled += OnWaitForInitializationToggled;
 
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
         _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
         _waitForInitialization.IsOn = configuration.WaitForInitialization;
 
         SimpleStackPanel panel = new() { Spacing = 12 };
+
         panel.Children.Add(_dllBuild);
-        panel.Children.Add(_customDllPath);
+        panel.Children.Add(_customDllPathPicker);
         panel.Children.Add(_waitForInitialization);
         panel.Children.Add(_hardwareAcceleration);
 
@@ -74,6 +84,7 @@ sealed class SettingsPage : Grid
         Children.Add(panel);
 
         SupportButtonsControl control = new(helper);
+
         SetColumn(control, 0);
         SetRow(control, 1);
         Children.Add(control);

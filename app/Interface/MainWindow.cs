@@ -14,7 +14,7 @@ using Flarial.Launcher.Services.Networking;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
 using Windows.ApplicationModel;
-using static Flarial.Launcher.Interface.MessageDialogContent;
+using static Flarial.Launcher.Interface.MessageDialog;
 using static System.StringComparison;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -26,15 +26,131 @@ namespace Flarial.Launcher.Interface;
 
 sealed class MainWindow : Window
 {
+    readonly Task<MemoryStream?> _task;
+
+    void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
+    {
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.Package.Id.FamilyName);
+    }
+
+    void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
+    {
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.Package.Id.FamilyName);
+    }
+
+    void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
+    {
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.TargetPackage.Id.FamilyName);
+    }
+
+    void OnPackageStatusChanged(string packageFamilyName)
+    {
+        if (packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
+            Dispatcher.Invoke(OnPackageStatusChanged, DispatcherPriority.Send);
+    }
+
+    void OnPackageStatusChanged()
+    {
+        if (!Minecraft.IsInstalled)
+        {
+            _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
+            return;
+        }
+
+        var entries = (VersionEntries)Tag;
+        var text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
+        _homePage._packageVersionTextBlock.Text = text;
+    }
+
+    async void OnSourceInitializedAsync()
+    {
+        if (await _task is not { } stream)
+            return;
+
+        using (stream)
+        {
+            _homePage._sponsorshipImage.IsEnabled = true;
+            _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
+        }
+    }
+
+    void OnLauncherUpdateDownloadAsync(int value)
+    {
+        if (!CheckAccess())
+        {
+            Dispatcher.Invoke(DispatcherPriority.Send, OnLauncherUpdateDownloadAsync, value);
+            return;
+        }
+
+        if (_homePage._progressBar.Value != value)
+        {
+            _homePage._progressBar.Value = value;
+            _homePage._progressBar.IsIndeterminate = false;
+        }
+    }
+
+    protected override async void OnSourceInitialized(EventArgs args)
+    {
+        base.OnSourceInitialized(args);
+
+        if (!await HttpService.IsAvailableAsync() && !await _connectionFailure.ShowAsync())
+            Application.Current.Shutdown();
+
+        if (await LauncherUpdate.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
+        {
+            _homePage._statusTextBlock.Text = "Updating...";
+            await LauncherUpdate.DownloadAsync(OnLauncherUpdateDownloadAsync);
+            _homePage._progressBar.IsIndeterminate = true;
+            return;
+        }
+
+        var entries = await VersionEntries.CreateAsync();
+        Tag = entries; _homePage.Tag = entries;
+
+        foreach (var entry in entries)
+        {
+            await Dispatcher.Yield();
+
+            if (entry.Value is null)
+                continue;
+
+            _versionsPage._listBox.Items.Add(new ListBoxItem
+            {
+                Tag = entry.Value,
+                Content = entry.Key,
+                HorizontalContentAlignment = HorizontalAlignment.Center
+            });
+        }
+
+        _catalog.PackageUpdating += OnPackageUpdating;
+        _catalog.PackageInstalling += OnPackageInstalling;
+        _catalog.PackageUninstalling += OnPackageUninstalling;
+
+        OnPackageStatusChanged(Minecraft.PackageFamilyName);
+
+        _homePage._progressBar.Value = 0;
+        _homePage._progressBar.IsIndeterminate = false;
+        _homePage._progressBar.Visibility = Visibility.Collapsed;
+
+        _homePage._statusTextBlock.Text = "Preparing...";
+        _homePage._statusTextBlock.Visibility = Visibility.Hidden;
+
+        _homePage._playButton.Visibility = Visibility.Visible;
+
+        _rootPage.IsEnabled = true;
+    }
+
     readonly HomePage _homePage;
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
-    readonly WindowInteropHelper _helper;
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal MainWindow(Configuration configuration)
+    internal MainWindow(Configuration configuration, Task<MemoryStream?> task)
     {
-        _helper = new(this);
+        _task = task;
 
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
@@ -50,77 +166,16 @@ sealed class MainWindow : Window
         SnapsToDevicePixels = true;
         RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
-        _rootPage = new(configuration, _helper);
-        _homePage = new(configuration, _helper);
+        WindowInteropHelper helper = new(this);
+
+        _rootPage = new(configuration, helper);
+        _homePage = new(configuration, helper);
         _versionsPage = new(_rootPage);
 
         _rootPage._homePageItem.Tag = _homePage;
         _rootPage._versionsPageItem.Tag = _versionsPage;
-        Content = _rootPage;
+        _rootPage.Content = _homePage; Content = _rootPage;
 
-
-        SourceInitialized += async (_, _) =>
-        {
-            var progressBar = (ModernWpf.Controls.ProgressBar)_rootPage.Content;
-
-            if (!await HttpService.IsAvailableAsync() &&
-                !await MessageDialog.ShowAsync(_connectionFailure))
-                Application.Current.Shutdown();
-
-            if (await LauncherUpdater.CheckAsync() &&
-                await MessageDialog.ShowAsync(_launcherUpdateAvailable))
-            {
-                await LauncherUpdater.DownloadAsync((_) => Dispatcher.Invoke(() =>
-                {
-                    if (progressBar.Value == _) return;
-                    progressBar.Value = _; progressBar.IsIndeterminate = false;
-                }, DispatcherPriority.Send));
-
-                progressBar.IsIndeterminate = true; return;
-            }
-
-            var entriesTask = VersionEntries.CreateAsync();
-            var sponsorshipTask = Sponsorship.StreamAsync();
-            await Task.WhenAll(entriesTask, sponsorshipTask);
-
-            var entries = await entriesTask;
-            _homePage.Tag = entries;
-
-            foreach (var entry in entries)
-            {
-                await Dispatcher.Yield(); if (entry.Value is null) continue;
-                _versionsPage._listBox.Items.Add(new ListBoxItem
-                {
-                    Tag = entry.Value,
-                    Content = entry.Key,
-                    HorizontalContentAlignment = HorizontalAlignment.Center
-                });
-            }
-
-            if (await sponsorshipTask is { } stream)
-            {
-                _homePage._sponsorshipImage.IsEnabled = true;
-                _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
-            }
-
-            void OnPackageStatusChanged(string packageFamilyName) => Dispatcher.Invoke(() =>
-            {
-                if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase)) return;
-                if (!Minecraft.IsInstalled) { _homePage._packageVersionTextBlock.Text = "❌ 0.0.0"; return; }
-                _homePage._packageVersionTextBlock.Text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
-            }, DispatcherPriority.Send);
-
-            _catalog.PackageInstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
-            _catalog.PackageUninstalling += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName); };
-            _catalog.PackageUpdating += (sender, args) => { if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName); };
-
-            OnPackageStatusChanged(Minecraft.PackageFamilyName);
-
-            _rootPage.IsEnabled = true;
-            _rootPage.IsPaneVisible = true;
-
-            _rootPage._homePageItem.IsSelected = true;
-            _rootPage.Content = _homePage;
-        };
+        _ = Dispatcher.InvokeAsync(OnSourceInitializedAsync, DispatcherPriority.SystemIdle);
     }
 }

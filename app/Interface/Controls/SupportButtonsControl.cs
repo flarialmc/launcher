@@ -3,18 +3,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using static System.Environment;
-using static Flarial.Launcher.Interface.MessageDialogContent;
+using static Flarial.Launcher.Interface.MessageDialog;
 using static Windows.Management.Core.ApplicationDataManager;
 using static Flarial.Launcher.Services.Core.Minecraft;
-using ModernWpf.Controls;
 using System.Windows.Interop;
 using System;
-using static Flarial.Launcher.PInvoke;
 
 namespace Flarial.Launcher.Interface.Controls;
 
 sealed class SupportButtonsControl : UniformGrid
 {
+    readonly WindowInteropHelper _helper;
+
     readonly Button _clientFolderButton = new()
     {
         Content = "Open Client Folder",
@@ -31,34 +31,43 @@ sealed class SupportButtonsControl : UniformGrid
         Margin = new(6, 0, 0, 0)
     };
 
-    readonly string _launcher = CurrentDirectory, _gdk = Path.Combine(CurrentDirectory, @"..\Client");
+    readonly string _launcherPath = CurrentDirectory;
+    readonly string _gdkPath = Path.Combine(CurrentDirectory, @"..\Client");
+
+    string UWPPath => Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
+
+    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
+
+    void OnLauncherFolderButtonClick(object sender, EventArgs args) => ShellExecute(_launcherPath);
+
+    async void OnClientFolderButtonClick(object sender, EventArgs args)
+    {
+        if (!IsInstalled)
+        {
+            await _notInstalled.ShowAsync();
+            return;
+        }
+
+        var path = UsingGameDevelopmentKit ? _gdkPath : UWPPath;
+
+        if (!Directory.Exists(path))
+        {
+            await _folderNotFound.ShowAsync();
+            return;
+        }
+
+        ShellExecute(path);
+    }
 
     internal SupportButtonsControl(WindowInteropHelper helper)
     {
-        Rows = 1;
+        _helper = helper;
 
+        Rows = 1;
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
 
-        _launcherFolderButton.Click += (_, _) => ShellExecute(helper.EnsureHandle(), null!, _launcher, null!, null!, SW_NORMAL);
-
-        _clientFolderButton.Click += async (_, _) =>
-        {
-            if (!IsInstalled)
-            {
-                await MessageDialog.ShowAsync(_notInstalled);
-                return;
-            }
-
-            var path = UsingGameDevelopmentKit ? _gdk : Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
-
-            if (!Directory.Exists(path))
-            {
-                await MessageDialog.ShowAsync(_folderNotFound);
-                return;
-            }
-
-            ShellExecute(helper.EnsureHandle(), null!, path, null!, null!, SW_NORMAL);
-        };
+        _clientFolderButton.Click += OnClientFolderButtonClick;
+        _launcherFolderButton.Click += OnLauncherFolderButtonClick;
     }
 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -11,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Flarial.Launcher.Services.Networking;
-using Microsoft.PowerShell;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 

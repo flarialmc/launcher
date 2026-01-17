@@ -11,9 +11,9 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Services.Management;
 
-public static class LauncherUpdater
+public static class LauncherUpdate
 {
-    static LauncherUpdater()
+    static LauncherUpdate()
     {
         var assembly = Assembly.GetEntryAssembly();
 

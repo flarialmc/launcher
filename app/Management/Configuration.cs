@@ -1,8 +1,6 @@
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Windows.Automation.Peers;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xml;

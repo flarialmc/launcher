@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -16,10 +14,12 @@ using static System.Environment.SpecialFolder;
 using static Flarial.Launcher.PInvoke;
 using static System.IO.Path;
 using Flarial.Launcher.Services.Core;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace Flarial.Launcher;
 
-static class Program
+sealed class Program : Application
 {
     const string Format = @"Looks like the launcher crashed! 
 
@@ -60,59 +60,67 @@ Exception: {1}
             var text = string.Format(Format, version, name, message, trace);
             MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
-            Exit(1);
+            Environment.Exit(1);
         };
     }
 
     [STAThread]
     static void Main(string[] args)
     {
-        using (new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created))
+        using var _ = new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
+        if (!created)
+            return;
+
+        CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
+
+        var configuration = Configuration.Get();
+
+        for (var index = 0; index < args.Length; index++)
         {
-            if (!created)
-                return;
-
-            CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
-
-            var configuration = Configuration.Get();
-
-            for (var index = 0; index < args.Length; index++)
+            var argument = args[index];
+            switch (argument)
             {
-                var argument = args[index];
-                switch (argument)
-                {
-                    case "--inject":
-                        if (!(index + 1 < args.Length))
-                            continue;
+                case "--inject":
+                    if (!(index + 1 < args.Length))
+                        continue;
 
-                        Injector.Launch(true, new(args[index + 1]));
-                        return;
+                    Injector.Launch(true, new(args[index + 1]));
+                    return;
 
-                    case "--use-proxy":
-                        HttpService.UseProxy = true; break;
+                case "--use-proxy":
+                    HttpService.UseProxy = true; break;
 
-                    case "--use-dns-over-https":
-                        HttpService.UseDnsOverHttps = true;
-                        break;
+                case "--use-dns-over-https":
+                    HttpService.UseDnsOverHttps = true;
+                    break;
 
-                    case "--no-hardware-acceleration":
-                        configuration.HardwareAcceleration = false;
-                        break;
+                case "--no-hardware-acceleration":
+                    configuration.HardwareAcceleration = false;
+                    break;
 
-                    case "--allow-unsigned-installs":
-                        Minecraft.AllowUnsignedInstalls = true;
-                        break;
-                }
+                case "--allow-unsigned-installs":
+                    Minecraft.AllowUnsignedInstalls = true;
+                    break;
             }
-
-            Application application = new();
-
-            application.Resources.MergedDictionaries.Add(new ThemeResources());
-            application.Resources.MergedDictionaries.Add(new XamlControlsResources());
-            application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
-
-            application.Exit += (_, _) => configuration.Save();
-            application.Run(new MainWindow(configuration));
         }
+
+        /*
+            - Preload sponsorship banner into memory.
+            - This should speedup rendering the banner.
+        */
+
+        new Program(configuration).Run(new MainWindow(configuration, Sponsorship.BannerAsync()));
     }
+
+    readonly Configuration _configuration;
+
+    Program(Configuration configuration)
+    {
+        _configuration = configuration;
+        Resources.MergedDictionaries.Add(new ThemeResources());
+        Resources.MergedDictionaries.Add(new XamlControlsResources());
+        Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
+    }
+
+    protected override void OnExit(ExitEventArgs args) { base.OnExit(args); _configuration.Save(); }
 }
