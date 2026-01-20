@@ -15,7 +15,6 @@
 
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
-    <ServerGarbageCollection>true</ServerGarbageCollection>
 
     <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
