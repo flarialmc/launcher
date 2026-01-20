@@ -42,7 +42,7 @@ public abstract class VersionEntry
         - This would reduce network bandwith but at the cost of speed.
     */
 
-    public virtual async Task InstallAsync(Action<AppInstallState, int> action) => await Task.Run(async () =>
+    public virtual async Task InstallAsync(Action<int, bool> action) => await Task.Run(async () =>
     {
         if (!Minecraft.IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
@@ -55,7 +55,7 @@ public abstract class VersionEntry
 
         try
         {
-            await HttpService.DownloadAsync(uri, path, (_) => action(AppInstallState.Downloading, _));
+            await HttpService.DownloadAsync(uri, path, (_) => action(_, false));
             unsafe
             {
                 /*
@@ -68,7 +68,7 @@ public abstract class VersionEntry
 
                 try
                 {
-                    item.Progress += (sender, args) => action(AppInstallState.Installing, (int)args.percentage);
+                    item.Progress += (sender, args) => action((int)args.percentage, true);
                     item.Completed += (_, _) => SetEvent(@event);
 
                     WaitForSingleObject(@event, INFINITE);

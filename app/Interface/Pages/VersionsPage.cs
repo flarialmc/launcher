@@ -48,24 +48,15 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void OnVersionEntryInstallAsync(AppInstallState state, int value)
+    void OnVersionEntryInstallAsync(int value, bool installing)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(OnVersionEntryInstallAsync, state, value);
+            Dispatcher.Invoke(OnVersionEntryInstallAsync, value, installing);
             return;
         }
 
-        switch (state)
-        {
-            case Installing:
-                _control._icon.Symbol = Upload;
-                break;
-
-            case Downloading:
-                _control._icon.Symbol = Download;
-                break;
-        }
+        _control._icon.Symbol = installing ? Upload : Download;
 
         if (value <= 0)
         {

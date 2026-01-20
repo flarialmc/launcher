@@ -37,7 +37,6 @@ abstract class SponsorshipInfo
     }
 }
 
-
 sealed class SponsorshipBlob : IDisposable
 {
     internal readonly string _uri;

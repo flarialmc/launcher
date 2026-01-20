@@ -75,7 +75,7 @@ sealed class GDKVersionEntry : VersionEntry
         throw new InvalidOperationException();
     }
 
-    public override async Task InstallAsync(Action<AppInstallState, int> action)
+    public override async Task InstallAsync(Action<int, bool> action)
     {
         /*
            - Verify, if GRTS is available and installed.
