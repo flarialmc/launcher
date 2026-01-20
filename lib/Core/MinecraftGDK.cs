@@ -25,8 +25,15 @@ unsafe partial class MinecraftGDK : Minecraft
     internal MinecraftGDK() : base() { }
     protected override string WindowClass => "Bedrock";
 
-    const string AppId = "Game";
-    string Command => Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+    static string Command
+    {
+        get
+        {
+            var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+            return File.Exists(path) ? path : throw new FileNotFoundException();
+        }
+    }
+
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
@@ -35,6 +42,9 @@ unsafe partial class MinecraftGDK : Minecraft
             - Verify if the game is actually signed by the Microsoft Store.
             - This allows the launcher ensure the launch contract works as intended.
         */
+
+        if (!IsInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
         if (!AllowUnsignedInstalls && !IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
@@ -49,10 +59,7 @@ unsafe partial class MinecraftGDK : Minecraft
 
         using var shell = PowerShell.Create();
         shell.AddCommand("Invoke-CommandInDesktopPackage");
-
-        shell.AddParameter(nameof(AppId), AppId);
-        shell.AddParameter(nameof(Command), Command);
-        shell.AddParameter(nameof(PackageFamilyName), PackageFamilyName);
+        shell.AddParameters((object[])[PackageFamilyName, "Game", Command]);
 
         shell.Invoke();
         return ProcessId;
