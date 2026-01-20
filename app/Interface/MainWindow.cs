@@ -20,14 +20,12 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static System.Windows.Media.Imaging.BitmapCreateOptions;
 using static System.Windows.Media.Imaging.BitmapCacheOption;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Flarial.Launcher.Interface;
 
 sealed class MainWindow : Window
 {
-    readonly Task<MemoryStream?> _task;
-
     void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
         if (!args.IsComplete) return;
@@ -49,7 +47,7 @@ sealed class MainWindow : Window
     void OnPackageStatusChanged(string packageFamilyName)
     {
         if (packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
-            Dispatcher.Invoke(OnPackageStatusChanged, DispatcherPriority.Send);
+            Dispatcher.Invoke(OnPackageStatusChanged);
     }
 
     void OnPackageStatusChanged()
@@ -65,23 +63,11 @@ sealed class MainWindow : Window
         _homePage._packageVersionTextBlock.Text = text;
     }
 
-    async void OnSourceInitializedAsync()
-    {
-        if (await _task is not { } stream)
-            return;
-
-        using (stream)
-        {
-            _homePage._sponsorshipImage.IsEnabled = true;
-            _homePage._sponsorshipImage.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
-        }
-    }
-
     void OnLauncherUpdateDownloadAsync(int value)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(DispatcherPriority.Send, OnLauncherUpdateDownloadAsync, value);
+            Dispatcher.Invoke(OnLauncherUpdateDownloadAsync, value);
             return;
         }
 
@@ -141,16 +127,60 @@ sealed class MainWindow : Window
         _homePage._playButton.Visibility = Visibility.Visible;
 
         _rootPage.IsEnabled = true;
+
+        await Task.Run(OnSourceFinalizedAsync);
+    }
+
+    async Task OnSourceFinalizedAsync()
+    {
+        /*
+            - On a timer, update the sponsorship banners.
+            - For now just load the first result, if available.
+        */
+
+        await Task.WhenAll(_promosTask, _serversTask);
+
+        var promos = await _promosTask;
+        var servers = await _serversTask;
+
+        if (promos.Count > 0)
+            LoadSponsorshipImage(promos[0], _homePage._promoSponsorshipImage);
+
+        if (servers.Count > 0)
+            LoadSponsorshipImage(servers[0], _homePage._serverSponsorshipImage);
+    }
+
+    void LoadSponsorshipImage(SponsorshipBlob blob, Image image)
+    {
+        if (!CheckAccess())
+        {
+            Dispatcher.Invoke(LoadSponsorshipImage, blob, image);
+            return;
+        }
+
+        /*
+            - Discard the sponsorship blobs.
+            - Tag the image with the campaign Uri.
+        */
+
+        using (blob)
+        {
+            image.Tag = blob._uri;
+            image.IsEnabled = true;
+            image.Source = BitmapFrame.Create(blob._stream, PreservePixelFormat, OnLoad);
+        }
     }
 
     readonly HomePage _homePage;
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
+    readonly Task<List<SponsorshipBlob>> _promosTask, _serversTask;
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal MainWindow(Configuration configuration, Task<MemoryStream?> task)
+    internal MainWindow(Configuration configuration, Task<List<SponsorshipBlob>> promosTask, Task<List<SponsorshipBlob>> serversTask)
     {
-        _task = task;
+        _promosTask = promosTask;
+        _serversTask = serversTask;
 
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
@@ -175,7 +205,5 @@ sealed class MainWindow : Window
         _rootPage._homePageItem.Tag = _homePage;
         _rootPage._versionsPageItem.Tag = _versionsPage;
         _rootPage.Content = _homePage; Content = _rootPage;
-
-        _ = Dispatcher.InvokeAsync(OnSourceInitializedAsync, DispatcherPriority.SystemIdle);
     }
 }

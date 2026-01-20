@@ -37,19 +37,16 @@ Exception: {1}
     {
         /*
             - Prevent the operating system from handling errors for us.
-            - Setup exception & process exit handlers.
         */
 
         SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
-
-        AppDomain.CurrentDomain.ProcessExit += static (_, _) => { GC.Collect(); GC.WaitForPendingFinalizers(); };
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
             var version = ApplicationManifest.Version;
 
             var exception = (Exception)args.ExceptionObject;
-            var trace = $"{exception.StackTrace}".Trim();
+            var trace = exception.StackTrace.Trim();
 
             while (exception.InnerException is not null)
                 exception = exception.InnerException;
@@ -68,48 +65,32 @@ Exception: {1}
     static void Main(string[] args)
     {
         using var _ = new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
-        if (!created)
-            return;
+        if (!created) return;
 
         CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
 
         var configuration = Configuration.Get();
 
         for (var index = 0; index < args.Length; index++)
-        {
-            var argument = args[index];
-            switch (argument)
+            switch (args[index])
             {
                 case "--inject":
-                    if (!(index + 1 < args.Length))
-                        continue;
-
-                    Injector.Launch(true, new(args[index + 1]));
-                    return;
-
-                case "--use-proxy":
-                    HttpService.UseProxy = true; break;
-
-                case "--use-dns-over-https":
-                    HttpService.UseDnsOverHttps = true;
-                    break;
-
-                case "--no-hardware-acceleration":
-                    configuration.HardwareAcceleration = false;
-                    break;
-
-                case "--allow-unsigned-installs":
-                    Minecraft.AllowUnsignedInstalls = true;
-                    break;
+                    if (!(index + 1 < args.Length)) continue;
+                    Injector.Launch(true, new(args[index + 1])); return;
+                case "--use-proxy": HttpService.UseProxy = true; break;
+                case "--use-dns-over-https": HttpService.UseDnsOverHttps = true; break;
+                case "--allow-unsigned-installs": Minecraft.AllowUnsignedInstalls = true; break;
+                case "--no-hardware-acceleration": configuration.HardwareAcceleration = false; break;
             }
-        }
 
         /*
             - Preload sponsorship banner into memory.
             - This should speedup rendering the banner.
         */
 
-        new Program(configuration).Run(new MainWindow(configuration, Sponsorship.BannerAsync()));
+        var promosTask = PromoSponsorshipRegistry.GetAsync();
+        var serversTask = ServerSponsorshipRegistry.GetAsync();
+        new Program(configuration).Run(new MainWindow(configuration, promosTask, serversTask));
     }
 
     readonly Configuration _configuration;

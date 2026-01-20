@@ -62,37 +62,41 @@ sealed class HomePage : Grid
     internal readonly TextBlock _packageVersionTextBlock = new()
     {
         Text = "❌ 0.0.0",
-        VerticalAlignment = VerticalAlignment.Bottom,
+        VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Left,
-        Margin = new(12, 0, 0, 12)
+        Margin = new(12, 12, 0, 0)
     };
 
     readonly TextBlock _launcherVersionTextBlock = new()
     {
         Text = ApplicationManifest.Version,
-        Margin = new(0, 0, 12, 12),
-        VerticalAlignment = VerticalAlignment.Bottom,
+        Margin = new(0, 12, 12, 0),
+        VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Right
     };
 
-    readonly HyperlinkButton _discordLinkButton = new()
-    {
-        Content = "Discord",
-        Foreground = new SolidColorBrush(Colors.White),
-        Padding = new(),
-        NavigateUri = new("https://flarial.xyz/discord"),
-        VerticalAlignment = VerticalAlignment.Top,
-        HorizontalAlignment = HorizontalAlignment.Right,
-        Margin = new(0, 12, 12, 0)
-    };
 
-    internal readonly Image _sponsorshipImage = new()
+    internal readonly Image _promoSponsorshipImage = new()
     {
+        Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
-        HorizontalAlignment = HorizontalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Left,
         Height = 50,
         Width = 320,
-        Margin = new(0, 0, 0, 12),
+        Margin = new(90, 0, 0, 12),
+        Cursor = Cursors.Hand,
+        IsEnabled = false
+    };
+
+
+    internal readonly Image _serverSponsorshipImage = new()
+    {
+        Stretch = Stretch.UniformToFill,
+        VerticalAlignment = VerticalAlignment.Bottom,
+        HorizontalAlignment = HorizontalAlignment.Right,
+        Height = 50,
+        Width = 320,
+        Margin = new(0, 0, 90, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
     };
@@ -109,13 +113,24 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    void OnSponsorshipImageClick(object sender, EventArgs args) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, Sponsorship.CampaignUri, null!, null!, PInvoke.SW_NORMAL);
+    /*
+        - In the future, the sponsorship banners should rotate.
+        - Use WPF's `FrameworkElement.Tag` property to attach clickable metadata.
+    */
+
+    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
+
+    void OnSponsorshipImageClick(object sender, EventArgs args)
+    {
+        var element = (FrameworkElement)sender;
+        ShellExecute((string)element.Tag);
+    }
 
     async void OnFlarialClientDownloadAsync(int value)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(DispatcherPriority.Send, OnFlarialClientDownloadAsync, value);
+            Dispatcher.Invoke(OnFlarialClientDownloadAsync, value);
             return;
         }
 
@@ -238,13 +253,14 @@ If you need help, join our Discord.";
         Children.Add(_logoImage);
         Children.Add(_progressBar);
         Children.Add(_statusTextBlock);
-        Children.Add(_discordLinkButton);
         Children.Add(_playButton);
         Children.Add(_launcherVersionTextBlock);
         Children.Add(_packageVersionTextBlock);
-        Children.Add(_sponsorshipImage);
+        Children.Add(_promoSponsorshipImage);
+        Children.Add(_serverSponsorshipImage);
 
         _playButton.Click += OnPlayButtonClick;
-        _sponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
+        _promoSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
+        _serverSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
     }
 }

@@ -28,7 +28,7 @@ public abstract class VersionEntry
         - Reuse the PackageManager instance from the `Minecraft` class.
     */
 
-    static readonly PackageManager s_manager = Minecraft.s_manager;
+    protected static readonly PackageManager s_manager = Minecraft.s_manager;
 
     /*
         - This method is present for compatibility reasons.
@@ -36,6 +36,11 @@ public abstract class VersionEntry
     */
 
     public abstract Task<string> GetAsync();
+
+    /*
+        - Reintroduce package streaming in the future if possible.
+        - This would reduce network bandwith but at the cost of speed.
+    */
 
     public virtual async Task InstallAsync(Action<AppInstallState, int> action) => await Task.Run(async () =>
     {

@@ -6,8 +6,8 @@
     <TargetFramework>net481</TargetFramework>
 
     <UseWPF>true</UseWPF>
-    <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
     <ApplicationIcon>Resources\Application.ico</ApplicationIcon>
+    <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -15,22 +15,17 @@
 
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
 
     <DebugType>embedded</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\AssemblyVersion.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Resources\Application.ico" LogicalName="Application.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\lib\Flarial.Launcher.Services.csproj" PrivateAssets="All"  />
+    <ProjectReference Include="..\lib\Flarial.Launcher.Services.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
