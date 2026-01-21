@@ -19,24 +19,24 @@ public sealed class Catalog : IEnumerable<string>
         ForceUpdateFromAnyVersion = true
     };
 
-    readonly Dictionary<string, VersionEntry> _entries;
+    readonly Dictionary<string, VersionItem> _catalog;
 
-    Catalog(VersionEntries entries) => _entries = entries.ToDictionary(static _ => _.Key, static _ => _.Value);
+    Catalog(VersionRegistry registry) => _catalog = registry.ToDictionary(static _ => _.Key, static _ => _.Value);
 
-    public static async Task<Catalog> GetAsync() => new(await VersionEntries.CreateAsync());
+    public static async Task<Catalog> GetAsync() => new(await VersionRegistry.CreateAsync());
 
-    public async Task<Uri> UriAsync(string version) => new(await _entries[version].GetAsync());
+    public async Task<Uri> UriAsync(string version) => new(await _catalog[version].GetAsync());
 
-    public bool IsCompatible => _entries.ContainsKey(Minecraft.PackageVersion);
+    public bool IsCompatible => _catalog.ContainsKey(Minecraft.PackageVersion);
 
     public async Task<Request> InstallAsync(string value, Action<int> action) => new(Manager.AddPackageByUriAsync(await UriAsync(value), Options), action);
 
     public IEnumerator<string> GetEnumerator()
     {
-        foreach (var entry in _entries)
+        foreach (var item in _catalog)
         {
-            if (entry.Value is null) continue;
-            yield return entry.Key;
+            if (item.Value is null) continue;
+            yield return item.Key;
         }
     }
 

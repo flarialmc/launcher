@@ -213,7 +213,7 @@ public partial class MainWindow
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        if (!await HttpService.IsAvailableAsync() && await DialogBox.ShowAsync("🚨 Connection Failure", @"Failed to connect to Flarial's CDN.
+        if (!await HttpStack.IsAvailableAsync() && await DialogBox.ShowAsync("🚨 Connection Failure", @"Failed to connect to Flarial's CDN.
         
 • Try restarting the launcher.
 • Check your internet connection.

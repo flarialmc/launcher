@@ -98,11 +98,11 @@ Exception: {1}
                     break;
 
                 case "--use-proxy":
-                    HttpService.UseProxy = true;
+                    HttpStack.UseProxy = true;
                     break;
 
                 case "--use-dns-over-https":
-                    HttpService.UseDnsOverHttps = true;
+                    DnsOverHttpsHandler.UseDnsOverHttps = true;
                     break;
             }
         }
