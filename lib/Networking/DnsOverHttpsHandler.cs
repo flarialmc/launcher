@@ -30,15 +30,15 @@ public sealed class DnsOverHttpsHandler : HttpClientHandler
         AutomaticDecompression = GZip | Deflate
     }, true);
 
-    const string IPMetdataUri = "https://speed.cloudflare.com/__down";
+    const string AddressMetadataUrl = "https://speed.cloudflare.com/__down";
 
-    const string DnsQueryUri = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
+    const string DnsQueryUrl = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
 
     static async Task<HostNameType?> GetVersionAsync()
     {
         try
         {
-            using var message = await s_client.GetAsync(IPMetdataUri, ResponseHeadersRead);
+            using var message = await s_client.GetAsync(AddressMetadataUrl, ResponseHeadersRead);
             var @string = message.Headers.GetValues("cf-meta-ip").FirstOrDefault();
 
             if (!TryParse(@string, out var address))
@@ -65,7 +65,7 @@ public sealed class DnsOverHttpsHandler : HttpClientHandler
             var type = version switch { Ipv6 => "AAAA", Ipv4 => "A", _ => null };
             var value = version switch { Ipv6 => "28", Ipv4 => "1", _ => null };
 
-            using var stream = await s_client.GetStreamAsync(string.Format(DnsQueryUri, name, type));
+            using var stream = await s_client.GetStreamAsync(string.Format(DnsQueryUrl, name, type));
             using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);
 
             foreach (var element in XElement.Load(reader).Descendants("data"))
