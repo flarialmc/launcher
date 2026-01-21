@@ -58,7 +58,7 @@ sealed class MainWindow : Window
             return;
         }
 
-        var entries = (VersionEntries)Tag;
+        var entries = (VersionRegistry)Tag;
         var text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
         _homePage._packageVersionTextBlock.Text = text;
     }
@@ -82,7 +82,7 @@ sealed class MainWindow : Window
     {
         base.OnSourceInitialized(args);
 
-        if (!await HttpService.IsAvailableAsync() && !await _connectionFailure.ShowAsync())
+        if (!await HttpStack.IsAvailableAsync() && !await _connectionFailure.ShowAsync())
             Application.Current.Shutdown();
 
         if (await LauncherUpdate.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
@@ -93,20 +93,20 @@ sealed class MainWindow : Window
             return;
         }
 
-        var entries = await VersionEntries.CreateAsync();
-        Tag = entries; _homePage.Tag = entries;
+        var registry = await VersionRegistry.CreateAsync();
+        Tag = registry; _homePage.Tag = registry;
 
-        foreach (var entry in entries)
+        foreach (var item in registry)
         {
             await Dispatcher.Yield();
 
-            if (entry.Value is null)
+            if (item.Value is null)
                 continue;
 
             _versionsPage._listBox.Items.Add(new ListBoxItem
             {
-                Tag = entry.Value,
-                Content = entry.Key,
+                Tag = item.Value,
+                Content = item.Key,
                 HorizontalContentAlignment = HorizontalAlignment.Center
             });
         }
@@ -177,7 +177,7 @@ sealed class MainWindow : Window
     readonly Task<List<SponsorshipBlob>> _promosTask, _serversTask;
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal MainWindow(Configuration configuration, Task<List<SponsorshipBlob>> promosTask, Task<List<SponsorshipBlob>> serversTask)
+    internal MainWindow(ApplicationConfiguration configuration, Task<List<SponsorshipBlob>> promosTask, Task<List<SponsorshipBlob>> serversTask)
     {
         _promosTask = promosTask;
         _serversTask = serversTask;

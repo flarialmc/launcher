@@ -14,11 +14,12 @@ using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-public abstract class VersionEntry
+public abstract class VersionItem
 {
-    internal VersionEntry() { }
+    internal VersionItem() { }
 
     static readonly string s_path = Path.GetTempPath();
+
     private protected static readonly DataContractJsonSerializerSettings s_settings = new()
     {
         UseSimpleDictionaryFormat = true
@@ -55,7 +56,7 @@ public abstract class VersionEntry
 
         try
         {
-            await HttpService.DownloadAsync(uri, path, (_) => action(_, false));
+            await HttpStack.DownloadAsync(uri, path, (_) => action(_, false));
             unsafe
             {
                 /*

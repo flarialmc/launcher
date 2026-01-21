@@ -14,15 +14,15 @@ abstract class SponsorshipInfo
     protected abstract string BannerUri { get; }
     internal protected abstract string CampaignUri { get; }
 
-    internal async Task<Stream?> StreamAsync()
+    internal async Task<Stream?> GetStreamAsync()
     {
-        try { return new MemoryStream(await HttpService.BytesAsync(BannerUri)); }
+        try { return new MemoryStream(await HttpStack.GetBytesAsync(BannerUri)); }
         catch { return null; }
     }
 
     internal static async Task<List<SponsorshipBlob>> GetAsync(IReadOnlyList<SponsorshipInfo> info)
     {
-        Task<Stream?>[] tasks = [.. info.Select(_ => _.StreamAsync())];
+        Task<Stream?>[] tasks = [.. info.Select(_ => _.GetStreamAsync())];
         await Task.WhenAll(tasks);
 
         List<SponsorshipBlob> blobs = [];

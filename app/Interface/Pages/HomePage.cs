@@ -20,7 +20,7 @@ namespace Flarial.Launcher.Interface.Pages;
 sealed class HomePage : Grid
 {
     readonly WindowInteropHelper _helper;
-    readonly Configuration _configuration;
+    readonly ApplicationConfiguration _configuration;
 
     readonly Image _logoImage = new()
     {
@@ -155,7 +155,7 @@ If you need help, join our Discord.";
             _statusTextBlock.Text = "Preparing...";
             _statusTextBlock.Visibility = Visibility.Visible;
 
-            var entries = (VersionEntries)Tag;
+            var registry = (VersionRegistry)Tag;
 
             if (!Minecraft.IsInstalled)
             {
@@ -180,9 +180,9 @@ If you need help, join our Discord.";
             var initialized = _configuration.WaitForInitialization;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
-            if (!custom && !beta && !entries.IsSupported)
+            if (!custom && !beta && !registry.IsSupported)
             {
-                await new UnsupportedVersion(Minecraft.PackageVersion, entries.First().Key).ShowAsync();
+                await new UnsupportedVersion(Minecraft.PackageVersion, registry.First().Key).ShowAsync();
                 return;
             }
 
@@ -245,7 +245,7 @@ If you need help, join our Discord.";
         }
     }
 
-    internal HomePage(Configuration configuration, WindowInteropHelper helper)
+    internal HomePage(ApplicationConfiguration configuration, WindowInteropHelper helper)
     {
         _helper = helper;
         _configuration = configuration;

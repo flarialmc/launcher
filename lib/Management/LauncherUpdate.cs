@@ -44,32 +44,32 @@ if not %errorlevel%==0 goto _
 del ""%~f0""
 ";
 
-    const string VersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
+    const string LauncherVersionUrl = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
 
-    const string LauncherUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
+    const string LauncherDownloadUrl = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
 
     static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
 
     public static async Task<bool> CheckAsync()
     {
-        var input = await HttpService.StringAsync(VersionUri);
+        var input = await HttpStack.GetStringAsync(LauncherVersionUrl);
         var version = JsonObject.Parse(input)["version"];
         return s_version != version.GetString();
     }
 
     public static async Task DownloadAsync(Action<int> action)
     {
-        await HttpService.DownloadAsync(LauncherUri, s_source, action);
+        await HttpStack.DownloadAsync(LauncherDownloadUrl, s_source, action);
 
         using (StreamWriter writer = new(s_script))
             await writer.WriteAsync(s_content);
 
         StringBuilder builder = new(s_arguments);
         
-        if (HttpService.UseProxy)
+        if (HttpStack.UseProxy)
             builder.Append(' ').Append("--use-proxy");
 
-        if (HttpServiceHandler.UseDnsOverHttps)
+        if (DnsOverHttpsHandler.UseDnsOverHttps)
             builder.Append(' ').Append("--use-dns-over-https");
 
         if (Minecraft.AllowUnsignedInstalls)

@@ -16,9 +16,10 @@ namespace Flarial.Launcher.Services.Client;
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
-    protected abstract string Uri { get; }
+
+    protected abstract string Url { get; }
+    protected abstract string Name { get; }
     protected abstract string Build { get; }
-    protected abstract string Path { get; }
     protected abstract string Identifer { get; }
 
     public static readonly FlarialClient Beta = new FlarialClientBeta(), Release = new FlarialClientRelease();
@@ -41,7 +42,7 @@ public abstract class FlarialClient
             return Minecraft.Current.Launch(false) is { };
         }
 
-        if (Injector.Launch(initialized, new(Path)) is not { } processId) return false;
+        if (Injector.Launch(initialized, new(Name)) is not { } processId) return false;
         using NativeMutex mutex = new(Identifer); return mutex.Duplicate(processId);
     }
 
@@ -49,11 +50,11 @@ public abstract class FlarialClient
 
     static readonly HashAlgorithm _algorithm = SHA256.Create();
 
-    const string HashesUri = "https://cdn.flarial.xyz/dll_hashes.json";
+    const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
     async Task<string> RemoteHashAsync()
     {
-        var @string = await HttpService.StringAsync(HashesUri);
+        var @string = await HttpStack.GetStringAsync(HashesUrl);
         return JsonObject.Parse(@string)[Build].GetString();
     }
 
@@ -63,7 +64,7 @@ public abstract class FlarialClient
         {
             lock (_lock)
             {
-                using var stream = File.OpenRead(Path);
+                using var stream = File.OpenRead(Name);
                 var value = _algorithm.ComputeHash(stream);
                 var @string = BitConverter.ToString(value);
                 return @string.Replace("-", string.Empty);
@@ -80,10 +81,10 @@ public abstract class FlarialClient
         if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
             return true;
 
-        try { File.Delete(Path); }
+        try { File.Delete(Name); }
         catch { return false; }
 
-        await HttpService.DownloadAsync(Uri, Path, action);
+        await HttpStack.DownloadAsync(Url, Name, action);
         return true;
     }
 }

@@ -16,13 +16,13 @@ using System.Net.Sockets;
 
 namespace Flarial.Launcher.Services.Networking;
 
-sealed partial class HttpServiceHandler : HttpClientHandler
+public sealed class DnsOverHttpsHandler : HttpClientHandler
 {
-    internal static bool UseDnsOverHttps { get; set { if (!field) field = value; } }
+    public static bool UseDnsOverHttps { internal get; set { if (!field) field = value; } }
 
-    internal HttpServiceHandler() { AllowAutoRedirect = true; AutomaticDecompression = GZip | Deflate; }
+    internal DnsOverHttpsHandler() { AllowAutoRedirect = true; AutomaticDecompression = GZip | Deflate; }
 
-    static HttpServiceHandler() => s_client.DefaultRequestHeaders.Add("accept", "application/dns-json");
+    static DnsOverHttpsHandler() => s_client.DefaultRequestHeaders.Add("accept", "application/dns-json");
 
     static readonly HttpClient s_client = new(new HttpClientHandler
     {
@@ -30,15 +30,15 @@ sealed partial class HttpServiceHandler : HttpClientHandler
         AutomaticDecompression = GZip | Deflate
     }, true);
 
-    const string TraceUri = "https://speed.cloudflare.com/__down";
+    const string IPMetdataUri = "https://speed.cloudflare.com/__down";
 
-    const string DnsUri = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
+    const string DnsQueryUri = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
 
-    static async Task<HostNameType?> VersionAsync()
+    static async Task<HostNameType?> GetVersionAsync()
     {
         try
         {
-            using var message = await s_client.GetAsync(TraceUri, ResponseHeadersRead);
+            using var message = await s_client.GetAsync(IPMetdataUri, ResponseHeadersRead);
             var @string = message.Headers.GetValues("cf-meta-ip").FirstOrDefault();
 
             if (!TryParse(@string, out var address))
@@ -58,14 +58,14 @@ sealed partial class HttpServiceHandler : HttpClientHandler
     {
         var uri = request.RequestUri;
 
-        if (UseDnsOverHttps && uri.HostNameType is Dns && await VersionAsync() is { } version)
+        if (UseDnsOverHttps && uri.HostNameType is Dns && await GetVersionAsync() is { } version)
         {
             var name = uri.Host;
 
             var type = version switch { Ipv6 => "AAAA", Ipv4 => "A", _ => null };
             var value = version switch { Ipv6 => "28", Ipv4 => "1", _ => null };
 
-            using var stream = await s_client.GetStreamAsync(string.Format(DnsUri, name, type));
+            using var stream = await s_client.GetStreamAsync(string.Format(DnsQueryUri, name, type));
             using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);
 
             foreach (var element in XElement.Load(reader).Descendants("data"))

@@ -10,7 +10,7 @@ namespace Flarial.Launcher.Management;
 enum DllBuild { Release, Beta, Custom }
 
 [DataContract]
-sealed class Configuration
+sealed class ApplicationConfiguration
 {
     [DataMember]
     internal DllBuild DllBuild { get; set; } = DllBuild.Release;
@@ -41,12 +41,12 @@ sealed class Configuration
         WaitForInitialization = true;
     }
 
-    internal static Configuration Get()
+    internal static ApplicationConfiguration Get()
     {
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.xml");
-            var configuration = (Configuration)s_serializer.ReadObject(stream);
+            var configuration = (ApplicationConfiguration)s_serializer.ReadObject(stream);
 
             if (!Enum.IsDefined(typeof(DllBuild), configuration.DllBuild))
                 configuration.DllBuild = DllBuild.Release;
@@ -69,7 +69,7 @@ sealed class Configuration
         s_serializer.WriteObject(writer, this);
     }
 
-    static readonly DataContractSerializer s_serializer = new(typeof(Configuration));
+    static readonly DataContractSerializer s_serializer = new(typeof(ApplicationConfiguration));
 
     static readonly XmlWriterSettings s_settings = new() { Indent = true };
 }

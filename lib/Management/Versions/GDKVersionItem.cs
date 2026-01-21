@@ -16,47 +16,47 @@ using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-sealed class GDKVersionEntry : VersionEntry
+sealed class GDKVersionItem : VersionItem
 {
     const string PackageFamilyName = "Microsoft.GamingServices_8wekyb3d8bbwe";
 
-    const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
+    const string GameLaunchHelperUrl = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
 
-    const string PackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@refs/heads/master/urls.json";
+    const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@refs/heads/master/urls.json";
 
     static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, Dictionary<string, string[]>>), s_settings);
 
     readonly byte[] _bytes;
-    readonly string[] _uris;
+    readonly string[] _urls;
 
     static string Path => Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
-    GDKVersionEntry(string[] uris, byte[] bytes) => (_uris, _bytes) = (uris, bytes);
+    GDKVersionItem(string[] urls, byte[] bytes) => (_urls, _bytes) = (urls, bytes);
 
-    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionEntry?> entries) => await Task.Run(async () =>
+    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionItem?> registry) => await Task.Run(async () =>
     {
-        var streamTask = HttpService.StreamAsync(PackagesUri);
-        var bytesTask = HttpService.BytesAsync(GameLaunchHelperUri);
-        await Task.WhenAll(streamTask, bytesTask);
+        var msixvcPackagesTask = HttpStack.GetStreamAsync(MSIXVCPackagesUrl);
+        var gamelaunchHelperTask = HttpStack.GetBytesAsync(GameLaunchHelperUrl);
+        await Task.WhenAll(msixvcPackagesTask, gamelaunchHelperTask);
 
-        var bytes = await bytesTask;
-        using var stream = await streamTask;
+        var bytes = await gamelaunchHelperTask;
+        using var stream = await msixvcPackagesTask;
 
         var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(stream);
 
         foreach (var item in items["release"])
         {
             var key = item.Key.Substring(0, item.Key.LastIndexOf('.'));
-            entries.TryUpdate(key, new GDKVersionEntry(item.Value, bytes), null);
+            registry.TryUpdate(key, new GDKVersionItem(item.Value, bytes), null);
         }
     });
 
-    static async Task<string?> GetAsync(string uri, CancellationToken token)
+    static async Task<string?> PingAsync(string url, CancellationToken token)
     {
         try
         {
-            using var message = await HttpService.GetAsync(uri, token);
-            return message.IsSuccessStatusCode ? uri : null;
+            using var message = await HttpStack.GetAsync(url, token);
+            return message.IsSuccessStatusCode ? url : null;
         }
         catch { return null; }
     }
@@ -64,12 +64,12 @@ sealed class GDKVersionEntry : VersionEntry
     public override async Task<string> GetAsync()
     {
         using CancellationTokenSource source = new();
-        HashSet<Task<string?>> tasks = [.. _uris.Select(_ => GetAsync(_, source.Token))];
+        HashSet<Task<string?>> tasks = [.. _urls.Select(_ => PingAsync(_, source.Token))];
 
         while (tasks.Count > 0)
         {
             var task = await Task.WhenAny(tasks); tasks.Remove(task);
-            if (await task is { } uri) { source.Cancel(); return uri; }
+            if (await task is { } url) { source.Cancel(); return url; }
         }
 
         throw new InvalidOperationException();

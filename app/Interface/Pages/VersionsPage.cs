@@ -109,7 +109,7 @@ sealed class VersionsPage : Grid
             try
             {
                 var item = (ListBoxItem)_listBox.SelectedItem;
-                var entry = (VersionEntry)item.Tag;
+                var entry = (VersionItem)item.Tag;
 
                 _task = entry.InstallAsync(OnVersionEntryInstallAsync);
                 await _task;

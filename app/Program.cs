@@ -69,18 +69,33 @@ Exception: {1}
 
         CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
 
-        var configuration = Configuration.Get();
+        var configuration = ApplicationConfiguration.Get();
 
         for (var index = 0; index < args.Length; index++)
             switch (args[index])
             {
                 case "--inject":
-                    if (!(index + 1 < args.Length)) continue;
-                    Injector.Launch(true, new(args[index + 1])); return;
-                case "--use-proxy": HttpService.UseProxy = true; break;
-                case "--use-dns-over-https": HttpService.UseDnsOverHttps = true; break;
-                case "--allow-unsigned-installs": Minecraft.AllowUnsignedInstalls = true; break;
-                case "--no-hardware-acceleration": configuration.HardwareAcceleration = false; break;
+                    if (!(index + 1 < args.Length))
+                        continue;
+
+                    Injector.Launch(true, new(args[index + 1]));
+                    return;
+
+                case "--use-proxy":
+                    HttpStack.UseProxy = true;
+                    break;
+
+                case "--use-dns-over-https":
+                    DnsOverHttpsHandler.UseDnsOverHttps = true;
+                    break;
+
+                case "--allow-unsigned-installs":
+                    Minecraft.AllowUnsignedInstalls = true;
+                    break;
+
+                case "--no-hardware-acceleration":
+                    configuration.HardwareAcceleration = false;
+                    break;
             }
 
         /*
@@ -93,9 +108,9 @@ Exception: {1}
         new Program(configuration).Run(new MainWindow(configuration, promosTask, serversTask));
     }
 
-    readonly Configuration _configuration;
+    readonly ApplicationConfiguration _configuration;
 
-    Program(Configuration configuration)
+    Program(ApplicationConfiguration configuration)
     {
         _configuration = configuration;
         Resources.MergedDictionaries.Add(new ThemeResources());

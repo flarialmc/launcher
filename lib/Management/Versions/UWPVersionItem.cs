@@ -12,20 +12,21 @@ using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher.Services.Management.Versions;
 
-sealed class UWPVersionEntry : VersionEntry
-{
-    const string MediaType = "application/soap+xml";
-    const string DownloadUri = "http://tlu.dl.delivery.mp.microsoft.com";
-    const string StoreUri = "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
-    const string PackagesUri = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
+sealed class UWPVersionItem : VersionItem
+{   
+    const string AppxPackageDownloadUrl = "http://tlu.dl.delivery.mp.microsoft.com";
+   
+    const string MicrosoftStoreUrl = "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
+   
+    const string AppxPackagesUrl = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
 
     readonly string _content;
     static readonly string s_content;
     static readonly DataContractJsonSerializer s_serializer = new(typeof(string[][]), s_settings);
 
-    UWPVersionEntry(string identifier) : base() => _content = string.Format(s_content, identifier, '1');
+    UWPVersionItem(string identifier) : base() => _content = string.Format(s_content, identifier, '1');
 
-    static UWPVersionEntry()
+    static UWPVersionItem()
     {
         var assembly = Assembly.GetExecutingAssembly();
 
@@ -35,28 +36,28 @@ sealed class UWPVersionEntry : VersionEntry
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionEntry?> entries)
+    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionItem?> registry)
     {
-        using var stream = await HttpService.StreamAsync(PackagesUri);
+        using var stream = await HttpStack.GetStreamAsync(AppxPackagesUrl);
         var items = (string[][])s_serializer.ReadObject(stream);
 
         foreach (var item in items)
         {
             if (item[2] != "0") continue;
             var key = item[0].Substring(0, item[0].LastIndexOf('.'));
-            entries.TryUpdate(key, new UWPVersionEntry(item[1]), null);
+            registry.TryUpdate(key, new UWPVersionItem(item[1]), null);
         }
     }
 
     public override async Task<string> GetAsync() => await Task.Run(async () =>
     {
-        using StringContent content = new(_content, Encoding.UTF8, MediaType);
-        using var message = await HttpService.PostAsync(StoreUri, content);
+        using StringContent content = new(_content, Encoding.UTF8, "application/soap+xml");
+        using var message = await HttpStack.PostAsync(MicrosoftStoreUrl, content);
 
         message.EnsureSuccessStatusCode();
         using var stream = await message.Content.ReadAsStreamAsync();
 
         var descendants = XElement.Load(stream).Descendants();
-        return descendants.First(_ => _.Value.StartsWith(DownloadUri, StringComparison.OrdinalIgnoreCase)).Value;
+        return descendants.First(_ => _.Value.StartsWith(AppxPackageDownloadUrl, StringComparison.OrdinalIgnoreCase)).Value;
     });
 }
