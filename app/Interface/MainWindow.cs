@@ -128,9 +128,23 @@ sealed class MainWindow : Window
 
         _rootPage.IsEnabled = true;
 
-        await Task.Run(OnSourceFinalizedAsync);
+        await Task.WhenAll(Task.Run(LoadServerSponsorshipsAsync), Task.Run(LoadPromoSponsorshipsAsync));
     }
 
+    async Task LoadServerSponsorshipsAsync()
+    {
+        var servers = await _serversTask;
+        if (servers.Count > 0) LoadSponsorshipImage(servers[0], _homePage._serverSponsorshipImage);
+    }
+
+    async Task LoadPromoSponsorshipsAsync()
+    {
+        var promos = await _promosTask;
+        if (promos.Count > 0) LoadSponsorshipImage(promos[0], _homePage._promoSponsorshipImage);
+    }
+
+
+    [Obsolete("", true)]
     async Task OnSourceFinalizedAsync()
     {
         /*

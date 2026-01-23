@@ -83,7 +83,7 @@ sealed class HomePage : Grid
         HorizontalAlignment = HorizontalAlignment.Left,
         Height = 50,
         Width = 320,
-        Margin = new(90, 0, 0, 12),
+        Margin = new(105, 0, 0, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
     };
@@ -96,7 +96,7 @@ sealed class HomePage : Grid
         HorizontalAlignment = HorizontalAlignment.Right,
         Height = 50,
         Width = 320,
-        Margin = new(0, 0, 90, 12),
+        Margin = new(0, 0, 105, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
     };

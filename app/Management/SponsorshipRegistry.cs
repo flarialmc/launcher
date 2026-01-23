@@ -7,6 +7,11 @@ using Flarial.Launcher.Services.Networking;
 
 namespace Flarial.Launcher.Management;
 
+/*
+    - Rework this in the future, if required.
+    - Rotating sponsorships will be hard to implement.
+*/
+
 abstract class SponsorshipInfo
 {
     internal SponsorshipInfo() { }
@@ -63,15 +68,16 @@ static class ServerSponsorshipRegistry
 
     static ServerSponsorshipRegistry()
     {
-        _info.Add(new Google());
+        _info.Add(new CollapseNetwork());
     }
 
     internal static async Task<List<SponsorshipBlob>> GetAsync() => await SponsorshipInfo.GetAsync(_info);
 
-    sealed class Google : SponsorshipInfo
+
+    sealed class CollapseNetwork : SponsorshipInfo
     {
-        protected override string BannerUri => "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-red-solid-color-background.jpg";
-        internal protected override string CampaignUri => "https://google.com";
+        protected override string BannerUri => "https://collapsemc.com/assets/other/ad-banner.png";
+        internal protected override string CampaignUri => "https://collapsemc.com";
     }
 }
 
