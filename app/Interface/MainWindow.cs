@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static System.Windows.Media.Imaging.BitmapCreateOptions;
 using static System.Windows.Media.Imaging.BitmapCacheOption;
-using System.Collections.Generic;
+using System.IO;
 
 namespace Flarial.Launcher.Interface;
 
@@ -128,73 +128,49 @@ sealed class MainWindow : Window
 
         _rootPage.IsEnabled = true;
 
-        await Task.WhenAll(Task.Run(LoadServerSponsorshipsAsync), Task.Run(LoadPromoSponsorshipsAsync));
+        var leftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
+        var centerSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
+        var rightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
+        await Task.WhenAll(leftSponsorshipTask, rightSponsorshipTask);
     }
 
-    async Task LoadServerSponsorshipsAsync()
-    {
-        var servers = await _serversTask;
-        if (servers.Count > 0) LoadSponsorshipImage(servers[0], _homePage._serverSponsorshipImage);
-    }
+    async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
+    async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);
+    async Task LoadRightSponsorshipAsync() => LoadSponsorshipImage(await _rightSponsorshipTask, _homePage._rightSponsorshipImage);
 
-    async Task LoadPromoSponsorshipsAsync()
-    {
-        var promos = await _promosTask;
-        if (promos.Count > 0) LoadSponsorshipImage(promos[0], _homePage._promoSponsorshipImage);
-    }
-
-
-    [Obsolete("", true)]
-    async Task OnSourceFinalizedAsync()
-    {
-        /*
-            - On a timer, update the sponsorship banners.
-            - For now just load the first result, if available.
-        */
-
-        await Task.WhenAll(_promosTask, _serversTask);
-
-        var promos = await _promosTask;
-        var servers = await _serversTask;
-
-        if (promos.Count > 0)
-            LoadSponsorshipImage(promos[0], _homePage._promoSponsorshipImage);
-
-        if (servers.Count > 0)
-            LoadSponsorshipImage(servers[0], _homePage._serverSponsorshipImage);
-    }
-
-    void LoadSponsorshipImage(SponsorshipBlob blob, Image image)
+    void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(LoadSponsorshipImage, blob, image);
+            Dispatcher.Invoke(LoadSponsorshipImage, sponsorship, image);
             return;
         }
 
-        /*
-            - Discard the sponsorship blobs.
-            - Tag the image with the campaign Uri.
-        */
+        if (sponsorship is not { } item)
+            return;
 
-        using (blob)
-        {
-            image.Tag = blob._uri;
-            image.IsEnabled = true;
-            image.Source = BitmapFrame.Create(blob._stream, PreservePixelFormat, OnLoad);
-        }
+        using var stream = item.Item1;
+        image.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
+
+        image.Tag = item.Item2;
+        image.IsEnabled = true;
     }
 
     readonly HomePage _homePage;
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
-    readonly Task<List<SponsorshipBlob>> _promosTask, _serversTask;
+
+    readonly Task<Tuple<Stream, string>?> _leftSponsorshipTask;
+    readonly Task<Tuple<Stream, string>?> _centerSponsorshipTask;
+    readonly Task<Tuple<Stream, string>?> _rightSponsorshipTask;
+
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal MainWindow(ApplicationConfiguration configuration, Task<List<SponsorshipBlob>> promosTask, Task<List<SponsorshipBlob>> serversTask)
+    internal MainWindow(ApplicationConfiguration configuration, params Task<Tuple<Stream, string>?>[] sponsorshipTasks)
     {
-        _promosTask = promosTask;
-        _serversTask = serversTask;
+        _leftSponsorshipTask = sponsorshipTasks[0];
+        _centerSponsorshipTask = sponsorshipTasks[1];
+        _rightSponsorshipTask = sponsorshipTasks[2];
 
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);

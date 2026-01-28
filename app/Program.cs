@@ -103,9 +103,10 @@ Exception: {1}
             - This should speedup rendering the banner.
         */
 
-        var promosTask = PromoSponsorshipRegistry.GetAsync();
-        var serversTask = ServerSponsorshipRegistry.GetAsync();
-        new Program(configuration).Run(new MainWindow(configuration, promosTask, serversTask));
+        var leftSponsorshipTask = SponsorshipRegistry._leftSponsorship.GetAsync();
+        var centerSponsorshipTask = SponsorshipRegistry._centerSponsorship.GetAsync();
+        var rightSponsorshipTask = SponsorshipRegistry._rightSponsorship.GetAsync();
+        new Program(configuration).Run(new MainWindow(configuration, leftSponsorshipTask, centerSponsorshipTask, rightSponsorshipTask));
     }
 
     readonly ApplicationConfiguration _configuration;

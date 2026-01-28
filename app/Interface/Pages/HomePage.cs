@@ -75,28 +75,38 @@ sealed class HomePage : Grid
         HorizontalAlignment = HorizontalAlignment.Right
     };
 
-
-    internal readonly Image _promoSponsorshipImage = new()
+    internal readonly Image _leftSponsorshipImage = new()
     {
         Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Left,
-        Height = 50,
-        Width = 320,
-        Margin = new(105, 0, 0, 12),
+        Height = 50 * 0.925,
+        Width = 320 * 0.925,
+        Margin = new(12, 0, 0, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
     };
 
+    internal readonly Image _centerSponsorshipImage = new()
+    {
+        Stretch = Stretch.UniformToFill,
+        VerticalAlignment = VerticalAlignment.Bottom,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Height = 50 * 0.925,
+        Width = 320 * 0.925,
+        Margin = new(0, 0, 0, 12),
+        Cursor = Cursors.Hand,
+        IsEnabled = false
+    };
 
-    internal readonly Image _serverSponsorshipImage = new()
+    internal readonly Image _rightSponsorshipImage = new()
     {
         Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Right,
-        Height = 50,
-        Width = 320,
-        Margin = new(0, 0, 105, 12),
+        Height = 50 * 0.925,
+        Width = 320 * 0.925,
+        Margin = new(0, 0, 12, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
     };
@@ -250,17 +260,21 @@ If you need help, join our Discord.";
         _helper = helper;
         _configuration = configuration;
 
+        Children.Add(_launcherVersionTextBlock);
+        Children.Add(_packageVersionTextBlock);
+
         Children.Add(_logoImage);
         Children.Add(_progressBar);
         Children.Add(_statusTextBlock);
         Children.Add(_playButton);
-        Children.Add(_launcherVersionTextBlock);
-        Children.Add(_packageVersionTextBlock);
-        Children.Add(_promoSponsorshipImage);
-        Children.Add(_serverSponsorshipImage);
+
+        Children.Add(_leftSponsorshipImage);
+        Children.Add(_centerSponsorshipImage);
+        Children.Add(_rightSponsorshipImage);
 
         _playButton.Click += OnPlayButtonClick;
-        _promoSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
-        _serverSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
+        _leftSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
+        _centerSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
+        _rightSponsorshipImage.MouseLeftButtonDown += OnSponsorshipImageClick;
     }
 }

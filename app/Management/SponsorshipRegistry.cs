@@ -4,97 +4,56 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Networking;
+using Windows.Storage;
 
 namespace Flarial.Launcher.Management;
 
-/*
-    - Rework this in the future, if required.
-    - Rotating sponsorships will be hard to implement.
-*/
-
-abstract class SponsorshipInfo
+abstract class SponsorshipItem
 {
-    internal SponsorshipInfo() { }
+    internal SponsorshipItem() { }
+    protected abstract string BannerUrl { get; }
+    protected abstract string CampaignUrl { get; }
 
-    protected abstract string BannerUri { get; }
-    internal protected abstract string CampaignUri { get; }
-
-    internal async Task<Stream?> GetStreamAsync()
+    internal async Task<Tuple<Stream, string>?> GetAsync()
     {
-        try { return new MemoryStream(await HttpStack.GetBytesAsync(BannerUri)); }
+        try { return new(new MemoryStream(await HttpStack.GetBytesAsync(BannerUrl)), CampaignUrl); }
         catch { return null; }
     }
-
-    internal static async Task<List<SponsorshipBlob>> GetAsync(IReadOnlyList<SponsorshipInfo> info)
-    {
-        Task<Stream?>[] tasks = [.. info.Select(_ => _.GetStreamAsync())];
-        await Task.WhenAll(tasks);
-
-        List<SponsorshipBlob> blobs = [];
-
-        for (var index = 0; index < info.Count; index++)
-        {
-            if (await tasks[index] is not { } stream) continue;
-            blobs.Add(new(info[index].CampaignUri, stream));
-        }
-
-        return blobs;
-    }
 }
 
-sealed class SponsorshipBlob : IDisposable
+static class SponsorshipRegistry
 {
-    internal readonly string _uri;
-    internal readonly Stream _stream;
+    internal static readonly SponsorshipItem _leftSponsorship = new LiteByteHosting();
 
-    internal SponsorshipBlob(string uri, Stream stream)
+    internal static readonly SponsorshipItem _centerSponsorship = new CollapseNetwork();
+
+    internal static readonly SponsorshipItem _rightSponsorship = new ExampleSponsorship();
+
+    /*
+        - Register & store sponsorships in the launcher.
+        - We can easily swap these out as required.
+    */
+
+    sealed class LiteByteHosting : SponsorshipItem
     {
-        _uri = uri;
-        _stream = stream;
+        protected override string BannerUrl => "https://litebyte.co/images/flarial.png";
+        protected override string CampaignUrl => "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
     }
 
-    public void Dispose()
+    sealed class CollapseNetwork : SponsorshipItem
     {
-        GC.SuppressFinalize(this);
-        _stream.Dispose();
+        protected override string CampaignUrl => "https://collapsemc.com";
+        protected override string BannerUrl => "https://collapsemc.com/assets/other/ad-banner.png";
     }
 
-    ~SponsorshipBlob() => Dispose();
-}
-
-static class ServerSponsorshipRegistry
-{
-    static readonly List<SponsorshipInfo> _info = [];
-
-    static ServerSponsorshipRegistry()
+    sealed class ExampleSponsorship : SponsorshipItem
     {
-        _info.Add(new CollapseNetwork());
-    }
+        /*
+            - Should be as a placeholder.
+            - Only used for testing purposes.
+        */
 
-    internal static async Task<List<SponsorshipBlob>> GetAsync() => await SponsorshipInfo.GetAsync(_info);
-
-
-    sealed class CollapseNetwork : SponsorshipInfo
-    {
-        protected override string BannerUri => "https://collapsemc.com/assets/other/ad-banner.png";
-        internal protected override string CampaignUri => "https://collapsemc.com";
-    }
-}
-
-static class PromoSponsorshipRegistry
-{
-    static readonly List<SponsorshipInfo> _info = [];
-
-    static PromoSponsorshipRegistry()
-    {
-        _info.Add(new LiteByte());
-    }
-
-    internal static async Task<List<SponsorshipBlob>> GetAsync() => await SponsorshipInfo.GetAsync(_info);
-
-    sealed class LiteByte : SponsorshipInfo
-    {
-        protected override string BannerUri => "https://litebyte.co/images/flarial.png";
-        internal protected override string CampaignUri => "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
+        protected override string CampaignUrl => "https://example.com";
+        protected override string BannerUrl => "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-white-solid-color-background.jpg";
     }
 }
