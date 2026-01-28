@@ -88,6 +88,7 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
+RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
         LaunchButton.ApplyTemplate();
         _launchButtonTextBlock = (TextBlock)LaunchButton.Template.FindName("LaunchText", LaunchButton);
