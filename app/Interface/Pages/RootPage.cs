@@ -25,7 +25,7 @@ sealed class RootPage : NavigationView
         Content = "Settings"
     };
 
-    internal RootPage(ApplicationConfiguration configuration, WindowInteropHelper helper)
+    internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
         IsEnabled = false;
         IsSettingsVisible = false;

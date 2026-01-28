@@ -10,7 +10,7 @@ namespace Flarial.Launcher.Interface.Pages;
 
 sealed class SettingsPage : Grid
 {
-    readonly ApplicationConfiguration _configuration;
+    readonly Configuration _configuration;
 
     readonly RadioButtons _dllBuild = new()
     {
@@ -50,7 +50,7 @@ sealed class SettingsPage : Grid
 
     readonly CustomDllPathPicker _customDllPathPicker;
 
-    internal SettingsPage(ApplicationConfiguration configuration, WindowInteropHelper helper)
+    internal SettingsPage(Configuration configuration, WindowInteropHelper helper)
     {
         _configuration = configuration;
         _customDllPathPicker = new(configuration);

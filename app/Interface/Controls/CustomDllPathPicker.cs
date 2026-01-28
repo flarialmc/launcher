@@ -10,7 +10,7 @@ namespace Flarial.Launcher.Interface.Controls;
 
 sealed class CustomDllPathPicker : SimpleStackPanel
 {
-    readonly ApplicationConfiguration _configuration;
+    readonly Configuration _configuration;
 
     readonly TextBox _textBox = new()
     {
@@ -49,7 +49,7 @@ sealed class CustomDllPathPicker : SimpleStackPanel
         _configuration.CustomDllPath = _dialog.FileName;
     }
 
-    internal CustomDllPathPicker(ApplicationConfiguration configuration)
+    internal CustomDllPathPicker(Configuration configuration)
     {
         _configuration = configuration;
 

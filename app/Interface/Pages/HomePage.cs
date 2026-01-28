@@ -20,20 +20,20 @@ namespace Flarial.Launcher.Interface.Pages;
 sealed class HomePage : Grid
 {
     readonly WindowInteropHelper _helper;
-    readonly ApplicationConfiguration _configuration;
+    readonly Configuration _configuration;
 
     readonly Image _logoImage = new()
     {
-        Source = ApplicationManifest.Icon,
-        Width = ApplicationManifest.Icon.Width / 2.5,
-        Height = ApplicationManifest.Icon.Height / 2.5,
+        Source = Manifest.Icon,
+        Width = Manifest.Icon.Width / 2.5,
+        Height = Manifest.Icon.Height / 2.5,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new(0, 0, 0, 120)
     };
 
     internal readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
-        Width = ApplicationManifest.Icon.Width,
+        Width = Manifest.Icon.Width,
         Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
@@ -54,7 +54,7 @@ sealed class HomePage : Grid
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
         Content = "Play",
-        Width = ApplicationManifest.Icon.Width,
+        Width = Manifest.Icon.Width,
         Margin = new(0, 90, 0, 0),
         Visibility = Visibility.Hidden
     };
@@ -69,7 +69,7 @@ sealed class HomePage : Grid
 
     readonly TextBlock _launcherVersionTextBlock = new()
     {
-        Text = ApplicationManifest.Version,
+        Text = Manifest.Version,
         Margin = new(0, 12, 12, 0),
         VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Right
@@ -255,7 +255,7 @@ If you need help, join our Discord.";
         }
     }
 
-    internal HomePage(ApplicationConfiguration configuration, WindowInteropHelper helper)
+    internal HomePage(Configuration configuration, WindowInteropHelper helper)
     {
         _helper = helper;
         _configuration = configuration;

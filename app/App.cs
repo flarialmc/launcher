@@ -19,7 +19,7 @@ using System.IO;
 
 namespace Flarial.Launcher;
 
-sealed class Program : Application
+sealed class App : Application
 {
     const string Format = @"Looks like the launcher crashed! 
 
@@ -33,7 +33,7 @@ Exception: {1}
 
 {3}";
 
-    static Program()
+    static App()
     {
         /*
             - Prevent the operating system from handling errors for us.
@@ -43,7 +43,7 @@ Exception: {1}
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
-            var version = ApplicationManifest.Version;
+            var version = Manifest.Version;
 
             var exception = (Exception)args.ExceptionObject;
             var trace = exception.StackTrace.Trim();
@@ -69,7 +69,7 @@ Exception: {1}
 
         CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
 
-        var configuration = ApplicationConfiguration.Get();
+        var configuration = Configuration.Get();
 
         for (var index = 0; index < args.Length; index++)
             switch (args[index])
@@ -103,15 +103,12 @@ Exception: {1}
             - This should speedup rendering the banner.
         */
 
-        var leftSponsorshipTask = SponsorshipRegistry._leftSponsorship.GetAsync();
-        var centerSponsorshipTask = SponsorshipRegistry._centerSponsorship.GetAsync();
-        var rightSponsorshipTask = SponsorshipRegistry._rightSponsorship.GetAsync();
-        new Program(configuration).Run(new MainWindow(configuration, leftSponsorshipTask, centerSponsorshipTask, rightSponsorshipTask));
+        new App(configuration).Run(new MainWindow(configuration));
     }
 
-    readonly ApplicationConfiguration _configuration;
+    readonly Configuration _configuration;
 
-    Program(ApplicationConfiguration configuration)
+    App(Configuration configuration)
     {
         _configuration = configuration;
         Resources.MergedDictionaries.Add(new ThemeResources());
@@ -119,5 +116,9 @@ Exception: {1}
         Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
     }
 
-    protected override void OnExit(ExitEventArgs args) { base.OnExit(args); _configuration.Save(); }
+    protected override void OnExit(ExitEventArgs args)
+    {
+        base.OnExit(args);
+        _configuration.Save();
+    }
 }

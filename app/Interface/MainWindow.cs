@@ -160,24 +160,20 @@ sealed class MainWindow : Window
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
 
-    readonly Task<Tuple<Stream, string>?> _leftSponsorshipTask;
-    readonly Task<Tuple<Stream, string>?> _centerSponsorshipTask;
-    readonly Task<Tuple<Stream, string>?> _rightSponsorshipTask;
+    readonly Task<Tuple<Stream, string>?> _leftSponsorshipTask = Sponsorship.GetAsync<Sponsorship.LiteByteHosting>();
+    readonly Task<Tuple<Stream, string>?> _centerSponsorshipTask = Sponsorship.GetAsync<Sponsorship.Empty>();
+    readonly Task<Tuple<Stream, string>?> _rightSponsorshipTask = Sponsorship.GetAsync<Sponsorship.CollapseNetwork>();
 
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
-    internal MainWindow(ApplicationConfiguration configuration, params Task<Tuple<Stream, string>?>[] sponsorshipTasks)
+    internal MainWindow(Configuration configuration)
     {
-        _leftSponsorshipTask = sponsorshipTasks[0];
-        _centerSponsorshipTask = sponsorshipTasks[1];
-        _rightSponsorshipTask = sponsorshipTasks[2];
-
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 
         Width = 960; Height = 540;
         Title = $"Flarial Launcher";
-        Icon = ApplicationManifest.Icon;
+        Icon = Manifest.Icon;
 
         ResizeMode = ResizeMode.NoResize;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;

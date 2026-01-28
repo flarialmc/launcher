@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 
 namespace Flarial.Launcher.Management;
 
-static class ApplicationManifest
+static class Manifest
 {
     static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
@@ -12,7 +12,7 @@ static class ApplicationManifest
 
     internal static readonly string Version;
 
-    static ApplicationManifest()
+    static Manifest()
     {
         Version = $"{Assembly.GetName().Version}";
         using var stream = Assembly.GetManifestResourceStream("Application.ico");
