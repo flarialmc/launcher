@@ -38,7 +38,7 @@ abstract class Sponsorship
 
     internal class InfinityNetwork : Sponsorship
     {
-        protected override string BannerUrl => "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-white-solid-color-background.jpg";
+        protected override string BannerUrl => "https://assets.infinitymcpe.com/banner.png";
         protected override string CampaignUrl => "https://discord.gg/infinitymcpe";
     }
 
