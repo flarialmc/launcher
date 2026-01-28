@@ -32,7 +32,7 @@ abstract class Sponsorship
 
     internal sealed class CollapseNetwork : Sponsorship
     {
-        protected override string CampaignUrl => "https://collapsemc.com";
+        protected override string CampaignUrl => "minecraft://?addExternalServer=Collapse|clps.gg:19132";
         protected override string BannerUrl => "https://collapsemc.com/assets/other/ad-banner.png";
     }
 
