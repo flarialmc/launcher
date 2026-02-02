@@ -23,6 +23,7 @@ using static System.NativeProcess;
 unsafe partial class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
+
     protected override string WindowClass => "Bedrock";
 
     static string Command
@@ -46,7 +47,7 @@ unsafe partial class MinecraftGDK : Minecraft
         if (!IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!(AllowUnsignedInstalls ??= false) && !IsPackaged)
+        if (!AllowUnsignedInstalls && !IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         /*
