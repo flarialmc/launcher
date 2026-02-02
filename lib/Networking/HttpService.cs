@@ -23,7 +23,7 @@ public static class HttpService
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool? UseProxy { internal get; set { field ??= value; } }
+    public static bool? UseProxy { internal get; set => field ??= value; }
 
     public static async Task<Stream> GetStreamAsync(string url) => await HttpClient.GetStreamAsync(url);
 

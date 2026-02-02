@@ -94,21 +94,19 @@ sealed class MainWindow : Window
         }
 
         var registry = await VersionRegistry.CreateAsync();
+        Tag = registry; _homePage.Tag = registry;
 
-        Tag = registry;
-        _homePage.Tag = registry;
-
-        foreach (var item in registry)
+        foreach (var entry in registry)
         {
             await Dispatcher.Yield();
 
-            if (item.Value is null)
+            if (entry.Value.Item is null)
                 continue;
 
             _versionsPage._listBox.Items.Add(new ListBoxItem
             {
-                Tag = item.Value,
-                Content = item.Key,
+                Content = entry.Key,
+                Tag = entry.Value.Item,
                 HorizontalContentAlignment = HorizontalAlignment.Center
             });
         }
@@ -135,6 +133,7 @@ sealed class MainWindow : Window
             - These should improve frontend performance + sponsorship loading.
             - Use `Task.WhenAll` to catch any logic or code issues in production.
         */
+
         await Task.WhenAll(_loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
     }
 

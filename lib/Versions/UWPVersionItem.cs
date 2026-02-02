@@ -21,7 +21,7 @@ sealed class UWPVersionItem : VersionItem
 
     const string AppxPackagesUrl = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
 
-    readonly string _content; 
+    readonly string _content;
     static readonly string s_content;
     static readonly DataContractJsonSerializer s_serializer = new(typeof(string[][]), s_settings);
 
@@ -37,7 +37,7 @@ sealed class UWPVersionItem : VersionItem
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task QueryAsync(Dictionary<string, VersionItem?> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(IDictionary<string, VersionEntry> registry) => await Task.Run(async () =>
     {
         using var stream = await HttpService.GetStreamAsync(AppxPackagesUrl);
         var items = (string[][])s_serializer.ReadObject(stream);
@@ -49,8 +49,8 @@ sealed class UWPVersionItem : VersionItem
 
             lock (registry)
             {
-                if (!registry.TryGetValue(key, out _)) continue;
-                registry[key] = new UWPVersionItem(item[1]);
+                if (!registry.TryGetValue(key, out var entry)) continue;
+                entry.Item = new UWPVersionItem(item[1]);
             }
         }
     });

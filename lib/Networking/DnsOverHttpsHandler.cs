@@ -18,11 +18,7 @@ namespace Flarial.Launcher.Services.Networking;
 
 public sealed class DnsOverHttpsHandler : HttpClientHandler
 {
-    public static bool? UseDnsOverHttps
-    {
-        internal get;
-        set { field ??= value; }
-    }
+    public static bool? UseDnsOverHttps { internal get; set => field ??= value; }
 
     internal DnsOverHttpsHandler()
     {
