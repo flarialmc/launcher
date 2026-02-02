@@ -137,24 +137,6 @@ sealed class MainWindow : Window
         await Task.WhenAll(_loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
     }
 
-    async Task LoadLeftSponsorshipAsync()
-    {
-        var sponsorship = await _leftSponsorshipTask;
-        LoadSponsorshipImage(sponsorship, _homePage._leftSponsorshipImage);
-    }
-
-    async Task LoadCenterSponsorshipAsync()
-    {
-        var sponsorship = await _centerSponsorshipTask;
-        LoadSponsorshipImage(sponsorship, _homePage._centerSponsorshipImage);
-    }
-
-    async Task LoadRightSponsorshipAsync()
-    {
-        var sponsorship = await _rightSponsorshipTask;
-        LoadSponsorshipImage(sponsorship, _homePage._rightSponsorshipImage);
-    }
-
     void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image)
     {
         /*
@@ -178,26 +160,25 @@ sealed class MainWindow : Window
         image.IsEnabled = true;
     }
 
-    readonly HomePage _homePage;
-    readonly RootPage _rootPage;
-    readonly VersionsPage _versionsPage;
+    async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
+    async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);
+    async Task LoadRightSponsorshipAsync() => LoadSponsorshipImage(await _rightSponsorshipTask, _homePage._rightSponsorshipImage);
 
     readonly Task _loadLeftSponsorshipTask;
     readonly Task _loadCenterSponsorshipTask;
     readonly Task _loadRightSponsorshipTask;
 
-    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
-
     readonly Task<Tuple<Stream, string>?> _leftSponsorshipTask = Sponsorship.GetAsync<Sponsorship.LiteByteHosting>();
     readonly Task<Tuple<Stream, string>?> _centerSponsorshipTask = Sponsorship.GetAsync<Sponsorship.InfinityNetwork>();
     readonly Task<Tuple<Stream, string>?> _rightSponsorshipTask = Sponsorship.GetAsync<Sponsorship.CollapseNetwork>();
 
+    readonly HomePage _homePage;
+    readonly RootPage _rootPage;
+    readonly VersionsPage _versionsPage;
+    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
+
     internal MainWindow(Configuration configuration)
     {
-        _loadLeftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
-        _loadCenterSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
-        _loadRightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
-
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 
@@ -220,6 +201,12 @@ sealed class MainWindow : Window
 
         _rootPage._homePageItem.Tag = _homePage;
         _rootPage._versionsPageItem.Tag = _versionsPage;
-        _rootPage.Content = _homePage; Content = _rootPage;
+
+        _rootPage.Content = _homePage;
+        Content = _rootPage;
+
+        _loadLeftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
+        _loadCenterSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
+        _loadRightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
     }
 }
