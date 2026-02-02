@@ -6,8 +6,6 @@ using static Windows.Win32.Foundation.WAIT_EVENT;
 using static System.IO.Directory;
 using static System.IO.NotifyFilters;
 using static System.Environment;
-using static System.Environment.SpecialFolder;
-using System.Management.Automation;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
@@ -15,27 +13,26 @@ using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System;
 
 namespace Flarial.Launcher.Services.Game;
 
 using static System.NativeProcess;
 
-unsafe partial class MinecraftGDK : Minecraft
+unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
-
     protected override string WindowClass => "Bedrock";
 
-    static string Command
-    {
-        get
-        {
-            var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-            return File.Exists(path) ? path : throw new FileNotFoundException();
-        }
-    }
+    /*
+        - Using Windows Powershell's binary directly, makes the code more portable.
+        - The `System.Management.Automation` package for Windows PowerShell is only for .NET Framework.
+    */
 
-    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_path = Path.Combine(GetFolderPath(SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+    static readonly string s_arguments = $"-ExecutionPolicy \"Bypass\" -NoProfile -NonInteractive -Command \"Invoke-CommandInDesktopPackage '{PackageFamilyName}' 'App' '{{0}}'\"";
 
     protected override uint? Activate()
     {
@@ -55,15 +52,21 @@ unsafe partial class MinecraftGDK : Minecraft
             - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
         */
 
-        if (ProcessId is { } processId)
+        if (GetProcessId() is { } processId)
             return processId;
 
-        using var shell = PowerShell.Create();
-        shell.AddCommand("Invoke-CommandInDesktopPackage");
-        shell.AddParameters((object[])[PackageFamilyName, "Game", Command]);
+        var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        if (!File.Exists(path)) throw new FileNotFoundException();
 
-        shell.Invoke();
-        return ProcessId;
+        using var process = Process.Start(new ProcessStartInfo()
+        {
+            FileName = s_filename,
+            CreateNoWindow = true,
+            UseShellExecute = false,
+            Arguments = string.Format(s_arguments, path),
+        }); process.WaitForExit();
+
+        return GetProcessId();
     }
 
     public override uint? Launch(bool initialized)
@@ -111,44 +114,42 @@ unsafe partial class MinecraftGDK : Minecraft
         }
     }
 
-    uint? ProcessId
+    uint? GetProcessId()
     {
-        get
+        fixed (char* pfn = PackageFamilyName)
+        fixed (char* name = "Minecraft.Windows.exe")
         {
-            fixed (char* pfn = PackageFamilyName) fixed (char* name = "Minecraft.Windows.exe")
+            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
+            WTS_PROCESS_INFOW* information = null;
+            var buffer = stackalloc char[(int)length];
+
+            try
             {
-                uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
-                WTS_PROCESS_INFOW* information = null;
-                var buffer = stackalloc char[(int)length];
+                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
+                    for (var index = 0; index < count; index++)
+                    {
+                        var entry = information[index];
 
-                try
-                {
-                    if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
-                        for (var index = 0; index < count; index++)
+                        if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL)
+                            continue;
+
+                        if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
+                            continue;
+
+                        using (process)
                         {
-                            var entry = information[index];
-
-                            if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL)
+                            if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS)
                                 continue;
 
-                            if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
+                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL)
                                 continue;
 
-                            using (process)
-                            {
-                                if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS)
-                                    continue;
-
-                                if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL)
-                                    continue;
-
-                                return entry.ProcessId;
-                            }
+                            return entry.ProcessId;
                         }
-                    return null;
-                }
-                finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
+                    }
+                return null;
             }
+            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
         }
     }
 }
