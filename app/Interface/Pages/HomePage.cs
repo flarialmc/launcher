@@ -175,7 +175,7 @@ If you need help, join our Discord.";
 
             if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
             {
-                if (!(bool)Minecraft.AllowUnsignedInstalls!)
+                if (!Minecraft.AllowUnsignedInstalls)
                 {
                     await _unsignedInstall.ShowAsync();
                     return;
