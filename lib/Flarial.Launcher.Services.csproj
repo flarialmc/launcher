@@ -15,6 +15,7 @@
     <PublishRelease>true</PublishRelease>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

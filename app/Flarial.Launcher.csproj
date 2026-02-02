@@ -19,6 +19,7 @@
     <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
