@@ -80,8 +80,8 @@ sealed class HomePage : Grid
         Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Left,
-        Height = 50 * 0.925,
-        Width = 320 * 0.925,
+        Height = 50 * 0.95,
+        Width = 320 * 0.95,
         Margin = new(12, 0, 0, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
@@ -92,8 +92,8 @@ sealed class HomePage : Grid
         Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Height = 50 * 0.925,
-        Width = 320 * 0.925,
+        Height = 50 * 0.95,
+        Width = 320 * 0.95,
         Margin = new(0, 0, 0, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
@@ -104,8 +104,8 @@ sealed class HomePage : Grid
         Stretch = Stretch.UniformToFill,
         VerticalAlignment = VerticalAlignment.Bottom,
         HorizontalAlignment = HorizontalAlignment.Right,
-        Height = 50 * 0.925,
-        Width = 320 * 0.925,
+        Height = 50 * 0.95,
+        Width = 320 * 0.95,
         Margin = new(0, 0, 12, 12),
         Cursor = Cursors.Hand,
         IsEnabled = false
@@ -113,8 +113,8 @@ sealed class HomePage : Grid
 
     sealed class UnsupportedVersion(string packageVersion, string supportedVersion) : MessageDialog
     {
-        protected override string Title => "⚠️ Unsupported Version";
         protected override string Primary => "Back";
+        protected override string Title => "⚠️ Unsupported Version";
         protected override string Content => $@"Minecraft {packageVersion} isn't compatible with Flarial Client.
 
 • Please switch to Minecraft {supportedVersion} for the best experience.

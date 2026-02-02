@@ -21,7 +21,7 @@ public sealed class Catalog : IEnumerable<string>
 
     readonly Dictionary<string, VersionItem> _catalog;
 
-    Catalog(VersionRegistry registry) => _catalog = registry.ToDictionary(static _ => _.Key, static _ => _.Value);
+    Catalog(VersionRegistry registry) => _catalog = registry.ToDictionary(static _ => _.Key, static _ => _.Value.Item);
 
     public static async Task<Catalog> GetAsync() => new(await VersionRegistry.CreateAsync());
 
