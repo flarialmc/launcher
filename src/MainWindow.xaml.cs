@@ -19,7 +19,7 @@ using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.SDK;
 using Flarial.Launcher.Services.Management;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Styles;
 using Flarial.Launcher.Services.Networking;
 
@@ -214,7 +214,7 @@ RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
     private async void MainWindow_ContentRendered(object sender, EventArgs e)
     {
-        if (!await HttpStack.IsAvailableAsync() && await DialogBox.ShowAsync("🚨 Connection Failure", @"Failed to connect to Flarial's CDN.
+        if (!await FlarialClient.CanConnectAsync() && await DialogBox.ShowAsync("🚨 Connection Failure", @"Failed to connect to Flarial's CDN.
         
 • Try restarting the launcher.
 • Check your internet connection.
@@ -222,7 +222,7 @@ RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
 If you need help, join our Discord.", ("Exit", true), ("Continue", false))) { Close(); return; }
 
-        if (await LauncherUpdate.CheckAsync() && await DialogBox.ShowAsync("💡 Launcher Update", @"An update is available for the launcher.
+        if (await FlarialLauncher.CheckAsync() && await DialogBox.ShowAsync("💡 Launcher Update", @"An update is available for the launcher.
 
 • Updating the launcher provides new bug fixes & features.
 • Newer versions of the client & game might require a launcher update.
@@ -240,7 +240,7 @@ If you need help, join our Discord.", ("Update", true)))
                 LolGrid.IsEnabled = true;
             });
 
-            await LauncherUpdate.DownloadAsync(LauncherDownloadProgressAction);
+            await FlarialLauncher.DownloadAsync(LauncherDownloadProgressAction);
             return;
         }
 

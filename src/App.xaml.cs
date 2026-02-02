@@ -98,7 +98,7 @@ Exception: {1}
                     break;
 
                 case "--use-proxy":
-                    HttpStack.UseProxy = true;
+                    HttpService.UseProxy = true;
                     break;
 
                 case "--use-dns-over-https":

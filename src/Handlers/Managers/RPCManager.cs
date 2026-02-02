@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
 using Flarial.Launcher.Functions;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 
 namespace Flarial.Launcher.Managers;
 

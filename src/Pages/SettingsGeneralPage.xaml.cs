@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Management;
 using static System.Environment;
 

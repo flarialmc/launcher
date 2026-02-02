@@ -18,9 +18,17 @@ namespace Flarial.Launcher.Services.Networking;
 
 public sealed class DnsOverHttpsHandler : HttpClientHandler
 {
-    public static bool UseDnsOverHttps { internal get; set { if (!field) field = value; } }
+    public static bool? UseDnsOverHttps
+    {
+        internal get;
+        set { field ??= value; }
+    }
 
-    internal DnsOverHttpsHandler() { AllowAutoRedirect = true; AutomaticDecompression = GZip | Deflate; }
+    internal DnsOverHttpsHandler()
+    {
+        AllowAutoRedirect = true;
+        AutomaticDecompression = GZip | Deflate;
+    }
 
     static DnsOverHttpsHandler() => s_client.DefaultRequestHeaders.Add("accept", "application/dns-json");
 
@@ -34,7 +42,7 @@ public sealed class DnsOverHttpsHandler : HttpClientHandler
 
     const string DnsQueryUrl = "https://cloudflare-dns.com/dns-query?name={0}&type={1}";
 
-    static async Task<HostNameType?> GetVersionAsync()
+    static async Task<HostNameType?> GetProtocolAsync()
     {
         try
         {
@@ -58,12 +66,23 @@ public sealed class DnsOverHttpsHandler : HttpClientHandler
     {
         var uri = request.RequestUri;
 
-        if (UseDnsOverHttps && uri.HostNameType is Dns && await GetVersionAsync() is { } version)
+        if ((UseDnsOverHttps ??= false) && uri.HostNameType is Dns && await GetProtocolAsync() is { } protocol)
         {
             var name = uri.Host;
 
-            var type = version switch { Ipv6 => "AAAA", Ipv4 => "A", _ => null };
-            var value = version switch { Ipv6 => "28", Ipv4 => "1", _ => null };
+            var type = protocol switch
+            {
+                Ipv6 => "AAAA",
+                Ipv4 => "A",
+                _ => throw new InvalidOperationException()
+            };
+
+            var value = protocol switch
+            {
+                Ipv6 => "28",
+                Ipv4 => "1",
+                _ => throw new InvalidOperationException()
+            };
 
             using var stream = await s_client.GetStreamAsync(string.Format(DnsQueryUrl, name, type));
             using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);

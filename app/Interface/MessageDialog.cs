@@ -116,7 +116,7 @@ If you need help, join our Discord.";
         protected override string? Close => "Exit";
         protected override string Primary => "Continue";
         protected override string Title => "🚨 Connection Failure";
-        protected override string Content => @"Failed to connect to Flarial's CDN.
+        protected override string Content => @"Failed to connect to Flarial Client Services.
         
 • Try restarting the launcher.
 • Check your internet connection.

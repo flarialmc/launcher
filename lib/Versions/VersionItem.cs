@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
@@ -12,7 +12,7 @@ using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 
-namespace Flarial.Launcher.Services.Management.Versions;
+namespace Flarial.Launcher.Services.Versions;
 
 public abstract class VersionItem
 {
@@ -56,7 +56,7 @@ public abstract class VersionItem
 
         try
         {
-            await HttpStack.DownloadAsync(uri, path, (_) => action(_, false));
+            await HttpService.DownloadAsync(uri, path, (_) => action(_, false));
             unsafe
             {
                 /*

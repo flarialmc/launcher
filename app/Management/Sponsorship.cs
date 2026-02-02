@@ -13,7 +13,7 @@ abstract class Sponsorship
 
     protected async virtual Task<Tuple<Stream, string>?> GetAsync()
     {
-        try { return new(new MemoryStream(await HttpStack.GetBytesAsync(BannerUrl)), CampaignUrl); }
+        try { return new(new MemoryStream(await HttpService.GetBytesAsync(BannerUrl)), CampaignUrl); }
         catch { return null; }
     }
 

@@ -6,31 +6,62 @@ using System.Threading.Tasks;
 using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using Windows.Data.Json;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.System;
 using static Windows.Win32.PInvoke;
 using Windows.Media.Devices;
 
 namespace Flarial.Launcher.Services.Client;
 
+sealed class FlarialClientBeta : FlarialClient
+{
+    internal FlarialClientBeta() : base() { }
+    protected override string Build => nameof(Beta);
+    protected override string Name => $"Flarial.Client.{nameof(Beta)}.dll";
+    protected override string Url => "https://cdn.flarial.xyz/dll/beta.dll";
+    protected override string Identifer => "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
+}
+
+sealed class FlarialClientRelease : FlarialClient
+{
+    internal FlarialClientRelease() : base() { }
+    protected override string Build => nameof(Release);
+    protected override string Url => "https://cdn.flarial.xyz/dll/latest.dll";
+    protected override string Name => $"Flarial.Client.{nameof(Release)}.dll";
+    protected override string Identifer => "34F45015-6EB6-4213-ABEF-F2967818E628";
+}
+
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
-
     protected abstract string Url { get; }
     protected abstract string Name { get; }
     protected abstract string Build { get; }
     protected abstract string Identifer { get; }
 
-    public static readonly FlarialClient Beta = new FlarialClientBeta(), Release = new FlarialClientRelease();
+    public static readonly FlarialClient Beta = new FlarialClientBeta();
+    public static readonly FlarialClient Release = new FlarialClientRelease();
 
     static FlarialClient? Client
     {
         get
         {
-            using NativeMutex beta = new(Beta.Identifer), release = new(Release.Identifer);
-            if (!Minecraft.Current.IsRunning || (beta.Exists && release.Exists)) return null;
-            if (beta.Exists) return Beta; if (release.Exists) return Release; return null;
+            using NativeMutex beta = new(Beta.Identifer);
+            using NativeMutex release = new(Release.Identifer);
+
+            if (!Minecraft.Current.IsRunning)
+                return null;
+
+            if (beta.Exists && release.Exists)
+                return null;
+
+            if (beta.Exists)
+                return Beta;
+
+            if (release.Exists)
+                return Release;
+
+            return null;
         }
     }
 
@@ -38,12 +69,17 @@ public abstract class FlarialClient
     {
         if (Client is { } client)
         {
-            if (!ReferenceEquals(this, client)) return false;
+            if (!ReferenceEquals(this, client))
+                return false;
+
             return Minecraft.Current.Launch(false) is { };
         }
 
-        if (Injector.Launch(initialized, new(Name)) is not { } processId) return false;
-        using NativeMutex mutex = new(Identifer); return mutex.Duplicate(processId);
+        if (Injector.Launch(initialized, new(Name)) is not { } processId)
+            return false;
+
+        using NativeMutex mutex = new(Identifer);
+        return mutex.Duplicate(processId);
     }
 
     static readonly object _lock = new();
@@ -52,13 +88,13 @@ public abstract class FlarialClient
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
-    async Task<string> RemoteHashAsync()
+    async Task<string> GetRemoteHashAsync()
     {
-        var @string = await HttpStack.GetStringAsync(HashesUrl);
+        var @string = await HttpService.GetStringAsync(HashesUrl);
         return JsonObject.Parse(@string)[Build].GetString();
     }
 
-    async Task<string> LocalHashAsync() => await Task.Run(() =>
+    async Task<string> GetLocalHashAsync() => await Task.Run(() =>
     {
         try
         {
@@ -75,16 +111,29 @@ public abstract class FlarialClient
 
     public async Task<bool> DownloadAsync(Action<int> action)
     {
-        Task<string>[] tasks = [LocalHashAsync(), RemoteHashAsync()];
-        await Task.WhenAll(tasks);
+        var localHashTask = GetLocalHashAsync();
+        var remoteHashTask = GetRemoteHashAsync();
+        await Task.WhenAll(localHashTask, remoteHashTask);
 
-        if ((await tasks[0]).Equals(await tasks[1], OrdinalIgnoreCase))
+        if ((await localHashTask).Equals(await remoteHashTask, OrdinalIgnoreCase))
             return true;
 
         try { File.Delete(Name); }
         catch { return false; }
 
-        await HttpStack.DownloadAsync(Url, Name, action);
+        await HttpService.DownloadAsync(Url, Name, action);
         return true;
+    }
+
+    const string AcceptedUrl = "https://cdn.flarial.xyz/202.txt";
+
+    public static async Task<bool> CanConnectAsync()
+    {
+        try
+        {
+            using var message = await HttpService.GetAsync(AcceptedUrl);
+            return message.IsSuccessStatusCode;
+        }
+        catch { return false; }
     }
 }

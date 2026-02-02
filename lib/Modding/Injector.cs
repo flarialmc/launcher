@@ -1,7 +1,7 @@
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;

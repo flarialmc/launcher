@@ -7,14 +7,12 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
-using Windows.Win32.Foundation;
 using static System.IO.Path;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 
-namespace Flarial.Launcher.Services.Management.Versions;
+namespace Flarial.Launcher.Services.Versions;
 
 sealed class GDKVersionItem : VersionItem
 {
@@ -33,21 +31,26 @@ sealed class GDKVersionItem : VersionItem
 
     GDKVersionItem(string[] urls, byte[] bytes) => (_urls, _bytes) = (urls, bytes);
 
-    internal static async Task CreateAsync(ConcurrentDictionary<string, VersionItem?> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(Dictionary<string, VersionItem?> registry) => await Task.Run(async () =>
     {
-        var msixvcPackagesTask = HttpStack.GetStreamAsync(MSIXVCPackagesUrl);
-        var gamelaunchHelperTask = HttpStack.GetBytesAsync(GameLaunchHelperUrl);
-        await Task.WhenAll(msixvcPackagesTask, gamelaunchHelperTask);
+        var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUrl);
+        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUrl);
+        await Task.WhenAll(msixvcPackagesTask, gameLaunchHelperTask);
 
-        var bytes = await gamelaunchHelperTask;
-        using var stream = await msixvcPackagesTask;
+        var gameLaunchHelper = await gameLaunchHelperTask;
+        using var msixvcPackages = await msixvcPackagesTask;
 
-        var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(stream);
+        var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(msixvcPackages);
 
         foreach (var item in items["release"])
         {
             var key = item.Key.Substring(0, item.Key.LastIndexOf('.'));
-            registry.TryUpdate(key, new GDKVersionItem(item.Value, bytes), null);
+
+            lock (registry)
+            {
+                if (!registry.TryGetValue(key, out _)) continue;
+                registry[key] = new GDKVersionItem(item.Value, gameLaunchHelper);
+            }
         }
     });
 
@@ -55,7 +58,7 @@ sealed class GDKVersionItem : VersionItem
     {
         try
         {
-            using var message = await HttpStack.GetAsync(url, token);
+            using var message = await HttpService.GetAsync(url, token);
             return message.IsSuccessStatusCode ? url : null;
         }
         catch { return null; }

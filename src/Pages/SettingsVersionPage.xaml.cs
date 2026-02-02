@@ -1,5 +1,5 @@
 ﻿using Flarial.Launcher.Managers;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Styles;
 using System;
 using System.Collections.Generic;

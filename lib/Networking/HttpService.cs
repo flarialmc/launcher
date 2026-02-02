@@ -10,7 +10,7 @@ using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Launcher.Services.Networking;
 
-public static class HttpStack
+public static class HttpService
 {
     static readonly HttpClient s_proxy = new(new DnsOverHttpsHandler
     {
@@ -19,21 +19,21 @@ public static class HttpStack
 
     static readonly HttpClient s_client = new(new DnsOverHttpsHandler(), true);
 
-    static HttpClient Client => UseProxy ? s_proxy : s_client;
+    static HttpClient HttpClient => (UseProxy ??= false) ? s_proxy : s_client;
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool UseProxy { internal get; set { if (!field) field = value; } }
+    public static bool? UseProxy { internal get; set { field ??= value; } }
 
-    public static async Task<Stream> GetStreamAsync(string url) => await Client.GetStreamAsync(url);
+    public static async Task<Stream> GetStreamAsync(string url) => await HttpClient.GetStreamAsync(url);
 
-    internal static async Task<string> GetStringAsync(string url) => await Client.GetStringAsync(url);
+    internal static async Task<string> GetStringAsync(string url) => await HttpClient.GetStringAsync(url);
 
-    public static async Task<byte[]> GetBytesAsync(string url) => await Client.GetByteArrayAsync(url);
+    public static async Task<byte[]> GetBytesAsync(string url) => await HttpClient.GetByteArrayAsync(url);
 
-    internal static async Task<HttpResponseMessage> PostAsync(string url, HttpContent content) => await Client.PostAsync(url, content);
+    internal static async Task<HttpResponseMessage> PostAsync(string url, HttpContent content) => await HttpClient.PostAsync(url, content);
 
-    internal static async Task<HttpResponseMessage> GetAsync(string url, [Optional] CancellationToken token) => await Client.GetAsync(url, ResponseHeadersRead, token);
+    internal static async Task<HttpResponseMessage> GetAsync(string url, [Optional] CancellationToken token) => await HttpClient.GetAsync(url, ResponseHeadersRead, token);
 
     internal static async Task DownloadAsync(string url, string path, Action<int> action)
     {
@@ -52,17 +52,5 @@ public static class HttpStack
             await destination.WriteAsync(buffer, 0, count);
             if (length > 0) action((int)((value += count) / length * 100));
         }
-    }
-
-    const string Url = "https://cdn.flarial.xyz/202.txt";
-
-    public static async Task<bool> IsAvailableAsync()
-    {
-        try
-        {
-            using var message = await GetAsync(Url);
-            return message.IsSuccessStatusCode;
-        }
-        catch { return false; }
     }
 }

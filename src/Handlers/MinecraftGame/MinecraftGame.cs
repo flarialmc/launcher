@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
 using Windows.Management.Deployment;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 
 namespace Flarial.Launcher;
 

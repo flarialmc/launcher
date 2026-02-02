@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using Flarial.Launcher.Services.Core;
-using Flarial.Launcher.Services.Management.Versions;
+using Flarial.Launcher.Services.Game;
+using Flarial.Launcher.Services.Versions;
 using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
 using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
@@ -52,7 +52,7 @@ sealed class VersionsPage : Grid
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(OnVersionEntryInstallAsync, value, installing);
+            Dispatcher.Invoke(() => OnVersionEntryInstallAsync(value, installing));
             return;
         }
 

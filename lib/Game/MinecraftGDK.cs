@@ -16,7 +16,7 @@ using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
 using System.ComponentModel;
 
-namespace Flarial.Launcher.Services.Core;
+namespace Flarial.Launcher.Services.Game;
 
 using static System.NativeProcess;
 
@@ -46,7 +46,7 @@ unsafe partial class MinecraftGDK : Minecraft
         if (!IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!AllowUnsignedInstalls && !IsPackaged)
+        if (!(AllowUnsignedInstalls ??= false) && !IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         /*

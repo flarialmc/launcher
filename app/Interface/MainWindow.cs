@@ -7,10 +7,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Flarial.Launcher.Interface.Pages;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Services.Core;
-using Flarial.Launcher.Services.Management;
-using Flarial.Launcher.Services.Management.Versions;
-using Flarial.Launcher.Services.Networking;
+using Flarial.Launcher.Services.Game;
+using Flarial.Launcher.Services.Versions;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
 using Windows.ApplicationModel;
@@ -21,6 +19,8 @@ using System.Windows.Media.Imaging;
 using static System.Windows.Media.Imaging.BitmapCreateOptions;
 using static System.Windows.Media.Imaging.BitmapCacheOption;
 using System.IO;
+using Flarial.Launcher.Services.Client;
+using System.Windows.Documents;
 
 namespace Flarial.Launcher.Interface;
 
@@ -63,11 +63,11 @@ sealed class MainWindow : Window
         _homePage._packageVersionTextBlock.Text = text;
     }
 
-    void OnLauncherUpdateDownloadAsync(int value)
+    void OnFlarialLauncherDownloadAsync(int value)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(OnLauncherUpdateDownloadAsync, value);
+            Dispatcher.Invoke(() => OnFlarialLauncherDownloadAsync(value));
             return;
         }
 
@@ -82,19 +82,21 @@ sealed class MainWindow : Window
     {
         base.OnSourceInitialized(args);
 
-        if (!await HttpStack.IsAvailableAsync() && !await _connectionFailure.ShowAsync())
+        if (!await FlarialClient.CanConnectAsync() && !await _connectionFailure.ShowAsync())
             Application.Current.Shutdown();
 
-        if (await LauncherUpdate.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
+        if (await FlarialLauncher.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
         {
             _homePage._statusTextBlock.Text = "Updating...";
-            await LauncherUpdate.DownloadAsync(OnLauncherUpdateDownloadAsync);
+            await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
             _homePage._progressBar.IsIndeterminate = true;
             return;
         }
 
         var registry = await VersionRegistry.CreateAsync();
-        Tag = registry; _homePage.Tag = registry;
+
+        Tag = registry;
+        _homePage.Tag = registry;
 
         foreach (var item in registry)
         {
@@ -128,21 +130,42 @@ sealed class MainWindow : Window
 
         _rootPage.IsEnabled = true;
 
-        var leftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
-        var centerSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
-        var rightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
-        await Task.WhenAll(leftSponsorshipTask, rightSponsorshipTask);
+        /*
+            - Dispatch loading sponsorships to dedicated threads.
+            - These should improve frontend performance + sponsorship loading.
+            - Use `Task.WhenAll` to catch any logic or code issues in production.
+        */
+        await Task.WhenAll(_loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
     }
 
-    async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
-    async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);
-    async Task LoadRightSponsorshipAsync() => LoadSponsorshipImage(await _rightSponsorshipTask, _homePage._rightSponsorshipImage);
+    async Task LoadLeftSponsorshipAsync()
+    {
+        var sponsorship = await _leftSponsorshipTask;
+        LoadSponsorshipImage(sponsorship, _homePage._leftSponsorshipImage);
+    }
+
+    async Task LoadCenterSponsorshipAsync()
+    {
+        var sponsorship = await _centerSponsorshipTask;
+        LoadSponsorshipImage(sponsorship, _homePage._centerSponsorshipImage);
+    }
+
+    async Task LoadRightSponsorshipAsync()
+    {
+        var sponsorship = await _rightSponsorshipTask;
+        LoadSponsorshipImage(sponsorship, _homePage._rightSponsorshipImage);
+    }
 
     void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image)
     {
+        /*
+            - Load sponsorships when the system is idle.
+            - This will ensure the frontend is responsive.
+        */
+
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(LoadSponsorshipImage, sponsorship, image);
+            Dispatcher.Invoke(() => LoadSponsorshipImage(sponsorship, image), DispatcherPriority.SystemIdle);
             return;
         }
 
@@ -160,14 +183,22 @@ sealed class MainWindow : Window
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
 
+    readonly Task _loadLeftSponsorshipTask;
+    readonly Task _loadCenterSponsorshipTask;
+    readonly Task _loadRightSponsorshipTask;
+
+    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
+
     readonly Task<Tuple<Stream, string>?> _leftSponsorshipTask = Sponsorship.GetAsync<Sponsorship.LiteByteHosting>();
     readonly Task<Tuple<Stream, string>?> _centerSponsorshipTask = Sponsorship.GetAsync<Sponsorship.InfinityNetwork>();
     readonly Task<Tuple<Stream, string>?> _rightSponsorshipTask = Sponsorship.GetAsync<Sponsorship.CollapseNetwork>();
 
-    readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
-
     internal MainWindow(Configuration configuration)
     {
+        _loadLeftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
+        _loadCenterSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
+        _loadRightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
+
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 

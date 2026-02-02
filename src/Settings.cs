@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Windows.Devices.Midi;
 using Windows.UI.Xaml.Controls.Maps;
 

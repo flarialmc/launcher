@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using static System.Environment;
 using static Flarial.Launcher.Interface.MessageDialog;
 using static Windows.Management.Core.ApplicationDataManager;
-using static Flarial.Launcher.Services.Core.Minecraft;
+using Flarial.Launcher.Services.Game;
 using System.Windows.Interop;
 using System;
 
@@ -34,7 +34,7 @@ sealed class SupportButtonsControl : UniformGrid
     readonly string _launcherPath = CurrentDirectory;
     readonly string _gdkPath = Path.Combine(CurrentDirectory, @"..\Client");
 
-    string UWPPath => Path.Combine(CreateForPackageFamily(PackageFamilyName).RoamingFolder.Path, "Flarial");
+    string UWPPath => Path.Combine(CreateForPackageFamily(Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial");
 
     void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
@@ -42,13 +42,13 @@ sealed class SupportButtonsControl : UniformGrid
 
     async void OnClientFolderButtonClick(object sender, EventArgs args)
     {
-        if (!IsInstalled)
+        if (!Minecraft.IsInstalled)
         {
             await _notInstalled.ShowAsync();
             return;
         }
 
-        var path = UsingGameDevelopmentKit ? _gdkPath : UWPPath;
+        var path = Minecraft.UsingGameDevelopmentKit ? _gdkPath : UWPPath;
 
         if (!Directory.Exists(path))
         {

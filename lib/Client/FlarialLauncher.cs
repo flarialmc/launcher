@@ -4,16 +4,16 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
 using Windows.Data.Json;
 using static Windows.Win32.PInvoke;
 
-namespace Flarial.Launcher.Services.Management;
+namespace Flarial.Launcher.Services.Client;
 
-public static class LauncherUpdate
+public static class FlarialLauncher
 {
-    static LauncherUpdate()
+    static FlarialLauncher()
     {
         var assembly = Assembly.GetEntryAssembly();
 
@@ -52,28 +52,23 @@ del ""%~f0""
 
     public static async Task<bool> CheckAsync()
     {
-        var input = await HttpStack.GetStringAsync(LauncherVersionUrl);
+        var input = await HttpService.GetStringAsync(LauncherVersionUrl);
         var version = JsonObject.Parse(input)["version"];
         return s_version != version.GetString();
     }
 
     public static async Task DownloadAsync(Action<int> action)
     {
-        await HttpStack.DownloadAsync(LauncherDownloadUrl, s_source, action);
+        await HttpService.DownloadAsync(LauncherDownloadUrl, s_source, action);
 
         using (StreamWriter writer = new(s_script))
             await writer.WriteAsync(s_content);
 
         StringBuilder builder = new(s_arguments);
-        
-        if (HttpStack.UseProxy)
-            builder.Append(' ').Append("--use-proxy");
 
-        if (DnsOverHttpsHandler.UseDnsOverHttps)
-            builder.Append(' ').Append("--use-dns-over-https");
-
-        if (Minecraft.AllowUnsignedInstalls)
-            builder.Append(' ').Append("--allow-unsigned-installs");
+        if ((bool)HttpService.UseProxy!) builder.Append(' ').Append("--use-proxy");
+        if ((bool)DnsOverHttpsHandler.UseDnsOverHttps!) builder.Append(' ').Append("--use-dns-over-https");
+        if ((bool)Minecraft.AllowUnsignedInstalls!) builder.Append(' ').Append("--allow-unsigned-installs");
 
         using (Process.Start(new ProcessStartInfo
         {

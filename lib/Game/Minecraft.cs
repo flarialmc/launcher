@@ -9,7 +9,7 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
 
-namespace Flarial.Launcher.Services.Core;
+namespace Flarial.Launcher.Services.Game;
 
 using static System.NativeProcess;
 
@@ -35,7 +35,7 @@ public unsafe abstract class Minecraft
 
     public abstract uint? Launch(bool initialized);
 
-    public static bool AllowUnsignedInstalls { get; set { if (!field) field = value; } }
+    public static bool? AllowUnsignedInstalls { get; set { field ??= value; } }
 
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
 

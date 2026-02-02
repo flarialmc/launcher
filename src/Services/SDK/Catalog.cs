@@ -3,9 +3,9 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Windows.Management.Deployment;
-using Flarial.Launcher.Services.Management.Versions;
+using Flarial.Launcher.Services.Versions;
 using System.Linq;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 
 namespace Flarial.Launcher.Services.SDK;
 

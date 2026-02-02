@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Animations;
 using Flarial.Launcher.Functions;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Styles;
 
 namespace Flarial.Launcher.Pages;

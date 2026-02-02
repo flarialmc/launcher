@@ -24,7 +24,7 @@ public static class LicensingService
     {
         var uri = string.Format(s_uri, new GeographicRegion().CodeTwoLetter);
 
-        using var stream = await HttpStack.GetStreamAsync(uri);
+        using var stream = await HttpService.GetStreamAsync(uri);
         using var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max);
 
         var element = XElement.Load(reader);

@@ -1,9 +1,8 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
-using Flarial.Launcher.Services.Management.Versions;
 using System.Threading.Tasks;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using static Flarial.Launcher.Interface.MessageDialog;
@@ -14,6 +13,7 @@ using Flarial.Launcher.Management;
 using ModernWpf.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Flarial.Launcher.Services.Versions;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -140,7 +140,7 @@ If you need help, join our Discord.";
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(OnFlarialClientDownloadAsync, value);
+            Dispatcher.Invoke(() => OnFlarialClientDownloadAsync(value));
             return;
         }
 
@@ -175,7 +175,7 @@ If you need help, join our Discord.";
 
             if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
             {
-                if (!Minecraft.AllowUnsignedInstalls)
+                if (!(bool)Minecraft.AllowUnsignedInstalls!)
                 {
                     await _unsignedInstall.ShowAsync();
                     return;
@@ -186,8 +186,10 @@ If you need help, join our Discord.";
 
             var path = _configuration.CustomDllPath;
             var beta = _configuration.DllBuild is DllBuild.Beta;
-            var custom = _configuration.DllBuild is DllBuild.Custom;
             var initialized = _configuration.WaitForInitialization;
+            var custom = _configuration.DllBuild is DllBuild.Custom;
+
+            beta = beta || Minecraft.UsingGameDevelopmentKit;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!custom && !beta && !registry.IsSupported)

@@ -13,7 +13,7 @@ using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static Flarial.Launcher.PInvoke;
 using static System.IO.Path;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -82,7 +82,7 @@ Exception: {1}
                     return;
 
                 case "--use-proxy":
-                    HttpStack.UseProxy = true;
+                    HttpService.UseProxy = true;
                     break;
 
                 case "--use-dns-over-https":

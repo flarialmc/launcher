@@ -15,7 +15,7 @@ using Flarial.Launcher.Styles;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using System.Xml;
-using Flarial.Launcher.Services.Core;
+using Flarial.Launcher.Services.Game;
 
 namespace Flarial.Launcher.Managers;
 
