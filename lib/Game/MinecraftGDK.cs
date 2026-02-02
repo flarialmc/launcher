@@ -13,8 +13,10 @@ using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System;
+using static System.IO.Path;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using Microsoft.PowerShell;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -25,14 +27,20 @@ unsafe sealed class MinecraftGDK : Minecraft
     internal MinecraftGDK() : base() { }
     protected override string WindowClass => "Bedrock";
 
-    /*
-        - Using Windows Powershell's binary directly, makes the code more portable.
-        - The `System.Management.Automation` package for Windows PowerShell is only for .NET Framework.
-    */
+    static MinecraftGDK()
+    {
+        /*
+            - Initialize a minimal instance of PowerShell.
+            - This improve overall performance when calling commands.
+        */
 
-    static readonly string s_path = Path.Combine(GetFolderPath(SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
-    static readonly string s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
-    static readonly string s_arguments = $"-ExecutionPolicy \"Bypass\" -NoProfile -NonInteractive -Command \"Invoke-CommandInDesktopPackage '{PackageFamilyName}' 'App' '{{0}}'\"";
+        s_state.ImportPSModule(["Appx"]);
+        s_state.LanguageMode = PSLanguageMode.NoLanguage;
+        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
+    }
+
+    static readonly InitialSessionState s_state = InitialSessionState.Create();
+    static readonly string s_path = Combine(GetFolderPath(SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
     {
@@ -47,24 +55,21 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!AllowUnsignedInstalls && !IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
+        if (GetProcessId() is { } processId)
+            return processId;
+
+        var path = Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        if (!File.Exists(path)) throw new FileNotFoundException();
+
         /*
             - We use PowerShell to directly start the game executable.
             - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
         */
 
-        if (GetProcessId() is { } processId)
-            return processId;
-
-        var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-        if (!File.Exists(path)) throw new FileNotFoundException();
-
-        using var process = Process.Start(new ProcessStartInfo()
-        {
-            FileName = s_filename,
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            Arguments = string.Format(s_arguments, path),
-        }); process.WaitForExit();
+        using var powershell = PowerShell.Create(s_state);
+        powershell.AddCommand("Invoke-CommandInDesktopPackage");
+        powershell.AddParameters((string[])[PackageFamilyName, "Game", path]);
+        powershell.Invoke();
 
         return GetProcessId();
     }
