@@ -16,6 +16,7 @@ using System.ComponentModel;
 using static System.IO.Path;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using Microsoft.PowerShell;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -28,7 +29,14 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     static MinecraftGDK()
     {
+        /*
+            - Initialize a minimal PowerShell session.
+            - Avoid operating system defaults since they might change.
+        */
+
         s_state.ImportPSModule(["Appx"]);
+        s_state.LanguageMode = PSLanguageMode.NoLanguage;
+        s_state.ExecutionPolicy = ExecutionPolicy.Restricted;
         s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
     }
 
