@@ -17,7 +17,7 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
-    public static string PackageFamilyName => "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
     internal static readonly PackageManager s_manager = new();
 
