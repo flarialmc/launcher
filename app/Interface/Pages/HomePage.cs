@@ -10,7 +10,6 @@ using System.Windows.Threading;
 using System.Linq;
 using System;
 using Flarial.Launcher.Management;
-using ModernWpf.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Flarial.Launcher.Services.Versions;
