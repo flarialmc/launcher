@@ -29,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModernWpfUI" Version="0.9.6" PrivateAssets="All" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
   </ItemGroup>
 
 </Project>
