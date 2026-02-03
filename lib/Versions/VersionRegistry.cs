@@ -49,7 +49,7 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEn
 
     /*
         - This might be a "micro-optimization".
-        - We can avoid using `System.Version` to avoid potential overheads.
+        - We can avoid using `System.Version` to avoid potential overhead.
     */
 
     sealed class VersionRegistryKeyComparer : IComparer<string>
