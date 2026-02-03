@@ -16,7 +16,6 @@ using System.ComponentModel;
 using static System.IO.Path;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using Microsoft.PowerShell;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -29,14 +28,8 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     static MinecraftGDK()
     {
-        /*
-            - Initialize a minimal instance of PowerShell.
-            - This improve overall performance when calling commands.
-        */
-
         s_state.ImportPSModule(["Appx"]);
-        s_state.LanguageMode = PSLanguageMode.NoLanguage;
-        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
+        s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
     }
 
     static readonly InitialSessionState s_state = InitialSessionState.Create();
@@ -52,7 +45,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!AllowUnsignedInstalls && !IsPackaged)
+        if (!AllowUnsignedInstalls) if (!IsPackaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         if (GetProcessId() is { } processId)
