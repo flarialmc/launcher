@@ -329,14 +329,12 @@ If you need help, join our Discord.", ("Update", true)))
 
             if (!beta && !VersionCatalog.IsCompatible)
             {
-                await DialogBox.ShowAsync("Update Required", $@"You're on Minecraft {Minecraft.PackageVersion}.
-Flarial currently supports a different version.
+                await DialogBox.ShowAsync("⚠️ Unsupported Version", @"The currently installed version is unsupported by the client.
 
-Choose one:
-- Switch to a supported version on the [Versions] page.
-- Enable the Beta client in [Settings] -> [General] (may be unstable).
+• Try switching to a version supported by the client.
+• Try using the beta build of client via [Settings] -> [General].
 
-Need help? Join our Discord.", ("OK", true));
+If you need help, join our Discord.", ("OK", true));
                 return;
             }
 
