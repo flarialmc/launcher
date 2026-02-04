@@ -52,14 +52,14 @@ sealed class MainWindow : Window
 
     void OnPackageStatusChanged()
     {
-        if (!Minecraft.IsInstalled)
+        if (!Minecraft.Installed)
         {
             _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
             return;
         }
 
-        var entries = (VersionRegistry)Tag;
-        var text = $"{(entries.IsSupported ? "✔️" : "❌")} {Minecraft.PackageVersion}";
+        var registry = (VersionRegistry)Tag;
+        var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
         _homePage._packageVersionTextBlock.Text = text;
     }
 
@@ -100,13 +100,13 @@ sealed class MainWindow : Window
         {
             await Dispatcher.Yield();
 
-            if (entry.Value.Item is null)
+            if (entry.Value is null)
                 continue;
 
             _versionsPage._listBox.Items.Add(new ListBoxItem
             {
+                Tag = entry.Value,
                 Content = entry.Key,
-                Tag = entry.Value.Item,
                 HorizontalContentAlignment = HorizontalAlignment.Center
             });
         }

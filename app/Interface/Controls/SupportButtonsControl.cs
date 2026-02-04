@@ -42,7 +42,7 @@ sealed class SupportButtonsControl : UniformGrid
 
     async void OnClientFolderButtonClick(object sender, EventArgs args)
     {
-        if (!Minecraft.IsInstalled)
+        if (!Minecraft.Installed)
         {
             await _notInstalled.ShowAsync();
             return;

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
+using Windows.Graphics;
 using static System.IO.Path;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 
@@ -31,7 +32,7 @@ sealed class GDKVersionItem : VersionItem
 
     GDKVersionItem(string[] urls, byte[] bytes) => (_urls, _bytes) = (urls, bytes);
 
-    internal static async Task QueryAsync(IDictionary<string, VersionEntry> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
         var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUrl);
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUrl);
@@ -44,12 +45,14 @@ sealed class GDKVersionItem : VersionItem
 
         foreach (var item in items["release"])
         {
-            var key = item.Key.Substring(0, item.Key.LastIndexOf('.'));
+            var index = item.Key.LastIndexOf('.');
+            var key = item.Key.Substring(0, index);
 
             lock (registry)
             {
-                if (!registry.TryGetValue(key, out var entry)) continue;
-                entry.Item = new GDKVersionItem(item.Value, gameLaunchHelper);
+                GDKVersionItem value = new(item.Value, gameLaunchHelper);
+                if (registry.TryGetValue(key, out var entry)) entry._item = value;
+                else registry.Add(key, new(false) { _item = value });
             }
         }
     });

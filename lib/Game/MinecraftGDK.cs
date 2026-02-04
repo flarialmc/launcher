@@ -25,7 +25,7 @@ using static System.NativeProcess;
 unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
-    protected override string WindowClass => "Bedrock";
+    protected override string Class => "Bedrock";
 
     static MinecraftGDK()
     {
@@ -50,10 +50,10 @@ unsafe sealed class MinecraftGDK : Minecraft
             - This allows the launcher ensure the launch contract works as intended.
         */
 
-        if (!IsInstalled)
+        if (!Installed)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!AllowUnsignedInstalls) if (!IsPackaged)
+        if (!AllowUnsignedInstalls) if (!Packaged)
             throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         if (GetProcessId() is { } processId)

@@ -27,9 +27,9 @@ public unsafe abstract class Minecraft
 
     static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
 
-    public bool IsRunning => Window is { };
+    public bool Running => Window is { };
 
-    protected abstract string WindowClass { get; }
+    protected abstract string Class { get; }
 
     protected abstract uint? Activate();
 
@@ -37,9 +37,9 @@ public unsafe abstract class Minecraft
 
     public static bool AllowUnsignedInstalls { get; set; }
 
-    public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
+    public static bool Packaged => Package.SignatureKind is PackageSignatureKind.Store;
 
-    public static bool IsInstalled => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
+    public static bool Installed => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit
     {
@@ -50,7 +50,7 @@ public unsafe abstract class Minecraft
         }
     }
 
-    public static string PackageVersion
+    public static string Version
     {
         get
         {
@@ -63,7 +63,7 @@ public unsafe abstract class Minecraft
     {
         get
         {
-            fixed (char* @class = WindowClass)
+            fixed (char* @class = Class)
             fixed (char* pfn = PackageFamilyName)
             {
                 NativeWindow window = HWND.Null;

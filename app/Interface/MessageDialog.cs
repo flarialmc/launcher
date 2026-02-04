@@ -7,7 +7,6 @@ namespace Flarial.Launcher.Interface;
 abstract class MessageDialog
 {
     internal MessageDialog() { }
-
     static readonly ContentDialog s_dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
 
@@ -45,7 +44,7 @@ abstract class MessageDialog
 
     internal static readonly MessageDialog _betaDllEnabled = new BetaDllEnabled();
 
-    internal static readonly MessageDialog _unpackagedInstallation = new UnpackagedInstallation();
+    internal static readonly MessageDialog _unpackagedInstallation = new UnpackagedInstall();
 
     internal static readonly MessageDialog _unsignedInstall = new UnsignedInstall();
 
@@ -75,10 +74,10 @@ If you need help, join our Discord.";
         protected override string Title => "💡 Install Version";
 
         protected override string Content => @"The selected Minecraft version will be now installed.
+Once the installation starts, you won't able to cancel it.
 
-• Once the installation starts, you won't able to cancel it.
-• A high speed internet connection is recommended for this.
 • Free up disk space before proceeding with the installation.
+• A high speed internet connection is recommended for this.
 
 If you need help, join our Discord.";
 
@@ -207,7 +206,7 @@ If you need help, join our Discord.";
 Hence use at your own risk.";
     }
 
-    sealed class UnpackagedInstallation : MessageDialog
+    sealed class UnpackagedInstall : MessageDialog
     {
         protected override string Title => "⚠️ Unpackaged Installation";
         protected override string Primary => "Back";

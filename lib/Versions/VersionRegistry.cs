@@ -4,25 +4,34 @@ using System.Threading.Tasks;
 using System.Collections;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
+using System.Linq;
 
 namespace Flarial.Launcher.Services.Versions;
 
-public sealed class VersionEntry
+public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionItem?>>
 {
-    public VersionItem? Item { get; internal set => field ??= value; }
-}
+    internal sealed class VersionEntry
+    {
+        internal VersionItem? _item;
+        internal readonly bool _supported;
+        internal VersionEntry(bool supported) => _supported = supported;
+    }
 
-public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEntry>>
-{
-    static readonly VersionRegistryKeyComparer s_comparer = new();
+    static readonly VersionKeyComparer s_comparer = new();
 
     const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
     readonly IReadOnlyDictionary<string, VersionEntry> _registry;
 
-    VersionRegistry(IReadOnlyDictionary<string, VersionEntry> registry) => _registry = registry;
+    VersionRegistry(string preferred, IReadOnlyDictionary<string, VersionEntry> registry)
+    {
+        _registry = registry;
+        Preferred = preferred;
+    }
 
-    public bool IsSupported => _registry.ContainsKey(Minecraft.PackageVersion);
+    public readonly string Preferred;
+
+    public bool Supported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
 
     /*
         - As the version metadata grows so does the processing time.
@@ -38,13 +47,14 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEn
         using StreamReader reader = new(stream);
 
         while ((@string = await reader.ReadLineAsync()) is { })
-            registry.Add(@string.Trim(), new());
+            registry.Add(@string.Trim(), new(true));
 
+        var preferred = registry.Keys.First();
         var uwp = UWPVersionItem.QueryAsync(registry);
         var gdk = GDKVersionItem.QueryAsync(registry);
         await Task.WhenAll(uwp, gdk);
 
-        return new VersionRegistry(registry);
+        return new VersionRegistry(preferred, registry);
     });
 
     /*
@@ -52,11 +62,11 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEn
         - We can avoid using `System.Version` to avoid potential overhead.
     */
 
-    sealed class VersionRegistryKeyComparer : IComparer<string>
+    sealed class VersionKeyComparer : IComparer<string>
     {
-        unsafe readonly struct VersionRegistryKey
+        unsafe readonly struct VersionKey
         {
-            internal VersionRegistryKey(string version)
+            internal VersionKey(string version)
             {
                 sbyte index = 0;
                 var segments = stackalloc ushort[3];
@@ -84,7 +94,7 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEn
 
         public int Compare(string x, string y)
         {
-            VersionRegistryKey a = new(x), b = new(y);
+            VersionKey a = new(x), b = new(y);
 
             if (b._major != a._major)
                 return b._major.CompareTo(a._major);
@@ -98,5 +108,9 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionEn
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IEnumerator<KeyValuePair<string, VersionEntry>> GetEnumerator() => _registry.GetEnumerator();
+    public IEnumerator<KeyValuePair<string, VersionItem?>> GetEnumerator()
+    {
+        foreach (var entry in _registry)
+            yield return new(entry.Key, entry.Value._item);
+    }
 }

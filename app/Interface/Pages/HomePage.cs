@@ -42,7 +42,7 @@ sealed class HomePage : Grid
 
     internal readonly TextBlock _statusTextBlock = new()
     {
-        Text = "Preparing...",
+        Text = "Connecting...",
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
         Margin = new(0, 30, 0, 0)
@@ -110,14 +110,15 @@ sealed class HomePage : Grid
         IsEnabled = false
     };
 
-    sealed class UnsupportedVersion(string packageVersion, string supportedVersion) : MessageDialog
+    sealed class UnsupportedVersion(string version, string preferred) : MessageDialog
     {
         protected override string Primary => "Back";
         protected override string Title => "⚠️ Unsupported Version";
-        protected override string Content => $@"Minecraft {packageVersion} isn't compatible with Flarial Client.
+        protected override string Content => $@"Minecraft {version} isn't compatible with Flarial Client.
+Please switch to Minecraft {preferred} for the best experience.
 
-• Please switch to Minecraft {supportedVersion} for the best experience.
-• You may switch versions by going to the [Versions] page in the launcher.
+• You may switch versions by going to the [Versions] page.
+• Try using 'Beta' DLL of the client by enabling in the [Settings] page.
 
 If you need help, join our Discord.";
     }
@@ -166,13 +167,13 @@ If you need help, join our Discord.";
 
             var registry = (VersionRegistry)Tag;
 
-            if (!Minecraft.IsInstalled)
+            if (!Minecraft.Installed)
             {
                 await _notInstalled.ShowAsync();
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged)
+            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.Packaged)
             {
                 if (!Minecraft.AllowUnsignedInstalls)
                 {
@@ -187,13 +188,11 @@ If you need help, join our Discord.";
             var beta = _configuration.DllBuild is DllBuild.Beta;
             var initialized = _configuration.WaitForInitialization;
             var custom = _configuration.DllBuild is DllBuild.Custom;
-
-            beta = beta || Minecraft.UsingGameDevelopmentKit;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
-            if (!custom && !beta && !registry.IsSupported)
+            if (!custom && !beta && !registry.Supported)
             {
-                await new UnsupportedVersion(Minecraft.PackageVersion, registry.First().Key).ShowAsync();
+                await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowAsync();
                 return;
             }
 

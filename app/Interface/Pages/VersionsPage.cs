@@ -12,6 +12,7 @@ using static System.ComponentModel.DependencyPropertyDescriptor;
 using System;
 using System.ComponentModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
+using ModernWpf.Controls.Primitives;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -34,8 +35,11 @@ sealed class VersionsPage : Grid
 
     void OnContentChanged(object sender, EventArgs args)
     {
-        if (_listBox.IsEnabled)
+        if (_listBox.IsEnabled && _listBox.Items.Count > 0)
+        {
             _listBox.SelectedIndex = -1;
+            _listBox.ScrollIntoView(_listBox.Items[0]);
+        }
     }
 
     void OnClosing(object sender, CancelEventArgs args)
@@ -77,13 +81,13 @@ sealed class VersionsPage : Grid
         {
             IsEnabled = false;
 
-            if (!Minecraft.IsInstalled)
+            if (!Minecraft.Installed)
             {
                 await _notInstalled.ShowAsync();
                 return;
             }
 
-            if (!Minecraft.IsPackaged)
+            if (!Minecraft.Packaged)
             {
                 await _unpackagedInstallation.ShowAsync();
                 return;
@@ -108,11 +112,8 @@ sealed class VersionsPage : Grid
 
             try
             {
-                var item = (ListBoxItem)_listBox.SelectedItem;
-                var entry = (VersionItem)item.Tag;
-
-                _task = entry.InstallAsync(OnVersionEntryInstallAsync);
-                await _task;
+                var entry = (VersionItem)((ListBoxItem)_listBox.SelectedItem).Tag;
+                await (_task = entry.InstallAsync(OnVersionEntryInstallAsync));
             }
             finally { _task = null; }
         }
@@ -136,9 +137,9 @@ sealed class VersionsPage : Grid
     internal VersionsPage(RootPage rootPage)
     {
         _rootPage = rootPage;
+        ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 
         Margin = new(12);
-
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 

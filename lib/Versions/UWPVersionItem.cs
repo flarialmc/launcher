@@ -37,7 +37,7 @@ sealed class UWPVersionItem : VersionItem
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task QueryAsync(IDictionary<string, VersionEntry> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
         using var stream = await HttpService.GetStreamAsync(AppxPackagesUrl);
         var items = (string[][])s_serializer.ReadObject(stream);
@@ -45,12 +45,15 @@ sealed class UWPVersionItem : VersionItem
         foreach (var item in items)
         {
             if (item[2] != "0") continue;
-            var key = item[0].Substring(0, item[0].LastIndexOf('.'));
+
+            var index = item[0].LastIndexOf('.');
+            var key = item[0].Substring(0, index);
 
             lock (registry)
             {
-                if (!registry.TryGetValue(key, out var entry)) continue;
-                entry.Item = new UWPVersionItem(item[1]);
+                UWPVersionItem value = new(item[1]);
+                if (registry.TryGetValue(key, out var entry)) entry._item = value;
+                else registry.Add(key, new(false) { _item = value });
             }
         }
     });

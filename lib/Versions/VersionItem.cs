@@ -45,10 +45,10 @@ public abstract class VersionItem
 
     public virtual async Task InstallAsync(Action<int, bool> action) => await Task.Run(async () =>
     {
-        if (!Minecraft.IsInstalled)
+        if (!Minecraft.Installed)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!Minecraft.IsPackaged)
+        if (!Minecraft.Packaged)
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var uri = await GetAsync();
