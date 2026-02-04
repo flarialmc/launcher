@@ -63,20 +63,14 @@ sealed class MainWindow : Window
         }, DispatcherPriority.Background);
     }
 
-    void OnFlarialLauncherDownloadAsync(int value)
+    void OnFlarialLauncherDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        if (!CheckAccess())
-        {
-            Dispatcher.Invoke(() => OnFlarialLauncherDownloadAsync(value), DispatcherPriority.Background);
-            return;
-        }
-
         if (_homePage._progressBar.Value != value)
         {
             _homePage._progressBar.Value = value;
             _homePage._progressBar.IsIndeterminate = false;
         }
-    }
+    }, DispatcherPriority.Background);
 
     protected override async void OnSourceInitialized(EventArgs args)
     {
@@ -92,7 +86,7 @@ sealed class MainWindow : Window
         {
             Dispatcher.Invoke(() => _homePage._statusTextBlock.Text = "Updating...", DispatcherPriority.Background);
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
-            
+
             Dispatcher.Invoke(() => _homePage._progressBar.IsIndeterminate = true, DispatcherPriority.Background);
             return;
         }
@@ -132,19 +126,8 @@ sealed class MainWindow : Window
         await Task.WhenAll(_loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
     }
 
-    void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image)
+    void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image) => Dispatcher.Invoke(() =>
     {
-        /*
-            - Load sponsorships when the system is idle.
-            - This will ensure the frontend is responsive.
-        */
-
-        if (!CheckAccess())
-        {
-            Dispatcher.Invoke(() => LoadSponsorshipImage(sponsorship, image), DispatcherPriority.Background);
-            return;
-        }
-
         if (sponsorship is not { } item)
             return;
 
@@ -153,7 +136,7 @@ sealed class MainWindow : Window
 
         image.Tag = item.Item2;
         image.IsEnabled = true;
-    }
+    }, DispatcherPriority.Background);
 
     async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
     async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);

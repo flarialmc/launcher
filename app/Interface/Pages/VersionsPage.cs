@@ -48,19 +48,16 @@ sealed class VersionsPage : Grid
         if (_task is { })
         {
             args.Cancel = true;
-            _rootPage.Content = this;
-            _rootPage._versionsPageItem.IsSelected = true;
+            Dispatcher.Invoke(() =>
+            {
+                _rootPage.Content = this;
+                _rootPage._versionsPageItem.IsSelected = true;
+            }, DispatcherPriority.Background);
         }
     }
 
-    void OnVersionEntryInstallAsync(int value, bool installing)
+    void OnVersionEntryInstallAsync(int value, bool installing) => Dispatcher.Invoke(() =>
     {
-        if (!CheckAccess())
-        {
-            Dispatcher.Invoke(() => OnVersionEntryInstallAsync(value, installing), DispatcherPriority.Background);
-            return;
-        }
-
         _control._icon.Symbol = installing ? Upload : Download;
 
         if (value <= 0)
@@ -74,7 +71,7 @@ sealed class VersionsPage : Grid
             _control._progressBar.Value = value;
             _control._progressBar.IsIndeterminate = false;
         }
-    }
+    }, DispatcherPriority.Background);
 
     void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
     {

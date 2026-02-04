@@ -136,14 +136,8 @@ If you need help, join our Discord.";
         ShellExecute((string)element.Tag);
     }
 
-    async void OnFlarialClientDownloadAsync(int value)
+    async void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        if (!CheckAccess())
-        {
-            Dispatcher.Invoke(() => OnFlarialClientDownloadAsync(value), DispatcherPriority.Background);
-            return;
-        }
-
         if (_progressBar.Value != value)
         {
             _progressBar.Value = value;
@@ -151,7 +145,7 @@ If you need help, join our Discord.";
         }
 
         _statusTextBlock.Text = "Downloading...";
-    }
+    }, DispatcherPriority.Background);
 
     internal void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
     {
