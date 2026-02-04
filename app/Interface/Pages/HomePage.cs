@@ -112,15 +112,17 @@ sealed class HomePage : Grid
 
     sealed class UnsupportedVersion(string version, string preferred) : MessageDialog
     {
-        protected override string Primary => "Back";
-        protected override string Title => "⚠️ Unsupported Version";
-        protected override string Content => $@"Minecraft {version} isn't compatible with Flarial Client.
-Please switch to Minecraft {preferred} for the best experience.
+        protected override string Primary => "Open Versions";
+        protected override string? Close => "Back";
+        protected override string Title => "Update Required";
+        protected override string Content => $@"You're on Minecraft {version}.
+Flarial currently supports {preferred}.
 
-• You may switch versions by going to the [Versions] page.
-• Try using 'Beta' DLL of the client by enabling in the [Settings] page.
+Choose one:
+- Switch to {preferred} on the [Versions] page.
+- Enable the Beta client in [Settings] (may be unstable).
 
-If you need help, join our Discord.";
+Need help? Join our Discord.";
     }
 
     /*
@@ -195,7 +197,8 @@ If you need help, join our Discord.";
 
             if (!custom && !beta && !registry.Supported)
             {
-                await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowAsync();
+                if (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowAsync())
+                    OpenVersionsPage();
                 return;
             }
 
@@ -249,6 +252,15 @@ If you need help, join our Discord.";
             }
         }
         finally { SetVisibility(true); }
+    }
+
+    void OpenVersionsPage()
+    {
+        if (Window.GetWindow(this)?.Content is not RootPage rootPage)
+            return;
+
+        rootPage.SelectedItem = rootPage._versionsPageItem;
+        rootPage.Content = rootPage._versionsPageItem.Tag;
     }
 
     internal HomePage(Configuration configuration, WindowInteropHelper helper)
