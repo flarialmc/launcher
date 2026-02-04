@@ -256,9 +256,7 @@ Need help? Join our Discord.";
 
     void OpenVersionsPage()
     {
-        if (Window.GetWindow(this)?.Content is not RootPage rootPage)
-            return;
-
+        var rootPage = (RootPage)Window.GetWindow(this)!.Content;
         rootPage.SelectedItem = rootPage._versionsPageItem;
         rootPage.Content = rootPage._versionsPageItem.Tag;
     }
