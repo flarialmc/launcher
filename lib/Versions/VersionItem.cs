@@ -11,6 +11,7 @@ using Windows.Management.Deployment;
 using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WIN32_ERROR;
+using System.Linq;
 
 namespace Flarial.Launcher.Services.Versions;
 
@@ -19,29 +20,10 @@ public abstract class VersionItem
     internal VersionItem() { }
 
     static readonly string s_path = Path.GetTempPath();
-
-    private protected static readonly DataContractJsonSerializerSettings s_settings = new()
-    {
-        UseSimpleDictionaryFormat = true
-    };
-
-    /*
-        - Reuse the PackageManager instance from the `Minecraft` class.
-    */
-
     protected static readonly PackageManager s_manager = Minecraft.s_manager;
-
-    /*
-        - This method is present for compatibility reasons.
-        - This method is used to resolve the download URI of a package.
-    */
+    private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
     public abstract Task<string> GetAsync();
-
-    /*
-        - Reintroduce package streaming in the future if possible.
-        - This would reduce network bandwith but at the cost of speed.
-    */
 
     public virtual async Task InstallAsync(Action<int, bool> action) => await Task.Run(async () =>
     {

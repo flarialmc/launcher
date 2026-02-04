@@ -41,6 +41,8 @@ public unsafe abstract class Minecraft
 
     public static bool Installed => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
 
+    public static bool GamingServicesInstalled => s_manager.FindPackagesForUser(Empty, "Microsoft.GamingServices_8wekyb3d8bbwe").Any();
+
     public static bool UsingGameDevelopmentKit
     {
         get

@@ -92,7 +92,7 @@ sealed class GDKVersionItem : VersionItem
            - If available, proceed with downloading & installing the package.
         */
 
-        if (!s_manager.FindPackagesForUser(string.Empty, PackageFamilyName).Any())
+        if (!Minecraft.GamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         await base.InstallAsync(action);

@@ -15,12 +15,14 @@ using Windows.ApplicationModel.Store.Preview.InstallControl;
 using ModernWpf.Controls.Primitives;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface.Pages;
 
 sealed class VersionsPage : Grid
 {
     readonly RootPage _rootPage;
+    readonly WindowInteropHelper _helper;
 
     internal readonly ListBox _listBox = new()
     {
@@ -95,6 +97,8 @@ sealed class VersionsPage : Grid
         _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
+    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
+
     async void OnButtonClick(object sender, EventArgs args)
     {
         if (!Minecraft.Installed)
@@ -106,6 +110,13 @@ sealed class VersionsPage : Grid
         if (!Minecraft.Packaged)
         {
             await _unpackagedInstallation.ShowAsync();
+            return;
+        }
+
+        if (!Minecraft.GamingServicesInstalled)
+        {
+            if (await _gamingServicesMissing.ShowAsync())
+                ShellExecute("ms-windows-store://pdp/?ProductId=9MWPM2CQNLHN");
             return;
         }
 
@@ -144,8 +155,9 @@ sealed class VersionsPage : Grid
 
     Task? _task = null;
 
-    internal VersionsPage(RootPage rootPage)
+    internal VersionsPage(RootPage rootPage, WindowInteropHelper helper)
     {
+        _helper = helper;
         _rootPage = rootPage;
         ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 

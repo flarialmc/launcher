@@ -1,3 +1,4 @@
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -63,6 +64,21 @@ abstract class MessageDialog
     internal static readonly MessageDialog _selectVersion = new SelectVersion();
 
     internal static readonly MessageDialog _allowUnsignedInstalls = new AllowUnsignedInstalls();
+
+    internal static readonly MessageDialog _gamingServicesMissing = new GamingServicesMissing();
+
+    sealed class GamingServicesMissing : MessageDialog
+    {
+        protected override string Close => "Back";
+        protected override string Primary => "Install";
+        protected override string Title => "Gaming Services Missing";
+        protected override string Content => @"Gaming Services isn't installed, please install it.
+
+• Gaming Services is required for installing GDK builds.
+• You may install Gaming Services via the Microsoft Store.
+
+If you need help, join our Discord.";
+    }
 
     sealed class SelectVersion : MessageDialog
     {
