@@ -189,8 +189,9 @@ sealed class MainWindow : Window
         WindowInteropHelper helper = new(this);
 
         _rootPage = new(configuration, helper);
-        _homePage = new(configuration, helper);
+
         _versionsPage = new(_rootPage);
+        _homePage = new(_rootPage, configuration, helper);
 
         _rootPage._homePageItem.Tag = _homePage;
         _rootPage._versionsPageItem.Tag = _versionsPage;

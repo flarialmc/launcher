@@ -13,11 +13,13 @@ using Flarial.Launcher.Management;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Flarial.Launcher.Services.Versions;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 
 sealed class HomePage : Grid
 {
+    readonly RootPage _rootPage;
     readonly WindowInteropHelper _helper;
     readonly Configuration _configuration;
 
@@ -112,13 +114,14 @@ sealed class HomePage : Grid
 
     sealed class UnsupportedVersion(string version, string preferred) : MessageDialog
     {
-        protected override string Primary => "Back";
+        protected override string Close => "Back";
+        protected override string Primary => "Versions";
+        protected override string? Secondary => "Settings";
         protected override string Title => "⚠️ Unsupported Version";
-        protected override string Content => $@"Minecraft {version} isn't compatible with Flarial Client.
-Please switch to Minecraft {preferred} for the best experience.
+        protected override string Content => $@"Minecraft {version} isn't supported by Flarial Client.
 
-• You may switch versions by going to the [Versions] page.
-• Try using 'Beta' DLL of the client by enabling in the [Settings] page.
+• Switch to {preferred} on the [Versions] page.
+• Enable the client's Beta on the [Settings] page.
 
 If you need help, join our Discord.";
     }
@@ -195,7 +198,18 @@ If you need help, join our Discord.";
 
             if (!custom && !beta && !registry.Supported)
             {
-                await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowAsync();
+                switch (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).PromptAsync())
+                {
+                    case ContentDialogResult.Primary:
+                        _rootPage._versionsPageItem.IsSelected = true;
+                        _rootPage.Content = _rootPage._versionsPageItem.Tag;
+                        break;
+
+                    case ContentDialogResult.Secondary:
+                        _rootPage._settingsPageItem.IsSelected = true;
+                        _rootPage.Content = _rootPage._settingsPageItem.Tag;
+                        break;
+                }
                 return;
             }
 
@@ -248,12 +262,16 @@ If you need help, join our Discord.";
                 return;
             }
         }
-        finally { SetVisibility(true); }
+        finally
+        {
+            SetVisibility(true);
+        }
     }
 
-    internal HomePage(Configuration configuration, WindowInteropHelper helper)
+    internal HomePage(RootPage rootPage, Configuration configuration, WindowInteropHelper helper)
     {
         _helper = helper;
+        _rootPage = rootPage;
         _configuration = configuration;
 
         Children.Add(_launcherVersionTextBlock);
