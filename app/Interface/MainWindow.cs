@@ -107,15 +107,21 @@ sealed class MainWindow : Window
         ObservableCollection<ListBoxItem> items = [];
         _versionsPage._listBox.ItemsSource = items;
 
-        foreach (var entry in registry) if (entry.Value is { })
+        foreach (var entry in registry)
         {
-            await Dispatcher.Yield(); items.Add(new()
+            await Dispatcher.Yield();
+
+            if (entry.Value is null)
+                continue;
+
+            items.Add(new()
             {
                 Tag = entry.Value,
                 Content = entry.Key,
                 HorizontalContentAlignment = HorizontalAlignment.Center
             });
         }
+
         _rootPage._versionsPageItem.IsEnabled = true;
 
         _catalog.PackageUpdating += OnPackageUpdating;
@@ -151,7 +157,7 @@ sealed class MainWindow : Window
 
             image.Visibility = Visibility.Visible;
         }
-    });
+    }, DispatcherPriority.Background);
 
     async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
     async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);
