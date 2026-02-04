@@ -139,28 +139,28 @@ If you need help, join our Discord.";
         ShellExecute(*(string*)&tag);
     }
 
-    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
+    void InvokeFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        if (_progressBar.Value != value)
+        using (Dispatcher.DisableProcessing())
         {
-            _progressBar.Value = value;
-            _progressBar.IsIndeterminate = false;
+            if (_progressBar.Value != value)
+            {
+                _progressBar.Value = value;
+                _progressBar.IsIndeterminate = false;
+            }
+            _statusTextBlock.Text = "Downloading...";
         }
-        _statusTextBlock.Text = "Downloading...";
     });
 
     internal void SetVisibility(bool visible)
     {
-        using (Dispatcher.DisableProcessing())
-        {
-            _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
 
-            _progressBar.Value = 0; _progressBar.IsIndeterminate = !visible;
-            _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        _progressBar.Value = 0; _progressBar.IsIndeterminate = !visible;
+        _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
 
-            _statusTextBlock.Text = "Preparing...";
-            _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-        }
+        _statusTextBlock.Text = "Preparing...";
+        _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     async void OnPlayButtonClick(object sender, EventArgs args)
@@ -198,18 +198,22 @@ If you need help, join our Discord.";
 
             if (!custom && !beta && !registry.Supported)
             {
-                switch (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).PromptAsync())
-                {
-                    case ContentDialogResult.Primary:
-                        _rootPage._versionsPageItem.IsSelected = true;
-                        _rootPage.Content = _rootPage._versionsPageItem.Tag;
-                        break;
+                UnsupportedVersion dialog = new(Minecraft.Version, registry.Preferred);
+                var result = await dialog.PromptAsync();
 
-                    case ContentDialogResult.Secondary:
-                        _rootPage._settingsPageItem.IsSelected = true;
-                        _rootPage.Content = _rootPage._settingsPageItem.Tag;
-                        break;
-                }
+                using (Dispatcher.DisableProcessing())
+                    switch (result)
+                    {
+                        case ContentDialogResult.Primary:
+                            _rootPage._versionsPageItem.IsSelected = true;
+                            _rootPage.Content = _rootPage._versionsPageItem.Tag;
+                            break;
+
+                        case ContentDialogResult.Secondary:
+                            _rootPage._settingsPageItem.IsSelected = true;
+                            _rootPage.Content = _rootPage._settingsPageItem.Tag;
+                            break;
+                    }
                 return;
             }
 
@@ -229,8 +233,11 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                SetVisibility(false);
-                _statusTextBlock.Text = "Launching...";
+                using (Dispatcher.DisableProcessing())
+                {
+                    SetVisibility(false);
+                    _statusTextBlock.Text = "Launching...";
+                }
 
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
@@ -244,17 +251,23 @@ If you need help, join our Discord.";
             if (beta && !await _betaDllEnabled.ShowAsync())
                 return;
 
-            SetVisibility(false);
-            _statusTextBlock.Text = "Verifying...";
+            using (Dispatcher.DisableProcessing())
+            {
+                SetVisibility(false);
+                _statusTextBlock.Text = "Verifying...";
+            }
 
-            if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
+            if (!await client.DownloadAsync(InvokeFlarialClientDownloadAsync))
             {
                 await _clientUpdateFailure.ShowAsync();
                 return;
             }
 
-            _progressBar.IsIndeterminate = true;
-            _statusTextBlock.Text = "Launching...";
+            using (Dispatcher.DisableProcessing())
+            {
+                _progressBar.IsIndeterminate = true;
+                _statusTextBlock.Text = "Launching...";
+            }
 
             if (!await Task.Run(() => client.Launch(initialized)))
             {
@@ -264,7 +277,8 @@ If you need help, join our Discord.";
         }
         finally
         {
-            SetVisibility(true);
+            using (Dispatcher.DisableProcessing())
+                SetVisibility(true);
         }
     }
 

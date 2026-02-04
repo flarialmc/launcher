@@ -42,7 +42,9 @@ sealed class SettingsPage : Grid
     {
         if (_dllBuild.SelectedIndex is -1) return;
         _configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
-        _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
+
+        using (Dispatcher.DisableProcessing())
+            _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
     }
 
     void OnHardwareAccelerationToggled(object sender, EventArgs args) => _configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;

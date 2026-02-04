@@ -39,8 +39,11 @@ sealed class VersionsPage : Grid
     {
         if (_listBox.IsEnabled && _listBox.HasItems)
         {
-            _listBox.SelectedIndex = -1;
-            _listBox.ScrollIntoView(_listBox.Items[0]);
+            using (Dispatcher.DisableProcessing())
+            {
+                _listBox.SelectedIndex = -1;
+                _listBox.ScrollIntoView(_listBox.Items[0]);
+            }
         }
     }
 
@@ -49,8 +52,12 @@ sealed class VersionsPage : Grid
         if (_task is { })
         {
             args.Cancel = true;
-            _rootPage.Content = this;
-            _rootPage._versionsPageItem.IsSelected = true;
+
+            using (Dispatcher.DisableProcessing())
+            {
+                _rootPage.Content = this;
+                _rootPage._versionsPageItem.IsSelected = true;
+            }
         }
     }
 
@@ -77,18 +84,15 @@ sealed class VersionsPage : Grid
 
     void SetVisibility(bool visible)
     {
-        using (Dispatcher.DisableProcessing())
-        {
-            _listBox.IsEnabled = visible;
-            _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+        _listBox.IsEnabled = visible;
+        _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
 
-            _control._progressBar.Value = 0;
-            _control._progressBar.IsIndeterminate = !visible;
-            _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        _control._progressBar.Value = 0;
+        _control._progressBar.IsIndeterminate = !visible;
+        _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
 
-            _control._icon.Symbol = Download;
-            _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-        }
+        _control._icon.Symbol = Download;
+        _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     async void OnButtonClick(object sender, EventArgs args)
@@ -116,7 +120,8 @@ sealed class VersionsPage : Grid
 
         try
         {
-            SetVisibility(false);
+            using (Dispatcher.DisableProcessing())
+                SetVisibility(false);
 
             VersionItem entry; unsafe
             {
@@ -130,7 +135,11 @@ sealed class VersionsPage : Grid
             try { await (_task = entry.InstallAsync(InvokeVersionEntryInstallAsync)); }
             finally { _task = null; }
         }
-        finally { SetVisibility(true); }
+        finally
+        {
+            using (Dispatcher.DisableProcessing())
+                SetVisibility(true);
+        }
     }
 
     Task? _task = null;

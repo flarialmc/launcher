@@ -51,7 +51,7 @@ sealed class MainWindow : Window
         if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
             return;
 
-        await Dispatcher.InvokeAsync(() =>
+        Dispatcher.Invoke(() =>
         {
             using (Dispatcher.DisableProcessing())
             {
@@ -75,10 +75,13 @@ sealed class MainWindow : Window
 
     void InvokeFlarialLauncherDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        if (_homePage._progressBar.Value != value)
+        using (Dispatcher.DisableProcessing())
         {
-            _homePage._progressBar.Value = value;
-            _homePage._progressBar.IsIndeterminate = false;
+            if (_homePage._progressBar.Value != value)
+            {
+                _homePage._progressBar.Value = value;
+                _homePage._progressBar.IsIndeterminate = false;
+            }
         }
     });
 
@@ -94,9 +97,10 @@ sealed class MainWindow : Window
 
         if (await FlarialLauncher.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
         {
-            _homePage._statusTextBlock.Text = "Updating...";
+            using (Dispatcher.DisableProcessing()) _homePage._statusTextBlock.Text = "Updating...";
             await FlarialLauncher.DownloadAsync(InvokeFlarialLauncherDownloadAsync);
-            _homePage._progressBar.IsIndeterminate = true;
+
+            using (Dispatcher.DisableProcessing()) _homePage._progressBar.IsIndeterminate = true;
             return;
         }
 
@@ -122,14 +126,16 @@ sealed class MainWindow : Window
             });
         }
 
-        _rootPage._versionsPageItem.IsEnabled = true;
-
         _catalog.PackageUpdating += OnPackageUpdating;
         _catalog.PackageInstalling += OnPackageInstalling;
         _catalog.PackageUninstalling += OnPackageUninstalling;
         OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-        _homePage.SetVisibility(true);
+        using (Dispatcher.DisableProcessing())
+        {
+            _rootPage._versionsPageItem.IsEnabled = true;
+            _homePage.SetVisibility(true);
+        }
 
         /*
             - Dispatch loading sponsorships to dedicated threads.
