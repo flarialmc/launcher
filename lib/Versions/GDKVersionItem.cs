@@ -41,7 +41,11 @@ sealed class GDKVersionItem : VersionItem
         var gameLaunchHelper = await gameLaunchHelperTask;
         using var msixvcPackages = await msixvcPackagesTask;
 
-        var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(msixvcPackages);
+        Dictionary<string, Dictionary<string, string[]>> items; unsafe
+        {
+            var @object = s_serializer.ReadObject(msixvcPackages);
+            items = *(Dictionary<string, Dictionary<string, string[]>>*)&@object;
+        }
 
         foreach (var item in items["release"])
         {

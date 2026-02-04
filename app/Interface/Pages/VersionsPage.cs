@@ -14,6 +14,7 @@ using System.ComponentModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using ModernWpf.Controls.Primitives;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -48,44 +49,47 @@ sealed class VersionsPage : Grid
         if (_task is { })
         {
             args.Cancel = true;
-            Dispatcher.Invoke(() =>
-            {
-                _rootPage.Content = this;
-                _rootPage._versionsPageItem.IsSelected = true;
-            }, DispatcherPriority.Background);
+            _rootPage.Content = this;
+            _rootPage._versionsPageItem.IsSelected = true;
         }
     }
 
-    void OnVersionEntryInstallAsync(int value, bool installing) => Dispatcher.Invoke(() =>
+    void InvokeVersionEntryInstallAsync(int value, bool installing) => Dispatcher.Invoke(() =>
     {
-        _control._icon.Symbol = installing ? Upload : Download;
-
-        if (value <= 0)
+        using (Dispatcher.DisableProcessing())
         {
+            _control._icon.Symbol = installing ? Upload : Download;
+
+            if (value <= 0)
+            {
+                _control._progressBar.Value = 0;
+                _control._progressBar.IsIndeterminate = true;
+                return;
+            }
+
+            if (_control._progressBar.Value != value)
+            {
+                _control._progressBar.Value = value;
+                _control._progressBar.IsIndeterminate = false;
+            }
+        }
+    });
+
+    void SetVisibility(bool visible)
+    {
+        using (Dispatcher.DisableProcessing())
+        {
+            _listBox.IsEnabled = visible;
+            _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+
             _control._progressBar.Value = 0;
-            _control._progressBar.IsIndeterminate = true;
+            _control._progressBar.IsIndeterminate = !visible;
+            _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+
+            _control._icon.Symbol = Download;
+            _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         }
-
-        if (_control._progressBar.Value != value)
-        {
-            _control._progressBar.Value = value;
-            _control._progressBar.IsIndeterminate = false;
-        }
-    }, DispatcherPriority.Background);
-
-    void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
-    {
-        _listBox.IsEnabled = visible;
-        _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
-
-        _control._progressBar.Value = 0;
-        _control._progressBar.IsIndeterminate = visible ? false : true;
-        _control._progressBar.Visibility = visible ? Visibility.Hidden : Visibility.Visible;
-
-        _control._icon.Symbol = Download;
-        _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-    }, DispatcherPriority.Background);
-
+    }
 
     async void OnButtonClick(object sender, EventArgs args)
     {
@@ -110,8 +114,10 @@ sealed class VersionsPage : Grid
         if (!await _installVersion.ShowAsync())
             return;
 
-        SetVisiblity(false); try
+        try
         {
+            SetVisibility(false);
+
             VersionItem entry; unsafe
             {
                 var @object = _listBox.SelectedItem;
@@ -120,9 +126,11 @@ sealed class VersionsPage : Grid
                 var tag = item.Tag;
                 entry = *(VersionItem*)&tag;
             }
-            await (_task = entry.InstallAsync(OnVersionEntryInstallAsync));
+
+            try { await (_task = entry.InstallAsync(InvokeVersionEntryInstallAsync)); }
+            finally { _task = null; }
         }
-        finally { _task = null; SetVisiblity(true); }
+        finally { SetVisibility(true); }
     }
 
     Task? _task = null;

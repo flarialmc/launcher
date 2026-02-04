@@ -83,7 +83,7 @@ sealed class HomePage : Grid
         Width = 320 * 0.95,
         Margin = new(12, 0, 0, 12),
         Cursor = Cursors.Hand,
-        IsEnabled = false
+        Visibility = Visibility.Collapsed
     };
 
     internal readonly Image _centerSponsorshipImage = new()
@@ -95,7 +95,7 @@ sealed class HomePage : Grid
         Width = 320 * 0.95,
         Margin = new(0, 0, 0, 12),
         Cursor = Cursors.Hand,
-        IsEnabled = false
+        Visibility = Visibility.Collapsed
     };
 
     internal readonly Image _rightSponsorshipImage = new()
@@ -107,7 +107,7 @@ sealed class HomePage : Grid
         Width = 320 * 0.95,
         Margin = new(0, 0, 12, 12),
         Cursor = Cursors.Hand,
-        IsEnabled = false
+        Visibility = Visibility.Collapsed
     };
 
     sealed class UnsupportedVersion(string version, string preferred) : MessageDialog
@@ -130,41 +130,40 @@ If you need help, join our Discord.";
 
     void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
-    void OnSponsorshipImageClick(object sender, EventArgs args)
+    unsafe void OnSponsorshipImageClick(object sender, EventArgs args)
     {
-        var element = (FrameworkElement)sender;
-        ShellExecute((string)element.Tag);
+        var tag = (*(FrameworkElement*)&sender).Tag;
+        ShellExecute(*(string*)&tag);
     }
 
-    async void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
+    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
         if (_progressBar.Value != value)
         {
             _progressBar.Value = value;
             _progressBar.IsIndeterminate = false;
         }
-
         _statusTextBlock.Text = "Downloading...";
-    }, DispatcherPriority.Background);
+    });
 
-    internal void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
+    internal void SetVisibility(bool visible)
     {
-        _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        using (Dispatcher.DisableProcessing())
+        {
+            _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
 
-        _progressBar.Value = 0;
-        _progressBar.IsIndeterminate = visible ? false : true;
-        _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+            _progressBar.Value = 0; _progressBar.IsIndeterminate = !visible;
+            _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
 
-        _statusTextBlock.Text = "Preparing...";
-        _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-    }, DispatcherPriority.Background);
+            _statusTextBlock.Text = "Preparing...";
+            _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        }
+    }
 
     async void OnPlayButtonClick(object sender, EventArgs args)
     {
         try
         {
-            var registry = (VersionRegistry)Tag;
-
             if (!Minecraft.Installed)
             {
                 await _notInstalled.ShowAsync();
@@ -180,6 +179,12 @@ If you need help, join our Discord.";
                 }
                 else if (await _allowUnsignedInstalls.ShowAsync())
                     return;
+            }
+
+            VersionRegistry registry; unsafe
+            {
+                var tag = Tag;
+                registry = *(VersionRegistry*)&tag;
             }
 
             var path = _configuration.CustomDllPath;
@@ -210,7 +215,7 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                SetVisiblity(false);
+                SetVisibility(false);
                 _statusTextBlock.Text = "Launching...";
 
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
@@ -225,8 +230,8 @@ If you need help, join our Discord.";
             if (beta && !await _betaDllEnabled.ShowAsync())
                 return;
 
-            SetVisiblity(false);
-            Dispatcher.Invoke(() => _statusTextBlock.Text = "Verifying...", DispatcherPriority.Background);
+            SetVisibility(false);
+            _statusTextBlock.Text = "Verifying...";
 
             if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
             {
@@ -234,11 +239,8 @@ If you need help, join our Discord.";
                 return;
             }
 
-            Dispatcher.Invoke(() =>
-            {
-                _statusTextBlock.Text = "Launching...";
-                _progressBar.IsIndeterminate = true;
-            }, DispatcherPriority.Background);
+            _progressBar.IsIndeterminate = true;
+            _statusTextBlock.Text = "Launching...";
 
             if (!await Task.Run(() => client.Launch(initialized)))
             {
@@ -246,7 +248,7 @@ If you need help, join our Discord.";
                 return;
             }
         }
-        finally { SetVisiblity(true); }
+        finally { SetVisibility(true); }
     }
 
     internal HomePage(Configuration configuration, WindowInteropHelper helper)

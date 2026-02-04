@@ -40,7 +40,12 @@ sealed class UWPVersionItem : VersionItem
     internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
         using var stream = await HttpService.GetStreamAsync(AppxPackagesUrl);
-        var items = (string[][])s_serializer.ReadObject(stream);
+
+        string[][] items; unsafe
+        {
+            var @object = s_serializer.ReadObject(stream);
+            items = *(string[][]*)&@object;
+        }
 
         foreach (var item in items)
         {
