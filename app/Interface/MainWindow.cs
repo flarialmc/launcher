@@ -46,28 +46,28 @@ sealed class MainWindow : Window
 
     void OnPackageStatusChanged(string packageFamilyName)
     {
-        if (packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
-            Dispatcher.Invoke(OnPackageStatusChanged, DispatcherPriority.Background);
-    }
-
-    void OnPackageStatusChanged()
-    {
-        if (!Minecraft.Installed)
-        {
-            _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
+        if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
             return;
-        }
 
-        var registry = (VersionRegistry)Tag;
-        var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
-        _homePage._packageVersionTextBlock.Text = text;
+        Dispatcher.Invoke(() =>
+        {
+            if (!Minecraft.Installed)
+            {
+                _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
+                return;
+            }
+
+            var registry = (VersionRegistry)Tag;
+            var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
+            _homePage._packageVersionTextBlock.Text = text;
+        }, DispatcherPriority.Background);
     }
 
     void OnFlarialLauncherDownloadAsync(int value)
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(() => OnFlarialLauncherDownloadAsync(value));
+            Dispatcher.Invoke(() => OnFlarialLauncherDownloadAsync(value), DispatcherPriority.Background);
             return;
         }
 
