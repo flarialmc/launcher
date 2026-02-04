@@ -78,9 +78,10 @@ jobs:
 
       - name: Build
         run: |
-          cd app      
-          msbuild -t:Restore Flarial.Launcher.csproj
-          msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
+          dotnet publish "app/Flarial.Launcher.csproj"
+
+          : # msbuild -t:Restore Flarial.Launcher.csproj
+          : # msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
       - name: update new version
         if: success()
