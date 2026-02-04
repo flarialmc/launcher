@@ -15,6 +15,11 @@ abstract class MessageDialog
 
     internal async Task<bool> ShowAsync()
     {
+        return await ShowResultAsync() != ContentDialogResult.None;
+    }
+
+    internal async Task<ContentDialogResult> ShowResultAsync()
+    {
         await s_semaphore.WaitAsync(); try
         {
             using (Application.Current.Dispatcher.DisableProcessing())
@@ -23,8 +28,9 @@ abstract class MessageDialog
                 s_dialog.Content = Content;
                 s_dialog.CloseButtonText = Close;
                 s_dialog.PrimaryButtonText = Primary;
+                s_dialog.SecondaryButtonText = Secondary;
             }
-            return await s_dialog.ShowAsync(ContentDialogPlacement.InPlace) != ContentDialogResult.None;
+            return await s_dialog.ShowAsync(ContentDialogPlacement.InPlace);
         }
         finally { s_semaphore.Release(); }
     }
@@ -33,6 +39,7 @@ abstract class MessageDialog
     protected abstract string Content { get; }
     protected abstract string Primary { get; }
     protected virtual string? Close { get; } = null;
+    protected virtual string? Secondary { get; } = null;
 
     internal static readonly MessageDialog _connectionFailure = new ConnectionFailure();
 

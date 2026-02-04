@@ -13,6 +13,7 @@ using Flarial.Launcher.Management;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Flarial.Launcher.Services.Versions;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -114,6 +115,7 @@ sealed class HomePage : Grid
     {
         protected override string Primary => "Open Versions";
         protected override string? Close => "Back";
+        protected override string? Secondary => "Open Settings";
         protected override string Title => "Update Required";
         protected override string Content => $@"You're on Minecraft {version}.
 Flarial currently supports {preferred}.
@@ -197,8 +199,11 @@ Need help? Join our Discord.";
 
             if (!custom && !beta && !registry.Supported)
             {
-                if (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowAsync())
+                var result = await new UnsupportedVersion(Minecraft.Version, registry.Preferred).ShowResultAsync();
+                if (result == ContentDialogResult.Primary)
                     OpenVersionsPage();
+                else if (result == ContentDialogResult.Secondary)
+                    OpenSettingsPage();
                 return;
             }
 
@@ -259,6 +264,13 @@ Need help? Join our Discord.";
         var rootPage = (RootPage)Window.GetWindow(this)!.Content;
         rootPage.SelectedItem = rootPage._versionsPageItem;
         rootPage.Content = rootPage._versionsPageItem.Tag;
+    }
+
+    void OpenSettingsPage()
+    {
+        var rootPage = (RootPage)Window.GetWindow(this)!.Content;
+        rootPage.SelectedItem = rootPage._settingsPageItem;
+        rootPage.Content = rootPage._settingsPageItem.Tag;
     }
 
     internal HomePage(Configuration configuration, WindowInteropHelper helper)
