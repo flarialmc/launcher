@@ -97,7 +97,7 @@ jobs:
           git commit -m "Bump launcher version"
           git push origin main
                 
-          cp D:/a/launcher/launcher/app/bin/Release/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
+          cp D:/a/launcher/launcher/app/bin/Release/publish/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
           git push origin main
