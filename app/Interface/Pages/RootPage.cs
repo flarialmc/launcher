@@ -27,7 +27,7 @@ sealed class RootPage : NavigationView
 
     internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
-        IsEnabled = false;
+        _versionsPageItem.IsEnabled = false;
         IsSettingsVisible = false;
 
         PaneDisplayMode = NavigationViewPaneDisplayMode.Top;

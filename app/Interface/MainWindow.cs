@@ -47,7 +47,7 @@ sealed class MainWindow : Window
     void OnPackageStatusChanged(string packageFamilyName)
     {
         if (packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
-            Dispatcher.Invoke(OnPackageStatusChanged);
+            Dispatcher.Invoke(OnPackageStatusChanged, DispatcherPriority.Background);
     }
 
     void OnPackageStatusChanged()
@@ -83,13 +83,17 @@ sealed class MainWindow : Window
         base.OnSourceInitialized(args);
 
         if (!await FlarialClient.CanConnectAsync() && !await _connectionFailure.ShowAsync())
+        {
             Application.Current.Shutdown();
+            return;
+        }
 
         if (await FlarialLauncher.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
         {
-            _homePage._statusTextBlock.Text = "Updating...";
+            Dispatcher.Invoke(() => _homePage._statusTextBlock.Text = "Updating...", DispatcherPriority.Background);
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
-            _homePage._progressBar.IsIndeterminate = true;
+            
+            Dispatcher.Invoke(() => _homePage._progressBar.IsIndeterminate = true, DispatcherPriority.Background);
             return;
         }
 
@@ -103,30 +107,21 @@ sealed class MainWindow : Window
             if (entry.Value is null)
                 continue;
 
-            _versionsPage._listBox.Items.Add(new ListBoxItem
+            Dispatcher.Invoke(() => _versionsPage._listBox.Items.Add(new ListBoxItem
             {
                 Tag = entry.Value,
                 Content = entry.Key,
                 HorizontalContentAlignment = HorizontalAlignment.Center
-            });
+            }), DispatcherPriority.Background);
         }
+        Dispatcher.Invoke(() => _rootPage._versionsPageItem.IsEnabled = true, DispatcherPriority.Background);
 
         _catalog.PackageUpdating += OnPackageUpdating;
         _catalog.PackageInstalling += OnPackageInstalling;
         _catalog.PackageUninstalling += OnPackageUninstalling;
-
         OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-        _homePage._progressBar.Value = 0;
-        _homePage._progressBar.IsIndeterminate = false;
-        _homePage._progressBar.Visibility = Visibility.Collapsed;
-
-        _homePage._statusTextBlock.Text = "Preparing...";
-        _homePage._statusTextBlock.Visibility = Visibility.Hidden;
-
-        _homePage._playButton.Visibility = Visibility.Visible;
-
-        _rootPage.IsEnabled = true;
+        _homePage.SetVisiblity(true);
 
         /*
             - Dispatch loading sponsorships to dedicated threads.
@@ -146,7 +141,7 @@ sealed class MainWindow : Window
 
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(() => LoadSponsorshipImage(sponsorship, image), DispatcherPriority.SystemIdle);
+            Dispatcher.Invoke(() => LoadSponsorshipImage(sponsorship, image), DispatcherPriority.Background);
             return;
         }
 

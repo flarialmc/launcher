@@ -5,6 +5,7 @@ using ModernWpf.Controls;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System;
+using System.Windows.Threading;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -41,7 +42,7 @@ sealed class SettingsPage : Grid
     {
         if (_dllBuild.SelectedIndex is -1) return;
         _configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
-        _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
+        Dispatcher.Invoke(() => _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom, DispatcherPriority.Background);
     }
 
     void OnHardwareAccelerationToggled(object sender, EventArgs args) => _configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;

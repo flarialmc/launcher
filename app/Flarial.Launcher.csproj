@@ -9,8 +9,10 @@
     <ApplicationIcon>Resources\Application.ico</ApplicationIcon>
     <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
 
+    <NoWarn>CS8500</NoWarn>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Optimize>true</Optimize>

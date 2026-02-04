@@ -1,5 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface;
@@ -7,20 +9,22 @@ namespace Flarial.Launcher.Interface;
 abstract class MessageDialog
 {
     internal MessageDialog() { }
-    static readonly ContentDialog s_dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
 
     internal async Task<bool> ShowAsync()
     {
         await s_semaphore.WaitAsync(); try
         {
-            s_dialog.Title = Title;
-            s_dialog.Content = Content;
-
-            s_dialog.CloseButtonText = Close;
-            s_dialog.PrimaryButtonText = Primary;
-
-            return await s_dialog.ShowAsync() != ContentDialogResult.None;
+            return await Application.Current.Dispatcher.Invoke(async () =>
+            {
+                return await new ContentDialog
+                {
+                    Title = Title,
+                    Content = Content,
+                    CloseButtonText = Close,
+                    PrimaryButtonText = Primary
+                }.ShowAsync() != ContentDialogResult.None;
+            }, DispatcherPriority.Background);
         }
         finally { s_semaphore.Release(); }
     }
@@ -196,8 +200,8 @@ If you need help, join our Discord.";
     sealed class BetaDllEnabled : MessageDialog
     {
         protected override string Title => "⚠️ Beta DLL Enabled";
-        protected override string Primary => "Cancel";
-        protected override string? Close => "Launch";
+        protected override string? Close => "Cancel";
+        protected override string Primary => "Launch";
         protected override string Content => @"The beta DLL of the client might be potentially unstable. 
 
 • Bugs & crashes might occur frequently during gameplay.

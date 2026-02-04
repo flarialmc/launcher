@@ -55,7 +55,7 @@ sealed class HomePage : Grid
         Content = "Play",
         Width = Manifest.Icon.Width,
         Margin = new(0, 90, 0, 0),
-        Visibility = Visibility.Hidden
+        Visibility = Visibility.Collapsed
     };
 
     internal readonly TextBlock _packageVersionTextBlock = new()
@@ -140,7 +140,7 @@ If you need help, join our Discord.";
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(() => OnFlarialClientDownloadAsync(value));
+            Dispatcher.Invoke(() => OnFlarialClientDownloadAsync(value), DispatcherPriority.Background);
             return;
         }
 
@@ -153,18 +153,22 @@ If you need help, join our Discord.";
         _statusTextBlock.Text = "Downloading...";
     }
 
+    internal void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
+    {
+        _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+
+        _progressBar.Value = 0;
+        _progressBar.IsIndeterminate = visible ? false : true;
+        _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+
+        _statusTextBlock.Text = "Preparing...";
+        _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+    }, DispatcherPriority.Background);
+
     async void OnPlayButtonClick(object sender, EventArgs args)
     {
         try
         {
-            _playButton.Visibility = Visibility.Hidden;
-
-            _progressBar.IsIndeterminate = true;
-            _progressBar.Visibility = Visibility.Visible;
-
-            _statusTextBlock.Text = "Preparing...";
-            _statusTextBlock.Visibility = Visibility.Visible;
-
             var registry = (VersionRegistry)Tag;
 
             if (!Minecraft.Installed)
@@ -212,6 +216,7 @@ If you need help, join our Discord.";
                     return;
                 }
 
+                SetVisiblity(false);
                 _statusTextBlock.Text = "Launching...";
 
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
@@ -223,10 +228,11 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (beta && await _betaDllEnabled.ShowAsync())
+            if (beta && !await _betaDllEnabled.ShowAsync())
                 return;
 
-            _statusTextBlock.Text = "Verifying...";
+            SetVisiblity(false);
+            Dispatcher.Invoke(() => _statusTextBlock.Text = "Verifying...", DispatcherPriority.Background);
 
             if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
             {
@@ -234,8 +240,11 @@ If you need help, join our Discord.";
                 return;
             }
 
-            _statusTextBlock.Text = "Launching...";
-            _progressBar.IsIndeterminate = true;
+            Dispatcher.Invoke(() =>
+            {
+                _statusTextBlock.Text = "Launching...";
+                _progressBar.IsIndeterminate = true;
+            }, DispatcherPriority.Background);
 
             if (!await Task.Run(() => client.Launch(initialized)))
             {
@@ -243,16 +252,7 @@ If you need help, join our Discord.";
                 return;
             }
         }
-        finally
-        {
-            _progressBar.IsIndeterminate = false;
-            _progressBar.Visibility = Visibility.Hidden;
-
-            _statusTextBlock.Text = "Preparing...";
-            _statusTextBlock.Visibility = Visibility.Hidden;
-
-            _playButton.Visibility = Visibility.Visible;
-        }
+        finally { SetVisiblity(true); }
     }
 
     internal HomePage(Configuration configuration, WindowInteropHelper helper)

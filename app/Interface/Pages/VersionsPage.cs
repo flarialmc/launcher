@@ -13,6 +13,7 @@ using System;
 using System.ComponentModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using ModernWpf.Controls.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -35,7 +36,7 @@ sealed class VersionsPage : Grid
 
     void OnContentChanged(object sender, EventArgs args)
     {
-        if (_listBox.IsEnabled && _listBox.Items.Count > 0)
+        if (_listBox.IsEnabled && _listBox.HasItems)
         {
             _listBox.SelectedIndex = -1;
             _listBox.ScrollIntoView(_listBox.Items[0]);
@@ -56,7 +57,7 @@ sealed class VersionsPage : Grid
     {
         if (!CheckAccess())
         {
-            Dispatcher.Invoke(() => OnVersionEntryInstallAsync(value, installing));
+            Dispatcher.Invoke(() => OnVersionEntryInstallAsync(value, installing), DispatcherPriority.Background);
             return;
         }
 
@@ -75,61 +76,56 @@ sealed class VersionsPage : Grid
         }
     }
 
+    void SetVisiblity(bool visible) => Dispatcher.Invoke(() =>
+    {
+        _listBox.IsEnabled = visible;
+        _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+
+        _control._progressBar.Value = 0;
+        _control._progressBar.IsIndeterminate = visible ? false : true;
+        _control._progressBar.Visibility = visible ? Visibility.Hidden : Visibility.Visible;
+
+        _control._icon.Symbol = Download;
+        _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+    }, DispatcherPriority.Background);
+
+
     async void OnButtonClick(object sender, EventArgs args)
     {
-        try
+        if (!Minecraft.Installed)
         {
-            IsEnabled = false;
-
-            if (!Minecraft.Installed)
-            {
-                await _notInstalled.ShowAsync();
-                return;
-            }
-
-            if (!Minecraft.Packaged)
-            {
-                await _unpackagedInstallation.ShowAsync();
-                return;
-            }
-
-            if (_listBox.SelectedItem is null)
-            {
-                await _selectVersion.ShowAsync();
-                return;
-            }
-
-            if (!await _installVersion.ShowAsync())
-                return;
-
-            _control._icon.Symbol = Download;
-            _control._icon.Visibility = Visibility.Visible;
-
-            _control._progressBar.IsIndeterminate = true;
-            _control._progressBar.Visibility = Visibility.Visible;
-
-            _control._button.Visibility = Visibility.Hidden;
-
-            try
-            {
-                var entry = (VersionItem)((ListBoxItem)_listBox.SelectedItem).Tag;
-                await (_task = entry.InstallAsync(OnVersionEntryInstallAsync));
-            }
-            finally { _task = null; }
+            await _notInstalled.ShowAsync();
+            return;
         }
-        finally
+
+        if (!Minecraft.Packaged)
         {
-            _control._progressBar.Value = 0;
-            _control._progressBar.IsIndeterminate = false;
-            _control._progressBar.Visibility = Visibility.Hidden;
-
-            _control._icon.Symbol = Download;
-            _control._icon.Visibility = Visibility.Collapsed;
-
-            _control._button.Visibility = Visibility.Visible;
-
-            IsEnabled = true;
+            await _unpackagedInstallation.ShowAsync();
+            return;
         }
+
+        if (_listBox.SelectedItem is null)
+        {
+            await _selectVersion.ShowAsync();
+            return;
+        }
+
+        if (!await _installVersion.ShowAsync())
+            return;
+
+        SetVisiblity(false); try
+        {
+            VersionItem entry; unsafe
+            {
+                var @object = _listBox.SelectedItem;
+                var item = *(ListBoxItem*)&@object;
+
+                var tag = item.Tag;
+                entry = *(VersionItem*)&tag;
+            }
+            await (_task = entry.InstallAsync(OnVersionEntryInstallAsync));
+        }
+        finally { _task = null; SetVisiblity(true); }
     }
 
     Task? _task = null;
