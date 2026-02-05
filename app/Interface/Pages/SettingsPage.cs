@@ -25,8 +25,8 @@ sealed class SettingsPage : Grid
         Header = "Allow the launcher to use hardware acceleration?",
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
-        OnContent = "Yes, improve launcher responsiveness.",
-        OffContent = "No, fix any launcher graphical issues."
+        OnContent = "Yes, improve responsiveness.",
+        OffContent = "No, fix graphical issues."
     };
 
     readonly ToggleSwitch _waitForInitialization = new()
@@ -34,8 +34,17 @@ sealed class SettingsPage : Grid
         Header = "Should the launcher wait for the game to initialize?",
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
-        OnContent = "Yes, reduce game crashes at the cost of injection speed.",
-        OffContent = "No, speed up injection with risk of game crashes."
+        OnContent = "Yes, reduce game crashes.",
+        OffContent = "No, speed up injection."
+    };
+
+    readonly ToggleSwitch _automaticUpdates = new()
+    {
+        Header = "Should the launcher automatically update?",
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        OnContent = "Yes, automatically update.",
+        OffContent = "No, ask before updating."
     };
 
     void OnDllBuildSelectionChanged(object sender, EventArgs args)
@@ -46,6 +55,8 @@ sealed class SettingsPage : Grid
         using (Dispatcher.DisableProcessing())
             _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
     }
+
+    void OnAutomaticUpdatesToggled(object sender, EventArgs args) => _configuration.AutomaticUpdates = _automaticUpdates.IsOn;
 
     void OnHardwareAccelerationToggled(object sender, EventArgs args) => _configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;
 
@@ -64,11 +75,13 @@ sealed class SettingsPage : Grid
         _dllBuild.Items.Add("Use the beta DLL of the client which is unstable.");
         _dllBuild.Items.Add("Specify your own custom DLL to be used with the game.");
 
+        _automaticUpdates.Toggled += OnAutomaticUpdatesToggled;
         _dllBuild.SelectionChanged += OnDllBuildSelectionChanged;
         _hardwareAcceleration.Toggled += OnHardwareAccelerationToggled;
         _waitForInitialization.Toggled += OnWaitForInitializationToggled;
 
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
+        _automaticUpdates.IsOn = configuration.AutomaticUpdates;
         _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
         _waitForInitialization.IsOn = configuration.WaitForInitialization;
 
@@ -78,6 +91,7 @@ sealed class SettingsPage : Grid
         panel.Children.Add(_customDllPathPicker);
         panel.Children.Add(_waitForInitialization);
         panel.Children.Add(_hardwareAcceleration);
+        panel.Children.Add(_automaticUpdates);
 
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });

@@ -90,7 +90,7 @@ sealed class MainWindow : Window
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && await _launcherUpdateAvailable.ShowAsync())
+        if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await _launcherUpdateAvailable.ShowAsync()))
         {
             using (Dispatcher.DisableProcessing()) _homePage._statusTextBlock.Text = "Updating...";
             await FlarialLauncher.DownloadAsync(InvokeFlarialLauncherDownloadAsync);
@@ -172,10 +172,14 @@ sealed class MainWindow : Window
     readonly HomePage _homePage;
     readonly RootPage _rootPage;
     readonly VersionsPage _versionsPage;
+    readonly Configuration _configuration;
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
+
 
     internal MainWindow(Configuration configuration)
     {
+        _configuration = configuration;
+
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 

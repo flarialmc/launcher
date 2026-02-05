@@ -13,6 +13,9 @@ enum DllBuild { Release, Beta, Custom }
 sealed class Configuration
 {
     [DataMember]
+    internal bool AutomaticUpdates { get; set; } = true;
+
+    [DataMember]
     internal DllBuild DllBuild { get; set; } = DllBuild.Release;
 
     [DataMember]
@@ -35,6 +38,7 @@ sealed class Configuration
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
     {
+        AutomaticUpdates = true;
         HardwareAcceleration = true;
         DllBuild = DllBuild.Release;
         CustomDllPath = string.Empty;

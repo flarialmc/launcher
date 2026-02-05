@@ -71,7 +71,7 @@ abstract class MessageDialog
     {
         protected override string Close => "Back";
         protected override string Primary => "Install";
-        protected override string Title => "Gaming Services Missing";
+        protected override string Title => "⚠️ Gaming Services Missing";
         protected override string Content => @"Gaming Services isn't installed, please install it.
 
 • Gaming Services is required for installing GDK builds.
