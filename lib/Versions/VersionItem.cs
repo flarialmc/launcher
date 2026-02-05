@@ -33,12 +33,12 @@ public abstract class VersionItem
         if (!Minecraft.Packaged)
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
-        var uri = await GetAsync();
+        var url = await GetAsync();
         var path = Path.Combine(s_path, Path.GetRandomFileName());
 
         try
         {
-            await HttpService.DownloadAsync(uri, path, (_) => action(_, false));
+            await HttpService.DownloadAsync(url, path, (_) => action(_, false));
             unsafe
             {
                 /*

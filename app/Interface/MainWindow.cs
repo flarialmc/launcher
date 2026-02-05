@@ -20,9 +20,6 @@ using static System.Windows.Media.Imaging.BitmapCreateOptions;
 using static System.Windows.Media.Imaging.BitmapCacheOption;
 using System.IO;
 using Flarial.Launcher.Services.Client;
-using System.Windows.Documents;
-using System.Runtime.InteropServices;
-using System.Collections.ObjectModel;
 
 namespace Flarial.Launcher.Interface;
 
@@ -53,30 +50,24 @@ sealed class MainWindow : Window
 
         Dispatcher.Invoke(() =>
         {
-            using (Dispatcher.DisableProcessing())
+            if (!Minecraft.Installed)
             {
-                if (!Minecraft.Installed)
-                {
-                    _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
-                    return;
-                }
-
-                var registry = (VersionRegistry)Tag;
-                var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
-                _homePage._packageVersionTextBlock.Text = text;
+                _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
+                return;
             }
+
+            var registry = (VersionRegistry)Tag;
+            var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
+            _homePage._packageVersionTextBlock.Text = text;
         });
     }
 
     void InvokeFlarialLauncherDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        using (Dispatcher.DisableProcessing())
+        if (_homePage._progressBar.Value != value)
         {
-            if (_homePage._progressBar.Value != value)
-            {
-                _homePage._progressBar.Value = value;
-                _homePage._progressBar.IsIndeterminate = false;
-            }
+            _homePage._progressBar.Value = value;
+            _homePage._progressBar.IsIndeterminate = false;
         }
     });
 
@@ -92,32 +83,30 @@ sealed class MainWindow : Window
 
         if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await _launcherUpdateAvailable.ShowAsync()))
         {
-            using (Dispatcher.DisableProcessing()) _homePage._statusTextBlock.Text = "Updating...";
+            _homePage._statusTextBlock.Text = "Updating...";
             await FlarialLauncher.DownloadAsync(InvokeFlarialLauncherDownloadAsync);
 
-            using (Dispatcher.DisableProcessing()) _homePage._progressBar.IsIndeterminate = true;
+            _homePage._progressBar.IsIndeterminate = true;
             return;
         }
 
         var registry = await VersionRegistry.CreateAsync();
         Tag = registry; _homePage.Tag = registry;
 
-        ObservableCollection<ListBoxItem> items = [];
-        _versionsPage._listBox.ItemsSource = items;
-
-        foreach (var entry in registry)
+        foreach (var item in registry)
         {
-            await Dispatcher.Yield();
-
-            if (entry.Value is null)
-                continue;
-
-            items.Add(new()
+            if (item.Value is null)
             {
-                Tag = entry.Value,
-                Content = entry.Key,
+                await Dispatcher.Yield();
+                continue;
+            }
+
+            await Dispatcher.InvokeAsync(() => _versionsPage._listBox.Items.Add(new ListBoxItem
+            {
+                Tag = item.Value,
+                Content = item.Key,
                 HorizontalContentAlignment = HorizontalAlignment.Center
-            });
+            }));
         }
 
         _catalog.PackageUpdating += OnPackageUpdating;
@@ -125,11 +114,8 @@ sealed class MainWindow : Window
         _catalog.PackageUninstalling += OnPackageUninstalling;
         OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-        using (Dispatcher.DisableProcessing())
-        {
-            _rootPage._versionsPageItem.IsEnabled = true;
-            _homePage.SetVisibility(true);
-        }
+        _rootPage._versionsPageItem.IsEnabled = true;
+        _homePage.SetVisibility(true);
 
         /*
             - Dispatch loading sponsorships to dedicated threads.
@@ -145,17 +131,15 @@ sealed class MainWindow : Window
         if (sponsorship is not { } item)
             return;
 
-        using (Dispatcher.DisableProcessing())
-        {
-            using var stream = item.Item1;
+        using var stream = item.Item1;
+        var source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
+        source.Freeze();
 
-            image.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
-            image.Source.Freeze();
+        image.Source = source;
+        image.Tag = item.Item2;
+        image.Visibility = Visibility.Visible;
 
-            image.Tag = item.Item2;
-            image.Visibility = Visibility.Visible;
-        }
-    }, DispatcherPriority.Background);
+    });
 
     async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
     async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);

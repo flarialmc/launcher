@@ -15,6 +15,7 @@ sealed class RootPage : NavigationView
 
     internal readonly NavigationViewItem _versionsPageItem = new()
     {
+        IsEnabled = false,
         Icon = new SymbolIcon(Symbol.AllApps),
         Content = "Versions"
     };
@@ -27,7 +28,6 @@ sealed class RootPage : NavigationView
 
     internal RootPage(Configuration configuration, WindowInteropHelper helper)
     {
-        _versionsPageItem.IsEnabled = false;
         IsSettingsVisible = false;
 
         PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
@@ -38,6 +38,6 @@ sealed class RootPage : NavigationView
         FooterMenuItems.Add(_settingsPageItem);
 
         _settingsPageItem.Tag = new SettingsPage(configuration, helper);
-        ItemInvoked += (sender, args) => { using (Dispatcher.DisableProcessing()) Content = args.InvokedItemContainer.Tag; };
+        ItemInvoked += (sender, args) => Content = args.InvokedItemContainer.Tag;
     }
 }

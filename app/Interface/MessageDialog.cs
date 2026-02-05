@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +11,6 @@ namespace Flarial.Launcher.Interface;
 abstract class MessageDialog
 {
     internal MessageDialog() { }
-
-    static readonly ContentDialog s_dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
 
     internal async Task<bool> ShowAsync() => await PromptAsync() != ContentDialogResult.None;
@@ -20,15 +19,14 @@ abstract class MessageDialog
     {
         await s_semaphore.WaitAsync(); try
         {
-            using (Application.Current.Dispatcher.DisableProcessing())
+            return await new ContentDialog
             {
-                s_dialog.Title = Title;
-                s_dialog.Content = Content;
-                s_dialog.CloseButtonText = Close;
-                s_dialog.PrimaryButtonText = Primary;
-                s_dialog.SecondaryButtonText = Secondary;
-            }
-            return await s_dialog.ShowAsync(ContentDialogPlacement.InPlace);
+                Title = Title,
+                Content = Content,
+                CloseButtonText = Close,
+                PrimaryButtonText = Primary,
+                SecondaryButtonText = Secondary,
+            }.ShowAsync(ContentDialogPlacement.InPlace);
         }
         finally { s_semaphore.Release(); }
     }

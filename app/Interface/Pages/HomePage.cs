@@ -137,15 +137,12 @@ If you need help, join our Discord.";
 
     void InvokeFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
-        using (Dispatcher.DisableProcessing())
+        if (_progressBar.Value != value)
         {
-            if (_progressBar.Value != value)
-            {
-                _progressBar.Value = value;
-                _progressBar.IsIndeterminate = false;
-            }
-            _statusTextBlock.Text = "Downloading...";
+            _progressBar.Value = value;
+            _progressBar.IsIndeterminate = false;
         }
+        _statusTextBlock.Text = "Downloading...";
     });
 
     internal void SetVisibility(bool visible)
@@ -189,22 +186,18 @@ If you need help, join our Discord.";
 
             if (!custom && !beta && !registry.Supported)
             {
-                UnsupportedVersion dialog = new(Minecraft.Version, registry.Preferred);
-                var result = await dialog.PromptAsync();
+                switch (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).PromptAsync())
+                {
+                    case ContentDialogResult.Primary:
+                        _rootPage._versionsPageItem.IsSelected = true;
+                        _rootPage.Content = _rootPage._versionsPageItem.Tag;
+                        break;
 
-                using (Dispatcher.DisableProcessing())
-                    switch (result)
-                    {
-                        case ContentDialogResult.Primary:
-                            _rootPage._versionsPageItem.IsSelected = true;
-                            _rootPage.Content = _rootPage._versionsPageItem.Tag;
-                            break;
-
-                        case ContentDialogResult.Secondary:
-                            _rootPage._settingsPageItem.IsSelected = true;
-                            _rootPage.Content = _rootPage._settingsPageItem.Tag;
-                            break;
-                    }
+                    case ContentDialogResult.Secondary:
+                        _rootPage._settingsPageItem.IsSelected = true;
+                        _rootPage.Content = _rootPage._settingsPageItem.Tag;
+                        break;
+                }
                 return;
             }
 
@@ -224,11 +217,8 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                using (Dispatcher.DisableProcessing())
-                {
-                    SetVisibility(false);
-                    _statusTextBlock.Text = "Launching...";
-                }
+                SetVisibility(false);
+                _statusTextBlock.Text = "Launching...";
 
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
@@ -242,11 +232,8 @@ If you need help, join our Discord.";
             if (beta && !await _betaDllEnabled.ShowAsync())
                 return;
 
-            using (Dispatcher.DisableProcessing())
-            {
-                SetVisibility(false);
-                _statusTextBlock.Text = "Verifying...";
-            }
+            SetVisibility(false);
+            _statusTextBlock.Text = "Verifying...";
 
             if (!await client.DownloadAsync(InvokeFlarialClientDownloadAsync))
             {
@@ -254,11 +241,8 @@ If you need help, join our Discord.";
                 return;
             }
 
-            using (Dispatcher.DisableProcessing())
-            {
-                _progressBar.IsIndeterminate = true;
-                _statusTextBlock.Text = "Launching...";
-            }
+            _progressBar.IsIndeterminate = true;
+            _statusTextBlock.Text = "Launching...";
 
             if (!await Task.Run(() => client.Launch(initialized)))
             {
@@ -266,11 +250,7 @@ If you need help, join our Discord.";
                 return;
             }
         }
-        finally
-        {
-            using (Dispatcher.DisableProcessing())
-                SetVisibility(true);
-        }
+        finally { SetVisibility(true); }
     }
 
     internal HomePage(RootPage rootPage, Configuration configuration, WindowInteropHelper helper)

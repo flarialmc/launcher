@@ -41,11 +41,8 @@ sealed class VersionsPage : Grid
     {
         if (_listBox.IsEnabled && _listBox.HasItems)
         {
-            using (Dispatcher.DisableProcessing())
-            {
-                _listBox.SelectedIndex = -1;
-                _listBox.ScrollIntoView(_listBox.Items[0]);
-            }
+            _listBox.SelectedIndex = -1;
+            _listBox.ScrollIntoView(_listBox.Items[0]);
         }
     }
 
@@ -54,33 +51,26 @@ sealed class VersionsPage : Grid
         if (_task is { })
         {
             args.Cancel = true;
-
-            using (Dispatcher.DisableProcessing())
-            {
-                _rootPage.Content = this;
-                _rootPage._versionsPageItem.IsSelected = true;
-            }
+            _rootPage.Content = this;
+            _rootPage._versionsPageItem.IsSelected = true;
         }
     }
 
     void InvokeVersionEntryInstallAsync(int value, bool installing) => Dispatcher.Invoke(() =>
     {
-        using (Dispatcher.DisableProcessing())
+        _control._icon.Symbol = installing ? Upload : Download;
+
+        if (value <= 0)
         {
-            _control._icon.Symbol = installing ? Upload : Download;
+            _control._progressBar.Value = 0;
+            _control._progressBar.IsIndeterminate = true;
+            return;
+        }
 
-            if (value <= 0)
-            {
-                _control._progressBar.Value = 0;
-                _control._progressBar.IsIndeterminate = true;
-                return;
-            }
-
-            if (_control._progressBar.Value != value)
-            {
-                _control._progressBar.Value = value;
-                _control._progressBar.IsIndeterminate = false;
-            }
+        if (_control._progressBar.Value != value)
+        {
+            _control._progressBar.Value = value;
+            _control._progressBar.IsIndeterminate = false;
         }
     });
 
@@ -131,17 +121,14 @@ sealed class VersionsPage : Grid
 
         try
         {
-            using (Dispatcher.DisableProcessing())
-                SetVisibility(false);
-
+            SetVisibility(false);
             var item = (VersionItem)((ListBoxItem)_listBox.SelectedItem).Tag;
             await (_task = item.InstallAsync(InvokeVersionEntryInstallAsync));
         }
         finally
         {
             _task = null;
-            using (Dispatcher.DisableProcessing())
-                SetVisibility(true);
+            SetVisibility(true);
         }
     }
 
