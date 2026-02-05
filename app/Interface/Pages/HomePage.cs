@@ -133,11 +133,7 @@ If you need help, join our Discord.";
 
     void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
-    unsafe void OnSponsorshipImageClick(object sender, EventArgs args)
-    {
-        var tag = (*(FrameworkElement*)&sender).Tag;
-        ShellExecute(*(string*)&tag);
-    }
+    void OnSponsorshipImageClick(object sender, EventArgs args) => ShellExecute((string)((FrameworkElement)sender).Tag);
 
     void InvokeFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
@@ -184,12 +180,7 @@ If you need help, join our Discord.";
                     return;
             }
 
-            VersionRegistry registry; unsafe
-            {
-                var tag = Tag;
-                registry = *(VersionRegistry*)&tag;
-            }
-
+            var registry = (VersionRegistry)Tag;
             var path = _configuration.CustomDllPath;
             var beta = _configuration.DllBuild is DllBuild.Beta;
             var initialized = _configuration.WaitForInitialization;

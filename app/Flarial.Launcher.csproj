@@ -12,7 +12,6 @@
     <NoWarn>CS8500</NoWarn>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Optimize>true</Optimize>

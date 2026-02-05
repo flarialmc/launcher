@@ -61,12 +61,7 @@ sealed class MainWindow : Window
                     return;
                 }
 
-                VersionRegistry registry; unsafe
-                {
-                    var tag = Tag;
-                    registry = *(VersionRegistry*)&tag;
-                }
-
+                var registry = (VersionRegistry)Tag;
                 var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
                 _homePage._packageVersionTextBlock.Text = text;
             }
@@ -105,7 +100,6 @@ sealed class MainWindow : Window
         }
 
         var registry = await VersionRegistry.CreateAsync();
-        object tag; unsafe { tag = *(object*)&registry; }
         Tag = registry; _homePage.Tag = registry;
 
         ObservableCollection<ListBoxItem> items = [];
@@ -158,9 +152,7 @@ sealed class MainWindow : Window
             image.Source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
             image.Source.Freeze();
 
-            var tag = item.Item2;
-            unsafe { image.Tag = *(object*)&tag; }
-
+            image.Tag = item.Item2;
             image.Visibility = Visibility.Visible;
         }
     }, DispatcherPriority.Background);

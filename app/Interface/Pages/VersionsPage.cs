@@ -134,20 +134,12 @@ sealed class VersionsPage : Grid
             using (Dispatcher.DisableProcessing())
                 SetVisibility(false);
 
-            VersionItem entry; unsafe
-            {
-                var @object = _listBox.SelectedItem;
-                var item = *(ListBoxItem*)&@object;
-
-                var tag = item.Tag;
-                entry = *(VersionItem*)&tag;
-            }
-
-            try { await (_task = entry.InstallAsync(InvokeVersionEntryInstallAsync)); }
-            finally { _task = null; }
+            var item = (VersionItem)((ListBoxItem)_listBox.SelectedItem).Tag;
+            await (_task = item.InstallAsync(InvokeVersionEntryInstallAsync));
         }
         finally
         {
+            _task = null;
             using (Dispatcher.DisableProcessing())
                 SetVisibility(true);
         }
