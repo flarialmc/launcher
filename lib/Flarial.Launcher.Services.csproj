@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
-    <TargetFramework>net481</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
     <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
