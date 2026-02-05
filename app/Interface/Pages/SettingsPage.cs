@@ -51,9 +51,7 @@ sealed class SettingsPage : Grid
     {
         if (_dllBuild.SelectedIndex is -1) return;
         _configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
-
-        using (Dispatcher.DisableProcessing())
-            _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
+        _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
     }
 
     void OnAutomaticUpdatesToggled(object sender, EventArgs args) => _configuration.AutomaticUpdates = _automaticUpdates.IsOn;
