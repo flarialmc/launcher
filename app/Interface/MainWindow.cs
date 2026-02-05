@@ -168,9 +168,10 @@ sealed class MainWindow : Window
         WindowHelper.SetUseModernWindowStyle(this, true);
         ThemeManager.SetRequestedTheme(this, ElementTheme.Dark);
 
-        Width = 960; Height = 540;
-        Title = $"Flarial Launcher";
+        Width = 960;
+        Height = 540;
         Icon = Manifest.Icon;
+        Title = $"Flarial Launcher";
 
         ResizeMode = ResizeMode.NoResize;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;

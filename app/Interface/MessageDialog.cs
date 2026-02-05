@@ -67,7 +67,7 @@ abstract class MessageDialog
 
     sealed class GamingServicesMissing : MessageDialog
     {
-        protected override string Close => "Back";
+        protected override string Close => "Cancel";
         protected override string Primary => "Install";
         protected override string Title => "⚠️ Gaming Services Missing";
         protected override string Content => @"Gaming Services isn't installed, please install it.

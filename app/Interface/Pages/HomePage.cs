@@ -159,6 +159,13 @@ If you need help, join our Discord.";
     {
         try
         {
+            var registry = (VersionRegistry)Tag;
+            var path = _configuration.CustomDllPath;
+            var beta = _configuration.DllBuild is DllBuild.Beta;
+            var initialized = _configuration.WaitForInitialization;
+            var custom = _configuration.DllBuild is DllBuild.Custom;
+            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+
             if (!Minecraft.Installed)
             {
                 await _notInstalled.ShowAsync();
@@ -175,13 +182,6 @@ If you need help, join our Discord.";
                 else if (await _allowUnsignedInstalls.ShowAsync())
                     return;
             }
-
-            var registry = (VersionRegistry)Tag;
-            var path = _configuration.CustomDllPath;
-            var beta = _configuration.DllBuild is DllBuild.Beta;
-            var initialized = _configuration.WaitForInitialization;
-            var custom = _configuration.DllBuild is DllBuild.Custom;
-            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!custom && !beta && !registry.Supported)
             {
@@ -242,7 +242,7 @@ If you need help, join our Discord.";
 
             _progressBar.IsIndeterminate = true;
             _statusTextBlock.Text = "Launching...";
-
+            
             if (!await Task.Run(() => client.Launch(initialized)))
             {
                 await _launchFailure.ShowAsync();
