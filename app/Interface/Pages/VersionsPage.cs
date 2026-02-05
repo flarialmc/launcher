@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Versions;
-using static Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallState;
 using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
 using static Flarial.Launcher.Interface.MessageDialog;
@@ -11,10 +10,7 @@ using System.Threading.Tasks;
 using static System.ComponentModel.DependencyPropertyDescriptor;
 using System;
 using System.ComponentModel;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using ModernWpf.Controls.Primitives;
-using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.Windows.Interop;
 
 namespace Flarial.Launcher.Interface.Pages;
@@ -77,14 +73,14 @@ sealed class VersionsPage : Grid
     void SetVisibility(bool visible)
     {
         _listBox.IsEnabled = visible;
-        _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
 
         _control._progressBar.Value = 0;
         _control._progressBar.IsIndeterminate = !visible;
-        _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
 
         _control._icon.Symbol = Download;
+        _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
         _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);

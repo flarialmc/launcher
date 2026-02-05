@@ -134,8 +134,7 @@ If you need help, join our Discord.";
 
     sealed class ConnectionFailure : MessageDialog
     {
-        protected override string? Close => "Exit";
-        protected override string Primary => "Continue";
+        protected override string Primary => "Exit";
         protected override string Title => "🚨 Connection Failure";
         protected override string Content => @"Failed to connect to Flarial Client Services.
         

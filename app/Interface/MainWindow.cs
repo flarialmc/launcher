@@ -75,8 +75,9 @@ sealed class MainWindow : Window
     {
         base.OnSourceInitialized(args);
 
-        if (!await FlarialClient.CanConnectAsync() && !await _connectionFailure.ShowAsync())
+        if (!await FlarialClient.CanConnectAsync())
         {
+            await _connectionFailure.ShowAsync();
             Application.Current.Shutdown();
             return;
         }

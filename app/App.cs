@@ -14,8 +14,6 @@ using static System.Environment.SpecialFolder;
 using static Flarial.Launcher.PInvoke;
 using static System.IO.Path;
 using Flarial.Launcher.Services.Game;
-using System.Threading.Tasks;
-using System.IO;
 
 namespace Flarial.Launcher;
 

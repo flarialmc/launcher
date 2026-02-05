@@ -7,7 +7,6 @@ using Flarial.Launcher.Services.Client;
 using Flarial.Launcher.Services.Modding;
 using static Flarial.Launcher.Interface.MessageDialog;
 using System.Windows.Threading;
-using System.Linq;
 using System;
 using Flarial.Launcher.Management;
 using System.Windows.Input;
@@ -147,12 +146,12 @@ If you need help, join our Discord.";
 
     internal void SetVisibility(bool visible)
     {
-        _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-
-        _progressBar.Value = 0; _progressBar.IsIndeterminate = !visible;
-        _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-
+        _progressBar.Value = 0;
+        _progressBar.IsIndeterminate = !visible;
         _statusTextBlock.Text = "Preparing...";
+
+        _playButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        _progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         _statusTextBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
