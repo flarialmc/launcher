@@ -38,6 +38,6 @@ sealed class RootPage : NavigationView
         FooterMenuItems.Add(_settingsPageItem);
 
         _settingsPageItem.Tag = new SettingsPage(configuration, helper);
-        ItemInvoked += (sender, args) => Content = args.InvokedItemContainer.Tag;
+        ItemInvoked += (sender, args) => { using (Dispatcher.DisableProcessing()) Content = args.InvokedItemContainer.Tag; };
     }
 }
