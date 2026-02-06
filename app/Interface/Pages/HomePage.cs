@@ -113,9 +113,9 @@ sealed class HomePage : Grid
 
     sealed class UnsupportedVersion(string version, string preferred) : MessageDialog
     {
-        protected override string Close => "Back";
-        protected override string Primary => "Versions";
-        protected override string? Secondary => "Settings";
+        protected override string CloseButtonText => "Back";
+        protected override string PrimaryButtonText => "Versions";
+        protected override string SecondaryButtonText => "Settings";
         protected override string Title => "⚠️ Unsupported Version";
         protected override string Content => $@"Minecraft {version} isn't supported by Flarial Client.
 
@@ -159,6 +159,8 @@ If you need help, join our Discord.";
     {
         try
         {
+            SetVisibility(false);
+
             var registry = (VersionRegistry)Tag;
             var path = _configuration.CustomDllPath;
             var beta = _configuration.DllBuild is DllBuild.Beta;
@@ -216,9 +218,7 @@ If you need help, join our Discord.";
                     return;
                 }
 
-                SetVisibility(false);
                 _statusTextBlock.Text = "Launching...";
-
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
                     await _launchFailure.ShowAsync();
@@ -231,9 +231,7 @@ If you need help, join our Discord.";
             if (beta && !await _betaDllEnabled.ShowAsync())
                 return;
 
-            SetVisibility(false);
             _statusTextBlock.Text = "Verifying...";
-
             if (!await client.DownloadAsync(InvokeFlarialClientDownloadAsync))
             {
                 await _clientUpdateFailure.ShowAsync();
@@ -242,7 +240,6 @@ If you need help, join our Discord.";
 
             _progressBar.IsIndeterminate = true;
             _statusTextBlock.Text = "Launching...";
-            
             if (!await Task.Run(() => client.Launch(initialized)))
             {
                 await _launchFailure.ShowAsync();

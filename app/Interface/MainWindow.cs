@@ -96,18 +96,12 @@ sealed class MainWindow : Window
 
         foreach (var item in registry)
         {
-            if (item.Value is null)
-            {
-                await Dispatcher.Yield();
-                continue;
-            }
-
-            await Dispatcher.InvokeAsync(() => _versionsPage._listBox.Items.Add(new ListBoxItem
+            await Dispatcher.Yield(); if (item.Value is { }) _versionsPage._listBox.Items.Add(new ListBoxItem
             {
                 Tag = item.Value,
                 Content = item.Key,
                 HorizontalContentAlignment = HorizontalAlignment.Center
-            }));
+            });
         }
 
         _catalog.PackageUpdating += OnPackageUpdating;
@@ -140,7 +134,7 @@ sealed class MainWindow : Window
         image.Tag = item.Item2;
         image.Visibility = Visibility.Visible;
 
-    });
+    }, DispatcherPriority.Background);
 
     async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
     async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);

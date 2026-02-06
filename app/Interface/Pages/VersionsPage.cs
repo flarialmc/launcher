@@ -87,39 +87,43 @@ sealed class VersionsPage : Grid
 
     async void OnButtonClick(object sender, EventArgs args)
     {
-        if (!Minecraft.Installed)
-        {
-            await _notInstalled.ShowAsync();
-            return;
-        }
-
-        if (!Minecraft.Packaged)
-        {
-            await _unpackagedInstallation.ShowAsync();
-            return;
-        }
-
-        if (!Minecraft.GamingServicesInstalled)
-        {
-            if (await _gamingServicesMissing.ShowAsync())
-                ShellExecute("ms-windows-store://pdp/?ProductId=9MWPM2CQNLHN");
-            return;
-        }
-
-        if (_listBox.SelectedItem is null)
-        {
-            await _selectVersion.ShowAsync();
-            return;
-        }
-
-        if (!await _installVersion.ShowAsync())
-            return;
-
         try
         {
             SetVisibility(false);
-            var item = (VersionItem)((ListBoxItem)_listBox.SelectedItem).Tag;
-            await (_task = item.InstallAsync(InvokeVersionEntryInstallAsync));
+
+            if (!Minecraft.Installed)
+            {
+                await _notInstalled.ShowAsync();
+                return;
+            }
+
+            if (!Minecraft.Packaged)
+            {
+                await _unpackagedInstallation.ShowAsync();
+                return;
+            }
+
+            if (!Minecraft.GamingServicesInstalled)
+            {
+                if (await _gamingServicesMissing.ShowAsync())
+                    ShellExecute("ms-windows-store://pdp/?ProductId=9MWPM2CQNLHN");
+                return;
+            }
+
+            if (_listBox.SelectedItem is null)
+            {
+                await _selectVersion.ShowAsync();
+                return;
+            }
+
+            if (!await _installVersion.ShowAsync())
+                return;
+
+            var listBoxItem = (ListBoxItem)_listBox.SelectedItem;
+            _listBox.ScrollIntoView(listBoxItem);
+
+            var versionItem = (VersionItem)listBoxItem.Tag;
+            await (_task = versionItem.InstallAsync(InvokeVersionEntryInstallAsync));
         }
         finally
         {

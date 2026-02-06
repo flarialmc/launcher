@@ -19,13 +19,14 @@ abstract class MessageDialog
     {
         await s_semaphore.WaitAsync(); try
         {
+            await Dispatcher.Yield();
             return await new ContentDialog
             {
                 Title = Title,
                 Content = Content,
-                CloseButtonText = Close,
-                PrimaryButtonText = Primary,
-                SecondaryButtonText = Secondary,
+                CloseButtonText = CloseButtonText,
+                PrimaryButtonText = PrimaryButtonText,
+                SecondaryButtonText = SecondaryButtonText,
             }.ShowAsync(ContentDialogPlacement.InPlace);
         }
         finally { s_semaphore.Release(); }
@@ -33,9 +34,9 @@ abstract class MessageDialog
 
     protected abstract string Title { get; }
     protected abstract string Content { get; }
-    protected abstract string Primary { get; }
-    protected virtual string? Secondary { get; } = null;
-    protected virtual string? Close { get; } = null;
+    protected abstract string PrimaryButtonText { get; }
+    protected virtual string SecondaryButtonText { get; } = null!;
+    protected virtual string CloseButtonText { get; } = null!;
 
     internal static readonly MessageDialog _connectionFailure = new ConnectionFailure();
 
@@ -67,8 +68,8 @@ abstract class MessageDialog
 
     sealed class GamingServicesMissing : MessageDialog
     {
-        protected override string Close => "Cancel";
-        protected override string Primary => "Install";
+        protected override string CloseButtonText => "Cancel";
+        protected override string PrimaryButtonText => "Install";
         protected override string Title => "⚠️ Gaming Services Missing";
         protected override string Content => @"Gaming Services isn't installed, please install it.
 
@@ -88,7 +89,7 @@ If you need help, join our Discord.";
 
 If you need help, join our Discord.";
 
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
     }
 
     sealed class InstallVersion : MessageDialog
@@ -103,9 +104,9 @@ Once the installation starts, you won't able to cancel it.
 
 If you need help, join our Discord.";
 
-        protected override string Primary => "Install";
+        protected override string PrimaryButtonText => "Install";
 
-        protected override string? Close => "Cancel";
+        protected override string CloseButtonText => "Cancel";
     }
 
     sealed class FolderNotFound : MessageDialog
@@ -118,12 +119,12 @@ If you need help, join our Discord.";
 
 If you need help, join our Discord.";
 
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
     }
 
     sealed class NotInstalled : MessageDialog
     {
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
         protected override string Title => "⚠️ Not Installed";
         protected override string Content => @"Minecraft: Bedrock Edition isn't installed.
 
@@ -134,7 +135,7 @@ If you need help, join our Discord.";
 
     sealed class ConnectionFailure : MessageDialog
     {
-        protected override string Primary => "Exit";
+        protected override string PrimaryButtonText => "Exit";
         protected override string Title => "🚨 Connection Failure";
         protected override string Content => @"Failed to connect to Flarial Client Services.
         
@@ -155,17 +156,17 @@ If you need help, join our Discord.";
 
 If you need help, join our Discord.";
 
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
     }
 
     sealed class AllowUnsignedInstalls : UnsignedInstall
     {
-        protected override string? Close => "Launch";
+        protected override string CloseButtonText => "Launch";
     }
 
     sealed class InvalidCustomDll : MessageDialog
     {
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
         protected override string Title => "⚠️ Invalid Custom DLL";
         protected override string Content => @"The specified custom DLL is invalid.
 
@@ -179,7 +180,7 @@ If you need help, join our Discord.";
     sealed class LaunchFailure : MessageDialog
     {
         protected override string Title => "⚠️ Launch Failure";
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
         protected override string Content => @"The launcher couldn't inject or initialize Minecraft correctly.
 
 • Remove & disable any 3rd party mods or tools.
@@ -191,7 +192,7 @@ If you need help, join our Discord.";
 
     sealed class ClientUpdateFailure : MessageDialog
     {
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
         protected override string Title => "⚠️ Client Update Failure";
         protected override string Content => @"A client update couldn't be downloaded.
 
@@ -204,8 +205,8 @@ If you need help, join our Discord.";
     sealed class LauncherUpdateAvailable : MessageDialog
     {
         protected override string Title => "💡 Launcher Update Available";
-        protected override string Primary => "Update";
-        protected override string? Close => "Later";
+        protected override string PrimaryButtonText => "Update";
+        protected override string CloseButtonText => "Later";
         protected override string Content => @"An update is available for the launcher.
 
 • Updating the launcher provides fixes & new features.
@@ -217,8 +218,8 @@ If you need help, join our Discord.";
     sealed class BetaDllEnabled : MessageDialog
     {
         protected override string Title => "⚠️ Beta DLL Enabled";
-        protected override string? Close => "Cancel";
-        protected override string Primary => "Launch";
+        protected override string CloseButtonText => "Cancel";
+        protected override string PrimaryButtonText => "Launch";
         protected override string Content => @"The beta DLL of the client might be potentially unstable. 
 
 • Bugs & crashes might occur frequently during gameplay.
@@ -230,7 +231,7 @@ Hence use at your own risk.";
     sealed class UnpackagedInstall : MessageDialog
     {
         protected override string Title => "⚠️ Unpackaged Installation";
-        protected override string Primary => "Back";
+        protected override string PrimaryButtonText => "Back";
         protected override string Content => @"The current Minecraft installation is unpackaged.
 
 • Please reinstall the game via the Microsoft or Xbox App.
