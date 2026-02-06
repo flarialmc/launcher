@@ -7,16 +7,16 @@ using System.Windows.Media;
 
 namespace Flarial.Launcher.Management;
 
-enum DllBuild { Release, Beta, Custom }
-
 [DataContract]
 sealed class Configuration
 {
+    internal enum Build { Release, Beta, Custom }
+
     [DataMember]
     internal bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
-    internal DllBuild DllBuild { get; set; } = DllBuild.Release;
+    internal Build DllBuild { get; set; } = Build.Release;
 
     [DataMember]
     internal string CustomDllPath { get; set; } = string.Empty;
@@ -39,8 +39,8 @@ sealed class Configuration
     void OnDeserializing(StreamingContext context)
     {
         AutomaticUpdates = true;
+        DllBuild = Build.Release;
         HardwareAcceleration = true;
-        DllBuild = DllBuild.Release;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
     }
@@ -52,8 +52,8 @@ sealed class Configuration
             using var stream = File.OpenRead("Flarial.Launcher.xml");
             var configuration = (Configuration)s_serializer.ReadObject(stream);
 
-            if (!Enum.IsDefined(typeof(DllBuild), configuration.DllBuild))
-                configuration.DllBuild = DllBuild.Release;
+            if (!Enum.IsDefined(typeof(Build), configuration.DllBuild))
+                configuration.DllBuild = Build.Release;
 
             try
             {

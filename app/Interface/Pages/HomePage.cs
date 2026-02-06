@@ -163,10 +163,10 @@ If you need help, join our Discord.";
 
             var registry = (VersionRegistry)Tag;
             var path = _configuration.CustomDllPath;
-            var beta = _configuration.DllBuild is DllBuild.Beta;
             var initialized = _configuration.WaitForInitialization;
-            var custom = _configuration.DllBuild is DllBuild.Custom;
+            var beta = _configuration.DllBuild is Configuration.Build.Beta;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+            var custom = _configuration.DllBuild is Configuration.Build.Custom;
 
             if (!Minecraft.Installed)
             {

@@ -6,6 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System;
 using System.Windows.Threading;
+using System.Diagnostics;
+using System.Windows.Controls.Primitives;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -49,16 +52,20 @@ sealed class SettingsPage : Grid
 
     void OnDllBuildSelectionChanged(object sender, EventArgs args)
     {
-        if (_dllBuild.SelectedIndex is -1) return;
-        _configuration.DllBuild = (DllBuild)_dllBuild.SelectedIndex;
-        _customDllPathPicker.IsEnabled = _configuration.DllBuild is DllBuild.Custom;
+        if (((RadioButtons)sender).SelectedItem is FrameworkElement element)
+        {
+            _configuration.DllBuild = (Configuration.Build)element.Tag;
+            _customDllPathPicker.IsEnabled = _configuration.DllBuild is Configuration.Build.Custom;
+        }
     }
 
-    void OnAutomaticUpdatesToggled(object sender, EventArgs args) => _configuration.AutomaticUpdates = _automaticUpdates.IsOn;
-
-    void OnHardwareAccelerationToggled(object sender, EventArgs args) => _configuration.HardwareAcceleration = _hardwareAcceleration.IsOn;
-
-    void OnWaitForInitializationToggled(object sender, EventArgs args) => _configuration.WaitForInitialization = _waitForInitialization.IsOn;
+    void OnToggleSwitchToggled(object sender, EventArgs args)
+    {
+        var value = ((ToggleSwitch)sender).IsOn;
+        if (ReferenceEquals(_automaticUpdates, sender)) _configuration.AutomaticUpdates = value;
+        else if (ReferenceEquals(_hardwareAcceleration, sender)) _configuration.HardwareAcceleration = value;
+        else if (ReferenceEquals(_waitForInitialization, sender)) _configuration.WaitForInitialization = value;
+    }
 
     readonly CustomDllPathPicker _customDllPathPicker;
 
@@ -69,39 +76,37 @@ sealed class SettingsPage : Grid
 
         Margin = new(12);
 
-        _dllBuild.Items.Add("Use the release DLL of the client which is stable.");
-        _dllBuild.Items.Add("Use the beta DLL of the client which is unstable.");
-        _dllBuild.Items.Add("Specify your own custom DLL to be used with the game.");
-
-        _automaticUpdates.Toggled += OnAutomaticUpdatesToggled;
         _dllBuild.SelectionChanged += OnDllBuildSelectionChanged;
-        _hardwareAcceleration.Toggled += OnHardwareAccelerationToggled;
-        _waitForInitialization.Toggled += OnWaitForInitializationToggled;
+        _dllBuild.Items.Add(new TextBlock { Tag = Configuration.Build.Release, Text = "Use the release DLL of the client which is stable." });
+        _dllBuild.Items.Add(new TextBlock { Tag = Configuration.Build.Beta, Text = "Use the beta DLL of the client which is unstable." });
+        _dllBuild.Items.Add(new TextBlock { Tag = Configuration.Build.Custom, Text = "Specify your own custom DLL to be used with the game." });
+
+        _automaticUpdates.Toggled += OnToggleSwitchToggled;
+        _hardwareAcceleration.Toggled += OnToggleSwitchToggled;
+        _waitForInitialization.Toggled += OnToggleSwitchToggled;
 
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
         _automaticUpdates.IsOn = configuration.AutomaticUpdates;
         _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
         _waitForInitialization.IsOn = configuration.WaitForInitialization;
 
-        SimpleStackPanel panel = new() { Spacing = 12 };
-
-        panel.Children.Add(_dllBuild);
-        panel.Children.Add(_customDllPathPicker);
-        panel.Children.Add(_waitForInitialization);
-        panel.Children.Add(_hardwareAcceleration);
-        panel.Children.Add(_automaticUpdates);
-
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
-        SetColumn(panel, 0);
-        SetRow(panel, 0);
-        Children.Add(panel);
+        SimpleStackPanel settingsPagePanel = new() { Spacing = 12 };
+        SetColumn(settingsPagePanel, 0);
+        SetRow(settingsPagePanel, 0);
+        Children.Add(settingsPagePanel);
 
         SupportButtonsControl control = new(helper);
-
         SetColumn(control, 0);
         SetRow(control, 1);
         Children.Add(control);
+
+        settingsPagePanel.Children.Add(_dllBuild);
+        settingsPagePanel.Children.Add(_customDllPathPicker);
+        settingsPagePanel.Children.Add(_waitForInitialization);
+        settingsPagePanel.Children.Add(_hardwareAcceleration);
+        settingsPagePanel.Children.Add(_automaticUpdates);
     }
 }
