@@ -166,7 +166,7 @@ RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
     {
         try
         {
-            VersionLabel.Text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.PackageVersion}";
+            VersionLabel.Text = $"{(Minecraft.UsingGameDevelopmentKit ? "GDK" : "UWP")} ~ {Minecraft.Version}";
             VersionTextBorder.Background = VersionCatalog.IsCompatible ? _darkGreen : _darkRed;
         }
         catch
@@ -292,7 +292,7 @@ If you need help, join our Discord.", ("Update", true)))
             IsLaunchEnabled = false;
             _launchButtonTextBlock.Text = "Verifying...";
 
-            if (!Minecraft.IsInstalled)
+            if (!Minecraft.Installed)
             {
                 CreateMessageBox(@"⚠️ Please install the game.");
                 return;

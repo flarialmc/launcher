@@ -43,7 +43,7 @@ public static partial class MinecraftGame
 
     public static bool isInstalled()
     {
-        return Minecraft.IsInstalled;
+        return Minecraft.Installed;
     }
 
     public static void InitManagers()
@@ -92,5 +92,5 @@ public static partial class MinecraftGame
         return scale * Math.Round(d / scale, digits);
     }
 
-    public static Version GetVersion() => new(Minecraft.IsInstalled ? Minecraft.PackageVersion : "0.0.0");
+    public static Version GetVersion() => new(Minecraft.Installed ? Minecraft.Version : "0.0.0");
 }

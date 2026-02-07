@@ -21,23 +21,22 @@ public sealed class Catalog : IEnumerable<string>
 
     readonly Dictionary<string, VersionItem> _catalog;
 
-    Catalog(VersionRegistry registry) => _catalog = registry.ToDictionary(static _ => _.Key, static _ => _.Value.Item);
+    readonly VersionRegistry _registry;
+
+    Catalog(VersionRegistry registry) => _catalog = (_registry = registry).ToDictionary(static _ => _.Key, static _ => _.Value);
 
     public static async Task<Catalog> GetAsync() => new(await VersionRegistry.CreateAsync());
 
     public async Task<Uri> UriAsync(string version) => new(await _catalog[version].GetAsync());
 
-    public bool IsCompatible => _catalog.ContainsKey(Minecraft.PackageVersion);
+    public bool IsCompatible => _registry.Supported;
 
     public async Task<Request> InstallAsync(string value, Action<int> action) => new(Manager.AddPackageByUriAsync(await UriAsync(value), Options), action);
 
     public IEnumerator<string> GetEnumerator()
     {
         foreach (var item in _catalog)
-        {
-            if (item.Value is null) continue;
             yield return item.Key;
-        }
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

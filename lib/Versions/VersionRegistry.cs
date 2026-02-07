@@ -50,10 +50,10 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         {
             value = value.Trim();
 
-            if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
                 continue;
 
-            registry.Add(value.Trim(), new(true));
+            registry.Add(value, new(true));
         }
 
         var preferred = registry.Keys.First();

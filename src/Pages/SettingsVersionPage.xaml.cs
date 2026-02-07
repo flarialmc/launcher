@@ -32,7 +32,7 @@ public partial class SettingsVersionPage : Page
             VersionItemProperties.SetVersion(versionItem, name);
             VersionItemProperties.SetState(versionItem, 0);
 
-            bool unpackaged = Minecraft.IsInstalled && !Minecraft.IsPackaged;
+            bool unpackaged = Minecraft.Installed && !Minecraft.Packaged;
 
             if (unpackaged)
             {

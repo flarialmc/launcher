@@ -35,7 +35,7 @@ public static class RPCManager
 
     private static void TimerElapsed(object sender, ElapsedEventArgs e)
     {
-        if (Minecraft.IsInstalled && Minecraft.Current.IsRunning)
+        if (Minecraft.Installed && Minecraft.Current.Running)
         {
             var ip = readIp();
             if (ip != previousContent)

@@ -32,7 +32,7 @@ public partial class SettingsPage : Page
 
     internal async void Navigate_Versions(object sender, RoutedEventArgs e)
     {
-        if (!Minecraft.IsInstalled)
+        if (!Minecraft.Installed)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -41,7 +41,7 @@ public partial class SettingsPage : Page
             return;
         }
 
-        if (!Minecraft.IsPackaged && !Utils.IsAdministrator)
+        if (!Minecraft.Packaged && !Utils.IsAdministrator)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

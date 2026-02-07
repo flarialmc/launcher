@@ -316,7 +316,7 @@ public static class VersionManagement
 
     public static async Task<bool> InstallMinecraft(string version, UIElement element)
     {
-        if (!Minecraft.IsInstalled)
+        if (!Minecraft.Installed)
         {
             Application.Current.MainWindow.Dispatcher.Invoke(() => MainWindow.CreateMessageBox("⚠️ Minecraft isn't installed, please install it."));
             return false;
@@ -324,7 +324,7 @@ public static class VersionManagement
 
         var gdk = Minecraft.UsingGameDevelopmentKit;
 
-        if (gdk || Minecraft.IsPackaged)
+        if (gdk || Minecraft.Packaged)
         {
             if (!gdk)
             {

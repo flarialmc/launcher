@@ -115,7 +115,7 @@ public partial class SettingsGeneralPage : Page
 
         ClientFolderButton.Click += (_, _) =>
         {
-            if (!Minecraft.IsInstalled)
+            if (!Minecraft.Installed)
             {
                 MainWindow.CreateMessageBox("⚠️ Please install the game.");
                 return;
