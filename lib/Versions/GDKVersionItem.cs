@@ -86,7 +86,7 @@ sealed class GDKVersionItem : VersionItem
            - If not available, try to install it automatically.
         */
 
-        await MicrosoftStoreProduct.MicrosoftGamingServices.InstallAsync(_ => action(_, AppInstallState.RestoringData));
+        await MicrosoftStoreProduct.MicrosoftGamingServices.InstallAsync(_ => action(_, AppInstallState.Starting));
         if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed) throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         /*

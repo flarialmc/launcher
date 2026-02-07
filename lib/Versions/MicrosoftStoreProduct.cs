@@ -23,33 +23,30 @@ public abstract class MicrosoftStoreProduct
 
     internal async Task InstallAsync(Action<int> action)
     {
-        if (!Installed)
+        if (Installed)
+            return;
+
+        await Task.Run(() =>
         {
-            TaskCompletionSource<bool> source = new();
-            var item = await s_appInstallManager.StartAppInstallAsync(ProductId, string.Empty, false, false);
+            foreach (var item in s_appInstallManager.AppInstallItems)
+                if (item.GetCurrentStatus().InstallState is AppInstallState.Error) item.Cancel();
+        });
 
-            s_appInstallManager.MoveToFrontOfDownloadQueue(item.ProductId, string.Empty);
-            _ = source.Task.ContinueWith(_ => item.Cancel(), TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+        if (await s_appInstallManager.StartAppInstallAsync(ProductId, string.Empty, false, false) is not { } item)
+            return;
 
-            item.StatusChanged += (sender, args) =>
-            {
-                var status = sender.GetCurrentStatus(); switch (status.InstallState)
-                {
-                    default:
-                        action((int)status.PercentComplete);
-                        break;
+        TaskCompletionSource<bool> source = new();
 
-                    case AppInstallState.Paused:
-                    case AppInstallState.PausedLowBattery:
-                    case AppInstallState.PausedWiFiRequired:
-                    case AppInstallState.PausedWiFiRecommended:
-                        s_appInstallManager.MoveToFrontOfDownloadQueue(ProductId, string.Empty);
-                        break;
-                }
-            };
+        s_appInstallManager.MoveToFrontOfDownloadQueue(item.ProductId, string.Empty);
+        _ = source.Task.ContinueWith(_ => item.Cancel(), TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
 
-            item.Completed += (_, _) => source.TrySetResult(true);
-            await source.Task;
-        }
+        item.StatusChanged += (sender, args) =>
+        {
+            var status = sender.GetCurrentStatus(); action((int)status.PercentComplete);
+            s_appInstallManager.MoveToFrontOfDownloadQueue(ProductId, string.Empty);
+        };
+
+        item.Completed += (_, _) => source.TrySetResult(true);
+        await source.Task;
     }
 }

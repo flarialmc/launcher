@@ -52,7 +52,8 @@ abstract class MessageDialog
 
     sealed class GamingServicesMissing : MessageDialog
     {
-        protected override string PrimaryButtonText => "Cancel";
+        protected override string CloseButtonText => "Cancel";
+        protected override string PrimaryButtonText => "Install";
         protected override string Title => "⚠️ Gaming Services Missing";
         protected override string Content => @"Gaming Services isn't installed, please install it.
 
@@ -105,7 +106,8 @@ If you need help, join our Discord.";
 
     sealed class NotInstalled : MessageDialog
     {
-        protected override string PrimaryButtonText => "Back";
+        protected override string CloseButtonText => "Cancel";
+        protected override string PrimaryButtonText => "Install";
         protected override string Title => "⚠️ Not Installed";
         protected override string Content => @"Minecraft: Bedrock Edition isn't installed.
 

@@ -170,7 +170,8 @@ If you need help, join our Discord.";
 
             if (!Minecraft.Installed)
             {
-                await _notInstalled.ShowAsync();
+                if (await _notInstalled.ShowAsync())
+                    ShellExecute("ms-windows-store://pdp/?ProductId=9NBLGGH2JHXJ");
                 return;
             }
 
@@ -178,7 +179,8 @@ If you need help, join our Discord.";
             {
                 if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed)
                 {
-                    await _gamingServicesMissing.ShowAsync();
+                    if (await _gamingServicesMissing.ShowAsync())
+                        ShellExecute("ms-windows-store://pdp/?ProductId=9MWPM2CQNLHN");
                     return;
                 }
 

@@ -165,7 +165,7 @@ sealed class MainWindow : Window
         Width = 960;
         Height = 540;
         Icon = Manifest.Icon;
-        Title = $"Flarial Launcher";
+        Title = "Flarial Launcher";
 
         ResizeMode = ResizeMode.NoResize;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -178,7 +178,7 @@ sealed class MainWindow : Window
 
         _rootPage = new(configuration, helper);
 
-        _versionsPage = new(_rootPage, helper);
+        _versionsPage = new(_rootPage);
         _homePage = new(_rootPage, configuration, helper);
 
         _rootPage._homePageItem.Tag = _homePage;

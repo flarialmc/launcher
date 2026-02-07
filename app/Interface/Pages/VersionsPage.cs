@@ -20,7 +20,6 @@ namespace Flarial.Launcher.Interface.Pages;
 sealed class VersionsPage : Grid
 {
     readonly RootPage _rootPage;
-    readonly WindowInteropHelper _helper;
 
     internal readonly ListBox _listBox = new()
     {
@@ -58,9 +57,9 @@ sealed class VersionsPage : Grid
     {
         _control._icon.Symbol = state switch
         {
+            AppInstallState.Starting => Refresh,
             AppInstallState.Installing => Upload,
             AppInstallState.Downloading => Download,
-            AppInstallState.RestoringData => Refresh,
             _ => throw new NotImplementedException()
         };
 
@@ -133,9 +132,8 @@ sealed class VersionsPage : Grid
 
     Task? _task = null;
 
-    internal VersionsPage(RootPage rootPage, WindowInteropHelper helper)
+    internal VersionsPage(RootPage rootPage)
     {
-        _helper = helper;
         _rootPage = rootPage;
         ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 
