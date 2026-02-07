@@ -5,10 +5,6 @@ using ModernWpf.Controls;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System;
-using System.Windows.Threading;
-using System.Diagnostics;
-using System.Windows.Controls.Primitives;
-using System.Diagnostics.Eventing.Reader;
 
 namespace Flarial.Launcher.Interface.Pages;
 

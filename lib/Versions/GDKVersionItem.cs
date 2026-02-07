@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Graphics;
 using static System.IO.Path;
 using static Windows.Win32.Foundation.WIN32_ERROR;
@@ -17,8 +18,6 @@ namespace Flarial.Launcher.Services.Versions;
 
 sealed class GDKVersionItem : VersionItem
 {
-    const string PackageFamilyName = "Microsoft.GamingServices_8wekyb3d8bbwe";
-
     const string GameLaunchHelperUrl = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
 
     const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@refs/heads/master/urls.json";
@@ -80,23 +79,22 @@ sealed class GDKVersionItem : VersionItem
         throw new InvalidOperationException();
     }
 
-    public override async Task InstallAsync(Action<int, bool> action)
+    public override async Task InstallAsync(Action<int, AppInstallState> action)
     {
         /*
            - Verify, if GRTS is available and installed.
-           - If available, proceed with downloading & installing the package.
+           - If not available, try to install it automatically.
         */
 
-        if (!Minecraft.GamingServicesInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
-
-        await base.InstallAsync(action);
+        await MicrosoftStoreProduct.MicrosoftGamingServices.InstallAsync(_ => action(_, AppInstallState.RestoringData));
+        if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed) throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         /*
            - Replace the stock PC Bootstrapper with a custom one.
            - This suppresses auto-updates allowing the version switch to persist. 
         */
 
+        await base.InstallAsync(action);
         using var stream = File.Create(Path);
         await stream.WriteAsync(_bytes, 0, _bytes.Length);
     }

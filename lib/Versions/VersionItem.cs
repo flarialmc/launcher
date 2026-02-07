@@ -20,12 +20,11 @@ public abstract class VersionItem
     internal VersionItem() { }
 
     static readonly string s_path = Path.GetTempPath();
-    protected static readonly PackageManager s_manager = Minecraft.s_manager;
     private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
     public abstract Task<string> GetAsync();
 
-    public virtual async Task InstallAsync(Action<int, bool> action) => await Task.Run(async () =>
+    public virtual async Task InstallAsync(Action<int, AppInstallState> action) => await Task.Run(async () =>
     {
         if (!Minecraft.Installed)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
@@ -38,7 +37,7 @@ public abstract class VersionItem
 
         try
         {
-            await HttpService.DownloadAsync(url, path, (_) => action(_, false));
+            await HttpService.DownloadAsync(url, path, (_) => action(_, AppInstallState.Downloading));
             unsafe
             {
                 /*
@@ -47,11 +46,11 @@ public abstract class VersionItem
                 */
 
                 var @event = CreateEvent(null, true, false, null);
-                var item = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+                var item = Minecraft.s_packageManager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
                 try
                 {
-                    item.Progress += (sender, args) => action((int)args.percentage, true);
+                    item.Progress += (sender, args) => action((int)args.percentage, AppInstallState.Installing);
                     item.Completed += (_, _) => SetEvent(@event);
 
                     WaitForSingleObject(@event, INFINITE);

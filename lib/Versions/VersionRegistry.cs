@@ -17,7 +17,7 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         internal VersionEntry(bool supported) => _supported = supported;
     }
 
-    static readonly VersionKeyComparer s_comparer = new();
+    static readonly VersionItemComparer s_comparer = new();
 
     const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
@@ -62,39 +62,29 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         - We can avoid using `System.Version` to avoid potential overhead.
     */
 
-    sealed class VersionKeyComparer : IComparer<string>
+    sealed class VersionItemComparer : IComparer<string>
     {
-        unsafe readonly struct VersionKey
+        unsafe readonly struct VersionItemKey
         {
-            internal VersionKey(string version)
+            internal VersionItemKey(string version)
             {
-                sbyte index = 0;
-                var segments = stackalloc ushort[3];
+                var index = 0;
+                var segments = stackalloc int[3];
 
-                foreach (var value in version)
-                {
-                    if (value is '.')
-                    {
-                        ++index;
-                        continue;
-                    }
-
-                    var segment = value - '0';
-                    segment += segments[index] * 10;
-                    segments[index] = (ushort)segment;
-                }
+                foreach (var value in version) if (value is '.') ++index;
+                else segments[index] = value - '0' + segments[index] * 10;
 
                 _major = segments[0];
                 _minor = segments[1];
                 _build = segments[2];
             }
 
-            internal readonly ushort _major, _minor, _build;
+            internal readonly int _major, _minor, _build;
         }
 
         public int Compare(string x, string y)
         {
-            VersionKey a = new(x), b = new(y);
+            VersionItemKey a = new(x), b = new(y);
 
             if (b._major != a._major)
                 return b._major.CompareTo(a._major);

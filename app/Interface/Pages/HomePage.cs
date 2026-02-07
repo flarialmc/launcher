@@ -174,14 +174,15 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.Packaged)
+            if (Minecraft.UsingGameDevelopmentKit)
             {
-                if (!Minecraft.AllowUnsignedInstalls)
+                if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed)
                 {
-                    await _unsignedInstall.ShowAsync();
+                    await _gamingServicesMissing.ShowAsync();
                     return;
                 }
-                else if (await _allowUnsignedInstalls.ShowAsync())
+
+                if (!Minecraft.Packaged && !await _unsignedInstall.ShowAsync())
                     return;
             }
 
@@ -228,7 +229,7 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (beta && !await _betaDllEnabled.ShowAsync())
+            if (beta && !await _betaDllUsage.ShowAsync())
                 return;
 
             _statusTextBlock.Text = "Verifying...";

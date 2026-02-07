@@ -17,6 +17,8 @@ using static System.IO.Path;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell;
+using System.Threading;
+using System.Linq;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -45,16 +47,11 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     protected override uint? Activate()
     {
-        /*
-            - Verify if the game is actually signed by the Microsoft Store.
-            - This allows the launcher ensure the launch contract works as intended.
-        */
-
         if (!Installed)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!AllowUnsignedInstalls) if (!Packaged)
-            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
+        if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed)
+            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         if (GetProcessId() is { } processId)
             return processId;
@@ -86,8 +83,19 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (Activate() is not { } processId)
             return null;
 
-        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
+        if (Open(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SYNCHRONIZE, processId) is not { } process)
             return null;
+            
+        /*
+            - Unsigned builds aren't guaranteed to have consistency.
+            - Hence, partially wait for the game to initialize.
+        */
+
+        if (!Packaged)
+        {
+            WaitForInputIdle(process, INFINITE);
+            return process.Wait(0) ? processId : null;
+        }
 
         /*
             - The initialization logic is derived from the UWP builds of the game.
@@ -105,11 +113,6 @@ unsafe sealed class MinecraftGDK : Minecraft
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true
                 };
-
-                /*
-                    - Use unmanaged events directly.
-                    - This removes the need for boilerplate code.
-                */
 
                 watcher.Deleted += (_, _) => SetEvent(@event);
                 var handles = stackalloc HANDLE[] { @event, process };

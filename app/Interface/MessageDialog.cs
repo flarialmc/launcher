@@ -1,8 +1,6 @@
 using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
 using ModernWpf.Controls;
 
@@ -34,42 +32,27 @@ abstract class MessageDialog
 
     protected abstract string Title { get; }
     protected abstract string Content { get; }
+    protected virtual string? CloseButtonText { get; }
     protected abstract string PrimaryButtonText { get; }
-    protected virtual string SecondaryButtonText { get; } = null!;
-    protected virtual string CloseButtonText { get; } = null!;
-
-    internal static readonly MessageDialog _connectionFailure = new ConnectionFailure();
+    protected virtual string? SecondaryButtonText { get; }
 
     internal static readonly MessageDialog _notInstalled = new NotInstalled();
-
-    internal static readonly MessageDialog _invalidCustomDll = new InvalidCustomDll();
-
     internal static readonly MessageDialog _launchFailure = new LaunchFailure();
-
-    internal static readonly MessageDialog _clientUpdateFailure = new ClientUpdateFailure();
-
-    internal static readonly MessageDialog _launcherUpdateAvailable = new LauncherUpdateAvailable();
-
-    internal static readonly MessageDialog _betaDllEnabled = new BetaDllEnabled();
-
-    internal static readonly MessageDialog _unpackagedInstallation = new UnpackagedInstall();
-
-    internal static readonly MessageDialog _unsignedInstall = new UnsignedInstall();
-
-    internal static readonly MessageDialog _folderNotFound = new FolderNotFound();
-
-    internal static readonly MessageDialog _installVersion = new InstallVersion();
-
     internal static readonly MessageDialog _selectVersion = new SelectVersion();
-
-    internal static readonly MessageDialog _allowUnsignedInstalls = new AllowUnsignedInstalls();
-
+    internal static readonly MessageDialog _betaDllUsage = new BetaDllUsage();
+    internal static readonly MessageDialog _folderNotFound = new FolderNotFound();
+    internal static readonly MessageDialog _installVersion = new InstallVersion();
+    internal static readonly MessageDialog _unsignedInstall = new UnsignedInstall();
+    internal static readonly MessageDialog _invalidCustomDll = new InvalidCustomDll();
+    internal static readonly MessageDialog _connectionFailure = new ConnectionFailure();
+    internal static readonly MessageDialog _clientUpdateFailure = new ClientUpdateFailure();
+    internal static readonly MessageDialog _unpackagedInstallation = new UnpackagedInstall();
     internal static readonly MessageDialog _gamingServicesMissing = new GamingServicesMissing();
+    internal static readonly MessageDialog _launcherUpdateAvailable = new LauncherUpdateAvailable();
 
     sealed class GamingServicesMissing : MessageDialog
     {
-        protected override string CloseButtonText => "Cancel";
-        protected override string PrimaryButtonText => "Install";
+        protected override string PrimaryButtonText => "Cancel";
         protected override string Title => "⚠️ Gaming Services Missing";
         protected override string Content => @"Gaming Services isn't installed, please install it.
 
@@ -81,15 +64,13 @@ If you need help, join our Discord.";
 
     sealed class SelectVersion : MessageDialog
     {
+        protected override string PrimaryButtonText => "Back";
         protected override string Title => "💡 Select Version";
-
         protected override string Content => @"No Minecraft version is selected.
 
 • Select a Minecraft version from the list that should be installed.
 
 If you need help, join our Discord.";
-
-        protected override string PrimaryButtonText => "Back";
     }
 
     sealed class InstallVersion : MessageDialog
@@ -149,19 +130,15 @@ If you need help, join our Discord.";
     class UnsignedInstall : MessageDialog
     {
         protected override string Title => "⚠️ Unsigned Install";
-
         protected override string Content => @"An unsigned Minecraft install has been detected.
 
-• Unsigned installs might cause compatibility issues with the client & launcher.
+• The launcher will not wait for the game to initialize.
+• Compatibility issues might arise with the client & launcher.
 
 If you need help, join our Discord.";
 
-        protected override string PrimaryButtonText => "Back";
-    }
-
-    sealed class AllowUnsignedInstalls : UnsignedInstall
-    {
-        protected override string CloseButtonText => "Launch";
+        protected override string PrimaryButtonText => "Launch";
+        protected override string? CloseButtonText => "Cancel";
     }
 
     sealed class InvalidCustomDll : MessageDialog
@@ -215,9 +192,9 @@ If you need help, join our Discord.";
 If you need help, join our Discord.";
     }
 
-    sealed class BetaDllEnabled : MessageDialog
+    sealed class BetaDllUsage : MessageDialog
     {
-        protected override string Title => "⚠️ Beta DLL Enabled";
+        protected override string Title => "⚠️ Beta DLL Usage";
         protected override string CloseButtonText => "Cancel";
         protected override string PrimaryButtonText => "Launch";
         protected override string Content => @"The beta DLL of the client might be potentially unstable. 
@@ -230,12 +207,12 @@ Hence use at your own risk.";
 
     sealed class UnpackagedInstall : MessageDialog
     {
-        protected override string Title => "⚠️ Unpackaged Installation";
+        protected override string Title => "⚠️ Unpackaged Install";
         protected override string PrimaryButtonText => "Back";
-        protected override string Content => @"The current Minecraft installation is unpackaged.
+        protected override string Content => @"The current Minecraft install is unpackaged.
 
 • Please reinstall the game via the Microsoft or Xbox App.
-• The launcher can only switch versions if the installation is packaged.
+• The launcher can only switch versions if the install is packaged.
 
 If you need help, join our Discord.";
     }

@@ -87,10 +87,6 @@ Exception: {1}
                     DnsOverHttpsHandler.UseDnsOverHttps = true;
                     break;
 
-                case "--allow-unsigned-installs":
-                    Minecraft.AllowUnsignedInstalls = true;
-                    break;
-
                 case "--no-hardware-acceleration":
                     configuration.HardwareAcceleration = false;
                     break;

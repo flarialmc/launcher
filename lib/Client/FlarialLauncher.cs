@@ -17,18 +17,18 @@ public static class FlarialLauncher
     {
         var assembly = Assembly.GetEntryAssembly();
 
-        var path = Path.GetTempPath();
-        s_source = $"{Path.Combine(path, Path.GetRandomFileName())}.exe";
-        s_script = $"{Path.Combine(path, Path.GetRandomFileName())}.cmd";
+        var temp = Path.GetTempPath();
+        s_source = $"{Path.Combine(temp, Path.GetRandomFileName())}.exe";
+        s_script = $"{Path.Combine(temp, Path.GetRandomFileName())}.cmd";
 
         s_version = assembly.GetName().Version.ToString();
         var destination = assembly.ManifestModule.FullyQualifiedName;
 
-        path = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
 
-        s_filename = Path.Combine(path, "cmd.exe");
+        s_filename = Path.Combine(system, "cmd.exe");
         s_arguments = string.Format(Arguments, s_script, s_filename, destination, "{0}");
-        s_content = string.Format(Content, Path.Combine(path, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
+        s_content = string.Format(Content, Path.Combine(system, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
     }
 
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
@@ -59,16 +59,18 @@ del ""%~f0""
 
     public static async Task DownloadAsync(Action<int> action)
     {
+        StringBuilder builder = new(s_arguments);
+
+        if (HttpService.UseProxy)
+            builder.Append(' ').Append("--use-proxy");
+
+        if (DnsOverHttpsHandler.UseDnsOverHttps)
+            builder.Append(' ').Append("--use-dns-over-https");
+
         await HttpService.DownloadAsync(LauncherDownloadUrl, s_source, action);
 
         using (StreamWriter writer = new(s_script))
             await writer.WriteAsync(s_content);
-
-        StringBuilder builder = new(s_arguments);
-
-        if (HttpService.UseProxy) builder.Append(' ').Append("--use-proxy");
-        if (DnsOverHttpsHandler.UseDnsOverHttps) builder.Append(' ').Append("--use-dns-over-https");
-        if (Minecraft.AllowUnsignedInstalls) builder.Append(' ').Append("--allow-unsigned-installs");
 
         using (Process.Start(new ProcessStartInfo
         {

@@ -12,6 +12,8 @@ using System;
 using System.ComponentModel;
 using ModernWpf.Controls.Primitives;
 using System.Windows.Interop;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
+using System.Collections;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -52,9 +54,15 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void InvokeVersionEntryInstallAsync(int value, bool installing) => Dispatcher.Invoke(() =>
+    void InvokeVersionEntryInstallAsync(int value, AppInstallState state) => Dispatcher.Invoke(() =>
     {
-        _control._icon.Symbol = installing ? Upload : Download;
+        _control._icon.Symbol = state switch
+        {
+            AppInstallState.Installing => Upload,
+            AppInstallState.Downloading => Download,
+            AppInstallState.RestoringData => Refresh,
+            _ => throw new NotImplementedException()
+        };
 
         if (value <= 0)
         {
@@ -77,13 +85,11 @@ sealed class VersionsPage : Grid
         _control._progressBar.Value = 0;
         _control._progressBar.IsIndeterminate = !visible;
 
-        _control._icon.Symbol = Download;
+        _control._icon.Symbol = Refresh;
         _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
         _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
-
-    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
     async void OnButtonClick(object sender, EventArgs args)
     {
@@ -100,13 +106,6 @@ sealed class VersionsPage : Grid
             if (!Minecraft.Packaged)
             {
                 await _unpackagedInstallation.ShowAsync();
-                return;
-            }
-
-            if (!Minecraft.GamingServicesInstalled)
-            {
-                if (await _gamingServicesMissing.ShowAsync())
-                    ShellExecute("ms-windows-store://pdp/?ProductId=9MWPM2CQNLHN");
                 return;
             }
 

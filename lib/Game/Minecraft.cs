@@ -1,6 +1,5 @@
 using System.Linq;
 using Windows.Management.Deployment;
-using static System.String;
 using static System.StringComparison;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
@@ -8,6 +7,8 @@ using Windows.Win32.Globalization;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
+using System;
+using Windows.Win32.UI.Shell;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -17,31 +18,24 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
+    internal static readonly PackageManager s_packageManager = new();
+    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    internal static readonly PackageManager s_manager = new();
-
-    internal static Package Package => s_manager.FindPackagesForUser(Empty, PackageFamilyName).First();
-
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
-
-    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
-
     public bool Running => Window is { };
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
+    internal static Package Package => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
 
     protected abstract string Class { get; }
 
     protected abstract uint? Activate();
-
     public abstract uint? Launch(bool initialized);
 
+    [Obsolete("", true)]
     public static bool AllowUnsignedInstalls { get; set; }
 
     public static bool Packaged => Package.SignatureKind is PackageSignatureKind.Store;
-
-    public static bool Installed => s_manager.FindPackagesForUser(Empty, PackageFamilyName).Any();
-
-    public static bool GamingServicesInstalled => s_manager.FindPackagesForUser(Empty, "Microsoft.GamingServices_8wekyb3d8bbwe").Any();
+    public static bool Installed => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).Any();
 
     public static bool UsingGameDevelopmentKit
     {
