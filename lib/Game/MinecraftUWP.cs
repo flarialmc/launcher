@@ -14,8 +14,7 @@ unsafe sealed class MinecraftUWP : Minecraft
 
     protected override string Class => "MSCTFIME UI";
 
-    static readonly IPackageDebugSettings2 s_package = (IPackageDebugSettings2)new PackageDebugSettings();
-
+    static readonly IPackageDebugSettings s_package = (IPackageDebugSettings)new PackageDebugSettings();
     static readonly IApplicationActivationManager s_application = (IApplicationActivationManager)new ApplicationActivationManager();
 
     /*

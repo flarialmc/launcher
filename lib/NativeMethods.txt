@@ -1,6 +1,6 @@
 GetPackageFamilyName
 PackageDebugSettings
-IPackageDebugSettings2
+IPackageDebugSettings
 ApplicationActivationManager
 IApplicationActivationManager
 OpenProcess
