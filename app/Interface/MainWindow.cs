@@ -96,7 +96,8 @@ sealed class MainWindow : Window
 
         foreach (var item in registry)
         {
-            await Dispatcher.Yield(); if (item.Value is { }) _versionsPage._listBox.Items.Add(new ListBoxItem
+            await Dispatcher.Yield();
+            _versionsPage._listBox.Items.Add(new ListBoxItem
             {
                 Tag = item.Value,
                 Content = item.Key,

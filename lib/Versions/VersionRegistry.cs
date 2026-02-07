@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Flarial.Launcher.Services.Versions;
 
-public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionItem?>>
+public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionItem>>
 {
     internal sealed class VersionEntry
     {
@@ -47,7 +47,14 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         using StreamReader reader = new(stream);
 
         while ((@string = await reader.ReadLineAsync()) is { })
+        {
+            @string = @string.Trim();
+
+            if (string.IsNullOrEmpty(@string) || string.IsNullOrWhiteSpace(@string))
+                continue;
+
             registry.Add(@string.Trim(), new(true));
+        }
 
         var preferred = registry.Keys.First();
         var uwp = UWPVersionItem.QueryAsync(registry);
@@ -98,9 +105,12 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IEnumerator<KeyValuePair<string, VersionItem?>> GetEnumerator()
+    public IEnumerator<KeyValuePair<string, VersionItem>> GetEnumerator()
     {
         foreach (var entry in _registry)
+        {
+            if (entry.Value._item is null) continue;
             yield return new(entry.Key, entry.Value._item);
+        }
     }
 }
