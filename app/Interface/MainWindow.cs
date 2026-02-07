@@ -179,7 +179,7 @@ sealed class MainWindow : Window
 
         _rootPage = new(configuration, helper);
 
-        _versionsPage = new(_rootPage);
+        _versionsPage = new(_rootPage, helper);
         _homePage = new(_rootPage, configuration, helper);
 
         _rootPage._homePageItem.Tag = _homePage;

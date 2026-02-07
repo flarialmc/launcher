@@ -20,6 +20,7 @@ namespace Flarial.Launcher.Interface.Pages;
 sealed class VersionsPage : Grid
 {
     readonly RootPage _rootPage;
+    readonly WindowInteropHelper _helper;
 
     internal readonly ListBox _listBox = new()
     {
@@ -98,7 +99,8 @@ sealed class VersionsPage : Grid
 
             if (!Minecraft.Installed)
             {
-                await _notInstalled.ShowAsync();
+                if (await _notInstalled.ShowAsync())
+                    ShellExecute("ms-windows-store://pdp/?ProductId=9NBLGGH2JHXJ");
                 return;
             }
 
@@ -130,10 +132,13 @@ sealed class VersionsPage : Grid
         }
     }
 
+    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
+
     Task? _task = null;
 
-    internal VersionsPage(RootPage rootPage)
+    internal VersionsPage(RootPage rootPage, WindowInteropHelper helper)
     {
+        _helper = helper;
         _rootPage = rootPage;
         ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 
