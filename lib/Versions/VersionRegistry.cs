@@ -43,17 +43,17 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
         using var stream = await HttpService.GetStreamAsync(SupportedVersionsUrl);
 
-        string @string = string.Empty;
+        string value = string.Empty;
         using StreamReader reader = new(stream);
 
-        while ((@string = await reader.ReadLineAsync()) is { })
+        while ((value = await reader.ReadLineAsync()) is { })
         {
-            @string = @string.Trim();
+            value = value.Trim();
 
-            if (string.IsNullOrEmpty(@string) || string.IsNullOrWhiteSpace(@string))
+            if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 continue;
 
-            registry.Add(@string.Trim(), new(true));
+            registry.Add(value.Trim(), new(true));
         }
 
         var preferred = registry.Keys.First();
