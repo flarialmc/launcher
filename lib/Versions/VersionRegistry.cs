@@ -47,14 +47,8 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         using StreamReader reader = new(stream);
 
         while ((value = await reader.ReadLineAsync()) is { })
-        {
-            value = value.Trim();
-
-            if (string.IsNullOrWhiteSpace(value))
-                continue;
-
-            registry.Add(value, new(true));
-        }
+            if (!string.IsNullOrEmpty(value = value.Trim()))
+                registry.Add(value, new(true));
 
         var preferred = registry.Keys.First();
         var uwp = UWPVersionItem.QueryAsync(registry);
