@@ -66,10 +66,12 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
-        powershell.AddParameters((string[])[PackageFamilyName, "Game", path]);
-        powershell.Invoke();
 
-        return GetProcessId();
+        powershell.AddParameter("AppId", "Game");
+        powershell.AddParameter("Command", path);
+        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+
+        powershell.Invoke(); return GetProcessId();
     }
 
     public override uint? Launch(bool initialized)
@@ -85,10 +87,10 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         if (Open(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SYNCHRONIZE, processId) is not { } process)
             return null;
-            
+
         /*
-            - Unsigned builds aren't guaranteed to have consistency.
-            - Hence, partially wait for the game to initialize.
+            - Unsigned builds aren't guaranteed to fulfill the launch contract.
+            - Prefer to partially to wait for initialization for compatibility.
         */
 
         if (!Packaged)
