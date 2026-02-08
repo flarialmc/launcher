@@ -86,7 +86,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         /*
             - The launch contract can't be fulfilled by unpackaged builds.
-            - Unlike UWP, the framework only guarantees consistency when packaged.
+            - Unlike UWP, GDK only guarantees consistency when packaged.
             - Hence, we simply attempt to activate the game's window if available.
         */
 
