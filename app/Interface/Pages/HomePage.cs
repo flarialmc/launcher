@@ -118,7 +118,7 @@ sealed class HomePage : Grid
         protected override string Content => $@"Minecraft {version} isn't supported by Flarial Client.
 
 • Switch to {preferred} on the [Versions] page.
-• Enable the client's Beta on the [Settings] page.
+• Enable the client's beta on the [Settings] page.
 
 If you need help, join our Discord.";
     }
