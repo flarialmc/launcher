@@ -69,7 +69,7 @@ file sealed class GamingServicesMissing : MainDialog
     protected override string Title => "⚠️ Gaming Services Missing";
     protected override string Content => @"Gaming Services isn't installed, please install it.
 
-• Gaming Services is required for installing GDK builds.
+• Gaming Services is required for GDK builds.
 • You may install Gaming Services via the Microsoft Store.
 
 If you need help, join our Discord.";

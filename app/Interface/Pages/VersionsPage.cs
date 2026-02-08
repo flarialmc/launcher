@@ -95,6 +95,9 @@ sealed class VersionsPage : Grid
         {
             SetVisibility(false);
 
+            var listBoxItem = (ListBoxItem)_listBox.SelectedItem;
+            var versionItem = (VersionItem)listBoxItem.Tag;
+
             if (!Minecraft.IsInstalled)
             {
                 await MainDialog.NotInstalled.ShowAsync();
@@ -107,10 +110,13 @@ sealed class VersionsPage : Grid
                 return;
             }
 
-            if (!s_packageManager.FindPackagesForUser(string.Empty, Product.GamingServices.PackageFamilyName).Any())
+            if (versionItem.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync();
-                return;
+                if (!Minecraft.IsGamingServicesInstalled)
+                {
+                    await MainDialog.GamingServicesMissing.ShowAsync();
+                    return;
+                }
             }
 
             if (_listBox.SelectedItem is null)
@@ -122,10 +128,7 @@ sealed class VersionsPage : Grid
             if (!await MainDialog.InstallVersion.ShowAsync())
                 return;
 
-            var listBoxItem = (ListBoxItem)_listBox.SelectedItem;
             _listBox.ScrollIntoView(listBoxItem);
-
-            var versionItem = (VersionItem)listBoxItem.Tag;
             await (_task = versionItem.InstallAsync(InvokeVersionEntryInstallAsync));
         }
         finally

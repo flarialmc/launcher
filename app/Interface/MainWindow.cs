@@ -41,7 +41,7 @@ sealed class MainWindow : Window
 
     async void OnPackageStatusChanged(string packageFamilyName)
     {
-        if (!packageFamilyName.Equals(Product.Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
+        if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
             return;
 
         Dispatcher.Invoke(() =>
@@ -104,7 +104,7 @@ sealed class MainWindow : Window
         _catalog.PackageUpdating += OnPackageUpdating;
         _catalog.PackageInstalling += OnPackageInstalling;
         _catalog.PackageUninstalling += OnPackageUninstalling;
-        OnPackageStatusChanged(Product.Minecraft.PackageFamilyName);
+        OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
         _rootPage._versionsPageItem.IsEnabled = true;
         _homePage.SetVisibility(true);

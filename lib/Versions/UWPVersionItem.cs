@@ -14,10 +14,10 @@ namespace Flarial.Launcher.Services.Versions;
 
 sealed class UWPVersionItem : VersionItem
 {
+    public override bool IsGameDevelopmentKit => false;
+
     const string AppxPackageDownloadUrl = "http://tlu.dl.delivery.mp.microsoft.com";
-
     const string MicrosoftStoreUrl = "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured";
-
     const string AppxPackagesUrl = "https://cdn.jsdelivr.net/gh/ddf8196/mc-w10-versiondb-auto-update@refs/heads/master/versions.json.min";
 
     readonly string _content;

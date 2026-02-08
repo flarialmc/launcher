@@ -123,13 +123,6 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    /*
-        - In the future, the sponsorship banners should rotate.
-        - Use WPF's `FrameworkElement.Tag` property to attach clickable metadata.
-    */
-
-    //  void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
-
     void OnSponsorshipImageClick(object sender, EventArgs args) => PInvoke.ShellExecute((string)((FrameworkElement)sender).Tag);
 
     void InvokeFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
@@ -172,8 +165,20 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsPackaged && !await MainDialog.UnsignedInstall.ShowAsync())
-                return;
+            if (Minecraft.UsingGameDevelopmentKit)
+            {
+                if (!Minecraft.IsGamingServicesInstalled)
+                {
+                    await MainDialog.GamingServicesMissing.ShowAsync();
+                    return;
+                }
+
+                if (!Minecraft.IsPackaged)
+                {
+                    if (!await MainDialog.UnsignedInstall.ShowAsync())
+                        return;
+                }
+            }
 
             if (!custom && !beta && !registry.Supported)
             {

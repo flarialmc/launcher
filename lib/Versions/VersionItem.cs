@@ -23,7 +23,8 @@ public abstract class VersionItem
     static readonly string s_path = Path.GetTempPath();
     private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
-    public abstract Task<string> GetUrlAsync();
+    public abstract Task<string> GetUrlAsync();    
+    public abstract bool IsGameDevelopmentKit { get; }
 
     public virtual async Task InstallAsync(Action<int, bool> action)
     {

@@ -14,6 +14,7 @@ using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell;
 using Flarial.Launcher.Services.System;
 using System;
+using System.ComponentModel;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -21,8 +22,6 @@ using static System.NativeProcess;
 
 unsafe sealed class MinecraftGDK : Minecraft
 {
-    const string GamingServices = "Microsoft.GamingServices_8wekyb3d8bbwe";
-
     internal MinecraftGDK() : base() { }
     protected override string Class => "Bedrock";
 
@@ -50,10 +49,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         */
 
         if (!IsInstalled)
-            throw new InvalidOperationException();
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (PackageService.GetPackage(GamingServices) is null)
-            throw new InvalidOperationException();
+        if (!IsGamingServicesInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         if (GetProcessId() is { } processId)
             return processId;
@@ -71,7 +70,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         powershell.AddParameter("AppId", "Game");
         powershell.AddParameter("Command", command);
-        powershell.AddParameter("PackageFamilyName", MinecraftUWP);
+        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
 
         powershell.Invoke(); return GetProcessId();
     }
@@ -129,7 +128,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     uint? GetProcessId()
     {
-        fixed (char* pfn = MinecraftUWP)
+        fixed (char* pfn = PackageFamilyName)
         fixed (char* name = "Minecraft.Windows.exe")
         {
             uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;

@@ -1,8 +1,8 @@
 using System.IO;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using static Windows.Management.Core.ApplicationDataManager;
 using Windows.Win32.UI.Shell;
+using Windows.Management.Core;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -25,7 +25,7 @@ unsafe sealed class MinecraftUWP : Minecraft
     protected override uint? Activate()
     {
         fixed (char* pfn = Package.Id.FullName)
-        fixed (char* aumid = $"{MinecraftUWP}!App")
+        fixed (char* aumid = $"Microsoft.MinecraftUWP_8wekyb3d8bbwe!App")
         {
             s_package.EnableDebugging(pfn, null, null);
             s_application.ActivateApplication(aumid, null, ACTIVATEOPTIONS.AO_NONE, out var processId);
@@ -42,7 +42,7 @@ unsafe sealed class MinecraftUWP : Minecraft
     public override uint? Launch(bool initialized)
     {
         if (IsRunning) return Activate();
-        var parent = CreateForPackageFamily(MinecraftUWP).LocalFolder.Path;
+        var parent = ApplicationDataManager.CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
         var child = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(parent, child))

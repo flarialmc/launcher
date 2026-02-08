@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
+using Windows.Services.Store;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -14,13 +15,14 @@ using static System.NativeProcess;
 
 public unsafe abstract class Minecraft
 {
-    protected const string MinecraftUWP = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-
     internal Minecraft() { }
     protected abstract string Class { get; }
 
-    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
-    internal static Package Package => PackageService.GetPackage(MinecraftUWP)!;
+    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
+    static readonly Minecraft s_uwp = new MinecraftUWP();
+    static readonly Minecraft s_gdk = new MinecraftGDK();
+    internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
 
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
@@ -30,6 +32,7 @@ public unsafe abstract class Minecraft
 
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
+    public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
 
     public static bool UsingGameDevelopmentKit
     {
@@ -54,7 +57,7 @@ public unsafe abstract class Minecraft
         get
         {
             fixed (char* @class = Class)
-            fixed (char* pfn = MinecraftUWP)
+            fixed (char* pfn = PackageFamilyName)
             {
                 NativeWindow window = HWND.Null;
                 var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;

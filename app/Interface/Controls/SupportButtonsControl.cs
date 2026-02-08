@@ -44,7 +44,7 @@ sealed class SupportButtonsControl : UniformGrid
         var path = Minecraft.UsingGameDevelopmentKit switch
         {
             true => _gdkPath,
-            false => Path.Combine(ApplicationDataManager.CreateForPackageFamily(Product.Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial")
+            false => Path.Combine(ApplicationDataManager.CreateForPackageFamily(Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial")
         };
 
         if (!Directory.Exists(path))
