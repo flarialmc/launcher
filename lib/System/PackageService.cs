@@ -14,10 +14,10 @@ unsafe static class PackageService
 
     internal static Package? GetPackage(string packageFamilyName) => s_packageManager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal static void AddPackage(string path, Action<int> action)
+    internal static void AddPackage(Uri uri, Action<int> action)
     {
         var handle = CreateEvent(null, true, false, null);
-        var info = s_packageManager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+        var info = s_packageManager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
         try
         {
