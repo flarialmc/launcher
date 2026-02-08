@@ -1,5 +1,3 @@
-using System.Linq;
-using Windows.Management.Deployment;
 using static System.StringComparison;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
@@ -7,8 +5,8 @@ using Windows.Win32.Globalization;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
-using System;
-using Windows.Win32.UI.Shell;
+using static Windows.Win32.Foundation.WIN32_ERROR;
+using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -16,23 +14,22 @@ using static System.NativeProcess;
 
 public unsafe abstract class Minecraft
 {
+    protected const string MinecraftUWP = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
     internal Minecraft() { }
-
-    internal static readonly PackageManager s_packageManager = new();
-    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
-    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-
-    public bool Running => Window is { };
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
-    internal static Package Package => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).First();
-
     protected abstract string Class { get; }
+
+    static readonly Minecraft s_uwp = new MinecraftUWP(), s_gdk = new MinecraftGDK();
+    internal static Package Package => PackageService.GetPackage(MinecraftUWP)!;
 
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
 
-    public static bool Packaged => Package.SignatureKind is PackageSignatureKind.Store;
-    public static bool Installed => s_packageManager.FindPackagesForUser(string.Empty, PackageFamilyName).Any();
+    public bool IsRunning => Window is { };
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
+
+    public static bool IsInstalled => Package is { };
+    public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
 
     public static bool UsingGameDevelopmentKit
     {
@@ -57,7 +54,7 @@ public unsafe abstract class Minecraft
         get
         {
             fixed (char* @class = Class)
-            fixed (char* pfn = PackageFamilyName)
+            fixed (char* pfn = MinecraftUWP)
             {
                 NativeWindow window = HWND.Null;
                 var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
@@ -70,12 +67,8 @@ public unsafe abstract class Minecraft
 
                     using (process)
                     {
-                        var error = GetPackageFamilyName(process, &length, buffer);
-                        if (error is not WIN32_ERROR.ERROR_SUCCESS) continue;
-
-                        var result = CompareStringOrdinal(pfn, -1, buffer, -1, true);
-                        if (result is not COMPARESTRING_RESULT.CSTR_EQUAL) continue;
-
+                        if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
+                        if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
                         return window;
                     }
                 }

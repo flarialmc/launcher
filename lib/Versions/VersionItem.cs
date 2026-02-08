@@ -12,6 +12,7 @@ using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using System.Linq;
+using Flarial.Launcher.Services.System;
 
 namespace Flarial.Launcher.Services.Versions;
 
@@ -22,43 +23,18 @@ public abstract class VersionItem
     static readonly string s_path = Path.GetTempPath();
     private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
-    public abstract Task<string> GetAsync();
+    public abstract Task<string> GetUrlAsync();
 
-    public virtual async Task InstallAsync(Action<int, AppInstallState> action) => await Task.Run(async () =>
+    public virtual async Task InstallAsync(Action<int, bool> action)
     {
-        if (!Minecraft.Installed)
+        if (!Minecraft.IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
-        if (!Minecraft.Packaged)
+        if (!Minecraft.IsPackaged)
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
-        var url = await GetAsync();
         var path = Path.Combine(s_path, Path.GetRandomFileName());
-
-        try
-        {
-            await HttpService.DownloadAsync(url, path, (_) => action(_, AppInstallState.Downloading));
-            unsafe
-            {
-                /*
-                    - Workaround this issue: https://github.com/microsoft/CsWinRT/issues/1720
-                    - We wrap the asynchronous operation as a synchronous operation & proxy it to 'Task.Run()'.
-                */
-
-                var @event = CreateEvent(null, true, false, null);
-                var item = Minecraft.s_packageManager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
-
-                try
-                {
-                    item.Progress += (sender, args) => action((int)args.percentage, AppInstallState.Installing);
-                    item.Completed += (_, _) => SetEvent(@event);
-
-                    WaitForSingleObject(@event, INFINITE);
-                    if (item.Status is AsyncStatus.Error) throw item.ErrorCode;
-                }
-                finally { CloseHandle(@event); item.Close(); }
-            }
-        }
-        finally { try { File.Delete(path); } catch { } }
-    });
+        await HttpService.DownloadAsync(await GetUrlAsync(), path, (_) => action(_, false));
+        await Task.Run(() => PackageService.AddPackage(path, (_) => action(_, true)));
+    }
 }

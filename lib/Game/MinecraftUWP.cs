@@ -25,7 +25,7 @@ unsafe sealed class MinecraftUWP : Minecraft
     protected override uint? Activate()
     {
         fixed (char* pfn = Package.Id.FullName)
-        fixed (char* aumid = "Microsoft.MinecraftUWP_8wekyb3d8bbwe!App")
+        fixed (char* aumid = $"{MinecraftUWP}!App")
         {
             s_package.EnableDebugging(pfn, null, null);
             s_application.ActivateApplication(aumid, null, ACTIVATEOPTIONS.AO_NONE, out var processId);
@@ -41,8 +41,8 @@ unsafe sealed class MinecraftUWP : Minecraft
 
     public override uint? Launch(bool initialized)
     {
-        if (Running) return Activate();
-        var parent = CreateForPackageFamily(PackageFamilyName).LocalFolder.Path;
+        if (IsRunning) return Activate();
+        var parent = CreateForPackageFamily(MinecraftUWP).LocalFolder.Path;
         var child = initialized ? @"games\com.mojang\minecraftpe\resource_init_lock" : @"games\com.mojang\minecraftpe\menu_load_lock";
 
         fixed (char* path = Path.Combine(parent, child))

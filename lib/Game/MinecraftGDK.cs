@@ -3,22 +3,17 @@ using static Windows.Win32.PInvoke;
 using System.IO;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using static Windows.Win32.Foundation.WAIT_EVENT;
-using static System.IO.Directory;
-using static System.IO.NotifyFilters;
-using static System.Environment;
 using Windows.Win32.System.RemoteDesktop;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using Windows.ApplicationModel;
-using System.ComponentModel;
-using static System.IO.Path;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell;
-using System.Threading;
-using System.Linq;
+using Flarial.Launcher.Services.System;
+using System;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -26,6 +21,8 @@ using static System.NativeProcess;
 
 unsafe sealed class MinecraftGDK : Minecraft
 {
+    const string GamingServices = "Microsoft.GamingServices_8wekyb3d8bbwe";
+
     internal MinecraftGDK() : base() { }
     protected override string Class => "Bedrock";
 
@@ -43,21 +40,26 @@ unsafe sealed class MinecraftGDK : Minecraft
     }
 
     static readonly InitialSessionState s_state = InitialSessionState.Create();
-    static readonly string s_path = Combine(GetFolderPath(SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
     {
-        if (!Installed)
-            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+        /*
+            - Verify if GRTS is actually installed.
+            - If it isn't installed then the game cannot be launched.
+        */
 
-        if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
+        if (!IsInstalled)
+            throw new InvalidOperationException();
+
+        if (PackageService.GetPackage(GamingServices) is null)
+            throw new InvalidOperationException();
 
         if (GetProcessId() is { } processId)
             return processId;
 
-        var path = Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-        if (!File.Exists(path)) throw new FileNotFoundException();
+        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        if (!File.Exists(command)) throw new FileNotFoundException();
 
         /*
             - We use PowerShell to directly start the game executable.
@@ -68,8 +70,8 @@ unsafe sealed class MinecraftGDK : Minecraft
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
 
         powershell.AddParameter("AppId", "Game");
-        powershell.AddParameter("Command", path);
-        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+        powershell.AddParameter("Command", command);
+        powershell.AddParameter("PackageFamilyName", MinecraftUWP);
 
         powershell.Invoke(); return GetProcessId();
     }
@@ -93,7 +95,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             - Prefer to partially to wait for initialization for compatibility.
         */
 
-        if (!Packaged)
+        if (!IsPackaged)
         {
             WaitForInputIdle(process, INFINITE);
             return process.Wait(0) ? processId : null;
@@ -108,12 +110,12 @@ unsafe sealed class MinecraftGDK : Minecraft
         {
             var @event = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
-                    NotifyFilter = FileName,
                     EnableRaisingEvents = true,
-                    IncludeSubdirectories = true
+                    IncludeSubdirectories = true,
+                    NotifyFilter = NotifyFilters.FileName
                 };
 
                 watcher.Deleted += (_, _) => SetEvent(@event);
@@ -127,7 +129,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     uint? GetProcessId()
     {
-        fixed (char* pfn = PackageFamilyName)
+        fixed (char* pfn = MinecraftUWP)
         fixed (char* name = "Minecraft.Windows.exe")
         {
             uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
@@ -140,21 +142,13 @@ unsafe sealed class MinecraftGDK : Minecraft
                     for (var index = 0; index < count; index++)
                     {
                         var entry = information[index];
-
-                        if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL)
-                            continue;
-
-                        if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process)
-                            continue;
+                        if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL) continue;
+                        if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
 
                         using (process)
                         {
-                            if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS)
-                                continue;
-
-                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL)
-                                continue;
-
+                            if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
+                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
                             return entry.ProcessId;
                         }
                     }

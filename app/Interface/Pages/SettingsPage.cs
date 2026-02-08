@@ -65,7 +65,7 @@ sealed class SettingsPage : Grid
 
     readonly CustomDllPathPicker _customDllPathPicker;
 
-    internal SettingsPage(Configuration configuration, WindowInteropHelper helper)
+    internal SettingsPage(Configuration configuration)
     {
         _configuration = configuration;
         _customDllPathPicker = new(configuration);
@@ -94,7 +94,7 @@ sealed class SettingsPage : Grid
         SetRow(settingsPagePanel, 0);
         Children.Add(settingsPagePanel);
 
-        SupportButtonsControl control = new(helper);
+        SupportButtonsControl control = new();
         SetColumn(control, 0);
         SetRow(control, 1);
         Children.Add(control);

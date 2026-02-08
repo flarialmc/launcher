@@ -49,7 +49,7 @@ public abstract class FlarialClient
             using NativeMutex beta = new(Beta.Identifer);
             using NativeMutex release = new(Release.Identifer);
 
-            if (!Minecraft.Current.Running)
+            if (!Minecraft.Current.IsRunning)
                 return null;
 
             if (beta.Exists && release.Exists)

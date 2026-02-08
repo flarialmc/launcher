@@ -8,12 +8,8 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using ModernWpf;
 using ModernWpf.Controls;
-using static System.IO.Directory;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
-using static Flarial.Launcher.PInvoke;
-using static System.IO.Path;
 using Flarial.Launcher.Services.Game;
+using System.IO;
 
 namespace Flarial.Launcher;
 
@@ -37,7 +33,7 @@ Exception: {1}
             - Prevent the operating system from handling errors for us.
         */
 
-        SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
+        PInvoke.SetErrorMode();
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {
@@ -65,7 +61,8 @@ Exception: {1}
         using var _ = new Mutex(default, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
         if (!created) return;
 
-        CurrentDirectory = CreateDirectory(Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher")).FullName;
+        var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Flarial\Launcher");
+        Environment.CurrentDirectory = Directory.CreateDirectory(path).FullName;
 
         var configuration = Configuration.Get();
 

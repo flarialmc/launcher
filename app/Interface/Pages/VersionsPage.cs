@@ -2,25 +2,25 @@ using System.Windows;
 using System.Windows.Controls;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Versions;
-using static ModernWpf.Controls.Symbol;
 using System.Windows.Threading;
-using static Flarial.Launcher.Interface.MessageDialog;
 using Flarial.Launcher.Interface.Controls;
 using System.Threading.Tasks;
-using static System.ComponentModel.DependencyPropertyDescriptor;
 using System;
 using System.ComponentModel;
 using ModernWpf.Controls.Primitives;
 using System.Windows.Interop;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
-using System.Collections;
+using ModernWpf.Controls;
+using Windows.Management.Deployment;
+using Flarial.Launcher.Management;
+using System.Linq;
 
 namespace Flarial.Launcher.Interface.Pages;
 
 sealed class VersionsPage : Grid
 {
     readonly RootPage _rootPage;
-    readonly WindowInteropHelper _helper;
+    static readonly PackageManager s_packageManager = new();
 
     internal readonly ListBox _listBox = new()
     {
@@ -54,14 +54,12 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void InvokeVersionEntryInstallAsync(int value, AppInstallState state) => Dispatcher.Invoke(() =>
+    void InvokeVersionEntryInstallAsync(int value, bool state) => Dispatcher.Invoke(() =>
     {
         _control._icon.Symbol = state switch
         {
-            AppInstallState.Starting => Refresh,
-            AppInstallState.Installing => Upload,
-            AppInstallState.Downloading => Download,
-            _ => throw new NotImplementedException()
+            true => Symbol.Upload,
+            false => Symbol.Download
         };
 
         if (value <= 0)
@@ -85,7 +83,7 @@ sealed class VersionsPage : Grid
         _control._progressBar.Value = 0;
         _control._progressBar.IsIndeterminate = !visible;
 
-        _control._icon.Symbol = Refresh;
+        _control._icon.Symbol = Symbol.Download;
         _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
         _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
@@ -97,26 +95,31 @@ sealed class VersionsPage : Grid
         {
             SetVisibility(false);
 
-            if (!Minecraft.Installed)
+            if (!Minecraft.IsInstalled)
             {
-                if (await _notInstalled.ShowAsync())
-                    ShellExecute("ms-windows-store://pdp/?ProductId=9NBLGGH2JHXJ");
+                await MainDialog.NotInstalled.ShowAsync();
                 return;
             }
 
-            if (!Minecraft.Packaged)
+            if (!Minecraft.IsPackaged)
             {
-                await _unpackagedInstallation.ShowAsync();
+                await MainDialog.UnpackagedInstall.ShowAsync();
+                return;
+            }
+
+            if (!s_packageManager.FindPackagesForUser(string.Empty, Product.GamingServices.PackageFamilyName).Any())
+            {
+                await MainDialog.GamingServicesMissing.ShowAsync();
                 return;
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await _selectVersion.ShowAsync();
+                await MainDialog.SelectVersion.ShowAsync();
                 return;
             }
 
-            if (!await _installVersion.ShowAsync())
+            if (!await MainDialog.InstallVersion.ShowAsync())
                 return;
 
             var listBoxItem = (ListBoxItem)_listBox.SelectedItem;
@@ -132,13 +135,12 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
+    //    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
     Task? _task = null;
 
-    internal VersionsPage(RootPage rootPage, WindowInteropHelper helper)
+    internal VersionsPage(RootPage rootPage)
     {
-        _helper = helper;
         _rootPage = rootPage;
         ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 
@@ -155,7 +157,7 @@ sealed class VersionsPage : Grid
         Children.Add(_control);
 
         Application.Current.MainWindow.Closing += OnClosing;
-        FromProperty(ContentControl.ContentProperty, typeof(ContentControl)).AddValueChanged(rootPage, OnContentChanged);
+        DependencyPropertyDescriptor.FromProperty(ContentControl.ContentProperty, typeof(ContentControl)).AddValueChanged(rootPage, OnContentChanged);
 
         _control._button.Click += OnButtonClick;
     }

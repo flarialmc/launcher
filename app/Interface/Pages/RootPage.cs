@@ -26,7 +26,7 @@ sealed class RootPage : NavigationView
         Content = "Settings"
     };
 
-    internal RootPage(Configuration configuration, WindowInteropHelper helper)
+    internal RootPage(Configuration configuration)
     {
         IsSettingsVisible = false;
 
@@ -37,7 +37,7 @@ sealed class RootPage : NavigationView
         MenuItems.Add(_versionsPageItem);
         FooterMenuItems.Add(_settingsPageItem);
 
-        _settingsPageItem.Tag = new SettingsPage(configuration, helper);
+        _settingsPageItem.Tag = new SettingsPage(configuration);
         ItemInvoked += (sender, args) => Content = args.InvokedItemContainer.Tag;
     }
 }

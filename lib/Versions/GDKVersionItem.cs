@@ -65,7 +65,7 @@ sealed class GDKVersionItem : VersionItem
         catch { return null; }
     }
 
-    public override async Task<string> GetAsync()
+    public override async Task<string> GetUrlAsync()
     {
         using CancellationTokenSource source = new();
         HashSet<Task<string?>> tasks = [.. _urls.Select(_ => PingAsync(_, source.Token))];
@@ -79,21 +79,8 @@ sealed class GDKVersionItem : VersionItem
         throw new InvalidOperationException();
     }
 
-    public override async Task InstallAsync(Action<int, AppInstallState> action)
+    public override async Task InstallAsync(Action<int, bool> action)
     {
-        /*
-           - Verify, if GRTS is available and installed.
-           - If not available, try to install it automatically.
-        */
-
-        await MicrosoftStoreProduct.MicrosoftGamingServices.InstallAsync(_ => action(_, AppInstallState.Starting));
-        if (!MicrosoftStoreProduct.MicrosoftGamingServices.Installed) throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
-
-        /*
-           - Replace the stock PC Bootstrapper with a custom one.
-           - This suppresses auto-updates allowing the version switch to persist. 
-        */
-
         await base.InstallAsync(action);
         using var stream = File.Create(Path);
         await stream.WriteAsync(_bytes, 0, _bytes.Length);

@@ -56,7 +56,7 @@ sealed class UWPVersionItem : VersionItem
         }
     });
 
-    public override async Task<string> GetAsync() => await Task.Run(async () =>
+    public override async Task<string> GetUrlAsync() => await Task.Run(async () =>
     {
         using StringContent content = new(_content, Encoding.UTF8, "application/soap+xml");
         using var message = await HttpService.PostAsync(MicrosoftStoreUrl, content);

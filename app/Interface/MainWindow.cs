@@ -12,12 +12,8 @@ using Flarial.Launcher.Services.Versions;
 using ModernWpf;
 using ModernWpf.Controls.Primitives;
 using Windows.ApplicationModel;
-using static Flarial.Launcher.Interface.MessageDialog;
-using static System.StringComparison;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static System.Windows.Media.Imaging.BitmapCreateOptions;
-using static System.Windows.Media.Imaging.BitmapCacheOption;
 using System.IO;
 using Flarial.Launcher.Services.Client;
 
@@ -45,12 +41,12 @@ sealed class MainWindow : Window
 
     async void OnPackageStatusChanged(string packageFamilyName)
     {
-        if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, OrdinalIgnoreCase))
+        if (!packageFamilyName.Equals(Product.Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
             return;
 
         Dispatcher.Invoke(() =>
         {
-            if (!Minecraft.Installed)
+            if (!Minecraft.IsInstalled)
             {
                 _homePage._packageVersionTextBlock.Text = "❌ 0.0.0";
                 return;
@@ -77,12 +73,12 @@ sealed class MainWindow : Window
 
         if (!await FlarialClient.CanConnectAsync())
         {
-            await _connectionFailure.ShowAsync();
+            await MainDialog.ConnectionFailure.ShowAsync();
             Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await _launcherUpdateAvailable.ShowAsync()))
+        if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync()))
         {
             _homePage._statusTextBlock.Text = "Updating...";
             await FlarialLauncher.DownloadAsync(InvokeFlarialLauncherDownloadAsync);
@@ -108,7 +104,7 @@ sealed class MainWindow : Window
         _catalog.PackageUpdating += OnPackageUpdating;
         _catalog.PackageInstalling += OnPackageInstalling;
         _catalog.PackageUninstalling += OnPackageUninstalling;
-        OnPackageStatusChanged(Minecraft.PackageFamilyName);
+        OnPackageStatusChanged(Product.Minecraft.PackageFamilyName);
 
         _rootPage._versionsPageItem.IsEnabled = true;
         _homePage.SetVisibility(true);
@@ -128,7 +124,7 @@ sealed class MainWindow : Window
             return;
 
         using var stream = item.Item1;
-        var source = BitmapFrame.Create(stream, PreservePixelFormat, OnLoad);
+        var source = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
         source.Freeze();
 
         image.Source = source;
@@ -175,12 +171,9 @@ sealed class MainWindow : Window
         SnapsToDevicePixels = true;
         RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
-        WindowInteropHelper helper = new(this);
-
-        _rootPage = new(configuration, helper);
-
-        _versionsPage = new(_rootPage, helper);
-        _homePage = new(_rootPage, configuration, helper);
+        _rootPage = new(configuration);
+        _versionsPage = new(_rootPage);
+        _homePage = new(_rootPage, configuration);
 
         _rootPage._homePageItem.Tag = _homePage;
         _rootPage._versionsPageItem.Tag = _versionsPage;

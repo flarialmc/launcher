@@ -2,19 +2,16 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using static System.Environment;
-using static Flarial.Launcher.Interface.MessageDialog;
-using static Windows.Management.Core.ApplicationDataManager;
 using Flarial.Launcher.Services.Game;
 using System.Windows.Interop;
 using System;
+using Flarial.Launcher.Management;
+using Windows.Management.Core;
 
 namespace Flarial.Launcher.Interface.Controls;
 
 sealed class SupportButtonsControl : UniformGrid
 {
-    readonly WindowInteropHelper _helper;
-
     readonly Button _clientFolderButton = new()
     {
         Content = "Open Client Folder",
@@ -31,37 +28,36 @@ sealed class SupportButtonsControl : UniformGrid
         Margin = new(6, 0, 0, 0)
     };
 
-    readonly string _launcherPath = CurrentDirectory;
-    readonly string _gdkPath = Path.Combine(CurrentDirectory, @"..\Client");
+    readonly string _launcherPath = Environment.CurrentDirectory;
+    readonly string _gdkPath = Path.Combine(Environment.CurrentDirectory, @"..\Client");
 
-    string UWPPath => Path.Combine(CreateForPackageFamily(Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial");
-
-    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
-
-    void OnLauncherFolderButtonClick(object sender, EventArgs args) => ShellExecute(_launcherPath);
+    void OnLauncherFolderButtonClick(object sender, EventArgs args) => PInvoke.ShellExecute(_launcherPath);
 
     async void OnClientFolderButtonClick(object sender, EventArgs args)
     {
-        if (!Minecraft.Installed)
+        if (!Minecraft.IsInstalled)
         {
-            await _notInstalled.ShowAsync();
+            await MainDialog.NotInstalled.ShowAsync();
             return;
         }
 
-        var path = Minecraft.UsingGameDevelopmentKit ? _gdkPath : UWPPath;
+        var path = Minecraft.UsingGameDevelopmentKit switch
+        {
+            true => _gdkPath,
+            false => Path.Combine(ApplicationDataManager.CreateForPackageFamily(Product.Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial")
+        };
 
         if (!Directory.Exists(path))
         {
-            await _folderNotFound.ShowAsync();
+            await MainDialog.FolderNotFound.ShowAsync();
             return;
         }
 
-        ShellExecute(path);
+        PInvoke.ShellExecute(path);
     }
 
-    internal SupportButtonsControl(WindowInteropHelper helper)
+    internal SupportButtonsControl()
     {
-        _helper = helper;
 
         Rows = 1;
         Children.Add(_clientFolderButton);
