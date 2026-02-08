@@ -44,18 +44,13 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override uint? Activate()
     {
         /*
-            - Verify if GRTS is actually installed.
-            - If it isn't installed then the game cannot be launched.
+            - Verify if Gaming Services is actually installed.
+            - If not installed then the game cannot be launched.
         */
 
-        if (!IsInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
-
-        if (!IsGamingServicesInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
-
-        if (GetProcessId() is { } processId)
-            return processId;
+        if (!IsInstalled) throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+        if (!IsGamingServicesInstalled) throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
+        if (GetProcessId() is { } processId) return processId;
 
         var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
         if (!File.Exists(command)) throw new FileNotFoundException();
@@ -77,36 +72,17 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     public override uint? Launch(bool initialized)
     {
-        if (Window is { } window)
-        {
-            window.Switch();
-            return window.ProcessId;
-        }
-
-        if (Activate() is not { } processId)
-            return null;
-
-        if (Open(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SYNCHRONIZE, processId) is not { } process)
-            return null;
-
-        /*
-            - Unsigned builds aren't guaranteed to fulfill the launch contract.
-            - Prefer to partially to wait for initialization for compatibility.
-        */
-
-        if (!IsPackaged)
-        {
-            WaitForInputIdle(process, INFINITE);
-            return process.Wait(0) ? processId : null;
-        }
-
-        /*
-            - The initialization logic is derived from the UWP builds of the game.
-            - We don't need to resort to polling since symbolic links aren't used.
-        */
+        if (GetWindow() is { } window) { window.Switch(); return window.ProcessId; }
+        if (Activate() is not { } processId) return null;
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
         using (process)
         {
+            /*
+                - The initialization logic is derived from the UWP builds of the game.
+                - We don't need to resort to polling since symbolic links aren't used.
+            */
+
             var @event = CreateEvent(null, true, false, null); try
             {
                 using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")

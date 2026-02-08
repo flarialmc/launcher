@@ -7,21 +7,13 @@ unsafe readonly struct NativeWindow
 {
     readonly HWND _handle;
 
-    internal uint ProcessId
-    {
-        get
-        {
-            uint processId = 0;
-            GetWindowThreadProcessId(_handle, &processId);
-            return processId;
-        }
-    }
-
     NativeWindow(HWND handle) => _handle = handle;
 
     internal void Switch() => SwitchToThisWindow(_handle, true);
 
-    public static implicit operator HWND(in NativeWindow @this) => @this._handle;
+    internal uint ProcessId { get { uint _; GetWindowThreadProcessId(_handle, &_); return _; } }
 
     public static implicit operator NativeWindow(in HWND @this) => new(@this);
+
+    public static implicit operator HWND(in NativeWindow @this) => @this._handle;
 }

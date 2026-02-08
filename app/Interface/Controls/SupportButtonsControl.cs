@@ -3,9 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Flarial.Launcher.Services.Game;
-using System.Windows.Interop;
 using System;
-using Flarial.Launcher.Management;
 using Windows.Management.Core;
 
 namespace Flarial.Launcher.Interface.Controls;
@@ -41,19 +39,11 @@ sealed class SupportButtonsControl : UniformGrid
             return;
         }
 
-        var path = Minecraft.UsingGameDevelopmentKit switch
+        PInvoke.ShellExecute(Directory.CreateDirectory(Minecraft.UsingGameDevelopmentKit switch
         {
-            true => _gdkPath,
+            true => Directory.CreateDirectory(_gdkPath).FullName,
             false => Path.Combine(ApplicationDataManager.CreateForPackageFamily(Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial")
-        };
-
-        if (!Directory.Exists(path))
-        {
-            await MainDialog.FolderNotFound.ShowAsync();
-            return;
-        }
-
-        PInvoke.ShellExecute(path);
+        }).FullName);
     }
 
     internal SupportButtonsControl()

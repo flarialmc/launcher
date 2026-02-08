@@ -26,7 +26,6 @@ WriteProcessMemory
 VirtualAllocEx
 VirtualFreeEx
 CreateMutex
-WaitForInputIdle
 DuplicateHandle
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64

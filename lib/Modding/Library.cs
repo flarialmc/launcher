@@ -21,11 +21,8 @@ public unsafe sealed class Library
     {
         get
         {
-            if (_path is null)
-                return false;
-
-            var module = HMODULE.Null;
-            try
+            if (_path is null) return false;
+            var module = HMODULE.Null; try
             {
                 /*
                     - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
@@ -35,9 +32,7 @@ public unsafe sealed class Library
                 fixed (char* path = _path)
                 {
                     module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
-
-                    if (module.IsNull)
-                        return false;
+                    if (module.IsNull) return false;
                 }
 
                 /*
@@ -45,9 +40,8 @@ public unsafe sealed class Library
                     - This can be done by inspecting the image header.
                 */
 
-                var dos = (IMAGE_DOS_HEADER*)module;
+                var dos = (IMAGE_DOS_HEADER*)(void*)module;
                 var nt = (IMAGE_NT_HEADERS64*)((nint)dos + dos->e_lfanew);
-
                 return nt->FileHeader.Characteristics.HasFlag(IMAGE_FILE_DLL);
 
             }
@@ -57,24 +51,7 @@ public unsafe sealed class Library
 
     public Library(string path)
     {
-        /*
-            - Peform path validation.
-            - Ensure the path has an extension & exists.
-        */
-
         _path = Path.GetFullPath(path);
-
-        if (!Path.HasExtension(_path))
-        {
-            _path = null!;
-            return;
-        }
-
-        if (!File.Exists(_path))
-        {
-            _path = null!;
-            return;
-        }
-
+        if (!Path.HasExtension(_path) || !File.Exists(_path)) _path = null!;
     }
 }

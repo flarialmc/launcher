@@ -41,9 +41,7 @@ abstract class MainDialog
     internal static readonly MainDialog LaunchFailure = new LaunchFailure();
     internal static readonly MainDialog SelectVersion = new SelectVersion();
     internal static readonly MainDialog BetaDllUsage = new BetaDllUsage();
-    internal static readonly MainDialog FolderNotFound = new FolderNotFound();
     internal static readonly MainDialog InstallVersion = new InstallVersion();
-    internal static readonly MainDialog UnsignedInstall = new UnsignedInstall();
     internal static readonly MainDialog InvalidCustomDll = new InvalidCustomDll();
     internal static readonly MainDialog ConnectionFailure = new ConnectionFailure();
     internal static readonly MainDialog ClientUpdateFailure = new ClientUpdateFailure();
@@ -103,9 +101,10 @@ If you need help, join our Discord.";
     protected override string CloseButtonText => "Cancel";
 }
 
-file sealed class FolderNotFound : MainDialog
+[Obsolete("", true)]
+file sealed class CannotFind : MainDialog
 {
-    protected override string Title => "⚠️ Folder Not Found";
+    protected override string Title => "⚠️ Cannot Find";
 
     protected override string Content => @"The client's folder cannot be found.
 
@@ -149,20 +148,6 @@ file sealed class ConnectionFailure : MainDialog
 • Change your system DNS for both IPv4 and IPv6.
 
 If you need help, join our Discord.";
-}
-
-class UnsignedInstall : MainDialog
-{
-    protected override string Title => "⚠️ Unsigned Install";
-    protected override string Content => @"An unsigned Minecraft install has been detected.
-
-• The launcher will not wait for the game to initialize.
-• Compatibility issues might arise with the client & launcher.
-
-If you need help, join our Discord.";
-
-    protected override string PrimaryButtonText => "Launch";
-    protected override string? CloseButtonText => "Cancel";
 }
 
 file sealed class InvalidCustomDll : MainDialog
