@@ -29,7 +29,7 @@ unsafe sealed class MinecraftGDK : Minecraft
     {
         /*
             - Initialize a minimal PowerShell session.
-            - Avoid operating system defaults since they might change.
+            - Avoid defaults since they might change.
         */
 
         s_state.ImportPSModule(["Appx"]);
@@ -44,8 +44,8 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override uint? Activate()
     {
         /*
-            - Verify if the game is installed & GRTS is available.
             - Unlike UWP builds, we are bootstrapping the game manually.
+            - Verify if the game is installed & Gaming Services is available.
         */
 
         if (!IsInstalled)
@@ -57,17 +57,20 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (GetProcessId() is { } processId)
             return processId;
 
-        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-        if (!File.Exists(command)) throw new FileNotFoundException();
+        var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        if (!File.Exists(path)) throw new FileNotFoundException();
 
         /*
-            - We use PowerShell to directly start the game executable.
-            - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
+            - We use PowerShell to directly start the game.
+            - This simplifies the activation contract.
         */
 
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
-        powershell.AddParameters((string[])[PackageFamilyName, "Game", command]);
+
+        powershell.AddParameter("AppId", "Game");
+        powershell.AddParameter("Command", path);
+        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
 
         powershell.Invoke();
         return GetProcessId();
@@ -80,6 +83,12 @@ unsafe sealed class MinecraftGDK : Minecraft
             window.Switch();
             return window.ProcessId;
         }
+
+        /*
+            - The launch contract can't be fulfilled by unpackaged builds.
+            - Unlike UWP, the framework only guarantees consistency when packaged.
+            - Hence, we simply attempt to activate the game's window if available.
+        */
 
         if (!IsPackaged) return null;
         if (Activate() is not { } processId) return null;
