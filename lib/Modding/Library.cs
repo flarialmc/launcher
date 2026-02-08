@@ -22,7 +22,9 @@ public unsafe sealed class Library
         get
         {
             if (_path is null) return false;
-            var module = HMODULE.Null; try
+            var module = HMODULE.Null;
+
+            try
             {
                 /*
                     - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.

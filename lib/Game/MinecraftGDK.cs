@@ -44,35 +44,32 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override uint? Activate()
     {
         /*
-            - Verify if Gaming Services is actually installed.
-            - If not installed then the game cannot be launched.
-        */
-
-        if (!IsInstalled) throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
-        if (!IsGamingServicesInstalled) throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
-        if (GetProcessId() is { } processId) return processId;
-
-        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-        if (!File.Exists(command)) throw new FileNotFoundException();
-
-        /*
             - We use PowerShell to directly start the game executable.
             - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
         */
 
+        if (GetProcessId() is { } processId)
+            return processId;
+
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
 
-        powershell.AddParameter("AppId", "Game");
-        powershell.AddParameter("Command", command);
-        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        powershell.AddParameters((string[])[PackageFamilyName, "Game", command]);
 
-        powershell.Invoke(); return GetProcessId();
+        powershell.Invoke();
+        return GetProcessId();
     }
 
     public override uint? Launch(bool initialized)
     {
-        if (GetWindow() is { } window) { window.Switch(); return window.ProcessId; }
+        if (GetWindow() is { } window)
+        {
+            window.Switch();
+            return window.ProcessId;
+        }
+
+        if (!IsPackaged) return null;
         if (Activate() is not { } processId) return null;
         if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
@@ -85,7 +82,8 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var @event = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                var path = Directory.CreateDirectory(s_path).FullName;
+                using FileSystemWatcher watcher = new(path, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,
@@ -96,7 +94,10 @@ unsafe sealed class MinecraftGDK : Minecraft
                 watcher.Deleted += (_, _) => SetEvent(@event);
                 var handles = stackalloc HANDLE[] { @event, process };
 
-                return WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0 ? processId : null;
+                if (WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0)
+                    return processId;
+
+                return null;
             }
             finally { CloseHandle(@event); }
         }
