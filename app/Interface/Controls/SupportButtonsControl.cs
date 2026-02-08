@@ -35,7 +35,7 @@ sealed class SupportButtonsControl : UniformGrid
     {
         if (!Minecraft.IsInstalled)
         {
-            await MainDialog.NotInstalled.ShowAsync();
+            await AppDialog.NotInstalled.ShowAsync();
             return;
         }
 

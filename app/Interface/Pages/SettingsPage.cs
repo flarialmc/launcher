@@ -3,7 +3,6 @@ using Flarial.Launcher.Management;
 using Flarial.Launcher.Interface.Controls;
 using ModernWpf.Controls;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System;
 
 namespace Flarial.Launcher.Interface.Pages;

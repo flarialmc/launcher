@@ -8,7 +8,6 @@ using Flarial.Launcher.Services.Modding;
 using Flarial.Launcher.Services.Networking;
 using ModernWpf;
 using ModernWpf.Controls;
-using Flarial.Launcher.Services.Game;
 using System.IO;
 
 namespace Flarial.Launcher;
@@ -94,7 +93,7 @@ Exception: {1}
             - This should speedup rendering the banner.
         */
 
-        new App(configuration).Run(new MainWindow(configuration));
+        new App(configuration).Run(new AppWindow(configuration));
     }
 
     readonly Configuration _configuration;

@@ -1,8 +1,6 @@
 using System;
-using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Flarial.Launcher.Interface.Pages;
@@ -19,7 +17,7 @@ using Flarial.Launcher.Services.Client;
 
 namespace Flarial.Launcher.Interface;
 
-sealed class MainWindow : Window
+sealed class AppWindow : Window
 {
     void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
@@ -73,12 +71,12 @@ sealed class MainWindow : Window
 
         if (!await FlarialClient.CanConnectAsync())
         {
-            await MainDialog.ConnectionFailure.ShowAsync();
+            await AppDialog.ConnectionFailure.ShowAsync();
             Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync()))
+        if (await FlarialLauncher.CheckAsync() && (_configuration.AutomaticUpdates || await AppDialog.LauncherUpdateAvailable.ShowAsync()))
         {
             _homePage._statusTextBlock.Text = "Updating...";
             await FlarialLauncher.DownloadAsync(InvokeFlarialLauncherDownloadAsync);
@@ -152,7 +150,7 @@ sealed class MainWindow : Window
     readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
 
 
-    internal MainWindow(Configuration configuration)
+    internal AppWindow(Configuration configuration)
     {
         _configuration = configuration;
 

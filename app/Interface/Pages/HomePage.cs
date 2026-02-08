@@ -9,7 +9,6 @@ using System.Windows.Threading;
 using System;
 using Flarial.Launcher.Management;
 using System.Windows.Input;
-using System.Windows.Interop;
 using Flarial.Launcher.Services.Versions;
 using ModernWpf.Controls;
 
@@ -109,7 +108,7 @@ sealed class HomePage : Grid
         Visibility = Visibility.Collapsed
     };
 
-    sealed class UnsupportedVersion(string version, string preferred) : MainDialog
+    sealed class UnsupportedVersion(string version, string preferred) : AppDialog
     {
         protected override string CloseButtonText => "Back";
         protected override string PrimaryButtonText => "Versions";
@@ -161,13 +160,13 @@ If you need help, join our Discord.";
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync();
+                await AppDialog.NotInstalled.ShowAsync();
                 return;
             }
 
             if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsGamingServicesInstalled)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync();
+                await AppDialog.GamingServicesMissing.ShowAsync();
                 return;
             }
 
@@ -192,7 +191,7 @@ If you need help, join our Discord.";
             {
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync();
+                    await AppDialog.InvalidCustomDll.ShowAsync();
                     return;
                 }
 
@@ -200,27 +199,27 @@ If you need help, join our Discord.";
 
                 if (!library.IsLoadable)
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync();
+                    await AppDialog.InvalidCustomDll.ShowAsync();
                     return;
                 }
 
                 _statusTextBlock.Text = "Launching...";
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
-                    await MainDialog.LaunchFailure.ShowAsync();
+                    await AppDialog.LaunchFailure.ShowAsync();
                     return;
                 }
 
                 return;
             }
 
-            if (beta && !await MainDialog.BetaDllUsage.ShowAsync())
+            if (beta && !await AppDialog.BetaDllUsage.ShowAsync())
                 return;
 
             _statusTextBlock.Text = "Verifying...";
             if (!await client.DownloadAsync(InvokeFlarialClientDownloadAsync))
             {
-                await MainDialog.ClientUpdateFailure.ShowAsync();
+                await AppDialog.ClientUpdateFailure.ShowAsync();
                 return;
             }
 
@@ -228,7 +227,7 @@ If you need help, join our Discord.";
             _statusTextBlock.Text = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
             {
-                await MainDialog.LaunchFailure.ShowAsync();
+                await AppDialog.LaunchFailure.ShowAsync();
                 return;
             }
         }

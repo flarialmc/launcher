@@ -7,10 +7,25 @@ using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface;
 
-abstract class MainDialog
+abstract class AppDialog
 {
-    internal MainDialog() { }
+    internal AppDialog()
+    {
+        _dialog.Title = Title;
+        _dialog.Content = Content;
+        _dialog.CloseButtonText = CloseButtonText;
+        _dialog.PrimaryButtonText = PrimaryButtonText;
+        _dialog.SecondaryButtonText = SecondaryButtonText;
+    }
+
+    readonly ContentDialog _dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
+
+    protected abstract string Title { get; }
+    protected abstract string Content { get; }
+    protected virtual string? CloseButtonText { get; }
+    protected abstract string PrimaryButtonText { get; }
+    protected virtual string? SecondaryButtonText { get; }
 
     internal virtual async Task<bool> ShowAsync() => await PromptAsync() != ContentDialogResult.None;
 
@@ -19,47 +34,31 @@ abstract class MainDialog
         await s_semaphore.WaitAsync(); try
         {
             await Dispatcher.Yield();
-            return await new ContentDialog
-            {
-                Title = Title,
-                Content = Content,
-                CloseButtonText = CloseButtonText,
-                PrimaryButtonText = PrimaryButtonText,
-                SecondaryButtonText = SecondaryButtonText,
-            }.ShowAsync(ContentDialogPlacement.InPlace);
+            return await _dialog.ShowAsync();
         }
         finally { s_semaphore.Release(); }
     }
 
-    protected abstract string Title { get; }
-    protected abstract string Content { get; }
-    protected abstract string PrimaryButtonText { get; }
-    protected virtual string? CloseButtonText { get; }
-    protected virtual string? SecondaryButtonText { get; }
-
-    internal static readonly MainDialog NotInstalled = new NotInstalled();
-    internal static readonly MainDialog LaunchFailure = new LaunchFailure();
-    internal static readonly MainDialog SelectVersion = new SelectVersion();
-    internal static readonly MainDialog BetaDllUsage = new BetaDllUsage();
-    internal static readonly MainDialog InstallVersion = new InstallVersion();
-    internal static readonly MainDialog InvalidCustomDll = new InvalidCustomDll();
-    internal static readonly MainDialog ConnectionFailure = new ConnectionFailure();
-    internal static readonly MainDialog ClientUpdateFailure = new ClientUpdateFailure();
-    internal static readonly MainDialog UnpackagedInstall = new UnpackagedInstall();
-    internal static readonly MainDialog GamingServicesMissing = new GamingServicesMissing();
-    internal static readonly MainDialog LauncherUpdateAvailable = new LauncherUpdateAvailable();
+    internal static readonly AppDialog BetaDllUsage = new BetaDllUsage();
+    internal static readonly AppDialog NotInstalled = new NotInstalled();
+    internal static readonly AppDialog LaunchFailure = new LaunchFailure();
+    internal static readonly AppDialog SelectVersion = new SelectVersion();
+    internal static readonly AppDialog InstallVersion = new InstallVersion();
+    internal static readonly AppDialog InvalidCustomDll = new InvalidCustomDll();
+    internal static readonly AppDialog ConnectionFailure = new ConnectionFailure();
+    internal static readonly AppDialog UnpackagedInstall = new UnpackagedInstall();
+    internal static readonly AppDialog ClientUpdateFailure = new ClientUpdateFailure();
+    internal static readonly AppDialog GamingServicesMissing = new GamingServicesMissing();
+    internal static readonly AppDialog LauncherUpdateAvailable = new LauncherUpdateAvailable();
 }
 
-file sealed class GamingServicesMissing : MainDialog
+file sealed class GamingServicesMissing : AppDialog
 {
     internal override async Task<bool> ShowAsync()
     {
-        var result = await base.ShowAsync();
-
-        if (result)
-            Product.GamingServices.OpenProductDetailsPage();
-
-        return result;
+        var _ = await base.ShowAsync();
+        if (_) Product.GamingServices.OpenProductDetailsPage();
+        return _;
     }
 
     protected override string CloseButtonText => "Cancel";
@@ -73,7 +72,7 @@ file sealed class GamingServicesMissing : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class SelectVersion : MainDialog
+file sealed class SelectVersion : AppDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "💡 Select Version";
@@ -84,7 +83,7 @@ file sealed class SelectVersion : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class InstallVersion : MainDialog
+file sealed class InstallVersion : AppDialog
 {
     protected override string Title => "💡 Install Version";
 
@@ -102,7 +101,7 @@ If you need help, join our Discord.";
 }
 
 [Obsolete("", true)]
-file sealed class CannotFind : MainDialog
+file sealed class CannotFind : AppDialog
 {
     protected override string Title => "⚠️ Cannot Find";
 
@@ -115,16 +114,13 @@ If you need help, join our Discord.";
     protected override string PrimaryButtonText => "Back";
 }
 
-file sealed class NotInstalled : MainDialog
+file sealed class NotInstalled : AppDialog
 {
     internal override async Task<bool> ShowAsync()
     {
-        var result = await base.ShowAsync();
-
-        if (result)
-            Product.Minecraft.OpenProductDetailsPage();
-
-        return result;
+        var _ = await base.ShowAsync();
+        if (_) Product.Minecraft.OpenProductDetailsPage();
+        return _;
     }
 
     protected override string CloseButtonText => "Cancel";
@@ -137,7 +133,7 @@ file sealed class NotInstalled : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class ConnectionFailure : MainDialog
+file sealed class ConnectionFailure : AppDialog
 {
     protected override string PrimaryButtonText => "Exit";
     protected override string Title => "🚨 Connection Failure";
@@ -150,7 +146,7 @@ file sealed class ConnectionFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class InvalidCustomDll : MainDialog
+file sealed class InvalidCustomDll : AppDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Invalid Custom DLL";
@@ -163,7 +159,7 @@ file sealed class InvalidCustomDll : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class LaunchFailure : MainDialog
+file sealed class LaunchFailure : AppDialog
 {
     protected override string Title => "⚠️ Launch Failure";
     protected override string PrimaryButtonText => "Back";
@@ -176,7 +172,7 @@ file sealed class LaunchFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class ClientUpdateFailure : MainDialog
+file sealed class ClientUpdateFailure : AppDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Client Update Failure";
@@ -188,7 +184,7 @@ file sealed class ClientUpdateFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class LauncherUpdateAvailable : MainDialog
+file sealed class LauncherUpdateAvailable : AppDialog
 {
     protected override string Title => "💡 Launcher Update Available";
     protected override string PrimaryButtonText => "Update";
@@ -201,7 +197,7 @@ file sealed class LauncherUpdateAvailable : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class BetaDllUsage : MainDialog
+file sealed class BetaDllUsage : AppDialog
 {
     protected override string Title => "⚠️ Beta DLL Usage";
     protected override string CloseButtonText => "Cancel";
@@ -214,7 +210,7 @@ file sealed class BetaDllUsage : MainDialog
 Hence use at your own risk.";
 }
 
-file sealed class UnpackagedInstall : MainDialog
+file sealed class UnpackagedInstall : AppDialog
 {
     protected override string Title => "⚠️ Unpackaged Install";
     protected override string PrimaryButtonText => "Back";

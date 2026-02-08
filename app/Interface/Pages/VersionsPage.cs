@@ -8,19 +8,13 @@ using System.Threading.Tasks;
 using System;
 using System.ComponentModel;
 using ModernWpf.Controls.Primitives;
-using System.Windows.Interop;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using ModernWpf.Controls;
-using Windows.Management.Deployment;
-using Flarial.Launcher.Management;
-using System.Linq;
 
 namespace Flarial.Launcher.Interface.Pages;
 
 sealed class VersionsPage : Grid
 {
     readonly RootPage _rootPage;
-    static readonly PackageManager s_packageManager = new();
 
     internal readonly ListBox _listBox = new()
     {
@@ -100,13 +94,13 @@ sealed class VersionsPage : Grid
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync();
+                await AppDialog.NotInstalled.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsPackaged)
             {
-                await MainDialog.UnpackagedInstall.ShowAsync();
+                await AppDialog.UnpackagedInstall.ShowAsync();
                 return;
             }
 
@@ -114,18 +108,18 @@ sealed class VersionsPage : Grid
             {
                 if (!Minecraft.IsGamingServicesInstalled)
                 {
-                    await MainDialog.GamingServicesMissing.ShowAsync();
+                    await AppDialog.GamingServicesMissing.ShowAsync();
                     return;
                 }
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await MainDialog.SelectVersion.ShowAsync();
+                await AppDialog.SelectVersion.ShowAsync();
                 return;
             }
 
-            if (!await MainDialog.InstallVersion.ShowAsync())
+            if (!await AppDialog.InstallVersion.ShowAsync())
                 return;
 
             _listBox.ScrollIntoView(listBoxItem);
@@ -137,8 +131,6 @@ sealed class VersionsPage : Grid
             SetVisibility(true);
         }
     }
-
-    //    void ShellExecute(string lpFile) => PInvoke.ShellExecute(_helper.EnsureHandle(), null!, lpFile, null!, null!, PInvoke.SW_NORMAL);
 
     Task? _task = null;
 
