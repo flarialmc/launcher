@@ -51,10 +51,11 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (GetProcessId() is { } processId)
             return processId;
 
+        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        if (!File.Exists(command)) throw new FileNotFoundException();
+
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
-
-        var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
         powershell.AddParameters((string[])[PackageFamilyName, "Game", command]);
 
         powershell.Invoke();

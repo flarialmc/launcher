@@ -28,8 +28,11 @@ public abstract class VersionItem
 
     public virtual async Task InstallAsync(Action<int, bool> action)
     {
-        if (!Minecraft.IsInstalled) throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
-        if (!Minecraft.IsPackaged) throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
+        if (!Minecraft.IsInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+
+        if (!Minecraft.IsPackaged)
+            throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
         await HttpService.DownloadAsync(await GetUrlAsync(), path, (_) => action(_, false));
