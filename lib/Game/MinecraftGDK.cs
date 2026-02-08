@@ -44,15 +44,26 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override uint? Activate()
     {
         /*
-            - We use PowerShell to directly start the game executable.
-            - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
+            - Verify if the game is installed & GRTS is available.
+            - Unlike UWP builds, we are bootstrapping the game manually.
         */
+
+        if (!IsInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+
+        if (!IsGamingServicesInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         if (GetProcessId() is { } processId)
             return processId;
 
         var command = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
         if (!File.Exists(command)) throw new FileNotFoundException();
+
+        /*
+            - We use PowerShell to directly start the game executable.
+            - This bypasses the PC Bootstrapper (GDK), simplifying the launch process.
+        */
 
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
