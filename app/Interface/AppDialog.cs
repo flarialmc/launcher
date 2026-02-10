@@ -31,11 +31,8 @@ abstract class AppDialog
 
     internal async Task<ContentDialogResult> PromptAsync()
     {
-        await s_semaphore.WaitAsync(); try
-        {
-            await Dispatcher.Yield();
-            return await _dialog.ShowAsync();
-        }
+        await s_semaphore.WaitAsync();
+        try { return await _dialog.ShowAsync(); }
         finally { s_semaphore.Release(); }
     }
 

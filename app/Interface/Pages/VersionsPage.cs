@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using ModernWpf.Controls.Primitives;
 using ModernWpf.Controls;
+using System.Diagnostics;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -143,6 +144,8 @@ sealed class VersionsPage : Grid
         VirtualizingPanel.SetIsVirtualizing(_listBox, true);
         ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
         ScrollViewer.SetIsDeferredScrollingEnabled(_listBox, true);
+        VirtualizingPanel.SetIsContainerVirtualizable(_listBox, true);
+        VirtualizingPanel.SetIsVirtualizingWhenGrouping(_listBox, true);
         VirtualizingPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         SetRow(_listBox, 0);
