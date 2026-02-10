@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.IO;
 using Flarial.Launcher.Services.Client;
+using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace Flarial.Launcher.Interface;
 
@@ -86,54 +88,43 @@ sealed class AppWindow : Window
         }
 
         var registry = await VersionRegistry.CreateAsync();
-        Tag = registry; _homePage.Tag = registry;
+        var loadVersionsPageTask = LoadVersionsPageAsync(registry);
 
-        foreach (var item in registry)
-        {
-            await Dispatcher.Yield();
-            _versionsPage._listBox.Items.Add(new ListBoxItem
-            {
-                Tag = item.Value,
-                Content = item.Key,
-                HorizontalContentAlignment = HorizontalAlignment.Center
-            });
-        }
-
+        _homePage.Tag = Tag = registry;
         _catalog.PackageUpdating += OnPackageUpdating;
         _catalog.PackageInstalling += OnPackageInstalling;
         _catalog.PackageUninstalling += OnPackageUninstalling;
         OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-        _rootPage._versionsPageItem.IsEnabled = true;
         _homePage.SetVisibility(true);
-
-        /*
-            - Dispatch loading sponsorships to dedicated threads.
-            - These should improve frontend performance + sponsorship loading.
-            - Use `Task.WhenAll` to catch any logic or code issues in production.
-        */
-
-        await Task.WhenAll(_loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
+        await Task.WhenAll(loadVersionsPageTask, _loadLeftSponsorshipTask, _loadCenterSponsorshipTask, _loadRightSponsorshipTask);
     }
 
-    void LoadSponsorshipImage(Tuple<Stream, string>? sponsorship, Image image) => Dispatcher.Invoke(() =>
+    async Task LoadVersionsPageAsync(VersionRegistry registry)
     {
-        if (sponsorship is not { } item)
+        await Task.Run(() =>
+        {
+            foreach (var item in registry)
+                Dispatcher.Invoke(() => _versionsPage._listBox.Items.Add(item));
+        });
+        _rootPage._versionsPageItem.IsEnabled = true;
+    }
+
+
+    async Task LoadSponsorshipImageAsync(Task<Tuple<Stream, string>?> task, Image image) => await Dispatcher.InvokeAsync(async () =>
+    {
+        if (await task is not { } sponsorship)
             return;
 
-        using var stream = item.Item1;
+        using var stream = sponsorship.Item1;
         var source = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
         source.Freeze();
 
         image.Source = source;
-        image.Tag = item.Item2;
+        image.Tag = sponsorship.Item2;
         image.Visibility = Visibility.Visible;
 
     }, DispatcherPriority.Background);
-
-    async Task LoadLeftSponsorshipAsync() => LoadSponsorshipImage(await _leftSponsorshipTask, _homePage._leftSponsorshipImage);
-    async Task LoadCenterSponsorshipAsync() => LoadSponsorshipImage(await _centerSponsorshipTask, _homePage._centerSponsorshipImage);
-    async Task LoadRightSponsorshipAsync() => LoadSponsorshipImage(await _rightSponsorshipTask, _homePage._rightSponsorshipImage);
 
     readonly Task _loadLeftSponsorshipTask;
     readonly Task _loadCenterSponsorshipTask;
@@ -179,8 +170,8 @@ sealed class AppWindow : Window
         _rootPage.Content = _homePage;
         Content = _rootPage;
 
-        _loadLeftSponsorshipTask = Task.Run(LoadLeftSponsorshipAsync);
-        _loadCenterSponsorshipTask = Task.Run(LoadCenterSponsorshipAsync);
-        _loadRightSponsorshipTask = Task.Run(LoadRightSponsorshipAsync);
+        _loadLeftSponsorshipTask = LoadSponsorshipImageAsync(_leftSponsorshipTask, _homePage._leftSponsorshipImage);
+        _loadCenterSponsorshipTask = LoadSponsorshipImageAsync(_centerSponsorshipTask, _homePage._centerSponsorshipImage);
+        _loadRightSponsorshipTask = LoadSponsorshipImageAsync(_rightSponsorshipTask, _homePage._rightSponsorshipImage);
     }
 }

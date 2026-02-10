@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections;
 using Flarial.Launcher.Services.Game;
 using Flarial.Launcher.Services.Networking;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace Flarial.Launcher.Services.Versions;
 
-public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionItem>>
+public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
     internal sealed class VersionEntry
     {
@@ -58,6 +58,17 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
         return new VersionRegistry(preferred, registry);
     });
 
+    public IEnumerator<VersionItem> GetEnumerator()
+    {
+        foreach (var value in _registry.Values)
+        {
+            if (value._item is null) continue;
+            yield return value._item;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()=>GetEnumerator();
+
     /*
         - This might be a "micro-optimization".
         - We can avoid using `System.Version` to avoid potential overhead.
@@ -94,17 +105,6 @@ public sealed class VersionRegistry : IEnumerable<KeyValuePair<string, VersionIt
                 return b._minor.CompareTo(a._minor);
 
             return b._build.CompareTo(a._build);
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    public IEnumerator<KeyValuePair<string, VersionItem>> GetEnumerator()
-    {
-        foreach (var entry in _registry)
-        {
-            if (entry.Value._item is null) continue;
-            yield return new(entry.Key, entry.Value._item);
         }
     }
 }

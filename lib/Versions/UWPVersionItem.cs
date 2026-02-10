@@ -24,7 +24,7 @@ sealed class UWPVersionItem : VersionItem
     static readonly string s_content;
     static readonly DataContractJsonSerializer s_serializer = new(typeof(string[][]), s_settings);
 
-    UWPVersionItem(string identifier) => _content = string.Format(s_content, identifier, '1');
+    UWPVersionItem(string version, string identifier) : base(version) => _content = string.Format(s_content, identifier, '1');
 
     static UWPVersionItem()
     {
@@ -51,7 +51,7 @@ sealed class UWPVersionItem : VersionItem
             lock (registry)
             {
                 if (registry.TryGetValue(key, out var entry))
-                    entry._item = new UWPVersionItem(item[1]);
+                    entry._item = new UWPVersionItem(key, item[1]);
             }
         }
     });

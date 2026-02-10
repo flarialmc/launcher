@@ -25,7 +25,7 @@ sealed class GDKVersionItem : VersionItem
     readonly byte[] _bytes;
     readonly string[] _urls;
 
-    GDKVersionItem(string[] urls, byte[] bytes) => (_urls, _bytes) = (urls, bytes);
+    GDKVersionItem(string version, string[] urls, byte[] bytes) : base(version) => (_urls, _bytes) = (urls, bytes);
 
     internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
@@ -44,7 +44,7 @@ sealed class GDKVersionItem : VersionItem
 
             lock (registry)
             {
-                GDKVersionItem value = new(item.Value, gameLaunchHelper);
+                GDKVersionItem value = new(key, item.Value, gameLaunchHelper);
                 if (registry.TryGetValue(key, out var entry)) entry._item = value;
                 else registry.Add(key, new(false) { _item = value });
             }

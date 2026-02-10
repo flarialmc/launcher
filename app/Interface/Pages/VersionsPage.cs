@@ -88,9 +88,7 @@ sealed class VersionsPage : Grid
         try
         {
             SetVisibility(false);
-
-            var listBoxItem = (ListBoxItem)_listBox.SelectedItem;
-            var versionItem = (VersionItem)listBoxItem.Tag;
+            var item = (VersionItem)_listBox.SelectedItem;
 
             if (!Minecraft.IsInstalled)
             {
@@ -104,7 +102,7 @@ sealed class VersionsPage : Grid
                 return;
             }
 
-            if (versionItem.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
+            if (item.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
             {
                 if (!Minecraft.IsGamingServicesInstalled)
                 {
@@ -122,8 +120,8 @@ sealed class VersionsPage : Grid
             if (!await AppDialog.InstallVersion.ShowAsync())
                 return;
 
-            _listBox.ScrollIntoView(listBoxItem);
-            await (_task = versionItem.InstallAsync(InvokeVersionEntryInstallAsync));
+            _listBox.ScrollIntoView(item);
+            await (_task = item.InstallAsync(InvokeVersionEntryInstallAsync));
         }
         finally
         {
@@ -137,11 +135,15 @@ sealed class VersionsPage : Grid
     internal VersionsPage(RootPage rootPage)
     {
         _rootPage = rootPage;
-        ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
 
         Margin = new(12);
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
+
+        VirtualizingPanel.SetIsVirtualizing(_listBox, true);
+        ScrollViewerHelper.SetAutoHideScrollBars(_listBox, true);
+        ScrollViewer.SetIsDeferredScrollingEnabled(_listBox, true);
+        VirtualizingPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         SetRow(_listBox, 0);
         SetColumn(_listBox, 0);
