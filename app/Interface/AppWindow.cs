@@ -153,7 +153,9 @@ sealed class AppWindow : Window
         Icon = Manifest.Icon;
         Title = "Flarial Launcher";
 
+        WindowStyle = WindowStyle.None;
         ResizeMode = ResizeMode.NoResize;
+        SizeToContent = SizeToContent.Manual;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         UseLayoutRounding = true;
