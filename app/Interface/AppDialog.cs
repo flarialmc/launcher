@@ -41,7 +41,7 @@ abstract class AppDialog
     internal static readonly AppDialog LaunchFailure = new LaunchFailure();
     internal static readonly AppDialog SelectVersion = new SelectVersion();
     internal static readonly AppDialog InstallVersion = new InstallVersion();
-    internal static readonly AppDialog IntegrityWarning = new IntegrityWarning();
+    internal static readonly AppDialog IntegrityCheck = new IntegrityCheck();
     internal static readonly AppDialog InvalidCustomDll = new InvalidCustomDll();
     internal static readonly AppDialog ConnectionFailure = new ConnectionFailure();
     internal static readonly AppDialog UnpackagedInstall = new UnpackagedInstall();
@@ -50,15 +50,17 @@ abstract class AppDialog
     internal static readonly AppDialog LauncherUpdateAvailable = new LauncherUpdateAvailable();
 }
 
-file sealed class IntegrityWarning : AppDialog
+file sealed class IntegrityCheck : AppDialog
 {
-    protected override string Title => "⚠️ Integrity Warning";
+    protected override string Title => "⚠️ Integrity Check";
     protected override string CloseButtonText => "Cancel";
     protected override string PrimaryButtonText => "Launch";
     protected override string Content => @"The launcher cannot verify the integrity of the game.
 
-• Compatibility issues might arise the client & launcher.
-• Consider reinstalling the game via the Microsoft Store or Xbox App.";
+• Compatibility issues might arise with the client & launcher.
+• Consider reinstalling the game via the Microsoft Store or Xbox App.
+
+If you need help, join our Discord.";
 }
 
 file sealed class GamingServicesMissing : AppDialog

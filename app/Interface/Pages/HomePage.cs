@@ -173,7 +173,7 @@ If you need help, join our Discord.";
 
                 if (!Minecraft.IsPackaged)
                 {
-                    if (!await AppDialog.IntegrityWarning.ShowAsync())
+                    if (!await AppDialog.IntegrityCheck.ShowAsync())
                         return;
                 }
             }
