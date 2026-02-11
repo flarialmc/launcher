@@ -58,20 +58,19 @@ sealed class VersionsPage : Grid
             false => Symbol.Download
         };
 
+        string statusLabel = state ? "Installing" : "Downloading";
+
         if (value <= 0)
         {
             _control._progressBar.Value = 0;
             _control._progressBar.IsIndeterminate = true;
-            _control._statusText.Text = "Preparing...";
+            _control._statusText.Text = $"{statusLabel}...";
             return;
         }
 
-        if (_control._progressBar.Value != value)
-        {
-            _control._progressBar.Value = value;
-            _control._progressBar.IsIndeterminate = false;
-            _control._statusText.Text = $"{value}%";
-        }
+        _control._progressBar.IsIndeterminate = false;
+        _control._progressBar.Value = value;
+        _control._statusText.Text = $"{statusLabel} {value}%";
     });
 
     void SetVisibility(bool visible)
