@@ -26,12 +26,24 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     VersionRegistry(string preferred, IReadOnlyDictionary<string, VersionEntry> registry)
     {
         _registry = registry;
-        Preferred = preferred;
+        PreferredVersion = preferred;
     }
 
-    public readonly string Preferred;
+    public readonly string PreferredVersion;
 
-    public bool Supported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
+    public static string InstalledVersion => NormalizeVersion(Minecraft.Version);
+
+    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
+
+    internal static string NormalizeVersion(string version)
+    {
+        VersionItemKey key = new(version);
+
+        if (key._minor >= 26)
+            return $"{key._minor}.{key._build}";
+
+        return version;
+    }
 
     /*
         - As the version metadata grows so does the processing time.
@@ -58,6 +70,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         return new VersionRegistry(preferred, registry);
     });
 
+
     public IEnumerator<VersionItem> GetEnumerator()
     {
         foreach (var value in _registry.Values)
@@ -67,33 +80,33 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()=>GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /*
         - This might be a "micro-optimization".
         - We can avoid using `System.Version` to avoid potential overhead.
     */
 
-    sealed class VersionItemComparer : IComparer<string>
+    unsafe readonly struct VersionItemKey
     {
-        unsafe readonly struct VersionItemKey
+        internal VersionItemKey(string version)
         {
-            internal VersionItemKey(string version)
-            {
-                var index = 0;
-                var segments = stackalloc int[3];
+            var index = 0;
+            var segments = stackalloc int[3];
 
-                foreach (var value in version) if (value is '.') ++index;
-                else segments[index] = value - '0' + segments[index] * 10;
+            foreach (var value in version) if (value is '.') ++index;
+            else segments[index] = value - '0' + segments[index] * 10;
 
-                _major = segments[0];
-                _minor = segments[1];
-                _build = segments[2];
-            }
-
-            internal readonly int _major, _minor, _build;
+            _major = segments[0];
+            _minor = segments[1];
+            _build = segments[2];
         }
 
+        internal readonly int _major, _minor, _build;
+    }
+
+    sealed class VersionItemComparer : IComparer<string>
+    {
         public int Compare(string x, string y)
         {
             VersionItemKey a = new(x), b = new(y);

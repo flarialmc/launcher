@@ -169,9 +169,9 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (!custom && !beta && !registry.Supported)
+            if (!custom && !beta && !registry.IsSupported)
             {
-                switch (await new UnsupportedVersion(Minecraft.Version, registry.Preferred).PromptAsync())
+                switch (await new UnsupportedVersion(VersionRegistry.InstalledVersion, registry.PreferredVersion).PromptAsync())
                 {
                     case ContentDialogResult.Primary:
                         _rootPage._versionsPageItem.IsSelected = true;

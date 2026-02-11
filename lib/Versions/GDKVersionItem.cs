@@ -43,9 +43,12 @@ sealed class GDKVersionItem : VersionItem
             var key = item.Key.Substring(0, index);
 
             lock (registry)
-            {
-                if (registry.TryGetValue(key, out var entry))
-                    entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
+            {            
+                if (!registry.TryGetValue(key, out var entry))
+                    continue;
+
+                var version = VersionRegistry.NormalizeVersion(key);
+                entry._item = new GDKVersionItem(version, item.Value, gameLaunchHelper);
             }
         }
     });

@@ -50,8 +50,11 @@ sealed class UWPVersionItem : VersionItem
 
             lock (registry)
             {
-                if (registry.TryGetValue(key, out var entry))
-                    entry._item = new UWPVersionItem(key, item[1]);
+                if (!registry.TryGetValue(key, out var entry))
+                    continue;
+
+                var version = VersionRegistry.NormalizeVersion(key);
+                entry._item = new UWPVersionItem(key, item[1]);
             }
         }
     });

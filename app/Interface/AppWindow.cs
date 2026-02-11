@@ -53,7 +53,7 @@ sealed class AppWindow : Window
             }
 
             var registry = (VersionRegistry)Tag;
-            var text = $"{(registry.Supported ? "✔️" : "❌")} {Minecraft.Version}";
+            var text = $"{(registry.IsSupported ? "✔️" : "❌")} {VersionRegistry.InstalledVersion}";
             _homePage._packageVersionTextBlock.Text = text;
         });
     }
