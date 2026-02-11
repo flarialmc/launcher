@@ -18,7 +18,7 @@ sealed class GDKVersionItem : VersionItem
     public override bool IsGameDevelopmentKit => true;
 
     const string GameLaunchHelperUrl = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
-    const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@refs/heads/master/urls.json";
+    const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
     static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, Dictionary<string, string[]>>), s_settings);
 
@@ -44,9 +44,8 @@ sealed class GDKVersionItem : VersionItem
 
             lock (registry)
             {
-                GDKVersionItem value = new(key, item.Value, gameLaunchHelper);
-                if (registry.TryGetValue(key, out var entry)) entry._item = value;
-                else registry.Add(key, new(false) { _item = value });
+                if (registry.TryGetValue(key, out var entry))
+                    entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
             }
         }
     });
