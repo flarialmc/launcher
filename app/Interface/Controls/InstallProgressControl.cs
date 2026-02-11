@@ -16,10 +16,21 @@ sealed class InstallProgressControl : Grid
 
     internal readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
-        VerticalAlignment = VerticalAlignment.Center,
+        VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
+        Height = 32,
         Foreground = new SolidColorBrush(Colors.White),
         Visibility = Visibility.Hidden
+    };
+
+    internal readonly TextBlock _statusText = new()
+    {
+        VerticalAlignment = VerticalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Foreground = new SolidColorBrush(Colors.White),
+        FontWeight = FontWeights.Bold,
+        Visibility = Visibility.Hidden,
+        IsHitTestVisible = false
     };
 
     internal readonly SymbolIcon _icon = new()
@@ -46,5 +57,9 @@ sealed class InstallProgressControl : Grid
         SetRow(_progressBar, 0);
         SetColumn(_progressBar, 1);
         Children.Add(_progressBar);
+
+        SetRow(_statusText, 0);
+        SetColumn(_statusText, 1);
+        Children.Add(_statusText);
     }
 }

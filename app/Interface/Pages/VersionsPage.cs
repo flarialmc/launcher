@@ -10,6 +10,7 @@ using System.ComponentModel;
 using ModernWpf.Controls.Primitives;
 using ModernWpf.Controls;
 using System.Diagnostics;
+using System.Windows.Media;
 
 namespace Flarial.Launcher.Interface.Pages;
 
@@ -61,6 +62,7 @@ sealed class VersionsPage : Grid
         {
             _control._progressBar.Value = 0;
             _control._progressBar.IsIndeterminate = true;
+            _control._statusText.Text = "Preparing...";
             return;
         }
 
@@ -68,6 +70,7 @@ sealed class VersionsPage : Grid
         {
             _control._progressBar.Value = value;
             _control._progressBar.IsIndeterminate = false;
+            _control._statusText.Text = $"{value}%";
         }
     });
 
@@ -82,6 +85,7 @@ sealed class VersionsPage : Grid
         _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
         _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        _control._statusText.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     async void OnButtonClick(object sender, EventArgs args)
