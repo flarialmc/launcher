@@ -163,10 +163,19 @@ If you need help, join our Discord.";
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsGamingServicesInstalled)
+            if (Minecraft.UsingGameDevelopmentKit)
             {
-                await AppDialog.GamingServicesMissing.ShowAsync();
-                return;
+                if (!Minecraft.IsGamingServicesInstalled)
+                {
+                    await AppDialog.GamingServicesMissing.ShowAsync();
+                    return;
+                }
+
+                if (!Minecraft.IsPackaged)
+                {
+                    if (!await AppDialog.IntegrityWarning.ShowAsync())
+                        return;
+                }
             }
 
             if (!custom && !beta && !registry.IsSupported)
