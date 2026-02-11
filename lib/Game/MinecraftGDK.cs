@@ -84,13 +84,6 @@ unsafe sealed class MinecraftGDK : Minecraft
             return window.ProcessId;
         }
 
-        /*
-            - The launch contract can't be fulfilled by unpackaged installs.
-            - Unlike UWP, GDK only guarantees consistency when packaged.
-            - Hence, we simply attempt to activate the game's window if available.
-        */
-
-        if (!IsPackaged) return null;
         if (Activate() is not { } processId) return null;
         if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
