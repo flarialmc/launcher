@@ -1,7 +1,7 @@
 using ModernWpf.Controls;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Flarial.Launcher.Interface.Controls;
 
@@ -18,20 +18,26 @@ sealed class InstallProgressControl : Grid
     {
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
-        Height = 32,
-        Visibility = Visibility.Hidden
+        Visibility = Visibility.Collapsed
     };
 
-    internal readonly TextBlock _statusText = new()
+    internal readonly TextBlock _textBlock = new()
     {
+        Text = "Preparing...",
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Foreground = new SolidColorBrush(Colors.White),
-        FontWeight = FontWeights.Bold,
-        Visibility = Visibility.Hidden,
-        IsHitTestVisible = false
+        Visibility = Visibility.Collapsed
     };
 
+    [Obsolete("", true)]
+    internal readonly Grid _grid = new()
+    {
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        Visibility = Visibility.Collapsed
+    };
+
+    [Obsolete("", true)]
     internal readonly SymbolIcon _icon = new()
     {
         VerticalAlignment = VerticalAlignment.Center,
@@ -42,23 +48,19 @@ sealed class InstallProgressControl : Grid
 
     internal InstallProgressControl()
     {
-        ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-        ColumnDefinitions.Add(new());
-
-        SetRow(_icon, 0);
-        SetColumn(_icon, 0);
-        Children.Add(_icon);
-
         SetRow(_button, 0);
-        SetColumn(_button, 1);
+        SetColumn(_button, 0);
         Children.Add(_button);
 
         SetRow(_progressBar, 0);
-        SetColumn(_progressBar, 1);
+        SetColumn(_progressBar, 0);
         Children.Add(_progressBar);
 
-        SetRow(_statusText, 0);
-        SetColumn(_statusText, 1);
-        Children.Add(_statusText);
+        SetRow(_textBlock, 0);
+        SetColumn(_textBlock, 0);
+        Children.Add(_textBlock);
+
+        SetZIndex(_textBlock, int.MaxValue);
+        SetZIndex(_progressBar, int.MinValue);
     }
 }

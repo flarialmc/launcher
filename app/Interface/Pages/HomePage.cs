@@ -31,7 +31,6 @@ sealed class HomePage : Grid
     internal readonly ModernWpf.Controls.ProgressBar _progressBar = new()
     {
         Width = Manifest.Icon.Width,
-        Foreground = new SolidColorBrush(Colors.White),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
         Margin = new(0, 90, 0, 0),

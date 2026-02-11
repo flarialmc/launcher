@@ -52,25 +52,19 @@ sealed class VersionsPage : Grid
 
     void InvokeVersionEntryInstallAsync(int value, bool state) => Dispatcher.Invoke(() =>
     {
-        _control._icon.Symbol = state switch
-        {
-            true => Symbol.Upload,
-            false => Symbol.Download
-        };
-
-        string statusLabel = state ? "Installing" : "Downloading";
+        string text = state ? "Installing..." : "Downloading...";
 
         if (value <= 0)
         {
             _control._progressBar.Value = 0;
+            _control._textBlock.Text = $"{text}";
             _control._progressBar.IsIndeterminate = true;
-            _control._statusText.Text = $"{statusLabel}...";
             return;
         }
 
-        _control._progressBar.IsIndeterminate = false;
         _control._progressBar.Value = value;
-        _control._statusText.Text = $"{statusLabel} {value}%";
+        _control._progressBar.IsIndeterminate = false;
+        _control._textBlock.Text = $"{text} {value}%";
     });
 
     void SetVisibility(bool visible)
@@ -78,13 +72,12 @@ sealed class VersionsPage : Grid
         _listBox.IsEnabled = visible;
 
         _control._progressBar.Value = 0;
+        _control._textBlock.Text = "Preparing...";
         _control._progressBar.IsIndeterminate = !visible;
 
-        _control._icon.Symbol = Symbol.Download;
         _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
-        _control._icon.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+        _control._textBlock.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
         _control._progressBar.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
-        _control._statusText.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     async void OnButtonClick(object sender, EventArgs args)
@@ -106,15 +99,6 @@ sealed class VersionsPage : Grid
                 return;
             }
 
-            if (item.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
-            {
-                if (!Minecraft.IsGamingServicesInstalled)
-                {
-                    await AppDialog.GamingServicesMissing.ShowAsync();
-                    return;
-                }
-            }
-
             if (_listBox.SelectedItem is null)
             {
                 await AppDialog.SelectVersion.ShowAsync();
@@ -123,6 +107,15 @@ sealed class VersionsPage : Grid
 
             if (!await AppDialog.InstallVersion.ShowAsync())
                 return;
+
+            if (item.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
+            {
+                if (!Minecraft.IsGamingServicesInstalled)
+                {
+                    await AppDialog.GamingServicesMissing.ShowAsync();
+                    return;
+                }
+            }
 
             _listBox.ScrollIntoView(item);
             await (_task = item.InstallAsync(InvokeVersionEntryInstallAsync));
