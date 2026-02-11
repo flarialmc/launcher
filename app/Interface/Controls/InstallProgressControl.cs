@@ -19,7 +19,6 @@ sealed class InstallProgressControl : Grid
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch,
         Height = 32,
-        Foreground = new SolidColorBrush(Colors.White),
         Visibility = Visibility.Hidden
     };
 
