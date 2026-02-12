@@ -55,17 +55,6 @@ public unsafe sealed class Library
     public Library(string path)
     {
         _path = Path.GetFullPath(path);
-
-        if (!Path.HasExtension(_path))
-        {
-            _invalid = true;
-            return;
-        }
-
-        if (!File.Exists(_path))
-        {
-            _invalid = true;
-            return;
-        }
+        _invalid = !Path.HasExtension(_path);
     }
 }
