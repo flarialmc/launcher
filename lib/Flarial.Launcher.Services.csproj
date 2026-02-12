@@ -9,7 +9,7 @@
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <NoWarn>PInvoke009,IDE0130,CS8500</NoWarn>
+    <NoWarn>PInvoke009</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <PublishRelease>true</PublishRelease>
@@ -25,12 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--
-      - `System.Numerics.Vectors` is included here to resolve an issue.
-      - On some machines, the runtime tries to reference a non-existent version.
-      - Including the latest version ensures, the runtime loads it.
-    -->
-
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
