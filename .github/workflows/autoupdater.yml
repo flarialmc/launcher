@@ -79,6 +79,8 @@ jobs:
       - name: Build
         run: |
           dotnet publish "app/Flarial.Launcher.csproj"
+          dotnet publish "extras/Flarial.Version.Changer/src/Flarial.Version.Changer.csproj"
+
           # msbuild -t:Restore Flarial.Launcher.csproj
           # msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
@@ -100,6 +102,11 @@ jobs:
           cp D:/a/launcher/launcher/app/bin/Release/publish/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
           git add launcher/Flarial.Launcher.exe
           git commit -a -m "Update launcher"
+          git push origin main
+
+          cp D:/a/launcher/launcher/extras/Flarial.Version.Changer/src/bin/Release/publish/Flarial.Version.Changer.exe ./launcher/Flarial.Version.Changer.exe
+          git add launcher/Flarial.Version.Changer.exe
+          git commit -a -m "Update version changer"
           git push origin main
 
         env:
