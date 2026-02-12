@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using ModernWpf;
@@ -38,6 +39,9 @@ Exception: {0}
     [STAThread]
     static void Main()
     {
+        using var _ = new Mutex(default, "F692A90B-7CD3-4D02-8A19-38E31C769CC0", out var created);
+        if (!created) return;
+
         Application application = new();
         application.Resources.MergedDictionaries.Add(new ThemeResources());
         application.Resources.MergedDictionaries.Add(new XamlControlsResources());
