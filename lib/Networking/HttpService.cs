@@ -19,11 +19,15 @@ public static class HttpService
 
     static readonly HttpClient s_client = new(new DnsOverHttpsHandler(), true);
 
-    static HttpClient HttpClient => UseProxy ? s_proxy : s_client;
+    static HttpClient HttpClient => (bool)UseProxy! ? s_proxy : s_client;
 
     static readonly int s_length = SystemPageSize;
 
-    public static bool UseProxy { internal get; set; }
+    public static bool? UseProxy
+    {
+        set => field ??= value;
+        internal get => field ??= false;
+    }
 
     public static async Task<Stream> GetStreamAsync(string url) => await HttpClient.GetStreamAsync(url);
 

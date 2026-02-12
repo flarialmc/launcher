@@ -61,11 +61,14 @@ del ""%~f0""
     {
         StringBuilder builder = new(s_arguments);
 
-        if (HttpService.UseProxy)
+        if ((bool)HttpService.UseProxy!)
             builder.Append(' ').Append("--use-proxy");
 
-        if (DnsOverHttpsHandler.UseDnsOverHttps)
+        if ((bool)DnsOverHttpsHandler.UseDnsOverHttps!)
             builder.Append(' ').Append("--use-dns-over-https");
+
+        if ((bool)Minecraft.AllowUnsignedInstalls!)
+            builder.Append(' ').Append("--allow-unsigned-installs");
 
         await HttpService.DownloadAsync(LauncherDownloadUrl, s_source, action);
 

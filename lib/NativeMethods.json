@@ -1,8 +1,7 @@
 {
     "$schema": "https://aka.ms/CsWin32.schema.json",
-    "useSafeHandles": false,
     "wideCharOnly": true,
-    "emitSingleFile": true,
+    "useSafeHandles": false,
     "friendlyOverloads": {
         "enabled": false
     }

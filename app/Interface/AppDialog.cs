@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Services.Game;
 using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface;
@@ -41,20 +42,26 @@ abstract class AppDialog
     internal static readonly AppDialog LaunchFailure = new LaunchFailure();
     internal static readonly AppDialog SelectVersion = new SelectVersion();
     internal static readonly AppDialog InstallVersion = new InstallVersion();
-    internal static readonly AppDialog IntegrityCheck = new IntegrityCheck();
+    internal static readonly AppDialog UnsignedInstall = new UnsignedInstall();
     internal static readonly AppDialog InvalidCustomDll = new InvalidCustomDll();
     internal static readonly AppDialog ConnectionFailure = new ConnectionFailure();
     internal static readonly AppDialog UnpackagedInstall = new UnpackagedInstall();
     internal static readonly AppDialog ClientUpdateFailure = new ClientUpdateFailure();
+    internal static readonly AppDialog AllowUnsignedInstall = new AllowUnsignedInstall();
     internal static readonly AppDialog GamingServicesMissing = new GamingServicesMissing();
     internal static readonly AppDialog LauncherUpdateAvailable = new LauncherUpdateAvailable();
 }
 
-file sealed class IntegrityCheck : AppDialog
+file sealed class AllowUnsignedInstall : UnsignedInstall
 {
-    protected override string Title => "⚠️ Integrity Check";
-    protected override string CloseButtonText => "Cancel";
+    protected override string? CloseButtonText => "Cancel";
     protected override string PrimaryButtonText => "Launch";
+}
+
+file class UnsignedInstall : AppDialog
+{
+    protected override string Title => "⚠️ Unsigned Install";
+    protected override string PrimaryButtonText => "Back";
     protected override string Content => @"The launcher cannot verify the integrity of the game.
 
 • Compatibility issues might arise with the client & launcher.

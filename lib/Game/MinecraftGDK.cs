@@ -54,11 +54,21 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsGamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
-        if (GetProcessId() is { } processId)
-            return processId;
+        /*
+            - Unsigned installs might fail the activation contract.
+            - Prefer to fail unless unsigned installs are allowed.
+        */
+
+        if (!(bool)AllowUnsignedInstalls!) if (!IsPackaged)
+            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
 
         var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
-        if (!File.Exists(path)) throw new FileNotFoundException();
+
+        if (!File.Exists(path))
+            throw new FileNotFoundException(null, path);
+
+        if (GetProcessId() is { } processId)
+            return processId;
 
         /*
             - We use PowerShell to directly start the game.

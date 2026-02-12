@@ -10,6 +10,7 @@ namespace Flarial.Launcher.Services.Modding;
 
 public unsafe sealed class Library
 {
+    readonly bool _invalid;
     internal readonly string _path;
 
     /*
@@ -21,7 +22,7 @@ public unsafe sealed class Library
     {
         get
         {
-            if (_path is null) return false;
+            if (_invalid) return false;
             var module = HMODULE.Null;
 
             try
@@ -54,6 +55,17 @@ public unsafe sealed class Library
     public Library(string path)
     {
         _path = Path.GetFullPath(path);
-        if (!Path.HasExtension(_path) || !File.Exists(_path)) _path = null!;
+
+        if (!Path.HasExtension(_path))
+        {
+            _invalid = true;
+            return;
+        }
+
+        if (!File.Exists(_path))
+        {
+            _invalid = true;
+            return;
+        }
     }
 }

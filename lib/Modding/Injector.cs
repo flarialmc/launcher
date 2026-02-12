@@ -35,7 +35,7 @@ public unsafe static class Injector
     public static uint? Launch(bool initialized, Library library)
     {
         if (!library.IsLoadable)
-            throw new FileLoadException();
+            throw new FileLoadException(null, library._path);
 
         var security = File.GetAccessControl(library._path);
         security.SetAccessRule(s_rule);

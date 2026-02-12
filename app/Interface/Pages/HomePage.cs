@@ -173,8 +173,16 @@ If you need help, join our Discord.";
 
                 if (!Minecraft.IsPackaged)
                 {
-                    if (!await AppDialog.IntegrityCheck.ShowAsync())
+                    if ((bool)Minecraft.AllowUnsignedInstalls!)
+                    {
+                        if (!await AppDialog.AllowUnsignedInstall.ShowAsync())
+                            return;
+                    }
+                    else
+                    {
+                        await AppDialog.UnsignedInstall.ShowAsync();
                         return;
+                    }
                 }
             }
 

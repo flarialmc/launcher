@@ -15,6 +15,12 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
+    public static bool? AllowUnsignedInstalls
+    {
+        get => field ??= false;
+        set => field ??= value;
+    }
+
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 

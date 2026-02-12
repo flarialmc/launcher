@@ -9,6 +9,7 @@ using Flarial.Launcher.Services.Networking;
 using ModernWpf;
 using ModernWpf.Controls;
 using System.IO;
+using Flarial.Launcher.Services.Game;
 
 namespace Flarial.Launcher;
 
@@ -77,6 +78,10 @@ Exception: {1}
 
                 case "--use-proxy":
                     HttpService.UseProxy = true;
+                    break;
+
+                case "--allow-unsigned-installs":
+                    Minecraft.AllowUnsignedInstalls = true;
                     break;
 
                 case "--use-dns-over-https":

@@ -18,7 +18,11 @@ namespace Flarial.Launcher.Services.Networking;
 
 public sealed class DnsOverHttpsHandler : HttpClientHandler
 {
-    public static bool UseDnsOverHttps { internal get; set; }
+    public static bool? UseDnsOverHttps
+    {
+        set => field ??= value;
+        internal get => field ??= false;
+    }
 
     internal DnsOverHttpsHandler()
     {
@@ -62,7 +66,7 @@ public sealed class DnsOverHttpsHandler : HttpClientHandler
     {
         var uri = request.RequestUri;
 
-        if (UseDnsOverHttps && uri.HostNameType is Dns && await GetProtocolAsync() is { } protocol)
+        if ((bool)UseDnsOverHttps! && uri.HostNameType is Dns && await GetProtocolAsync() is { } protocol)
         {
             var name = uri.Host;
 
