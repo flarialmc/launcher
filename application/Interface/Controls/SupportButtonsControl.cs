@@ -31,24 +31,10 @@ sealed class SupportButtonsControl : UniformGrid
 
     void OnLauncherFolderButtonClick(object sender, EventArgs args) => PInvoke.ShellExecute(_launcherPath);
 
-    async void OnClientFolderButtonClick(object sender, EventArgs args)
-    {
-        if (!Minecraft.IsInstalled)
-        {
-            await AppDialog.NotInstalled.ShowAsync();
-            return;
-        }
-
-        PInvoke.ShellExecute(Directory.CreateDirectory(Minecraft.UsingGameDevelopmentKit switch
-        {
-            true => Directory.CreateDirectory(_gdkPath).FullName,
-            false => Path.Combine(ApplicationDataManager.CreateForPackageFamily(Minecraft.PackageFamilyName).RoamingFolder.Path, "Flarial")
-        }).FullName);
-    }
+    async void OnClientFolderButtonClick(object sender, EventArgs args) => PInvoke.ShellExecute(Directory.CreateDirectory(_gdkPath).FullName);
 
     internal SupportButtonsControl()
     {
-
         Rows = 1;
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);
