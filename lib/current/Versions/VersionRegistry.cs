@@ -60,9 +60,8 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
         foreach (var item in items) registry.Add(item.Key, new(item.Value));
 
-        var preferred = registry.Keys.First();
-        var gdk = GDKVersionItem.QueryAsync(registry);
-        await Task.WhenAll(gdk);
+        await GDKVersionItem.QueryAsync(registry);
+        var preferred = registry.First(_ => _.Value._supported).Key;
 
         return new VersionRegistry(preferred, registry);
     });
