@@ -6,12 +6,11 @@
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
 
-    <NoWarn>CS2008</NoWarn>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <NoWarn>PInvoke009,IDE0130</NoWarn>
+    <NoWarn>PInvoke009,CS2008</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
