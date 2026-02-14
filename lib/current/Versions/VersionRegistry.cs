@@ -5,6 +5,7 @@ using Flarial.Launcher.Services.Networking;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using System.Runtime.Serialization.Json;
 
 namespace Flarial.Launcher.Services.Versions;
 
@@ -18,8 +19,9 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     }
 
     static readonly VersionItemComparer s_comparer = new();
+    static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, bool>), VersionItem.s_settings);
 
-    const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
+    const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/Supported.json";
 
     readonly SortedDictionary<string, VersionEntry> _registry;
 
@@ -52,15 +54,11 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     public static async Task<VersionRegistry> CreateAsync() => await Task.Run(static async () =>
     {
-        SortedDictionary<string, VersionEntry> registry = new(s_comparer);
         using var stream = await HttpService.GetStreamAsync(SupportedVersionsUrl);
+        var items = (Dictionary<string, bool>)s_serializer.ReadObject(stream);
 
-        string value = string.Empty;
-        using StreamReader reader = new(stream);
-
-        while ((value = await reader.ReadLineAsync()) is { })
-            if (!string.IsNullOrEmpty(value = value.Trim()))
-                registry.Add(value, new(true));
+        SortedDictionary<string, VersionEntry> registry = new(s_comparer);
+        foreach (var item in items) registry.Add(item.Key, new(item.Value));
 
         var preferred = registry.Keys.First();
         var gdk = GDKVersionItem.QueryAsync(registry);

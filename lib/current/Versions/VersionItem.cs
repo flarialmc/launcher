@@ -19,7 +19,7 @@ public abstract class VersionItem
     public override string ToString() => _version;
 
     static readonly string s_path = Path.GetTempPath();
-    private protected static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
+    internal static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
     public abstract Task<string> GetUrlAsync();
     public abstract bool IsGameDevelopmentKit { get; }
