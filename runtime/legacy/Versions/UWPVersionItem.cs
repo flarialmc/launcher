@@ -8,9 +8,9 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Flarial.Launcher.Services.Networking;
+using Flarial.Launcher.Runtime.Networking;
 
-namespace Flarial.Launcher.Services.Versions;
+namespace Flarial.Launcher.Runtime.Versions;
 
 sealed class UWPVersionItem : VersionItem
 {

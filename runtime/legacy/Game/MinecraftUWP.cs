@@ -4,7 +4,7 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 using Windows.Win32.UI.Shell;
 using Windows.Management.Core;
 
-namespace Flarial.Launcher.Services.Game;
+namespace Flarial.Launcher.Runtime.Game;
 
 using static System.NativeProcess;
 
