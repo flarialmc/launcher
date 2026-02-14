@@ -1,40 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
     <TargetFramework>net481</TargetFramework>
 
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>Resources\Application.ico</ApplicationIcon>
-    <ApplicationManifest>Resources\Application.manifest</ApplicationManifest>
-
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <NoWarn>PInvoke009,CS2008</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-    <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
-
-    <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\AssemblyVersion.cs" />
-    <EmbeddedResource Include="Resources\Application.ico" LogicalName="Application.ico" />
+    <Reference Include="System.Net.Http" />
+    <Compile Include="..\..\AssemblyVersion.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lib\current\Flarial.Launcher.Services.csproj" PrivateAssets="All" />
+    <ProjectReference Include="../win32/Windows.Win32.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
-    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
+    <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

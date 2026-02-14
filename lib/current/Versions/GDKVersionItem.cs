@@ -27,7 +27,7 @@ sealed class GDKVersionItem : VersionItem
 
     GDKVersionItem(string version, string[] urls, byte[] bytes) : base(version) => (_urls, _bytes) = (urls, bytes);
 
-    internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
         var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUrl);
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUrl);

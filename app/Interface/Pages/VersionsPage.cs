@@ -72,7 +72,7 @@ sealed class VersionsPage : Grid
         _listBox.IsEnabled = visible;
 
         _control._progressBar.Value = 0;
-        _control._textBlock.Text = "Preparing...";
+        _control._textBlock.Text = "Downloading...";
         _control._progressBar.IsIndeterminate = !visible;
 
         _control._button.Visibility = visible ? Visibility.Visible : Visibility.Hidden;

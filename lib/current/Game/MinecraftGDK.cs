@@ -12,7 +12,6 @@ using Windows.ApplicationModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell;
-using Flarial.Launcher.Services.System;
 using System;
 using System.ComponentModel;
 

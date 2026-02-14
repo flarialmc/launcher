@@ -11,7 +11,6 @@ using static System.NativeProcess;
 unsafe sealed class MinecraftUWP : Minecraft
 {
     internal MinecraftUWP() : base() { }
-
     protected override string Class => "MSCTFIME UI";
 
     static readonly IPackageDebugSettings s_package = (IPackageDebugSettings)new PackageDebugSettings();

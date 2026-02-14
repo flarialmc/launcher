@@ -36,7 +36,7 @@ sealed class UWPVersionItem : VersionItem
         s_content = reader.ReadToEnd();
     }
 
-    internal static async Task QueryAsync(IDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
         using var stream = await HttpService.GetStreamAsync(AppxPackagesUrl);
         var items = (string[][])s_serializer.ReadObject(stream);

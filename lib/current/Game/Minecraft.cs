@@ -6,6 +6,7 @@ using Windows.ApplicationModel;
 using Flarial.Launcher.Services.System;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
+using System;
 
 namespace Flarial.Launcher.Services.Game;
 
@@ -14,6 +15,22 @@ using static System.NativeProcess;
 public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
+    protected abstract string Class { get; }
+
+    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new NotSupportedException();
+
+     static readonly Minecraft s_gdk = new MinecraftGDK();
+    internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
+
+    internal static string Version
+    {
+        get
+        {
+            var _ = Package.Id.Version;
+            return $"{_.Major}.{_.Minor}.{_.Build / 100}";
+        }
+    }
 
     public static bool? AllowUnsignedInstalls
     {
@@ -21,19 +38,10 @@ public unsafe abstract class Minecraft
         set => field ??= value;
     }
 
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : s_uwp;
-    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-
-    static readonly Minecraft s_uwp = new MinecraftUWP();
-    static readonly Minecraft s_gdk = new MinecraftGDK();
-    internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
-    internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
-
     protected abstract uint? Activate();
-    protected abstract string Class { get; }
-    public bool IsRunning => GetWindow() is { };
     public abstract uint? Launch(bool initialized);
 
+    public bool IsRunning => GetWindow() is { };
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };

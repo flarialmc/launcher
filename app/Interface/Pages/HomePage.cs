@@ -185,6 +185,11 @@ If you need help, join our Discord.";
                     }
                 }
             }
+            else
+            {
+                await AppDialog.UWPDeprecated.ShowAsync();
+                return;
+            }
 
             if (!custom && !beta && !registry.IsSupported)
             {

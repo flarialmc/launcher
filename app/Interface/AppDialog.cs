@@ -41,6 +41,7 @@ abstract class AppDialog
     internal static readonly AppDialog NotInstalled = new NotInstalled();
     internal static readonly AppDialog LaunchFailure = new LaunchFailure();
     internal static readonly AppDialog SelectVersion = new SelectVersion();
+    internal static readonly AppDialog UWPDeprecated = new UWPDeprecated();
     internal static readonly AppDialog InstallVersion = new InstallVersion();
     internal static readonly AppDialog UnsignedInstall = new UnsignedInstall();
     internal static readonly AppDialog InvalidCustomDll = new InvalidCustomDll();
@@ -50,6 +51,18 @@ abstract class AppDialog
     internal static readonly AppDialog AllowUnsignedInstall = new AllowUnsignedInstall();
     internal static readonly AppDialog GamingServicesMissing = new GamingServicesMissing();
     internal static readonly AppDialog LauncherUpdateAvailable = new LauncherUpdateAvailable();
+}
+
+file sealed class UWPDeprecated : AppDialog
+{
+    protected override string PrimaryButtonText => "Back";
+    protected override string Title => "⚠️ UWP Deprecated";
+    protected override string Content => @"The client & launcher no longer support UWP builds.
+
+• UWP builds are now outdated & deprecated.
+• Consider updating to the latest GDK build of the game.
+
+If you need help, join our Discord.";
 }
 
 file sealed class AllowUnsignedInstall : UnsignedInstall

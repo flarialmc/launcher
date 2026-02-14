@@ -21,9 +21,9 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/NewSupported.txt";
 
-    readonly IReadOnlyDictionary<string, VersionEntry> _registry;
+    readonly SortedDictionary<string, VersionEntry> _registry;
 
-    VersionRegistry(string preferred, IReadOnlyDictionary<string, VersionEntry> registry)
+    VersionRegistry(string preferred, SortedDictionary<string, VersionEntry> registry)
     {
         _registry = registry;
         PreferredVersion = preferred;
@@ -63,9 +63,8 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
                 registry.Add(value, new(true));
 
         var preferred = registry.Keys.First();
-        var uwp = UWPVersionItem.QueryAsync(registry);
         var gdk = GDKVersionItem.QueryAsync(registry);
-        await Task.WhenAll(uwp, gdk);
+        await Task.WhenAll(gdk);
 
         return new VersionRegistry(preferred, registry);
     });
