@@ -26,14 +26,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     static MinecraftGDK()
     {
-        /*
-            - Initialize a minimal PowerShell session.
-            - Avoid defaults since they might change.
-        */
-
         s_state.ImportPSModule(["Appx"]);
-        s_state.LanguageMode = PSLanguageMode.NoLanguage;
-        s_state.ExecutionPolicy = ExecutionPolicy.Restricted;
         s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
     }
 
@@ -42,25 +35,6 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     protected override uint? Activate()
     {
-        /*
-            - Unlike UWP builds, we are bootstrapping the game manually.
-            - Verify if the game is installed & Gaming Services is available.
-        */
-
-        if (!IsInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
-
-        if (!IsGamingServicesInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
-
-        /*
-            - Unsigned installs might fail the activation contract.
-            - Prefer to fail unless unsigned installs are allowed.
-        */
-
-        if (!(bool)AllowUnsignedInstalls!) if (!IsPackaged)
-            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
-
         var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
 
         if (!File.Exists(path))
@@ -87,14 +61,36 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     public override uint? Launch(bool initialized)
     {
+        /*
+            - Unlike UWP builds, we are bootstrapping the game manually.
+            - Hence, verify if the game & Gaming Services are installed.
+        */
+
+        if (!IsInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+
+        if (!IsGamingServicesInstalled)
+            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
+
+        /*
+            - Unsigned installs might fail the launch contract.
+            - Prefer to fail unless unsigned installs are allowed.
+        */
+
+        if (!(bool)AllowUnsignedInstalls!) if (!IsPackaged)
+            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
+
         if (GetWindow() is { } window)
         {
             window.Switch();
             return window.ProcessId;
         }
 
-        if (Activate() is not { } processId) return null;
-        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+        if (Activate() is not { } processId)
+            return null;
+
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
+            return null;
 
         using (process)
         {
