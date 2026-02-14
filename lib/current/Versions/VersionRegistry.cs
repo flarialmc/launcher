@@ -61,7 +61,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         foreach (var item in items) registry.Add(item.Key, new(item.Value));
 
         await GDKVersionItem.QueryAsync(registry);
-        var preferred = registry.First(_ => _.Value._supported).Key;
+        var preferred = registry.First(static _ => _.Value._supported).Key;
 
         return new VersionRegistry(preferred, registry);
     });
