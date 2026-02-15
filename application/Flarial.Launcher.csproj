@@ -17,8 +17,9 @@
     <PublishRelease>true</PublishRelease>
 
     <DebugType>embedded</DebugType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 

@@ -1,8 +1,4 @@
 GetPackageFamilyName
-PackageDebugSettings
-IPackageDebugSettings
-ApplicationActivationManager
-IApplicationActivationManager
 OpenProcess
 GetCurrentProcessId
 GetCurrentProcess
@@ -17,7 +13,6 @@ CompareStringOrdinal
 FindWindowEx
 GetWindowThreadProcessId
 SwitchToThisWindow
-GetFileAttributes
 CreateRemoteThread
 LoadLibraryEx
 GetModuleHandle
@@ -31,7 +26,6 @@ IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64
 INFINITE
 INVALID_HANDLE_VALUE
-INVALID_FILE_ATTRIBUTES
 PROCESS_CREATION_FLAGS
 PACKAGE_FAMILY_NAME_MAX_LENGTH
 WTS_CURRENT_SESSION

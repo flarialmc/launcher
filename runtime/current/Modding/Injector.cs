@@ -1,6 +1,4 @@
 using System.IO;
-using System.Security.AccessControl;
-using System.Security.Principal;
 using Flarial.Launcher.Runtime.Game;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
@@ -9,8 +7,6 @@ using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
 using static Windows.Win32.System.Memory.VIRTUAL_FREE_TYPE;
 using static Windows.Win32.Foundation.HANDLE;
 using Windows.Win32.Foundation;
-using static System.Security.AccessControl.FileSystemRights;
-using static System.Security.AccessControl.AccessControlType;
 using static System.Text.Encoding;
 using Windows.Win32.System.Threading;
 
@@ -21,7 +17,6 @@ using static System.NativeProcess;
 public unsafe static class Injector
 {
     static readonly LPTHREAD_START_ROUTINE s_routine;
-    static readonly FileSystemAccessRule s_rule = new(new SecurityIdentifier("S-1-15-2-1"), FullControl, Allow);
 
     static Injector()
     {
@@ -37,12 +32,11 @@ public unsafe static class Injector
         if (!library.IsLoadable)
             throw new FileLoadException(null, library._path);
 
-        var security = File.GetAccessControl(library._path);
-        security.SetAccessRule(s_rule);
-        File.SetAccessControl(library._path, security);
+        if (Minecraft.Current.Launch(initialized) is not { } processId)
+            return null;
 
-        if (Minecraft.Current.Launch(initialized) is not { } processId) return null;
-        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
+        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process)
+            return null;
 
         using (process)
         {
