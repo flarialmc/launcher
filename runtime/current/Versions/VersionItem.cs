@@ -4,9 +4,8 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Networking;
 using static Windows.Win32.Foundation.WIN32_ERROR;
-using Flarial.Launcher.Runtime.System;
+using Flarial.Launcher.Runtime.Services;
 
 namespace Flarial.Launcher.Runtime.Versions;
 
@@ -20,13 +19,7 @@ public abstract class VersionItem
 
     static readonly string s_path = Path.GetTempPath();
 
-    [Obsolete("", true)]
-    internal static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
-
-    public abstract Task<string> GetUrlAsync();
-
-    [Obsolete("", true)]
-    public abstract bool IsGameDevelopmentKit { get; }
+    protected abstract Task<string> GetUrlAsync();
 
     public virtual async Task InstallAsync(Action<int, bool> action)
     {

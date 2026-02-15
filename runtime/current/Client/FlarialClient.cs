@@ -4,11 +4,11 @@ using static System.StringComparison;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Modding;
-using Flarial.Launcher.Runtime.Networking;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.System;
 using System.Runtime.Serialization.Json;
 using System.Collections.Generic;
+using Flarial.Launcher.Runtime.Services;
 
 namespace Flarial.Launcher.Runtime.Client;
 
@@ -17,7 +17,7 @@ sealed class FlarialClientBeta : FlarialClient
     internal FlarialClientBeta() : base() { }
     protected override string Build => nameof(Beta);
     protected override string Name => $"Flarial.Client.{nameof(Beta)}.dll";
-    protected override string Url => "https://cdn.flarial.xyz/dll/beta.dll";
+    protected override string Uri => "https://cdn.flarial.xyz/dll/beta.dll";
     protected override string Identifer => "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
 }
 
@@ -25,7 +25,7 @@ sealed class FlarialClientRelease : FlarialClient
 {
     internal FlarialClientRelease() : base() { }
     protected override string Build => nameof(Release);
-    protected override string Url => "https://cdn.flarial.xyz/dll/latest.dll";
+    protected override string Uri => "https://cdn.flarial.xyz/dll/latest.dll";
     protected override string Name => $"Flarial.Client.{nameof(Release)}.dll";
     protected override string Identifer => "34F45015-6EB6-4213-ABEF-F2967818E628";
 }
@@ -35,7 +35,7 @@ public abstract class FlarialClient
     internal FlarialClient() { }
     static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, string>>();
 
-    protected abstract string Url { get; }
+    protected abstract string Uri { get; }
     protected abstract string Name { get; }
     protected abstract string Build { get; }
     protected abstract string Identifer { get; }
@@ -111,7 +111,7 @@ public abstract class FlarialClient
         catch { return string.Empty; }
     });
 
-    public async Task<bool> DownloadAsync(Action<int> action)
+    public async Task<bool> DownloadAsync(Action<int> callback)
     {
         var localHashTask = GetLocalHashAsync();
         var remoteHashTask = GetRemoteHashAsync();
@@ -123,19 +123,7 @@ public abstract class FlarialClient
         try { File.Delete(Name); }
         catch { return false; }
 
-        await HttpService.DownloadAsync(Url, Name, action);
+        await HttpService.DownloadAsync(Uri, Name, callback);
         return true;
-    }
-
-    const string AcceptedUrl = "https://cdn.flarial.xyz/202.txt";
-
-    public static async Task<bool> CanConnectAsync()
-    {
-        try
-        {
-            using var message = await HttpService.GetAsync(AcceptedUrl);
-            return message.IsSuccessStatusCode;
-        }
-        catch { return false; }
     }
 }

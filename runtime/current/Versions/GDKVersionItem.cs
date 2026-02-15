@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -8,19 +7,15 @@ using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Networking;
-using Flarial.Launcher.Runtime.System;
+using Flarial.Launcher.Runtime.Services;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Runtime.Versions;
 
 sealed class GDKVersionItem : VersionItem
 {
-    [Obsolete("", true)]
-    public override bool IsGameDevelopmentKit => true;
-
-    const string GameLaunchHelperUrl = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
-    const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
+    const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
+    const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
     static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, Dictionary<string, string[]>>>();
 
@@ -31,8 +26,8 @@ sealed class GDKVersionItem : VersionItem
 
     internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
-        var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUrl);
-        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUrl);
+        var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUri);
+        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
         await Task.WhenAll(msixvcPackagesTask, gameLaunchHelperTask);
 
         var gameLaunchHelper = await gameLaunchHelperTask;
@@ -65,7 +60,7 @@ sealed class GDKVersionItem : VersionItem
         catch { return null; }
     }
 
-    public override async Task<string> GetUrlAsync()
+    protected override async Task<string> GetUrlAsync()
     {
         using CancellationTokenSource source = new();
         HashSet<Task<string?>> tasks = [.. _urls.Select(_ => PingAsync(_, source.Token))];

@@ -16,6 +16,7 @@ using System.Net.Sockets;
 
 namespace Flarial.Launcher.Runtime.Networking;
 
+[Obsolete("", true)]
 public sealed class DnsOverHttpsHandler : HttpClientHandler
 {
     public static bool? UseDnsOverHttps

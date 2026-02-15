@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
 
-namespace Flarial.Launcher.Runtime.System;
+namespace Flarial.Launcher.Runtime.Services;
 
 static class JsonService
 {

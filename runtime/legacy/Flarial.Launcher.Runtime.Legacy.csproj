@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../native/Windows.Win32.csproj" PrivateAssets="All" />
     <ProjectReference Include="../current/Flarial.Launcher.Runtime.csproj" PrivateAssets="All" />
   </ItemGroup>
 

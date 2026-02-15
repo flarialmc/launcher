@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Flarial.Launcher.Runtime.Networking;
+using Flarial.Launcher.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
 

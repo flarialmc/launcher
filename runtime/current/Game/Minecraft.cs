@@ -7,6 +7,7 @@ using Flarial.Launcher.Runtime.System;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 using System;
+using Flarial.Launcher.Runtime.Services;
 
 namespace Flarial.Launcher.Runtime.Game;
 
@@ -20,7 +21,7 @@ public unsafe abstract class Minecraft
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new NotSupportedException();
 
-     static readonly Minecraft s_gdk = new MinecraftGDK();
+    static readonly Minecraft s_gdk = new MinecraftGDK();
     internal static Package Package => PackageService.Get(PackageFamilyName)!;
 
     internal static string Version

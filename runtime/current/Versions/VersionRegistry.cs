@@ -1,12 +1,10 @@
-using System.IO;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Networking;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.Serialization.Json;
-using Flarial.Launcher.Runtime.System;
+using Flarial.Launcher.Runtime.Services;
 
 namespace Flarial.Launcher.Runtime.Versions;
 
@@ -22,7 +20,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     static readonly VersionItemComparer s_comparer = new();
     static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, bool>>();
 
-    const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/Supported.json";
+    const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
 
     readonly SortedDictionary<string, VersionEntry> _registry;
 
@@ -55,7 +53,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     public static async Task<VersionRegistry> CreateAsync() => await Task.Run(static async () =>
     {
-        using var stream = await HttpService.GetStreamAsync(SupportedVersionsUrl);
+        using var stream = await HttpService.GetStreamAsync(SupportedVersionsUri);
         var items = (Dictionary<string, bool>)s_serializer.ReadObject(stream);
 
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);

@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Runtime.Modding;
-using Flarial.Launcher.Runtime.Networking;
+using Flarial.Launcher.Runtime.Services;
 using ModernWpf;
 using ModernWpf.Controls;
 using System.IO;
@@ -76,16 +76,8 @@ Exception: {1}
                     Injector.Launch(true, new(args[index + 1]));
                     return;
 
-                case "--use-proxy":
-                    HttpService.UseProxy = true;
-                    break;
-
                 case "--allow-unsigned-installs":
                     Minecraft.AllowUnsignedInstalls = true;
-                    break;
-
-                case "--use-dns-over-https":
-                    DnsOverHttpsHandler.UseDnsOverHttps = true;
                     break;
 
                 case "--no-hardware-acceleration":

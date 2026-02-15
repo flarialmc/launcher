@@ -6,7 +6,7 @@ using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Foundation.AsyncStatus;
 using static Windows.Win32.PInvoke;
 
-namespace Flarial.Launcher.Runtime.System;
+namespace Flarial.Launcher.Runtime.Services;
 
 unsafe static class PackageService
 {
