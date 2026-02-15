@@ -19,9 +19,13 @@ public abstract class VersionItem
     public override string ToString() => _version;
 
     static readonly string s_path = Path.GetTempPath();
+
+    [Obsolete("", true)]
     internal static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
 
     public abstract Task<string> GetUrlAsync();
+
+    [Obsolete("", true)]
     public abstract bool IsGameDevelopmentKit { get; }
 
     public virtual async Task InstallAsync(Action<int, bool> action)
@@ -34,6 +38,6 @@ public abstract class VersionItem
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
         await HttpService.DownloadAsync(await GetUrlAsync(), path, (_) => action(_, false));
-        await Task.Run(() => PackageService.AddPackage(new(path), (_) => action(_, true)));
+        await Task.Run(() => PackageService.Add(new(path), (_) => action(_, true)));
     }
 }

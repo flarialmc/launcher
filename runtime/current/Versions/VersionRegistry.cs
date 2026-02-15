@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.Serialization.Json;
+using Flarial.Launcher.Runtime.System;
 
 namespace Flarial.Launcher.Runtime.Versions;
 
@@ -19,7 +20,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     }
 
     static readonly VersionItemComparer s_comparer = new();
-    static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, bool>), VersionItem.s_settings);
+    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, bool>>();
 
     const string SupportedVersionsUrl = "https://cdn.flarial.xyz/launcher/Supported.json";
 

@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Networking;
+using Flarial.Launcher.Runtime.System;
 using Windows.Data.Json;
 using static Windows.Win32.PInvoke;
 
@@ -31,30 +34,25 @@ public static class FlarialLauncher
         s_content = string.Format(Content, Path.Combine(system, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
     }
 
-    const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
-
-    const string Content = @"
-chcp 65001
+    const string Content = @"chcp 65001
 ""{0}"" /f /pid ""{1}""
-
 :_
 move /y ""{2}"" ""{3}""
 if not %errorlevel%==0 goto _
-
-del ""%~f0""
-";
+del ""%~f0""";
 
     const string LauncherVersionUrl = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
-
     const string LauncherDownloadUrl = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
+    const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
 
     static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
+    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, string>>();
 
     public static async Task<bool> CheckAsync()
     {
-        var input = await HttpService.GetStringAsync(LauncherVersionUrl);
-        var version = JsonObject.Parse(input)["version"];
-        return s_version != version.GetString();
+        using var stream = await HttpService.GetStreamAsync(LauncherVersionUrl);
+        var items = (Dictionary<string,string>)s_serializer.ReadObject(stream);
+        return s_version != items["version"];
     }
 
     public static async Task DownloadAsync(Action<int> action)

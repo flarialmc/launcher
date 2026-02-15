@@ -31,8 +31,6 @@ public static class HttpService
 
     public static async Task<Stream> GetStreamAsync(string url) => await HttpClient.GetStreamAsync(url);
 
-    internal static async Task<string> GetStringAsync(string url) => await HttpClient.GetStringAsync(url);
-
     public static async Task<byte[]> GetBytesAsync(string url) => await HttpClient.GetByteArrayAsync(url);
 
     internal static async Task<HttpResponseMessage> PostAsync(string url, HttpContent content) => await HttpClient.PostAsync(url, content);

@@ -9,18 +9,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Networking;
+using Flarial.Launcher.Runtime.System;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Runtime.Versions;
 
 sealed class GDKVersionItem : VersionItem
 {
+    [Obsolete("", true)]
     public override bool IsGameDevelopmentKit => true;
 
     const string GameLaunchHelperUrl = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
     const string MSIXVCPackagesUrl = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    static readonly DataContractJsonSerializer s_serializer = new(typeof(Dictionary<string, Dictionary<string, string[]>>), s_settings);
+    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, Dictionary<string, string[]>>>();
 
     readonly byte[] _bytes;
     readonly string[] _urls;
@@ -43,7 +45,7 @@ sealed class GDKVersionItem : VersionItem
             var key = item.Key.Substring(0, index);
 
             lock (registry)
-            {            
+            {
                 if (!registry.TryGetValue(key, out var entry))
                     continue;
 

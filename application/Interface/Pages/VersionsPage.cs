@@ -108,7 +108,7 @@ sealed class VersionsPage : Grid
             if (!await AppDialog.InstallVersion.ShowAsync())
                 return;
 
-            if (item.IsGameDevelopmentKit || Minecraft.UsingGameDevelopmentKit)
+            if (Minecraft.UsingGameDevelopmentKit)
             {
                 if (!Minecraft.IsGamingServicesInstalled)
                 {

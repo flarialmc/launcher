@@ -5,11 +5,10 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Networking;
-using Windows.Data.Json;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.System;
-using static Windows.Win32.PInvoke;
-using Windows.Media.Devices;
+using System.Runtime.Serialization.Json;
+using System.Collections.Generic;
 
 namespace Flarial.Launcher.Runtime.Client;
 
@@ -34,6 +33,8 @@ sealed class FlarialClientRelease : FlarialClient
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
+    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, string>>();
+
     protected abstract string Url { get; }
     protected abstract string Name { get; }
     protected abstract string Build { get; }
@@ -90,8 +91,9 @@ public abstract class FlarialClient
 
     async Task<string> GetRemoteHashAsync()
     {
-        var @string = await HttpService.GetStringAsync(HashesUrl);
-        return JsonObject.Parse(@string)[Build].GetString();
+        using var stream = await HttpService.GetStreamAsync(HashesUrl);
+        var items = (Dictionary<string,string>)s_serializer.ReadObject(stream);
+        return items[Build];
     }
 
     async Task<string> GetLocalHashAsync() => await Task.Run(() =>
