@@ -18,15 +18,6 @@ sealed class SettingsPage : Grid
         HorizontalAlignment = HorizontalAlignment.Stretch
     };
 
-    readonly ToggleSwitch _hardwareAcceleration = new()
-    {
-        Header = "Allow the launcher to use hardware acceleration?",
-        VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch,
-        OnContent = "Yes, improve responsiveness.",
-        OffContent = "No, fix graphical issues."
-    };
-
     readonly ToggleSwitch _waitForInitialization = new()
     {
         Header = "Should the launcher wait for the game to initialize?",
@@ -58,7 +49,6 @@ sealed class SettingsPage : Grid
     {
         var value = ((ToggleSwitch)sender).IsOn;
         if (ReferenceEquals(_automaticUpdates, sender)) _configuration.AutomaticUpdates = value;
-        else if (ReferenceEquals(_hardwareAcceleration, sender)) _configuration.HardwareAcceleration = value;
         else if (ReferenceEquals(_waitForInitialization, sender)) _configuration.WaitForInitialization = value;
     }
 
@@ -77,12 +67,10 @@ sealed class SettingsPage : Grid
         _dllBuild.Items.Add(new TextBlock { Tag = Configuration.Build.Custom, Text = "Specify your own custom DLL to be used with the game." });
 
         _automaticUpdates.Toggled += OnToggleSwitchToggled;
-        _hardwareAcceleration.Toggled += OnToggleSwitchToggled;
         _waitForInitialization.Toggled += OnToggleSwitchToggled;
 
         _dllBuild.SelectedIndex = (int)configuration.DllBuild;
         _automaticUpdates.IsOn = configuration.AutomaticUpdates;
-        _hardwareAcceleration.IsOn = configuration.HardwareAcceleration;
         _waitForInitialization.IsOn = configuration.WaitForInitialization;
 
         RowDefinitions.Add(new());
@@ -101,7 +89,6 @@ sealed class SettingsPage : Grid
         settingsPagePanel.Children.Add(_dllBuild);
         settingsPagePanel.Children.Add(_customDllPathPicker);
         settingsPagePanel.Children.Add(_waitForInitialization);
-        settingsPagePanel.Children.Add(_hardwareAcceleration);
         settingsPagePanel.Children.Add(_automaticUpdates);
     }
 }

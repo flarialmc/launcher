@@ -24,23 +24,11 @@ sealed class Configuration
     [DataMember]
     internal bool WaitForInitialization { get; set; } = true;
 
-    [DataMember]
-    internal bool HardwareAcceleration
-    {
-        get => field;
-        set
-        {
-            field = value;
-            RenderOptions.ProcessRenderMode = value ? RenderMode.Default : RenderMode.SoftwareOnly;
-        }
-    } = true;
-
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
     {
         AutomaticUpdates = true;
         DllBuild = Build.Release;
-        HardwareAcceleration = true;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
     }
