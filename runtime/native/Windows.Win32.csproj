@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
 
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
