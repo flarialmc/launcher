@@ -33,7 +33,7 @@ Exception: {1}
             - Prevent the operating system from handling errors for us.
         */
 
-        PInvoke.SetErrorMode();
+        Wrappers.SetErrorMode();
 
         AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
         {

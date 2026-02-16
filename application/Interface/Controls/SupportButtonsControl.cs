@@ -29,9 +29,9 @@ sealed class SupportButtonsControl : UniformGrid
     readonly string _launcherPath = Environment.CurrentDirectory;
     readonly string _gdkPath = Path.Combine(Environment.CurrentDirectory, @"..\Client");
 
-    void OnLauncherFolderButtonClick(object sender, EventArgs args) => PInvoke.ShellExecute(_launcherPath);
+    void OnLauncherFolderButtonClick(object sender, EventArgs args) => Wrappers.ShellExecute(_launcherPath);
 
-    async void OnClientFolderButtonClick(object sender, EventArgs args) => PInvoke.ShellExecute(Directory.CreateDirectory(_gdkPath).FullName);
+    async void OnClientFolderButtonClick(object sender, EventArgs args) => Wrappers.ShellExecute(Directory.CreateDirectory(_gdkPath).FullName);
 
     internal SupportButtonsControl()
     {

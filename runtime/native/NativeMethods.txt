@@ -1,3 +1,5 @@
+SetErrorMode
+ShellExecute
 GetPackageFamilyName
 OpenProcess
 GetCurrentProcessId
@@ -22,6 +24,7 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
+SHOW_WINDOW_CMD
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64
 INFINITE

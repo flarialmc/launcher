@@ -7,7 +7,7 @@ abstract class Product
 
     protected abstract string ProductId { get; }
 
-    internal void OpenProductDetailsPage() => PInvoke.ShellExecute($"ms-windows-store://pdp/?ProductId={ProductId}");
+    internal void OpenProductDetailsPage() => Wrappers.ShellExecute($"ms-windows-store://pdp/?ProductId={ProductId}");
 }
 
 file sealed class Minecraft : Product

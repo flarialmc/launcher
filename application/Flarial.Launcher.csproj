@@ -11,6 +11,7 @@
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Optimize>true</Optimize>
@@ -29,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\runtime\native\Windows.Win32.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\runtime\current\Flarial.Launcher.Runtime.csproj" PrivateAssets="All" />
   </ItemGroup>
 

@@ -121,7 +121,7 @@ sealed class HomePage : Grid
 If you need help, join our Discord.";
     }
 
-    void OnSponsorshipImageClick(object sender, EventArgs args) => PInvoke.ShellExecute((string)((FrameworkElement)sender).Tag);
+    void OnSponsorshipImageClick(object sender, EventArgs args) => Wrappers.ShellExecute((string)((FrameworkElement)sender).Tag);
 
     void InvokeFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
