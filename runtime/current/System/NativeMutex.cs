@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
+using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using static Windows.Win32.Foundation.DUPLICATE_HANDLE_OPTIONS;
 
 namespace Flarial.Launcher.Runtime.System;
 

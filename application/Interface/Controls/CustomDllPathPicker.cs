@@ -1,7 +1,6 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
 using Microsoft.Win32;
 using ModernWpf.Controls;

@@ -1,14 +1,14 @@
 using System.IO;
 using Flarial.Launcher.Runtime.Game;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
-using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
-using static Windows.Win32.System.Memory.VIRTUAL_FREE_TYPE;
-using static Windows.Win32.Foundation.HANDLE;
 using Windows.Win32.Foundation;
-using static System.Text.Encoding;
 using Windows.Win32.System.Threading;
+using static System.Text.Encoding;
+using static Windows.Win32.Foundation.HANDLE;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
+using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
+using static Windows.Win32.System.Memory.VIRTUAL_FREE_TYPE;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Runtime.Modding;
 
@@ -20,7 +20,8 @@ public unsafe static class Injector
 
     static Injector()
     {
-        fixed (char* module = "Kernel32") fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
+        fixed (char* module = "Kernel32")
+        fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
         {
             var address = GetProcAddress(GetModuleHandle(module), new(procedure));
             s_routine = address.CreateDelegate<LPTHREAD_START_ROUTINE>();
@@ -29,14 +30,9 @@ public unsafe static class Injector
 
     public static uint? Launch(bool initialized, Library library)
     {
-        if (!library.IsLoadable)
-            throw new FileLoadException(null, library._path);
-
-        if (Minecraft.Current.Launch(initialized) is not { } processId)
-            return null;
-
-        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process)
-            return null;
+        if (!library.IsLoadable) throw new FileLoadException(null, library._path);
+        if (Minecraft.Current.Launch(initialized) is not { } processId) return null;
+        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
 
         using (process)
         {

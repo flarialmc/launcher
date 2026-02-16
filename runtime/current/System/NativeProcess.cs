@@ -1,8 +1,8 @@
 using System;
 using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.Foundation.WAIT_EVENT;
 using Windows.Win32.System.Threading;
+using static Windows.Win32.Foundation.WAIT_EVENT;
+using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Runtime.System;
 

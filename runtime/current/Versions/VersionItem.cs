@@ -4,8 +4,8 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
-using static Windows.Win32.Foundation.WIN32_ERROR;
 using Flarial.Launcher.Runtime.Services;
+using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Launcher.Runtime.Versions;
 

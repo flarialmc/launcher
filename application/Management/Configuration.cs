@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using System.Xml;
 using System.Runtime.Serialization;
-using System.Windows.Interop;
-using System.Windows.Media;
+using System.Xml;
 
 namespace Flarial.Launcher.Management;
 

@@ -1,12 +1,8 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.System.Diagnostics.Debug;
 using Windows.Win32.UI.WindowsAndMessaging;
-using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
 
 namespace Flarial.Launcher;

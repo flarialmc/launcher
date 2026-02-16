@@ -1,14 +1,14 @@
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Controls;
-using System.Threading.Tasks;
-using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Client;
-using Flarial.Launcher.Runtime.Modding;
-using System.Windows.Threading;
 using System;
-using Flarial.Launcher.Management;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
+using Flarial.Launcher.Management;
+using Flarial.Launcher.Runtime.Client;
+using Flarial.Launcher.Runtime.Game;
+using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Versions;
 using ModernWpf.Controls;
 

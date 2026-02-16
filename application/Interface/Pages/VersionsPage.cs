@@ -1,16 +1,13 @@
-using System.Windows;
-using System.Windows.Controls;
-using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Versions;
-using System.Windows.Threading;
-using Flarial.Launcher.Interface.Controls;
-using System.Threading.Tasks;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
+using Flarial.Launcher.Interface.Controls;
+using Flarial.Launcher.Runtime.Game;
+using Flarial.Launcher.Runtime.Versions;
 using ModernWpf.Controls.Primitives;
-using ModernWpf.Controls;
-using System.Diagnostics;
-using System.Windows.Media;
 
 namespace Flarial.Launcher.Interface.Pages;
 

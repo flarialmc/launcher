@@ -1,15 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Services;
 using ModernWpf;
 using ModernWpf.Controls;
-using System.IO;
-using Flarial.Launcher.Runtime.Game;
 
 namespace Flarial.Launcher;
 

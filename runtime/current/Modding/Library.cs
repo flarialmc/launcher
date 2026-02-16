@@ -1,10 +1,10 @@
-using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 using System.IO;
-using Windows.Win32.System.SystemServices;
+using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
+using Windows.Win32.System.SystemServices;
+using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.IMAGE_FILE_CHARACTERISTICS;
+using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 
 namespace Flarial.Launcher.Runtime.Modding;
 

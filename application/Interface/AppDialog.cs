@@ -1,9 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Runtime.Game;
 using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface;

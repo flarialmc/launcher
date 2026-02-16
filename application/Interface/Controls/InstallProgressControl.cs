@@ -1,7 +1,7 @@
-using ModernWpf.Controls;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Controls;
 

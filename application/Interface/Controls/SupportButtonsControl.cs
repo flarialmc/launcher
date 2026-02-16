@@ -1,9 +1,9 @@
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Flarial.Launcher.Runtime.Game;
-using System;
 using Windows.Management.Core;
 
 namespace Flarial.Launcher.Interface.Controls;

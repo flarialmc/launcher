@@ -1,9 +1,9 @@
-using System.Windows;
-using Flarial.Launcher.Management;
-using Flarial.Launcher.Interface.Controls;
-using ModernWpf.Controls;
-using System.Windows.Controls;
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using Flarial.Launcher.Interface.Controls;
+using Flarial.Launcher.Management;
+using ModernWpf.Controls;
 
 namespace Flarial.Launcher.Interface.Pages;
 

@@ -1,19 +1,18 @@
-using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using System.IO;
-using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using static Windows.Win32.Foundation.WAIT_EVENT;
-using Windows.Win32.System.RemoteDesktop;
-using static Windows.Win32.Foundation.WIN32_ERROR;
-using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
-using static Windows.Win32.Foundation.HANDLE;
-using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
-using Windows.ApplicationModel;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using Microsoft.PowerShell;
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using Windows.ApplicationModel;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.RemoteDesktop;
+using static Windows.Win32.Foundation.HANDLE;
+using static Windows.Win32.Foundation.WAIT_EVENT;
+using static Windows.Win32.Foundation.WIN32_ERROR;
+using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Runtime.Game;
 

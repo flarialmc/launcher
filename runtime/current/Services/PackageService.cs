@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
-using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Foundation.AsyncStatus;
+using static Windows.Management.Deployment.DeploymentOptions;
 using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Runtime.Services;

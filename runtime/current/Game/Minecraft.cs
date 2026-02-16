@@ -1,13 +1,13 @@
-using static System.StringComparison;
-using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
-using Windows.ApplicationModel;
-using Flarial.Launcher.Runtime.System;
-using static Windows.Win32.Foundation.WIN32_ERROR;
-using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 using System;
 using Flarial.Launcher.Runtime.Services;
+using Flarial.Launcher.Runtime.System;
+using Windows.ApplicationModel;
+using Windows.Win32.Foundation;
+using static System.StringComparison;
+using static Windows.Win32.Foundation.WIN32_ERROR;
+using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Runtime.Game;
 
