@@ -17,12 +17,13 @@ sealed class GDKVersionItem : VersionItem
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
     const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, Dictionary<string, string[]>>>();
+    static readonly JsonService<Dictionary<string, Dictionary<string, string[]>>> s_json;
+    static GDKVersionItem() => s_json = JsonService<Dictionary<string, Dictionary<string, string[]>>>.Get();
 
-    readonly byte[] _bytes;
-    readonly string[] _urls;
+    readonly string[] _uris;
+    readonly byte[] _gameLaunchHelper;
 
-    GDKVersionItem(string version, string[] urls, byte[] bytes) : base(version) => (_urls, _bytes) = (urls, bytes);
+    GDKVersionItem(string version, string[] uris, byte[] gameLaunchHelper) : base(version) => (_uris, _gameLaunchHelper) = (uris, gameLaunchHelper);
 
     internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
@@ -32,9 +33,8 @@ sealed class GDKVersionItem : VersionItem
 
         var gameLaunchHelper = await gameLaunchHelperTask;
         using var msixvcPackages = await msixvcPackagesTask;
-        var items = (Dictionary<string, Dictionary<string, string[]>>)s_serializer.ReadObject(msixvcPackages);
 
-        foreach (var item in items["release"])
+        foreach (var item in s_json.Read(msixvcPackages)["release"])
         {
             var index = item.Key.LastIndexOf('.');
             var key = item.Key.Substring(0, index);
@@ -50,25 +50,31 @@ sealed class GDKVersionItem : VersionItem
         }
     });
 
-    static async Task<string?> PingAsync(string url, CancellationToken token)
+    static async Task<string?> PingAsync(string uri, CancellationToken token)
     {
         try
         {
-            using var message = await HttpService.GetAsync(url, token);
-            return message.IsSuccessStatusCode ? url : null;
+            using var message = await HttpService.GetAsync(uri, token);
+            return message.IsSuccessStatusCode ? uri : null;
         }
         catch { return null; }
     }
 
-    protected override async Task<string> GetUrlAsync()
+    protected override async Task<string> GetUriAsync()
     {
         using CancellationTokenSource source = new();
-        HashSet<Task<string?>> tasks = [.. _urls.Select(_ => PingAsync(_, source.Token))];
+        HashSet<Task<string?>> tasks = [.. _uris.Select(_ => PingAsync(_, source.Token))];
 
         while (tasks.Count > 0)
         {
-            var task = await Task.WhenAny(tasks); tasks.Remove(task);
-            if (await task is { } url) { source.Cancel(); return url; }
+            var task = await Task.WhenAny(tasks);
+            tasks.Remove(task);
+
+            if (await task is { } uri)
+            {
+                source.Cancel();
+                return uri;
+            }
         }
 
         throw new InvalidOperationException();
@@ -83,6 +89,6 @@ sealed class GDKVersionItem : VersionItem
         var path = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
         using var stream = File.Create(path);
-        await stream.WriteAsync(_bytes, 0, _bytes.Length);
+        await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
     }
 }

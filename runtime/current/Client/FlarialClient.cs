@@ -33,7 +33,7 @@ sealed class FlarialClientRelease : FlarialClient
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
-    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, string>>();
+    static readonly JsonService< Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.Get();
 
     protected abstract string Uri { get; }
     protected abstract string Name { get; }
@@ -92,8 +92,7 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        var items = (Dictionary<string,string>)s_serializer.ReadObject(stream);
-        return items[Build];
+        return s_json.Read(stream)[Build];
     }
 
     async Task<string> GetLocalHashAsync() => await Task.Run(() =>

@@ -1,11 +1,11 @@
 using System;
 using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using static System.Environment;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
+using static System.Environment;
 using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Launcher.Runtime.Services;
@@ -24,8 +24,6 @@ public static class HttpService
     public static async Task<Stream> GetStreamAsync(string uri) => await s_client.GetStreamAsync(uri);
 
     public static async Task<byte[]> GetBytesAsync(string uri) => await s_client.GetByteArrayAsync(uri);
-
-    internal static async Task<HttpResponseMessage> PostAsync(string uri, HttpContent content) => await s_client.PostAsync(uri, content);
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, ResponseHeadersRead, token);
 

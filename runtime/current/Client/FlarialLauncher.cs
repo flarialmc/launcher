@@ -45,7 +45,7 @@ del ""%~f0""";
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
 
     static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
-    static readonly DataContractJsonSerializer s_serializer = JsonService.Get<Dictionary<string, string>>();
+    static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.Get();
 
     public static async Task<bool> ConnectAsync()
     {
@@ -60,8 +60,7 @@ del ""%~f0""";
     public static async Task<bool> CheckAsync()
     {
         using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
-        var items = (Dictionary<string, string>)s_serializer.ReadObject(stream);
-        return s_version != items["version"];
+        return s_version != s_json.Read(stream)["version"];
     }
 
     public static async Task DownloadAsync(Action<int> callback)

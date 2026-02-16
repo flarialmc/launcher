@@ -21,17 +21,4 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources/GetExtendedUpdateInfo2.xml" LogicalName="GetExtendedUpdateInfo2.xml" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../current/Flarial.Launcher.Runtime.csproj" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" />
-  </ItemGroup>
-
 </Project>

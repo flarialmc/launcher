@@ -1,27 +1,36 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 
 namespace Flarial.Launcher.Runtime.Services;
 
-static class JsonService
+sealed class JsonService<T>
 {
-    static readonly Dictionary<Type, DataContractJsonSerializer> s_serializers = [];
-    static readonly DataContractJsonSerializerSettings s_settings = new() { UseSimpleDictionaryFormat = true };
+    internal JsonService() { }
 
-    internal static DataContractJsonSerializer Get<T>()
+    static readonly Dictionary<Type, JsonService<T>> s_services = [];
+    static readonly DataContractJsonSerializerSettings s_settings = new()
     {
-        lock (s_serializers)
+        UseSimpleDictionaryFormat = true,
+        MaxItemsInObjectGraph = int.MaxValue,
+        EmitTypeInformation = EmitTypeInformation.Never,
+    };
+
+    internal T Read(Stream stream) => (T)_serializer.ReadObject(stream);
+    readonly DataContractJsonSerializer _serializer = new(typeof(T), s_settings);
+
+    internal static JsonService<T> Get()
+    {
+        lock (s_services)
         {
             var type = typeof(T);
 
-            if (!s_serializers.TryGetValue(type, out var serializer))
-            {
-                serializer = new(type, s_settings);
-                s_serializers.Add(type, serializer);
-            }
+            if (!s_services.TryGetValue(type, out var service))
+                s_services.Add(type, service = new());
 
-            return serializer;
+            return service;
         }
     }
 }

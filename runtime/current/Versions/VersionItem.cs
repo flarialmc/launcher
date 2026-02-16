@@ -19,7 +19,7 @@ public abstract class VersionItem
 
     static readonly string s_path = Path.GetTempPath();
 
-    protected abstract Task<string> GetUrlAsync();
+    protected abstract Task<string> GetUriAsync();
 
     public virtual async Task InstallAsync(Action<int, bool> action)
     {
@@ -30,7 +30,7 @@ public abstract class VersionItem
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
-        await HttpService.DownloadAsync(await GetUrlAsync(), path, (_) => action(_, false));
+        await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => action(_, false));
         await Task.Run(() => PackageService.Add(new(path), (_) => action(_, true)));
     }
 }
