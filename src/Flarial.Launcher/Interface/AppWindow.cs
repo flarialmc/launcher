@@ -107,9 +107,10 @@ sealed class AppWindow : Window
             foreach (var item in registry)
                 Dispatcher.Invoke(() => _versionsPage._listBox.Items.Add(item));
         });
-        _rootPage._versionsPageItem.IsEnabled = true;
+        
+        var versionsPage = (VersionsPage)_rootPage._versionsPageItem.Tag;
+        versionsPage.IsEnabled = true;
     }
-
 
     async Task LoadSponsorshipImageAsync(Task<Tuple<Stream, string>?> task, Image image) => await Dispatcher.InvokeAsync(async () =>
     {

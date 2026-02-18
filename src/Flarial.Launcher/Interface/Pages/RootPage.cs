@@ -14,7 +14,6 @@ sealed class RootPage : NavigationView
 
     internal readonly NavigationViewItem _versionsPageItem = new()
     {
-        IsEnabled = false,
         Icon = new SymbolIcon(Symbol.AllApps),
         Content = "Versions"
     };

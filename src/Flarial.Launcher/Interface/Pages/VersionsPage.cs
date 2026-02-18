@@ -129,6 +129,7 @@ sealed class VersionsPage : Grid
     internal VersionsPage(RootPage rootPage)
     {
         _rootPage = rootPage;
+        IsEnabled = false;
 
         Margin = new(12);
         RowDefinitions.Add(new());
