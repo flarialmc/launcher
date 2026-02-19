@@ -1,10 +1,12 @@
+using System;
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
-
+using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 namespace Flarial.Launcher;
 
 [System.Security.SuppressUnmanagedCodeSecurity]
@@ -29,17 +31,19 @@ unsafe static class NativeMethods
         PInvoke.SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
     }
 
-    internal static void ShellExecute(string @object)
+    internal static void ShellExecute(string value)
     {
-        HWND hWnd = HWND.Null;
-
-        if (Application.Current?.MainWindow is { } window)
+        fixed (char* lpFile = value)
         {
-            WindowInteropHelper helper = new(window);
-            hWnd = (HWND)helper.EnsureHandle();
-        }
+            HWND hWnd = HWND.Null;
 
-        fixed (char* lpFile = @object)
-            PInvoke.ShellExecute(hWnd, null, lpFile, null, null, SHOW_WINDOW_CMD.SW_SHOWNORMAL);
+            if (Application.Current?.MainWindow is { } window)
+            {
+                WindowInteropHelper helper = new(window);
+                hWnd = (HWND)helper.EnsureHandle();
+            }
+
+            PInvoke.ShellExecute(hWnd, null, lpFile, null, null, SW_SHOWNORMAL);
+        }
     }
 }
