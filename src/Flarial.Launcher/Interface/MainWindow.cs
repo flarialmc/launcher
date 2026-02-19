@@ -45,11 +45,6 @@ sealed class MainWindow : Window
         WindowStyle = WindowStyle.ToolWindow;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(new MainNavigationView(settings).@this)
-        {
-            Focusable = true,
-            Width = 960,
-            Height = 540
-        };
+        Content = new XamlHost(new MainNavigationView(settings).@this) { Width = 960, Height = 540 };
     }
 }
