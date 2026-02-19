@@ -24,7 +24,7 @@ sealed class TextBlockProgressBar : XamlElement<Grid>
 
     internal TextBlockProgressBar() : base(new())
     {
-        @this.Children.Add(_progressBar);
-        @this.Children.Add(_textBlock);
+        _this.Children.Add(_progressBar);
+        _this.Children.Add(_textBlock);
     }
 }

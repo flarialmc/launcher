@@ -59,17 +59,17 @@ sealed class DllSelectionBox : XamlElement<Grid>
         _settings = settings;
         _button = new(_settings);
 
-        @this.RowDefinitions.Add(new());
-        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        _this.RowDefinitions.Add(new());
+        _this.RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         Grid.SetRow(_listBox, 0);
         Grid.SetColumn(_listBox, 0);
 
-        Grid.SetRow(_button.@this, 1);
-        Grid.SetColumn(_button.@this, 0);
+        Grid.SetRow(_button._this, 1);
+        Grid.SetColumn(_button._this, 0);
 
-        @this.Children.Add(_listBox);
-        @this.Children.Add(_button.@this);
+        _this.Children.Add(_listBox);
+        _this.Children.Add(_button._this);
 
         _listBox.Items.Add(new ReleaseDllItem());
         _listBox.Items.Add(new BetaDllItem());

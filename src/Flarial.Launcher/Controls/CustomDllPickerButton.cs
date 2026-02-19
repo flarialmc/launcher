@@ -53,8 +53,8 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
     {
         _settings = settings;
 
-        @this.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-        @this.ColumnDefinitions.Add(new());
+        _this.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+        _this.ColumnDefinitions.Add(new());
 
         Grid.SetRow(_button, 0);
         Grid.SetColumn(_button, 0);
@@ -62,8 +62,8 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
         Grid.SetRow(_textBox, 0);
         Grid.SetColumn(_textBox, 1);
 
-        @this.Children.Add(_button);
-        @this.Children.Add(_textBox);
+        _this.Children.Add(_button);
+        _this.Children.Add(_textBox);
 
         _button.Click += OnButtonClick;
 

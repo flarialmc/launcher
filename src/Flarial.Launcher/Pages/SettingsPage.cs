@@ -40,11 +40,11 @@ sealed class SettingsPage : XamlElement<Grid>
     {
         _settings = settings;
 
-        @this.RowSpacing = 12;
-        @this.Margin = new(12);
+        _this.RowSpacing = 12;
+        _this.Margin = new(12);
 
-        @this.RowDefinitions.Add(new());
-        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        _this.RowDefinitions.Add(new());
+        _this.RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         StackPanel panel = new() { Spacing = 12, Orientation = Orientation.Vertical };
         FolderButtonsBox box = new();
@@ -52,11 +52,11 @@ sealed class SettingsPage : XamlElement<Grid>
         Grid.SetRow(panel, 0);
         Grid.SetColumn(panel, 0);
 
-        Grid.SetRow(box.@this, 1);
-        Grid.SetColumn(box.@this, 0);
+        Grid.SetRow(box._this, 1);
+        Grid.SetColumn(box._this, 0);
 
         panel.Children.Add(new TextBlock { Text = "Select what DLL should be used:" });
-        panel.Children.Add(new DllSelectionBox(settings).@this);
+        panel.Children.Add(new DllSelectionBox(settings)._this);
         panel.Children.Add(_waitForInitialization);
         panel.Children.Add(_automaticUpdates);
 
@@ -66,7 +66,7 @@ sealed class SettingsPage : XamlElement<Grid>
         _automaticUpdates.IsOn = _settings.AutomaticUpdates;
         _waitForInitialization.IsOn = _settings.WaitForInitialization;
 
-        @this.Children.Add(panel);
-        @this.Children.Add(box.@this);
+        _this.Children.Add(panel);
+        _this.Children.Add(box._this);
     }
 }

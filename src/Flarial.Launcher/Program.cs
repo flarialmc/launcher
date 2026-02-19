@@ -94,12 +94,14 @@ Exception: {1}
         using (WindowsXamlManager.InitializeForCurrentThread())
         {
             var application = Windows.UI.Xaml.Application.Current;
-            ColorPaletteResources resources = new() { Accent = Colors.IndianRed };
+            application.UnhandledException += OnUnhandledException;
+
+            application.Resources.MergedDictionaries.Add(new ColorPaletteResources
+            {
+                Accent = Colors.IndianRed
+            });
 
             application.RequestedTheme = ApplicationTheme.Dark;
-            application.UnhandledException += OnUnhandledException;
-            application.Resources.MergedDictionaries.Add(resources);
-
             new MainApplication(settings).Run(new MainWindow(settings));
         }
     }

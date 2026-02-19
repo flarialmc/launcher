@@ -41,7 +41,7 @@ sealed class MainWindow : Window
         Title = "Flarial Launcher";
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(new MainNavigationView(settings).@this)
+        Content = new XamlHost(new MainNavigationView(settings)._this)
         {
             Width = 960,
             Height = 540
