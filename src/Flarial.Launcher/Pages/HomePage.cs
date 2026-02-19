@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface;
+using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Runtime.Client;
 using Flarial.Launcher.Runtime.Game;
@@ -67,7 +68,7 @@ sealed class HomePage : XamlElement<Grid>
     readonly PromotionImageButton _rightImageButton = new CollapseNetworkImageButton();
     readonly PromotionImageButton _centerImageButton = new InfinityNetworkImageButton();
 
-    UnsupportedVersion UnsupportedVersion
+    UnsupportedVersionDialog UnsupportedVersion
     {
         get
         {
