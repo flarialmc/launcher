@@ -20,7 +20,7 @@ abstract class PromotionImageButton : XamlElement<Image>
 
     protected PromotionImageButton() : base(new())
     {
-        _this.Source = new BitmapImage
+        @this.Source = new BitmapImage
         {
             DecodePixelWidth = 288,
             DecodePixelHeight = 45,
@@ -28,17 +28,17 @@ abstract class PromotionImageButton : XamlElement<Image>
             DecodePixelType = DecodePixelType.Logical,
         };
 
-        _this.Width = 288;
-        _this.Height = 45;
-        _this.VerticalAlignment = VerticalAlignment.Bottom;
+        @this.Width = 288;
+        @this.Height = 45;
+        @this.VerticalAlignment = VerticalAlignment.Bottom;
 
-        _this.ImageOpened += OnImageOpened;
-        _this.PointerPressed += OnImagePointerPressed;
+        @this.ImageOpened += OnImageOpened;
+        @this.PointerPressed += OnImagePointerPressed;
 
-        _this.PointerEntered += OnImagePointerEntered;
-        _this.PointerExited += OnImagePointerExited;
+        @this.PointerEntered += OnImagePointerEntered;
+        @this.PointerExited += OnImagePointerExited;
 
-        _this.Tag = NavigateUri;
+        @this.Tag = NavigateUri;
     }
 
     static void OnImageOpened(object sender, RoutedEventArgs args)

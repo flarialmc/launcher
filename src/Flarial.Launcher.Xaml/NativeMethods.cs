@@ -34,6 +34,16 @@ unsafe static class NativeMethods
     internal static void ShellExecute(string value)
     {
         fixed (char* lpFile = value)
+        {
+            HWND hWnd = HWND.Null;
+
+            if (Application.Current?.MainWindow is { } window)
+            {
+                WindowInteropHelper helper = new(window);
+                hWnd = (HWND)helper.EnsureHandle();
+            }
+
             PInvoke.ShellExecute(GetActiveWindow(), null, lpFile, null, null, SW_SHOWNORMAL);
+        }
     }
 }

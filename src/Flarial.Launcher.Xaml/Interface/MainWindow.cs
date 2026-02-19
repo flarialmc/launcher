@@ -39,7 +39,7 @@ sealed class MainWindow : Window
 
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(new MainNavigationView(settings)._this)
+        Content = new XamlHost(new MainNavigationView(settings).@this)
         {
             Focusable = true,
             Width = 960,

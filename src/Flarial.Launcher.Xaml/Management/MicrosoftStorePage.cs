@@ -1,21 +1,21 @@
 namespace Flarial.Launcher.Management;
 
-abstract class ProductPage
+abstract class MicrosoftStorePage
 {
-    internal static readonly ProductPage s_minecraft = new Minecraft();
-    internal static readonly ProductPage s_gamingServices = new GamingServices();
+    internal static MicrosoftStorePage Minecraft => field ??= new Minecraft();
+    internal static MicrosoftStorePage GamingServices => field ??= new GamingServices();
 
     protected abstract string ProductId { get; }
 
     internal void Open() => NativeMethods.ShellExecute($"ms-windows-store://pdp/?ProductId={ProductId}");
 }
 
-file sealed class Minecraft : ProductPage
+file sealed class Minecraft : MicrosoftStorePage
 {
     protected override string ProductId => "9NBLGGH2JHXJ";
 }
 
-file sealed class GamingServices : ProductPage
+file sealed class GamingServices : MicrosoftStorePage
 {
     protected override string ProductId => "9MWPM2CQNLHN";
 }

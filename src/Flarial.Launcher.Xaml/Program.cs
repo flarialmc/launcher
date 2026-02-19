@@ -6,6 +6,8 @@ using System.Threading;
 using System.Windows;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Runtime.Game;
+using Flarial.Launcher.Runtime.Modding;
 using Microsoft.VisualBasic;
 using Windows.UI;
 using Windows.UI.Core;
@@ -30,11 +32,7 @@ Exception: {1}
 
 {3}";
 
-    static Program()
-    {
-        AppDomain.CurrentDomain.UnhandledException += static (sender, args) =>
-        { OnUnhandledException((Exception)args.ExceptionObject); };
-    }
+    static Program() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
     static void OnUnhandledException(Exception exception)
     {
@@ -52,8 +50,19 @@ Exception: {1}
         Exit(1);
     }
 
+    static void OnUnhandledException(object sender, System.UnhandledExceptionEventArgs args)
+    {
+        OnUnhandledException((Exception)args.ExceptionObject);
+    }
+
+    static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args)
+    {
+        args.Handled = true;
+        OnUnhandledException(args.Exception);
+    }
+
     [STAThread]
-    static void Main()
+    static void Main(string[] args)
     {
         using Mutex mutex = new(false, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
         if (!created) return;
@@ -61,18 +70,32 @@ Exception: {1}
         var path = Path.Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher");
         CurrentDirectory = Directory.CreateDirectory(path).FullName;
 
+        var settings = ApplicationSettings.ReadSettings();
+
+        for (var index = 0; index < args.Length; index++)
+            switch (args[index])
+            {
+                case "--inject":
+                    if (!(index + 1 < args.Length))
+                        continue;
+
+                    Injector.Launch(true, new(args[index + 1]));
+                    return;
+
+                case "--allow-unsigned-installs":
+                    Minecraft.AllowUnsignedInstalls = true;
+                    break;
+            }
+
         using (WindowsXamlManager.InitializeForCurrentThread())
         {
             var application = Windows.UI.Xaml.Application.Current;
             ColorPaletteResources resources = new() { Accent = Colors.IndianRed };
 
-            application.UnhandledException += static (sender, args) =>
-            { args.Handled = true; OnUnhandledException(args.Exception); };
-
             application.RequestedTheme = ApplicationTheme.Dark;
+            application.UnhandledException += OnUnhandledException;
             application.Resources.MergedDictionaries.Add(resources);
 
-            var settings = ApplicationSettings.ReadSettings();
             new MainApplication(settings).Run(new MainWindow(settings));
         }
     }

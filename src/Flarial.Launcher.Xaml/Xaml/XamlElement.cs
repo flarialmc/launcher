@@ -4,7 +4,7 @@ namespace Flarial.Launcher.Xaml;
 
 abstract class XamlElement<T> where T : UIElement
 {
-    internal readonly T _this;
+    internal readonly T @this;
 
-    internal XamlElement(T element) => _this = element; 
+    internal XamlElement(T element) => @this = element; 
 }

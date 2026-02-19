@@ -92,29 +92,29 @@ If you need help, join our Discord.";
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        _leftImageButton._this.Margin = new(12, 0, 0, 12);
-        _leftImageButton._this.HorizontalAlignment = HorizontalAlignment.Left;
+        _leftImageButton.@this.Margin = new(12, 0, 0, 12);
+        _leftImageButton.@this.HorizontalAlignment = HorizontalAlignment.Left;
 
-        _centerImageButton._this.Margin = new(0, 0, 0, 12);
-        _centerImageButton._this.HorizontalAlignment = HorizontalAlignment.Center;
+        _centerImageButton.@this.Margin = new(0, 0, 0, 12);
+        _centerImageButton.@this.HorizontalAlignment = HorizontalAlignment.Center;
 
-        _rightImageButton._this.Margin = new(0, 0, 12, 12);
-        _rightImageButton._this.HorizontalAlignment = HorizontalAlignment.Right;
+        _rightImageButton.@this.Margin = new(0, 0, 12, 12);
+        _rightImageButton.@this.HorizontalAlignment = HorizontalAlignment.Right;
 
-        _this.Children.Add(_leftText);
-        _this.Children.Add(_rightText);
+        @this.Children.Add(_leftText);
+        @this.Children.Add(_rightText);
 
-        _this.Children.Add(_button);
-        _this.Children.Add(_logoImage);
+        @this.Children.Add(_button);
+        @this.Children.Add(_logoImage);
 
-        _this.Children.Add(_leftImageButton._this);
-        _this.Children.Add(_centerImageButton._this);
-        _this.Children.Add(_rightImageButton._this);
+        @this.Children.Add(_leftImageButton.@this);
+        @this.Children.Add(_centerImageButton.@this);
+        @this.Children.Add(_rightImageButton.@this);
 
         _button.Click += OnButtonClick;
     }
 
-    void OnFlarialClientDownloadAsync(int value) => _this.Dispatcher.Invoke(() =>
+    void OnFlarialClientDownloadAsync(int value) => @this.Dispatcher.Invoke(() =>
     {
         _button.Content = $"Downloading... {value}%";
     });
@@ -126,18 +126,18 @@ If you need help, join our Discord.";
             button.IsEnabled = false;
             button.Content = "Play";
 
-            var beta = _settings.SelectedDll is Dll.Beta;
-            var custom = _settings.SelectedDll is Dll.Custom;
+            var beta = _settings.DllSelection is DllSelection.Beta;
+            var custom = _settings.DllSelection is DllSelection.Custom;
 
             var path = _settings.CustomDllPath;
             var initialized = _settings.WaitForInitialization;
 
-            var registry = (VersionRegistry)_this.Tag;
+            var registry = (VersionRegistry)@this.Tag;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync(_this);
+                await MainDialog.NotInstalled.ShowAsync(@this);
                 return;
             }
 
@@ -145,7 +145,7 @@ If you need help, join our Discord.";
             {
                 if (!Minecraft.IsGamingServicesInstalled)
                 {
-                    await MainDialog.GamingServicesMissing.ShowAsync(_this);
+                    await MainDialog.GamingServicesMissing.ShowAsync(@this);
                     return;
                 }
 
@@ -153,34 +153,34 @@ If you need help, join our Discord.";
                 {
                     if ((bool)Minecraft.AllowUnsignedInstalls!)
                     {
-                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync(_this))
+                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync(@this))
                             return;
                     }
                     else
                     {
-                        await MainDialog.UnsignedInstall.ShowAsync(_this);
+                        await MainDialog.UnsignedInstall.ShowAsync(@this);
                         return;
                     }
                 }
             }
             else
             {
-                await MainDialog.UWPDeprecated.ShowAsync(_this);
+                await MainDialog.UWPDeprecated.ShowAsync(@this);
                 return;
             }
 
             if (!custom && !beta && !registry.IsSupported)
             {
-                switch (await new UnsupportedVersion(VersionRegistry.InstalledVersion, registry.PreferredVersion).PromptAsync(_this))
+                switch (await new UnsupportedVersion(VersionRegistry.InstalledVersion, registry.PreferredVersion).PromptAsync(@this))
                 {
                     case ContentDialogResult.Primary:
-                        _view._this.SelectedItem = _view._versionsItem;
-                        _view._this.Content = _view._versionsPage._this;
+                        _view.@this.SelectedItem = _view._versionsItem;
+                        _view.@this.Content = _view._versionsPage.@this;
                         break;
 
                     case ContentDialogResult.Secondary:
-                        _view._this.Content = _view._settingsPage._this;
-                        _view._this.SelectedItem = (NavigationViewItem)_view._this.SettingsItem;
+                        _view.@this.Content = _view._settingsPage.@this;
+                        _view.@this.SelectedItem = (NavigationViewItem)_view.@this.SettingsItem;
                         break;
                 }
                 return;
@@ -190,7 +190,7 @@ If you need help, join our Discord.";
             {
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    await MainDialog.InvalidCustomDll.ShowAsync(@this);
                     return;
                 }
 
@@ -198,14 +198,14 @@ If you need help, join our Discord.";
 
                 if (!library.IsLoadable)
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    await MainDialog.InvalidCustomDll.ShowAsync(@this);
                     return;
                 }
 
                 _button.Content = "Launching...";
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
-                    await MainDialog.LaunchFailure.ShowAsync(_this);
+                    await MainDialog.LaunchFailure.ShowAsync(@this);
                     return;
                 }
 
@@ -213,20 +213,20 @@ If you need help, join our Discord.";
             }
 
 
-            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(_this))
+            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(@this))
                 return;
 
             _button.Content = "Verifying...";
             if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
             {
-                await MainDialog.ClientUpdateFailure.ShowAsync(_this);
+                await MainDialog.ClientUpdateFailure.ShowAsync(@this);
                 return;
             }
 
             _button.Content = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
             {
-                await MainDialog.LaunchFailure.ShowAsync(_this);
+                await MainDialog.LaunchFailure.ShowAsync(@this);
                 return;
             }
         }

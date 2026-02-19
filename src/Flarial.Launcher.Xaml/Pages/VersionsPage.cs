@@ -30,7 +30,7 @@ sealed class VersionsPage : XamlElement<Grid>
     readonly MainNavigationView _view;
     readonly TextBlockProgressBar _progressBar = new();
 
-    void OnVersionItemInstallAsync(int value, bool state) => _this.Dispatcher.Invoke(() =>
+    void OnVersionItemInstallAsync(int value, bool state) => @this.Dispatcher.Invoke(() =>
     {
         string text = state ? "Installing..." : "Downloading...";
         _progressBar._progressBar.Value = value <= 0 ? 0 : value;
@@ -52,28 +52,28 @@ sealed class VersionsPage : XamlElement<Grid>
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync(_this);
+                await MainDialog.NotInstalled.ShowAsync(@this);
                 return;
             }
 
             if (!Minecraft.IsPackaged)
             {
-                await MainDialog.UnpackagedInstall.ShowAsync(_this);
+                await MainDialog.UnpackagedInstall.ShowAsync(@this);
                 return;
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await MainDialog.SelectVersion.ShowAsync(_this);
+                await MainDialog.SelectVersion.ShowAsync(@this);
                 return;
             }
 
-            if (!await MainDialog.InstallVersion.ShowAsync(_this))
+            if (!await MainDialog.InstallVersion.ShowAsync(@this))
                 return;
 
             if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsGamingServicesInstalled)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync(_this);
+                await MainDialog.GamingServicesMissing.ShowAsync(@this);
                 return;
             }
 
@@ -120,8 +120,8 @@ sealed class VersionsPage : XamlElement<Grid>
         if (_item is { })
         {
             args.Cancel = true;
-            _view._this.Content = _this;
-            _view._this.SelectedItem = _view._versionsItem;
+            _view.@this.Content = @this;
+            _view.@this.SelectedItem = _view._versionsItem;
         }
     }
 
@@ -131,11 +131,11 @@ sealed class VersionsPage : XamlElement<Grid>
     {
         _view = view;
 
-        _this.RowSpacing = 12;
-        _this.Margin = new(12);
+        @this.RowSpacing = 12;
+        @this.Margin = new(12);
 
-        _this.RowDefinitions.Add(new());
-        _this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        @this.RowDefinitions.Add(new());
+        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         Grid.SetRow(_listBox, 0);
         Grid.SetColumn(_listBox, 0);
@@ -143,12 +143,12 @@ sealed class VersionsPage : XamlElement<Grid>
         Grid.SetRow(_button, 1);
         Grid.SetColumn(_button, 0);
 
-        Grid.SetRow(_progressBar._this, 1);
-        Grid.SetColumn(_progressBar._this, 0);
+        Grid.SetRow(_progressBar.@this, 1);
+        Grid.SetColumn(_progressBar.@this, 0);
 
-        _this.Children.Add(_listBox);
-        _this.Children.Add(_button);
-        _this.Children.Add(_progressBar._this);
+        @this.Children.Add(_listBox);
+        @this.Children.Add(_button);
+        @this.Children.Add(_progressBar.@this);
 
         _button.Click += OnButtonClick;
         _listBox.SelectionChanged += OnListBoxSelectionChanged;
@@ -157,6 +157,6 @@ sealed class VersionsPage : XamlElement<Grid>
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
-        view._this.RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
+        view.@this.RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
     }
 }

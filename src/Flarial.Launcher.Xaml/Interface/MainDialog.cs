@@ -91,7 +91,7 @@ file sealed class GamingServicesMissing : MainDialog
     internal override async Task<bool> ShowAsync(UIElement element)
     {
         var _ = await base.ShowAsync(element);
-        if (_) ProductPage.s_gamingServices.Open();
+        if (_) MicrosoftStorePage.GamingServices.Open();
         return _;
     }
 
@@ -153,7 +153,7 @@ file sealed class NotInstalled : MainDialog
     internal override async Task<bool> ShowAsync(UIElement element)
     {
         var _ = await base.ShowAsync(element);
-        if (_) ProductPage.s_minecraft.Open();
+        if (_) MicrosoftStorePage.Minecraft.Open();
         return _;
     }
 

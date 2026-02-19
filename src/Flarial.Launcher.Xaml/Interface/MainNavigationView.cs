@@ -39,26 +39,26 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         _catalog = PackageCatalog.OpenForCurrentUser();
 
         _homePage = new(this, settings);
-        _homeItem.Tag = _homePage._this;
+        _homeItem.Tag = _homePage.@this;
 
         _versionsPage = new(this);
-        _versionsItem.Tag = _versionsPage._this;
+        _versionsItem.Tag = _versionsPage.@this;
 
         _settingsPage = new(settings);
 
-        _this.IsPaneOpen = false;
-        _this.UseLayoutRounding = true;
-        _this.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
-        _this.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+        @this.IsPaneOpen = false;
+        @this.UseLayoutRounding = true;
+        @this.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+        @this.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
-        _this.MenuItems.Add(_homeItem);
-        _this.MenuItems.Add(_versionsItem);
+        @this.MenuItems.Add(_homeItem);
+        @this.MenuItems.Add(_versionsItem);
 
-        _this.Loaded += OnLoaded;
-        _this.ItemInvoked += OnItemInvoked;
+        @this.Loaded += OnLoaded;
+        @this.ItemInvoked += OnItemInvoked;
 
-        _this.SelectedItem = _homeItem;
-        _this.Content = _homePage._this;
+        @this.SelectedItem = _homeItem;
+        @this.Content = _homePage.@this;
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -67,7 +67,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         sender.Content = container.Tag;
     }
 
-    void OnFlarialLauncherDownloadAsync(int value) => _this.Dispatcher.Invoke(() =>
+    void OnFlarialLauncherDownloadAsync(int value) => @this.Dispatcher.Invoke(() =>
     {
         _homePage._button.Content = $"Updating... {value}%";
     });
@@ -92,7 +92,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
             return;
 
-        _this.Dispatcher.Invoke(() =>
+        @this.Dispatcher.Invoke(() =>
         {
             if (!Minecraft.IsInstalled)
             {
@@ -100,7 +100,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
                 return;
             }
 
-            var registry = (VersionRegistry)_this.Tag;
+            var registry = (VersionRegistry)@this.Tag;
             var text = $"{(registry.IsSupported ? "✔️" : "❌")} {VersionRegistry.InstalledVersion}";
 
             _homePage._leftText.Text = text;
@@ -109,17 +109,17 @@ sealed class MainNavigationView : XamlElement<NavigationView>
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
-        var settingsItem = (NavigationViewItem)_this.SettingsItem;
-        settingsItem.Tag = _settingsPage._this;
+        var settingsItem = (NavigationViewItem)@this.SettingsItem;
+        settingsItem.Tag = _settingsPage.@this;
 
         if (!await FlarialLauncher.ConnectAsync())
         {
-            await MainDialog.ConnectionFailure.ShowAsync(_this);
+            await MainDialog.ConnectionFailure.ShowAsync(@this);
             System.Windows.Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync(_this)))
+        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync(@this)))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
@@ -127,11 +127,11 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         }
 
         var registry = await VersionRegistry.CreateAsync();
-        _this.Tag = _homePage._this.Tag = registry;
+        @this.Tag = _homePage.@this.Tag = registry;
 
-        var loadTask = Task.Run(() =>
+        var task = Task.Run(() =>
         {
-            foreach (var item in registry) _this.Dispatcher.Invoke(() =>
+            foreach (var item in registry) @this.Dispatcher.Invoke(() =>
             {
                 var listBox = _versionsPage._listBox;
                 listBox.Items.Add(item);
@@ -147,7 +147,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         _homePage._button.Content = "Play";
         _homePage._button.IsEnabled = true;
 
-        await loadTask;
+        await task;
         _versionsPage._button.IsEnabled = true;
     }
 }
