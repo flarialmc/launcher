@@ -32,7 +32,11 @@ Exception: {1}
 
 {3}";
 
-    static Program() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    static Program()
+    {
+        NativeMethods.SetErrorMode();
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    }
 
     static void OnUnhandledException(Exception exception)
     {
