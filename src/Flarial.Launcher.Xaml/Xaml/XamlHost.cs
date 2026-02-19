@@ -29,6 +29,7 @@ sealed class XamlHost : HwndHost
         var value = GetStockObject(BLACK_BRUSH);
         SetClassLongPtr(_dwxsn.WindowHandle, GCLP_HBRBACKGROUND, value);
 
+        SwitchToThisWindow(_dwxsn.WindowHandle, true);
         return handle;
     }
 

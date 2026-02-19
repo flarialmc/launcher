@@ -1,6 +1,5 @@
 IDesktopWindowXamlSourceNative
 GetStockObject
-GetActiveWindow
 SetClassLongPtr
 DwmSetWindowAttribute
 SetErrorMode

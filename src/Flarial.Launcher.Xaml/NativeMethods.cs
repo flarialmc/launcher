@@ -43,7 +43,7 @@ unsafe static class NativeMethods
                 hWnd = (HWND)helper.EnsureHandle();
             }
 
-            PInvoke.ShellExecute(GetActiveWindow(), null, lpFile, null, null, SW_SHOWNORMAL);
+            PInvoke.ShellExecute(hWnd, null, lpFile, null, null, SW_SHOWNORMAL);
         }
     }
 }
