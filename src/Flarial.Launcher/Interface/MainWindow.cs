@@ -50,11 +50,11 @@ sealed class MainWindow : Window
 
     static nint OnHwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
-        handled = msg == WM_SYSCOMMAND && ((uint)wParam & 0xFFF0) switch
+        if (msg == WM_SYSCOMMAND)
         {
-            SC_KEYMENU or SC_MOUSEMENU => true,
-            _ => false
-        };
+            var command = wParam & 0xFFF0;
+            handled = command == SC_KEYMENU || command == SC_MOUSEMENU;
+        }
         return new();
     }
 }
