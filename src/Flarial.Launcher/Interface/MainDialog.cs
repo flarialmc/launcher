@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -9,14 +11,7 @@ namespace Flarial.Launcher.Interface;
 
 abstract class MainDialog
 {
-    internal MainDialog()
-    {
-        _dialog.Title = Title;
-        _dialog.Content = Content;
-        _dialog.CloseButtonText = CloseButtonText;
-        _dialog.PrimaryButtonText = PrimaryButtonText;
-        _dialog.SecondaryButtonText = SecondaryButtonText;
-    }
+    internal MainDialog() { }
 
     readonly ContentDialog _dialog = new();
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
@@ -34,29 +29,70 @@ abstract class MainDialog
         await s_semaphore.WaitAsync();
         try
         {
+            _dialog.Title = Title;
+            _dialog.Content = Content;
+
+            _dialog.CloseButtonText = CloseButtonText;
+            _dialog.PrimaryButtonText = PrimaryButtonText;
+            _dialog.SecondaryButtonText = SecondaryButtonText;
+
             _dialog.XamlRoot = element.XamlRoot;
+
             return await _dialog.ShowAsync();
         }
         finally { s_semaphore.Release(); }
     }
 
-    internal static MainDialog BetaDllUsage => field ??= new BetaDllUsage();
-    internal static MainDialog NotInstalled => field ??= new NotInstalled();
-    internal static MainDialog LaunchFailure => field ??= new LaunchFailure();
-    internal static MainDialog SelectVersion => field ??= new SelectVersion();
-    internal static MainDialog UWPDeprecated => field ??= new UWPDeprecated();
-    internal static MainDialog InstallVersion => field ??= new InstallVersion();
-    internal static MainDialog UnsignedInstall => field ??= new UnsignedInstall();
-    internal static MainDialog InvalidCustomDll => field ??= new InvalidCustomDll();
-    internal static MainDialog ConnectionFailure => field ??= new ConnectionFailure();
-    internal static MainDialog UnpackagedInstall => field ??= new UnpackagedInstall();
-    internal static MainDialog ClientUpdateFailure => field ??= new ClientUpdateFailure();
-    internal static MainDialog AllowUnsignedInstall => field ??= new AllowUnsignedInstall();
-    internal static MainDialog GamingServicesMissing => field ??= new GamingServicesMissing();
-    internal static MainDialog LauncherUpdateAvailable => field ??= new LauncherUpdateAvailable();
+    internal static BetaDllUsage BetaDllUsage => field ??= new();
+    internal static NotInstalled NotInstalled => field ??= new();
+    internal static LaunchFailure LaunchFailure => field ??= new();
+    internal static SelectVersion SelectVersion => field ??= new();
+    internal static UWPDeprecated UWPDeprecated => field ??= new();
+    internal static InstallVersion InstallVersion => field ??= new();
+    internal static UnsignedInstall UnsignedInstall => field ??= new();
+    internal static InvalidCustomDll InvalidCustomDll => field ??= new();
+    internal static ConnectionFailure ConnectionFailure => field ??= new();
+    internal static UnpackagedInstall UnpackagedInstall => field ??= new();
+    internal static ClientUpdateFailure ClientUpdateFailure => field ??= new();
+    internal static AllowUnsignedInstall AllowUnsignedInstall => field ??= new();
+    internal static GamingServicesMissing GamingServicesMissing => field ??= new();
+    internal static LauncherUpdateAvailable LauncherUpdateAvailable => field ??= new();
 }
 
-file sealed class UWPDeprecated : MainDialog
+sealed class UnsupportedVersion(string preferred) : MainDialog
+{
+    protected override string CloseButtonText => "Back";
+    protected override string PrimaryButtonText => "Versions";
+    protected override string SecondaryButtonText => "Settings";
+    protected override string Title => "⚠️ Unsupported Version";
+
+    protected override string Content
+    {
+        get
+        {
+            var key = VersionRegistry.InstalledVersion;
+
+            if (_cache.TryGetValue(key, out var value))
+                return value;
+
+            value = string.Format(_format, key);
+            _cache.Add(key, value);
+
+            return value;
+        }
+    }
+
+    readonly Dictionary<string, string> _cache = [];
+
+    readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
+
+• Switch to {preferred} on the [Versions] page.
+• Enable the client's beta on the [Settings] page.
+
+If you need help, join our Discord.";
+}
+
+sealed class UWPDeprecated : MainDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ UWP Deprecated";
@@ -68,13 +104,13 @@ file sealed class UWPDeprecated : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class AllowUnsignedInstall : UnsignedInstall
+sealed class AllowUnsignedInstall : UnsignedInstall
 {
     protected override string CloseButtonText => "Cancel";
     protected override string PrimaryButtonText => "Launch";
 }
 
-file class UnsignedInstall : MainDialog
+class UnsignedInstall : MainDialog
 {
     protected override string Title => "⚠️ Unsigned Install";
     protected override string PrimaryButtonText => "Back";
@@ -86,7 +122,7 @@ file class UnsignedInstall : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class GamingServicesMissing : MainDialog
+sealed class GamingServicesMissing : MainDialog
 {
     internal override async Task<bool> ShowAsync(UIElement element)
     {
@@ -106,7 +142,7 @@ file sealed class GamingServicesMissing : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class SelectVersion : MainDialog
+sealed class SelectVersion : MainDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "💡 Select Version";
@@ -117,7 +153,7 @@ file sealed class SelectVersion : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class InstallVersion : MainDialog
+sealed class InstallVersion : MainDialog
 {
     protected override string Title => "💡 Install Version";
 
@@ -135,7 +171,7 @@ If you need help, join our Discord.";
 }
 
 [Obsolete("", true)]
-file sealed class CannotFind : MainDialog
+sealed class CannotFind : MainDialog
 {
     protected override string Title => "⚠️ Cannot Find";
 
@@ -148,7 +184,7 @@ If you need help, join our Discord.";
     protected override string PrimaryButtonText => "Back";
 }
 
-file sealed class NotInstalled : MainDialog
+sealed class NotInstalled : MainDialog
 {
     internal override async Task<bool> ShowAsync(UIElement element)
     {
@@ -167,7 +203,7 @@ file sealed class NotInstalled : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class ConnectionFailure : MainDialog
+sealed class ConnectionFailure : MainDialog
 {
     protected override string PrimaryButtonText => "Exit";
     protected override string Title => "🚨 Connection Failure";
@@ -180,7 +216,7 @@ file sealed class ConnectionFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class InvalidCustomDll : MainDialog
+sealed class InvalidCustomDll : MainDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Invalid Custom DLL";
@@ -193,7 +229,7 @@ file sealed class InvalidCustomDll : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class LaunchFailure : MainDialog
+sealed class LaunchFailure : MainDialog
 {
     protected override string Title => "⚠️ Launch Failure";
     protected override string PrimaryButtonText => "Back";
@@ -206,7 +242,7 @@ file sealed class LaunchFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class ClientUpdateFailure : MainDialog
+sealed class ClientUpdateFailure : MainDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Client Update Failure";
@@ -218,7 +254,7 @@ file sealed class ClientUpdateFailure : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class LauncherUpdateAvailable : MainDialog
+sealed class LauncherUpdateAvailable : MainDialog
 {
     protected override string Title => "💡 Launcher Update Available";
     protected override string PrimaryButtonText => "Update";
@@ -231,7 +267,7 @@ file sealed class LauncherUpdateAvailable : MainDialog
 If you need help, join our Discord.";
 }
 
-file sealed class BetaDllUsage : MainDialog
+sealed class BetaDllUsage : MainDialog
 {
     protected override string Title => "⚠️ Beta DLL Usage";
     protected override string CloseButtonText => "Cancel";
@@ -244,7 +280,7 @@ file sealed class BetaDllUsage : MainDialog
 Hence use at your own risk.";
 }
 
-file sealed class UnpackagedInstall : MainDialog
+sealed class UnpackagedInstall : MainDialog
 {
     protected override string Title => "⚠️ Unpackaged Install";
     protected override string PrimaryButtonText => "Back";

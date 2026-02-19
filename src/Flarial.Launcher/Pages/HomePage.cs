@@ -67,18 +67,17 @@ sealed class HomePage : XamlElement<Grid>
     readonly PromotionImageButton _rightImageButton = new CollapseNetworkImageButton();
     readonly PromotionImageButton _centerImageButton = new InfinityNetworkImageButton();
 
-    sealed class UnsupportedVersion(string version, string preferred) : MainDialog
+    UnsupportedVersion UnsupportedVersion
     {
-        protected override string CloseButtonText => "Back";
-        protected override string PrimaryButtonText => "Versions";
-        protected override string SecondaryButtonText => "Settings";
-        protected override string Title => "⚠️ Unsupported Version";
-        protected override string Content => $@"Minecraft {version} isn't supported by Flarial Client.
-
-• Switch to {preferred} on the [Versions] page.
-• Enable the client's beta on the [Settings] page.
-
-If you need help, join our Discord.";
+        get
+        {
+            if (field is null)
+            {
+                var registry = (VersionRegistry)@this.Tag;
+                field = new(registry.PreferredVersion);
+            }
+            return field;
+        }
     }
 
     internal HomePage(MainNavigationView view, ApplicationSettings settings) : base(new())
@@ -171,7 +170,7 @@ If you need help, join our Discord.";
 
             if (!custom && !beta && !registry.IsSupported)
             {
-                switch (await new UnsupportedVersion(VersionRegistry.InstalledVersion, registry.PreferredVersion).PromptAsync(@this))
+                switch (await UnsupportedVersion.PromptAsync(@this))
                 {
                     case ContentDialogResult.Primary:
                         _view.@this.SelectedItem = _view._versionsItem;
