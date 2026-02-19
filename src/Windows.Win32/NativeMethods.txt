@@ -1,5 +1,8 @@
+WINDOW_EX_STYLE
 IDesktopWindowXamlSourceNative
 GetStockObject
+SetWindowLongPtr
+GetWindowLongPtr
 SetClassLongPtr
 DwmSetWindowAttribute
 SetErrorMode

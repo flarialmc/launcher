@@ -7,6 +7,8 @@ using Flarial.Launcher.Xaml;
 using Windows.Win32.Foundation;
 using static Windows.Win32.Graphics.Dwm.DWMWINDOWATTRIBUTE;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_LONG_PTR_INDEX;
 
 namespace Flarial.Launcher.Interface;
 
@@ -25,6 +27,9 @@ sealed class MainWindow : Window
             DwmSetWindowAttribute(handle, DWMWA_USE_IMMERSIVE_DARK_MODE, &attribute, (uint)sizeof(BOOL));
         }
 
+        var style = GetWindowLongPtr(handle, GWL_EXSTYLE);
+        SetWindowLongPtr(handle, GWL_EXSTYLE, style | (nint)WS_EX_APPWINDOW);
+
         using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
         {
             Icon = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
@@ -37,6 +42,7 @@ sealed class MainWindow : Window
         UseLayoutRounding = true;
         SnapsToDevicePixels = true;
 
+        WindowStyle = WindowStyle.ToolWindow;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         Content = new XamlHost(new MainNavigationView(settings).@this)

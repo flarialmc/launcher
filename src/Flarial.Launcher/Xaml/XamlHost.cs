@@ -7,6 +7,8 @@ using Windows.Win32.System.WinRT.Xaml;
 using static Windows.Win32.Graphics.Gdi.GET_STOCK_OBJECT_FLAGS;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.UI.WindowsAndMessaging.GET_CLASS_LONG_INDEX;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_LONG_PTR_INDEX;
 
 namespace Flarial.Launcher.Xaml;
 
