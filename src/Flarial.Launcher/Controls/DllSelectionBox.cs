@@ -5,31 +5,6 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Controls;
 
-file abstract class DllItem
-{
-    protected abstract string String { get; }
-    public override string ToString() => String;
-    internal abstract DllSelection Value { get; }
-}
-
-file sealed class ReleaseDllItem : DllItem
-{
-    protected override string String => "Use the release DLL of the client which is stable.";
-    internal override DllSelection Value => DllSelection.Release;
-}
-
-file sealed class BetaDllItem : DllItem
-{
-    protected override string String => "Use the beta DLL of the client which is unstable.";
-    internal override DllSelection Value => DllSelection.Beta;
-}
-
-file sealed class CustomDllItem : DllItem
-{
-    protected override string String => "Specify your own custom DLL to be used with the game.";
-    internal override DllSelection Value => DllSelection.Custom;
-}
-
 sealed class DllSelectionBox : XamlElement<Grid>
 {
     readonly ApplicationSettings _settings;
@@ -81,5 +56,30 @@ sealed class DllSelectionBox : XamlElement<Grid>
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         _listBox.SelectedIndex = (int)_settings.DllSelection;
+    }
+
+    abstract class DllItem
+    {
+        protected abstract string String { get; }
+        public override string ToString() => String;
+        internal abstract DllSelection Value { get; }
+    }
+
+    sealed class ReleaseDllItem : DllItem
+    {
+        protected override string String => "Use the release DLL of the client which is stable.";
+        internal override DllSelection Value => DllSelection.Release;
+    }
+
+    sealed class BetaDllItem : DllItem
+    {
+        protected override string String => "Use the beta DLL of the client which is unstable.";
+        internal override DllSelection Value => DllSelection.Beta;
+    }
+
+     sealed class CustomDllItem : DllItem
+    {
+        protected override string String => "Specify your own custom DLL to be used with the game.";
+        internal override DllSelection Value => DllSelection.Custom;
     }
 }
