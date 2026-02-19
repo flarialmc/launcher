@@ -14,7 +14,7 @@ unsafe static class PackageService
 
     internal static Package? Get(string packageFamilyName) => s_packageManager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal static void Add(Uri uri, Action<int> action)
+    internal static void Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
         var info = s_packageManager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
@@ -22,7 +22,7 @@ unsafe static class PackageService
         try
         {
             info.Completed += (_, _) => SetEvent(handle);
-            info.Progress += (sender, args) => action((int)args.percentage);
+            info.Progress += (sender, args) => callback((int)args.percentage);
 
             WaitForSingleObject(handle, INFINITE);
             if (info.Status is Error) throw info.ErrorCode;

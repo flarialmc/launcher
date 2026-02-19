@@ -21,7 +21,7 @@ public abstract class VersionItem
 
     protected abstract Task<string> GetUriAsync();
 
-    public virtual async Task InstallAsync(Action<int, bool> action)
+    public virtual async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
@@ -30,7 +30,7 @@ public abstract class VersionItem
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
-        await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => action(_, false));
-        await Task.Run(() => PackageService.Add(new(path), (_) => action(_, true)));
+        await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => callback(_, false));
+        await Task.Run(() => PackageService.Add(new(path), (_) => callback(_, true)));
     }
 }

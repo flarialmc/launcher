@@ -1,0 +1,239 @@
+using System.IO;
+using System.Threading.Tasks;
+using Flarial.Launcher.Controls;
+using Flarial.Launcher.Interface;
+using Flarial.Launcher.Management;
+using Flarial.Launcher.Runtime.Client;
+using Flarial.Launcher.Runtime.Game;
+using Flarial.Launcher.Runtime.Modding;
+using Flarial.Launcher.Runtime.Versions;
+using Flarial.Launcher.Xaml;
+using Windows.Phone.Notification.Management;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+
+namespace Flarial.Launcher.Pages;
+
+sealed class HomePage : XamlElement<Grid>
+{
+    readonly Image _logoImage = new()
+    {
+        Source = new BitmapImage
+        {
+            DecodePixelType = DecodePixelType.Logical,
+            DecodePixelWidth = 96,
+            DecodePixelHeight = 96
+        },
+        Stretch = Stretch.None,
+        VerticalAlignment = VerticalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Margin = new(0, 0, 0, 90)
+    };
+
+    internal readonly Button _button = new()
+    {
+        Content = "Connecting...",
+        Width = 256,
+        VerticalAlignment = VerticalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Margin = new(0, 90, 0, 0),
+        IsEnabled = false
+    };
+
+    internal readonly TextBlock _leftText = new()
+    {
+        VerticalAlignment = VerticalAlignment.Top,
+        HorizontalAlignment = HorizontalAlignment.Left,
+        Margin = new(12, 12, 0, 0),
+        Text = "❌ 0.0.0"
+    };
+
+    readonly TextBlock _rightText = new()
+    {
+        Margin = new(0, 12, 12, 0),
+        VerticalAlignment = VerticalAlignment.Top,
+        HorizontalAlignment = HorizontalAlignment.Right,
+        Text = ApplicationManifest.s_version
+    };
+
+    readonly MainNavigationView _view;
+    readonly ApplicationSettings _settings;
+
+    readonly PromotionImageButton _leftImageButton = new LiteByteHostingImageButton();
+    readonly PromotionImageButton _rightImageButton = new CollapseNetworkImageButton();
+    readonly PromotionImageButton _centerImageButton = new InfinityNetworkImageButton();
+
+    sealed class UnsupportedVersion(string version, string preferred) : MainDialog
+    {
+        protected override string CloseButtonText => "Back";
+        protected override string PrimaryButtonText => "Versions";
+        protected override string SecondaryButtonText => "Settings";
+        protected override string Title => "⚠️ Unsupported Version";
+        protected override string Content => $@"Minecraft {version} isn't supported by Flarial Client.
+
+• Switch to {preferred} on the [Versions] page.
+• Enable the client's beta on the [Settings] page.
+
+If you need help, join our Discord.";
+    }
+
+    internal HomePage(MainNavigationView view, ApplicationSettings settings) : base(new())
+    {
+        _view = view;
+        _settings = settings;
+
+        using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
+        {
+            var logoBitmap = (BitmapImage)_logoImage.Source;
+            logoBitmap.SetSource(stream.AsRandomAccessStream());
+        }
+
+        _leftImageButton._this.Margin = new(12, 0, 0, 12);
+        _leftImageButton._this.HorizontalAlignment = HorizontalAlignment.Left;
+
+        _centerImageButton._this.Margin = new(0, 0, 0, 12);
+        _centerImageButton._this.HorizontalAlignment = HorizontalAlignment.Center;
+
+        _rightImageButton._this.Margin = new(0, 0, 12, 12);
+        _rightImageButton._this.HorizontalAlignment = HorizontalAlignment.Right;
+
+        _this.Children.Add(_leftText);
+        _this.Children.Add(_rightText);
+
+        _this.Children.Add(_button);
+        _this.Children.Add(_logoImage);
+
+        _this.Children.Add(_leftImageButton._this);
+        _this.Children.Add(_centerImageButton._this);
+        _this.Children.Add(_rightImageButton._this);
+
+        _button.Click += OnButtonClick;
+    }
+
+    void OnFlarialClientDownloadAsync(int value) => _this.Dispatcher.Invoke(() =>
+    {
+        _button.Content = $"Downloading... {value}%";
+    });
+
+    async void OnButtonClick(object sender, RoutedEventArgs args)
+    {
+        var button = (Button)sender; try
+        {
+            button.IsEnabled = false;
+            button.Content = "Play";
+
+            var beta = _settings.SelectedDll is Dll.Beta;
+            var custom = _settings.SelectedDll is Dll.Custom;
+
+            var path = _settings.CustomDllPath;
+            var initialized = _settings.WaitForInitialization;
+
+            var registry = (VersionRegistry)_this.Tag;
+            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
+
+            if (!Minecraft.IsInstalled)
+            {
+                await MainDialog.NotInstalled.ShowAsync(_this);
+                return;
+            }
+
+            if (Minecraft.UsingGameDevelopmentKit)
+            {
+                if (!Minecraft.IsGamingServicesInstalled)
+                {
+                    await MainDialog.GamingServicesMissing.ShowAsync(_this);
+                    return;
+                }
+
+                if (!Minecraft.IsPackaged)
+                {
+                    if ((bool)Minecraft.AllowUnsignedInstalls!)
+                    {
+                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync(_this))
+                            return;
+                    }
+                    else
+                    {
+                        await MainDialog.UnsignedInstall.ShowAsync(_this);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                await MainDialog.UWPDeprecated.ShowAsync(_this);
+                return;
+            }
+
+            if (!custom && !beta && !registry.IsSupported)
+            {
+                switch (await new UnsupportedVersion(VersionRegistry.InstalledVersion, registry.PreferredVersion).PromptAsync(_this))
+                {
+                    case ContentDialogResult.Primary:
+                        _view._this.SelectedItem = _view._versionsItem;
+                        _view._this.Content = _view._versionsPage._this;
+                        break;
+
+                    case ContentDialogResult.Secondary:
+                        _view._this.Content = _view._settingsPage._this;
+                        _view._this.SelectedItem = (NavigationViewItem)_view._this.SettingsItem;
+                        break;
+                }
+                return;
+            }
+
+            if (custom)
+            {
+                if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
+                {
+                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    return;
+                }
+
+                Library library = new(path);
+
+                if (!library.IsLoadable)
+                {
+                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    return;
+                }
+
+                _button.Content = "Launching...";
+                if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
+                {
+                    await MainDialog.LaunchFailure.ShowAsync(_this);
+                    return;
+                }
+
+                return;
+            }
+
+
+            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(_this))
+                return;
+
+            _button.Content = "Verifying...";
+            if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
+            {
+                await MainDialog.ClientUpdateFailure.ShowAsync(_this);
+                return;
+            }
+
+            _button.Content = "Launching...";
+            if (!await Task.Run(() => client.Launch(initialized)))
+            {
+                await MainDialog.LaunchFailure.ShowAsync(_this);
+                return;
+            }
+        }
+        finally
+        {
+            button.IsEnabled = true;
+            button.Content = "Play";
+        }
+    }
+}

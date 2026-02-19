@@ -16,7 +16,7 @@ using static System.NativeProcess;
 
 public unsafe static class Injector
 {
-    static readonly delegate* unmanaged[Stdcall]<void*, uint> s_routine;
+    static readonly LPTHREAD_START_ROUTINE s_routine;
 
     static Injector()
     {
@@ -24,7 +24,7 @@ public unsafe static class Injector
         fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
         {
             var address = GetProcAddress(GetModuleHandle(module), new(procedure));
-            s_routine = (delegate* unmanaged[Stdcall]<void*, uint>)address.Value;
+            s_routine = address.CreateDelegate<LPTHREAD_START_ROUTINE>();
         }
     }
 
