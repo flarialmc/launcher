@@ -72,17 +72,17 @@ sealed class UnsupportedVersion(string preferred) : MainDialog
         {
             var key = VersionRegistry.InstalledVersion;
 
-            if (_cache.TryGetValue(key, out var value))
+            if (_collection.TryGetValue(key, out var value))
                 return value;
 
             value = string.Format(_format, key);
-            _cache.Add(key, value);
+            _collection.Add(key, value);
 
             return value;
         }
     }
 
-    readonly Dictionary<string, string> _cache = [];
+    readonly Dictionary<string, string> _collection = [];
 
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 
