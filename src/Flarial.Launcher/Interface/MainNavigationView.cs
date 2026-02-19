@@ -87,25 +87,23 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName);
     }
 
-    void OnPackageStatusChanged(string packageFamilyName)
+    void OnPackageStatusChanged(string packageFamilyName) => _this.Dispatcher.Invoke(() =>
     {
         if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
             return;
 
-        _this.Dispatcher.Invoke(() =>
+        if (!Minecraft.IsInstalled)
         {
-            if (!Minecraft.IsInstalled)
-            {
-                _homePage._leftText.Text = "❌ 0.0.0";
-                return;
-            }
+            _homePage._leftText.Text = "❌ 0.0.0";
+            return;
+        }
 
-            var registry = (VersionRegistry)_this.Tag;
-            var text = $"{(registry.IsSupported ? "✔️" : "❌")} {VersionRegistry.InstalledVersion}";
+        var registry = (VersionRegistry)_this.Tag;
+        var text = $"{(registry.IsSupported ? "✔️" : "❌")} {VersionRegistry.InstalledVersion}";
 
-            _homePage._leftText.Text = text;
-        });
-    }
+        _homePage._leftText.Text = text;
+    });
+
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
