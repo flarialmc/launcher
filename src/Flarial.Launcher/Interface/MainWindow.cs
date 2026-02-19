@@ -14,10 +14,11 @@ sealed class MainWindow : Window
 {
     internal MainWindow(ApplicationSettings settings)
     {
-        Title = "Flarial Launcher";
-
         WindowInteropHelper helper = new(this);
         var handle = (HWND)helper.EnsureHandle();
+
+        var source = HwndSource.FromHwnd(handle);
+        source.AddHook(OnHwndSourceHook);
 
         unsafe
         {
@@ -36,8 +37,24 @@ sealed class MainWindow : Window
 
         ResizeMode = ResizeMode.NoResize;
         SizeToContent = SizeToContent.WidthAndHeight;
+
+        Title = "Flarial Launcher";
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(new MainNavigationView(settings).@this) { Width = 960, Height = 540 };
+        Content = new XamlHost(new MainNavigationView(settings).@this)
+        {
+            Width = 960,
+            Height = 540
+        };
+    }
+
+    static nint OnHwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+    {
+        handled = msg == WM_SYSCOMMAND && ((uint)wParam & 0xFFF0) switch
+        {
+            SC_KEYMENU or SC_MOUSEMENU => true,
+            _ => false
+        };
+        return new();
     }
 }

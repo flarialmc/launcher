@@ -1,8 +1,9 @@
-WINDOW_EX_STYLE
+WM_SYSCOMMAND
+SC_DEFAULT
+SC_KEYMENU
+SC_MOUSEMENU
 IDesktopWindowXamlSourceNative
 GetStockObject
-SetWindowLongPtr
-GetWindowLongPtr
 SetClassLongPtr
 DwmSetWindowAttribute
 SetErrorMode
