@@ -27,7 +27,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     VersionRegistry(string preferred, SortedDictionary<string, VersionEntry> registry)
     {
         _registry = registry;
-        PreferredVersion = preferred;
+        PreferredVersion = NormalizeVersion(preferred);
     }
 
     public readonly string PreferredVersion;
