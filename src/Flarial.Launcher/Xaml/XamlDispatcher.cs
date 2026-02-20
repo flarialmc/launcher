@@ -13,7 +13,7 @@ static class XamlDispatcher
         else dispatcher.InvokeAsync(callback, priority).GetAwaiter().GetResult();
     }
 
-    internal static async Task InvokeAsync(this CoreDispatcher dispatcher, Action callback, [Optional] CoreDispatcherPriority priority)
+    internal static Task InvokeAsync(this CoreDispatcher dispatcher, Action callback, [Optional] CoreDispatcherPriority priority)
     {
         TaskCompletionSource<bool> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -23,6 +23,6 @@ static class XamlDispatcher
             catch (Exception exception) { tcs.TrySetException(exception); }
         });
 
-        await tcs.Task;
+        return tcs.Task;
     }
 }
