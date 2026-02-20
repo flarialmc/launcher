@@ -94,12 +94,12 @@ sealed class MainNavigationView : XamlElement<NavigationView>
 
         if (!Minecraft.IsInstalled)
         {
-            _homePage._leftText.Text = "❌ 0.0.0";
+            _homePage._leftText.Text = "⚪ 0.0.0";
             return;
         }
 
         var registry = (VersionRegistry)_this.Tag;
-        var text = $"{(registry.IsSupported ? "✔️" : "❌")} {VersionRegistry.InstalledVersion}";
+        var text = $"{(registry.IsSupported ? "🟢" : "🔴")} {VersionRegistry.InstalledVersion}";
 
         _homePage._leftText.Text = text;
     });

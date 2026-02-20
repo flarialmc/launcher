@@ -46,7 +46,7 @@ sealed class HomePage : XamlElement<Grid>
         VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Left,
         Margin = new(12, 12, 0, 0),
-        Text = "❌ 0.0.0"
+        Text = "⚪ 0.0.0"
     };
 
     readonly TextBlock _rightText = new()
