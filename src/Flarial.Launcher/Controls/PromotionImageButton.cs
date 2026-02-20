@@ -27,8 +27,6 @@ abstract class PromotionImageButton : XamlElement<Image>
         _this.Source = new BitmapImage
         {
             UriSource = new(ImageUri),
-            DecodePixelWidth = (int)_this.Width,
-            DecodePixelHeight = (int)_this.Height,
             DecodePixelType = DecodePixelType.Logical,
         };
 

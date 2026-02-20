@@ -23,16 +23,12 @@ sealed class HomePage : XamlElement<Grid>
 {
     readonly Image _logoImage = new()
     {
-        Source = new BitmapImage
-        {
-            DecodePixelType = DecodePixelType.Logical,
-            DecodePixelWidth = 96,
-            DecodePixelHeight = 96
-        },
-        Stretch = Stretch.None,
+        Width = 96,
+        Height = 96,
+        Margin = new(0, 0, 0, 90),
         VerticalAlignment = VerticalAlignment.Center,
         HorizontalAlignment = HorizontalAlignment.Center,
-        Margin = new(0, 0, 0, 90)
+        Source = new BitmapImage { DecodePixelType = DecodePixelType.Logical }
     };
 
     internal readonly Button _button = new()
