@@ -19,7 +19,7 @@ public unsafe abstract class Minecraft
     protected abstract string Class { get; }
 
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new NotSupportedException();
+    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new PlatformNotSupportedException();
 
     static readonly Minecraft s_gdk = new MinecraftGDK();
     internal static Package Package => PackageService.Get(PackageFamilyName)!;
