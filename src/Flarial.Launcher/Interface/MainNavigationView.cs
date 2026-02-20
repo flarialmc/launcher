@@ -48,7 +48,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
 
         _this.IsPaneOpen = false;
         _this.UseLayoutRounding = true;
-        _this.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+        _this.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
         _this.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 
         _this.MenuItems.Add(_homeItem);

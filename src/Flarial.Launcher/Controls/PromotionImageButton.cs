@@ -20,17 +20,17 @@ abstract class PromotionImageButton : XamlElement<Image>
 
     protected PromotionImageButton() : base(new())
     {
+        _this.Width = 320 * 0.95;
+        _this.Height = 50 * 0.95;
+        _this.VerticalAlignment = VerticalAlignment.Bottom;
+
         _this.Source = new BitmapImage
         {
-            DecodePixelWidth = 288,
-            DecodePixelHeight = 45,
             UriSource = new(ImageUri),
+            DecodePixelWidth = (int)_this.Width,
+            DecodePixelHeight = (int)_this.Height,
             DecodePixelType = DecodePixelType.Logical,
         };
-
-        _this.Width = 288;
-        _this.Height = 45;
-        _this.VerticalAlignment = VerticalAlignment.Bottom;
 
         _this.ImageOpened += OnImageOpened;
         _this.PointerPressed += OnImagePointerPressed;
