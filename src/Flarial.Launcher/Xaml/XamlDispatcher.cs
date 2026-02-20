@@ -7,17 +7,13 @@ namespace Flarial.Launcher.Xaml;
 
 static class XamlDispatcher
 {
-    internal static void Invoke(this CoreDispatcher dispatcher, DispatchedHandler callback, [Optional] CoreDispatcherPriority priority)
+    internal static void Invoke(this CoreDispatcher dispatcher, Action callback, [Optional] CoreDispatcherPriority priority)
     {
-        if (dispatcher.HasThreadAccess)
-        {
-            if (!dispatcher.ShouldYield(priority)) callback();
-            else _ = dispatcher.RunAsync(priority, callback);
-        }
+        if (dispatcher.HasThreadAccess) callback();
         else dispatcher.InvokeAsync(callback, priority).GetAwaiter().GetResult();
     }
 
-    internal static async Task InvokeAsync(this CoreDispatcher dispatcher, DispatchedHandler callback, [Optional] CoreDispatcherPriority priority)
+    internal static async Task InvokeAsync(this CoreDispatcher dispatcher, Action callback, [Optional] CoreDispatcherPriority priority)
     {
         TaskCompletionSource<bool> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
