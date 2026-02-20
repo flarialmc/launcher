@@ -11,26 +11,23 @@ namespace Flarial.Launcher.Xaml;
 
 sealed class XamlHost : HwndHost
 {
-    readonly DesktopWindowXamlSource _dwxs;
-    readonly IDesktopWindowXamlSourceNative _dwxsn;
+    readonly DesktopWindowXamlSource _host;
 
-    internal XamlHost(UIElement element)
-    {
-        _dwxs = new() { Content = element };
-        _dwxsn = (IDesktopWindowXamlSourceNative)_dwxs;
-    }
+    internal XamlHost(UIElement element) => _host = new() { Content = element };
 
     protected override HandleRef BuildWindowCore(HandleRef hwndParent)
     {
-        _dwxsn.AttachToWindow((HWND)hwndParent.Handle);
-        HandleRef handle = new(this, _dwxsn.WindowHandle);
+        var host = (IDesktopWindowXamlSourceNative)_host;
+        host.AttachToWindow((HWND)hwndParent.Handle);
+
+        var handle = host.WindowHandle;
+        SwitchToThisWindow(handle, true);
 
         var value = GetStockObject(BLACK_BRUSH);
-        SetClassLongPtr(_dwxsn.WindowHandle, GCLP_HBRBACKGROUND, value);
+        SetClassLongPtr(handle, GCLP_HBRBACKGROUND, value);
 
-        SwitchToThisWindow(_dwxsn.WindowHandle, true);
-        return handle;
+        return new(this, handle);
     }
 
-    protected override void DestroyWindowCore(HandleRef hwnd) => _dwxs.Dispose();
+    protected override void DestroyWindowCore(HandleRef hwnd) => _host.Dispose();
 }

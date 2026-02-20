@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -12,13 +11,23 @@ namespace Flarial.Launcher.Interface;
 
 sealed class MainWindow : Window
 {
+    static nint HwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+    {
+        if (msg == WM_SYSCOMMAND)
+        {
+            var command = (uint)wParam & 0xFFF0;
+            handled = command is SC_KEYMENU or SC_MOUSEMENU;
+        }
+        return new();
+    }
+
     internal MainWindow(ApplicationSettings settings)
     {
         WindowInteropHelper helper = new(this);
         var handle = (HWND)helper.EnsureHandle();
 
         var source = HwndSource.FromHwnd(handle);
-        source.AddHook(OnHwndSourceHook);
+        source.AddHook(HwndSourceHook);
 
         unsafe
         {
@@ -41,20 +50,6 @@ sealed class MainWindow : Window
         Title = "Flarial Launcher";
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(new MainNavigationView(settings)._this)
-        {
-            Width = 960,
-            Height = 540
-        };
-    }
-
-    static nint OnHwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
-    {
-        if (msg == WM_SYSCOMMAND)
-        {
-            var command = wParam & 0xFFF0;
-            handled = command == SC_KEYMENU || command == SC_MOUSEMENU;
-        }
-        return new();
+        Content = new XamlHost(new MainNavigationView(settings)._this) { Width = 960, Height = 540 };
     }
 }
