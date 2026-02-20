@@ -145,7 +145,6 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         _homePage._button.Content = "Play";
         _homePage._button.IsEnabled = true;
 
-        await task;
-        _versionsPage._button.IsEnabled = true;
+        await task;  _versionsPage._button.IsEnabled = true;
     }
 }
