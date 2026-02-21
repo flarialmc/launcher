@@ -120,8 +120,8 @@ sealed class VersionsPage : Grid
         if (_item is { })
         {
             args.Cancel = true;
-            (~_view).SelectedItem = _view._versionsItem;
-            (~_view).Content = _view._versionsItem.Tag;
+            (!_view).SelectedItem = _view._versionsItem;
+            (!_view).Content = _view._versionsItem.Tag;
         }
     }
 
@@ -157,6 +157,6 @@ sealed class VersionsPage : Grid
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
-        (~view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
+        (!view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
     }
 }

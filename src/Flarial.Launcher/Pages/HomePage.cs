@@ -84,14 +84,14 @@ sealed class HomePage : Grid
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        (~_leftImageButton).Margin = new(12, 0, 0, 12);
-        (~_leftImageButton).HorizontalAlignment = HorizontalAlignment.Left;
+        (!_leftImageButton).Margin = new(12, 0, 0, 12);
+        (!_leftImageButton).HorizontalAlignment = HorizontalAlignment.Left;
 
-        (~_centerImageButton).Margin = new(0, 0, 0, 12);
-        (~_centerImageButton).HorizontalAlignment = HorizontalAlignment.Center;
+        (!_centerImageButton).Margin = new(0, 0, 0, 12);
+        (!_centerImageButton).HorizontalAlignment = HorizontalAlignment.Center;
 
-        (~_rightImageButton).Margin = new(0, 0, 12, 12);
-        (~_rightImageButton).HorizontalAlignment = HorizontalAlignment.Right;
+        (!_rightImageButton).Margin = new(0, 0, 12, 12);
+        (!_rightImageButton).HorizontalAlignment = HorizontalAlignment.Right;
 
         Children.Add(_leftText);
         Children.Add(_rightText);
@@ -99,9 +99,9 @@ sealed class HomePage : Grid
         Children.Add(_button);
         Children.Add(_logoImage);
 
-        Children.Add(~_leftImageButton);
-        Children.Add(~_centerImageButton);
-        Children.Add(~_rightImageButton);
+        Children.Add(!_leftImageButton);
+        Children.Add(!_centerImageButton);
+        Children.Add(!_rightImageButton);
 
         _button.Click += OnButtonClick;
     }
@@ -166,14 +166,14 @@ sealed class HomePage : Grid
                 switch (await UnsupportedVersion.PromptAsync(this))
                 {
                     case ContentDialogResult.Primary:
-                        (~_view).SelectedItem = _view._versionsItem;
-                        (~_view).Content = _view._versionsItem.Tag;
+                        (!_view).SelectedItem = _view._versionsItem;
+                        (!_view).Content = _view._versionsItem.Tag;
                         break;
 
                     case ContentDialogResult.Secondary:
-                        var settingsItem = (NavigationViewItem)(~_view).SettingsItem;
-                        (~_view).SelectedItem = settingsItem;
-                        (~_view).Content = settingsItem.Tag;
+                        var settingsItem = (NavigationViewItem)(!_view).SettingsItem;
+                        (!_view).SelectedItem = settingsItem;
+                        (!_view).Content = settingsItem.Tag;
                         break;
                 }
                 return;
