@@ -159,10 +159,7 @@ sealed class VersionsPage : XamlElement<Grid>
         _listBox.SetValue(VirtualizingStackPanel.IsVirtualizingProperty, true);
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
-        DependencyObject @object = view;
-        var property = ContentControl.ContentProperty;
-        @object.RegisterPropertyChangedCallback(property, OnNavigationViewContentChanged);
-
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
+        ((DependencyObject)view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
     }
 }
