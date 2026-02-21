@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Controls;
 namespace Flarial.Launcher.Pages;
 
 
-sealed class SettingsPage : XamlElement<Grid>
+sealed class SettingsPage : Grid
 {
     readonly ApplicationSettings _settings;
 
@@ -36,24 +36,24 @@ sealed class SettingsPage : XamlElement<Grid>
         else if (ReferenceEquals(_waitForInitialization, sender)) _settings.WaitForInitialization = value;
     }
 
-    internal SettingsPage(ApplicationSettings settings) : base(new())
+    internal SettingsPage(ApplicationSettings settings)
     {
         _settings = settings;
 
-        @this.RowSpacing = 12;
-        @this.Margin = new(12);
+        RowSpacing = 12;
+        Margin = new(12);
 
-        @this.RowDefinitions.Add(new());
-        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        RowDefinitions.Add(new());
+        RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         StackPanel panel = new() { Spacing = 12, Orientation = Orientation.Vertical };
         FolderButtonsBox box = new();
 
-        Grid.SetRow(panel, 0);
-        Grid.SetColumn(panel, 0);
+        SetRow(panel, 0);
+        SetColumn(panel, 0);
 
-        Grid.SetRow(box, 1);
-        Grid.SetColumn(box, 0);
+        SetRow(box, 1);
+        SetColumn(box, 0);
 
         panel.Children.Add(new TextBlock { Text = "Select what DLL should be used:" });
         panel.Children.Add(new DllSelectionBox(settings));
@@ -66,7 +66,7 @@ sealed class SettingsPage : XamlElement<Grid>
         _automaticUpdates.IsOn = _settings.AutomaticUpdates;
         _waitForInitialization.IsOn = _settings.WaitForInitialization;
 
-        @this.Children.Add(panel);
-        @this.Children.Add(box);
+        Children.Add(panel);
+        Children.Add(box);
     }
 }

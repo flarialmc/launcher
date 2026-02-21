@@ -39,10 +39,10 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         _catalog = PackageCatalog.OpenForCurrentUser();
 
         _homePage = new(this, settings);
-        _homeItem.Tag = (UIElement)_homePage;
+        _homeItem.Tag = _homePage;
 
         _versionsPage = new(this);
-        _versionsItem.Tag = (UIElement)_versionsPage;
+        _versionsItem.Tag = _versionsPage;
 
         _settingsPage = new(settings);
 
@@ -58,7 +58,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         @this.ItemInvoked += OnItemInvoked;
 
         @this.SelectedItem = _homeItem;
-        @this.Content = (UIElement)_homePage;
+        @this.Content = _homePage;
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -107,7 +107,7 @@ sealed class MainNavigationView : XamlElement<NavigationView>
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
         var settingsItem = (NavigationViewItem)@this.SettingsItem;
-        settingsItem.Tag = (UIElement)_settingsPage;
+        settingsItem.Tag = _settingsPage;
 
         if (!await FlarialLauncher.ConnectAsync())
         {

@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Controls;
 
-sealed class DllSelectionBox : XamlElement<Grid>
+sealed class DllSelectionBox : Grid
 {
     readonly ApplicationSettings _settings;
 
@@ -29,13 +29,13 @@ sealed class DllSelectionBox : XamlElement<Grid>
         _button._textBox.IsEnabled = enabled;
     }
 
-    internal DllSelectionBox(ApplicationSettings settings) : base(new())
+    internal DllSelectionBox(ApplicationSettings settings)
     {
         _settings = settings;
         _button = new(_settings);
 
-        @this.RowDefinitions.Add(new());
-        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        RowDefinitions.Add(new());
+        RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         Grid.SetRow(_listBox, 0);
         Grid.SetColumn(_listBox, 0);
@@ -43,8 +43,8 @@ sealed class DllSelectionBox : XamlElement<Grid>
         Grid.SetRow(_button, 1);
         Grid.SetColumn(_button, 0);
 
-        @this.Children.Add(_listBox);
-        @this.Children.Add(_button);
+        Children.Add(_listBox);
+        Children.Add(_button);
 
         _listBox.Items.Add(new ReleaseDllItem());
         _listBox.Items.Add(new BetaDllItem());

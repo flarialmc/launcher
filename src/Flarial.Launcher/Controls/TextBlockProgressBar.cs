@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Controls;
 
-sealed class TextBlockProgressBar : XamlElement<Grid>
+sealed class TextBlockProgressBar : Grid
 {
     internal readonly ProgressBar _progressBar = new()
     {
@@ -22,9 +22,9 @@ sealed class TextBlockProgressBar : XamlElement<Grid>
         Visibility = Visibility.Collapsed
     };
 
-    internal TextBlockProgressBar() : base(new())
+    internal TextBlockProgressBar()
     {
-        @this.Children.Add(_progressBar);
-        @this.Children.Add(_textBlock);
+        Children.Add(_progressBar);
+        Children.Add(_textBlock);
     }
 }

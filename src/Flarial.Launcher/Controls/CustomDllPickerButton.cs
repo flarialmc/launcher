@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Controls;
 
-sealed class CustomDllPickerButton : XamlElement<Grid>
+sealed class CustomDllPickerButton : Grid
 {
     readonly OpenFileDialog _dialog = new()
     {
@@ -46,12 +46,12 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
 
     readonly ApplicationSettings _settings;
 
-    internal CustomDllPickerButton(ApplicationSettings settings) : base(new())
+    internal CustomDllPickerButton(ApplicationSettings settings) 
     {
         _settings = settings;
 
-        @this.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-        @this.ColumnDefinitions.Add(new());
+        ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+        ColumnDefinitions.Add(new());
 
         Grid.SetRow(_button, 0);
         Grid.SetColumn(_button, 0);
@@ -59,8 +59,8 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
         Grid.SetRow(_textBox, 0);
         Grid.SetColumn(_textBox, 1);
 
-        @this.Children.Add(_button);
-        @this.Children.Add(_textBox);
+        Children.Add(_button);
+        Children.Add(_textBox);
 
         _button.Click += OnButtonClick;
 

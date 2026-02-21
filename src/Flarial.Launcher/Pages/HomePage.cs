@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Flarial.Launcher.Pages;
 
-sealed class HomePage : XamlElement<Grid>
+sealed class HomePage : Grid
 {
     readonly Image _logoImage = new()
     {
@@ -66,14 +66,14 @@ sealed class HomePage : XamlElement<Grid>
         {
             if (field is null)
             {
-                var registry = (VersionRegistry)@this.Tag;
+                var registry = (VersionRegistry)Tag;
                 field = new(registry.PreferredVersion);
             }
             return field;
         }
     }
 
-    internal HomePage(MainNavigationView view, ApplicationSettings settings) : base(new())
+    internal HomePage(MainNavigationView view, ApplicationSettings settings)
     {
         _view = view;
         _settings = settings;
@@ -84,9 +84,9 @@ sealed class HomePage : XamlElement<Grid>
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        FrameworkElement leftImageButton = _leftImageButton;
-        FrameworkElement centerImageButton = _centerImageButton;
-        FrameworkElement rightImageButton = _rightImageButton;
+        Image leftImageButton = _leftImageButton;
+        Image centerImageButton = _centerImageButton;
+        Image rightImageButton = _rightImageButton;
 
         leftImageButton.Margin = new(12, 0, 0, 12);
         leftImageButton.HorizontalAlignment = HorizontalAlignment.Left;
@@ -97,20 +97,20 @@ sealed class HomePage : XamlElement<Grid>
         rightImageButton.Margin = new(0, 0, 12, 12);
         rightImageButton.HorizontalAlignment = HorizontalAlignment.Right;
 
-        @this.Children.Add(_leftText);
-        @this.Children.Add(_rightText);
+        Children.Add(_leftText);
+        Children.Add(_rightText);
 
-        @this.Children.Add(_button);
-        @this.Children.Add(_logoImage);
+        Children.Add(_button);
+        Children.Add(_logoImage);
 
-        @this.Children.Add(_leftImageButton);
-        @this.Children.Add(_centerImageButton);
-        @this.Children.Add(_rightImageButton);
+        Children.Add(_leftImageButton);
+        Children.Add(_centerImageButton);
+        Children.Add(_rightImageButton);
 
         _button.Click += OnButtonClick;
     }
 
-    void OnFlarialClientDownloadAsync(int value) => @this.Dispatcher.Invoke(() =>
+    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
     {
         _button.Content = $"Downloading... {value}%";
     });
@@ -128,7 +128,7 @@ sealed class HomePage : XamlElement<Grid>
             var path = _settings.CustomDllPath;
             var initialized = _settings.WaitForInitialization;
 
-            var registry = (VersionRegistry)@this.Tag;
+            var registry = (VersionRegistry)Tag;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!Minecraft.IsInstalled)

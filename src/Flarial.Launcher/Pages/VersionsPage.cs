@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Pages;
 
-sealed class VersionsPage : XamlElement<Grid>
+sealed class VersionsPage : Grid
 {
     internal readonly ListBox _listBox = new()
     {
@@ -30,7 +30,7 @@ sealed class VersionsPage : XamlElement<Grid>
     readonly MainNavigationView _view;
     readonly TextBlockProgressBar _progressBar = new();
 
-    void OnVersionItemInstallAsync(int value, bool state) => @this.Dispatcher.Invoke(() =>
+    void OnVersionItemInstallAsync(int value, bool state) => Dispatcher.Invoke(() =>
     {
         string text = state ? "Installing..." : "Downloading...";
         _progressBar._progressBar.Value = value <= 0 ? 0 : value;
@@ -130,15 +130,15 @@ sealed class VersionsPage : XamlElement<Grid>
 
     VersionItem? _item = null;
 
-    internal VersionsPage(MainNavigationView view) : base(new())
+    internal VersionsPage(MainNavigationView view)
     {
         _view = view;
 
-        @this.RowSpacing = 12;
-        @this.Margin = new(12);
+        RowSpacing = 12;
+        Margin = new(12);
 
-        @this.RowDefinitions.Add(new());
-        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        RowDefinitions.Add(new());
+        RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         Grid.SetRow(_listBox, 0);
         Grid.SetColumn(_listBox, 0);
@@ -149,9 +149,9 @@ sealed class VersionsPage : XamlElement<Grid>
         Grid.SetRow(_progressBar, 1);
         Grid.SetColumn(_progressBar, 0);
 
-        @this.Children.Add(_listBox);
-        @this.Children.Add(_button);
-        @this.Children.Add(_progressBar);
+        Children.Add(_listBox);
+        Children.Add(_button);
+        Children.Add(_progressBar);
 
         _button.Click += OnButtonClick;
         _listBox.SelectionChanged += OnListBoxSelectionChanged;

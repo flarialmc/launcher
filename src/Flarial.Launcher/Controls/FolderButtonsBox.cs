@@ -7,7 +7,7 @@ using static System.Environment.SpecialFolder;
 
 namespace Flarial.Launcher.Controls;
 
-sealed class FolderButtonsBox : XamlElement<Grid>
+sealed class FolderButtonsBox : Grid
 {
     readonly Button _clientFolderButton = new()
     {
@@ -32,7 +32,7 @@ sealed class FolderButtonsBox : XamlElement<Grid>
         NativeMethods.ShellExecute(path);
     }
 
-    internal FolderButtonsBox() : base(new())
+    internal FolderButtonsBox()
     {
         var path = Path.Combine(GetFolderPath(LocalApplicationData), "Flarial");
 
@@ -42,9 +42,9 @@ sealed class FolderButtonsBox : XamlElement<Grid>
         _clientFolderButton.Click += OnButtonClick;
         _launcherFolderButton.Click += OnButtonClick;
 
-        @this.ColumnSpacing = 12;
-        @this.ColumnDefinitions.Add(new());
-        @this.ColumnDefinitions.Add(new());
+        ColumnSpacing = 12;
+        ColumnDefinitions.Add(new());
+        ColumnDefinitions.Add(new());
 
         Grid.SetRow(_clientFolderButton, 0);
         Grid.SetColumn(_clientFolderButton, 0);
@@ -52,7 +52,7 @@ sealed class FolderButtonsBox : XamlElement<Grid>
         Grid.SetRow(_launcherFolderButton, 0);
         Grid.SetColumn(_launcherFolderButton, 1);
 
-        @this.Children.Add(_clientFolderButton);
-        @this.Children.Add(_launcherFolderButton);
+        Children.Add(_clientFolderButton);
+        Children.Add(_launcherFolderButton);
     }
 }
