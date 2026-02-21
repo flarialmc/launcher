@@ -46,11 +46,11 @@ sealed class FolderButtonsBox : Grid
         ColumnDefinitions.Add(new());
         ColumnDefinitions.Add(new());
 
-        Grid.SetRow(_clientFolderButton, 0);
-        Grid.SetColumn(_clientFolderButton, 0);
+        SetRow(_clientFolderButton, 0);
+        SetColumn(_clientFolderButton, 0);
 
-        Grid.SetRow(_launcherFolderButton, 0);
-        Grid.SetColumn(_launcherFolderButton, 1);
+        SetRow(_launcherFolderButton, 0);
+        SetColumn(_launcherFolderButton, 1);
 
         Children.Add(_clientFolderButton);
         Children.Add(_launcherFolderButton);

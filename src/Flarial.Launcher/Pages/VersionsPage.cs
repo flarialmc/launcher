@@ -119,12 +119,9 @@ sealed class VersionsPage : Grid
     {
         if (_item is { })
         {
-            NavigationView view = _view;
-
-            view.SelectedItem = _view._versionsItem;
-            view.Content = _view._versionsItem.Tag;
-
             args.Cancel = true;
+            (~_view).SelectedItem = _view._versionsItem;
+            (~_view).Content = _view._versionsItem.Tag;
         }
     }
 
@@ -140,14 +137,14 @@ sealed class VersionsPage : Grid
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
-        Grid.SetRow(_listBox, 0);
-        Grid.SetColumn(_listBox, 0);
+        SetRow(_listBox, 0);
+        SetColumn(_listBox, 0);
 
-        Grid.SetRow(_button, 1);
-        Grid.SetColumn(_button, 0);
+        SetRow(_button, 1);
+        SetColumn(_button, 0);
 
-        Grid.SetRow(_progressBar, 1);
-        Grid.SetColumn(_progressBar, 0);
+        SetRow(_progressBar, 1);
+        SetColumn(_progressBar, 0);
 
         Children.Add(_listBox);
         Children.Add(_button);
@@ -160,6 +157,6 @@ sealed class VersionsPage : Grid
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
-        ((DependencyObject)view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
+        (~view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
     }
 }

@@ -6,5 +6,5 @@ abstract class XamlElement<T>(T element) where T : UIElement
 {
     protected readonly T @this = element;
 
-    public static implicit operator T(XamlElement<T> element) => element.@this;
+    public static T operator ~(XamlElement<T> element) => element.@this;
 }
