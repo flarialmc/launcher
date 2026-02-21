@@ -96,12 +96,9 @@ Exception: {1}
             var application = Windows.UI.Xaml.Application.Current;
             application.UnhandledException += OnUnhandledException;
 
-            application.Resources.MergedDictionaries.Add(new ColorPaletteResources
-            {
-                Accent = Colors.IndianRed
-            });
-
             application.RequestedTheme = ApplicationTheme.Dark;
+            application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
+
             new MainApplication(settings).Run(new MainWindow(settings));
         }
     }
