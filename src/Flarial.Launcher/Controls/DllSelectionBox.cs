@@ -34,17 +34,17 @@ sealed class DllSelectionBox : XamlElement<Grid>
         _settings = settings;
         _button = new(_settings);
 
-        _this.RowDefinitions.Add(new());
-        _this.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        @this.RowDefinitions.Add(new());
+        @this.RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         Grid.SetRow(_listBox, 0);
         Grid.SetColumn(_listBox, 0);
 
-        Grid.SetRow(_button._this, 1);
-        Grid.SetColumn(_button._this, 0);
+        Grid.SetRow(_button, 1);
+        Grid.SetColumn(_button, 0);
 
-        _this.Children.Add(_listBox);
-        _this.Children.Add(_button._this);
+        @this.Children.Add(_listBox);
+        @this.Children.Add(_button);
 
         _listBox.Items.Add(new ReleaseDllItem());
         _listBox.Items.Add(new BetaDllItem());
@@ -77,7 +77,7 @@ sealed class DllSelectionBox : XamlElement<Grid>
         internal override DllSelection Value => DllSelection.Beta;
     }
 
-     sealed class CustomDllItem : DllItem
+    sealed class CustomDllItem : DllItem
     {
         protected override string String => "Specify your own custom DLL to be used with the game.";
         internal override DllSelection Value => DllSelection.Custom;

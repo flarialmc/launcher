@@ -1,9 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
 using Microsoft.Win32;
-using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -53,8 +50,8 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
     {
         _settings = settings;
 
-        _this.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-        _this.ColumnDefinitions.Add(new());
+        @this.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+        @this.ColumnDefinitions.Add(new());
 
         Grid.SetRow(_button, 0);
         Grid.SetColumn(_button, 0);
@@ -62,8 +59,8 @@ sealed class CustomDllPickerButton : XamlElement<Grid>
         Grid.SetRow(_textBox, 0);
         Grid.SetColumn(_textBox, 1);
 
-        _this.Children.Add(_button);
-        _this.Children.Add(_textBox);
+        @this.Children.Add(_button);
+        @this.Children.Add(_textBox);
 
         _button.Click += OnButtonClick;
 

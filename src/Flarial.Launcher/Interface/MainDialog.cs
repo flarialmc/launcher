@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Interface.Dialogs;
-using Flarial.Launcher.Management;
-using Flarial.Launcher.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 

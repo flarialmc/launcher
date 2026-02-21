@@ -10,11 +10,9 @@ using static Windows.Win32.UI.WindowsAndMessaging.GET_CLASS_LONG_INDEX;
 
 namespace Flarial.Launcher.Xaml;
 
-sealed class XamlHost : HwndHost
+sealed class XamlHost(UIElement element) : HwndHost
 {
-    readonly DesktopWindowXamlSource _host;
-
-    internal XamlHost(UIElement element) => _host = new() { Content = element };
+    readonly DesktopWindowXamlSource _host = new() { Content = element };
 
     protected override HandleRef BuildWindowCore(HandleRef hwndParent)
     {

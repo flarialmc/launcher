@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Xaml;
@@ -43,9 +42,9 @@ sealed class FolderButtonsBox : XamlElement<Grid>
         _clientFolderButton.Click += OnButtonClick;
         _launcherFolderButton.Click += OnButtonClick;
 
-        _this.ColumnSpacing = 12;
-        _this.ColumnDefinitions.Add(new());
-        _this.ColumnDefinitions.Add(new());
+        @this.ColumnSpacing = 12;
+        @this.ColumnDefinitions.Add(new());
+        @this.ColumnDefinitions.Add(new());
 
         Grid.SetRow(_clientFolderButton, 0);
         Grid.SetColumn(_clientFolderButton, 0);
@@ -53,7 +52,7 @@ sealed class FolderButtonsBox : XamlElement<Grid>
         Grid.SetRow(_launcherFolderButton, 0);
         Grid.SetColumn(_launcherFolderButton, 1);
 
-        _this.Children.Add(_clientFolderButton);
-        _this.Children.Add(_launcherFolderButton);
+        @this.Children.Add(_clientFolderButton);
+        @this.Children.Add(_launcherFolderButton);
     }
 }

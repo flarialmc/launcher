@@ -1,11 +1,7 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Flarial.Launcher.Controls;
@@ -20,23 +16,23 @@ abstract class PromotionImageButton : XamlElement<Image>
 
     protected PromotionImageButton() : base(new())
     {
-        _this.Width = 320 * 0.95;
-        _this.Height = 50 * 0.95;
-        _this.VerticalAlignment = VerticalAlignment.Bottom;
+        @this.Width = 320 * 0.95;
+        @this.Height = 50 * 0.95;
+        @this.VerticalAlignment = VerticalAlignment.Bottom;
 
-        _this.Source = new BitmapImage
+        @this.Source = new BitmapImage
         {
             UriSource = new(ImageUri),
             DecodePixelType = DecodePixelType.Logical,
         };
 
-        _this.ImageOpened += OnImageOpened;
-        _this.PointerPressed += OnImagePointerPressed;
+        @this.ImageOpened += OnImageOpened;
+        @this.PointerPressed += OnImagePointerPressed;
 
-        _this.PointerEntered += OnImagePointerEntered;
-        _this.PointerExited += OnImagePointerExited;
+        @this.PointerEntered += OnImagePointerEntered;
+        @this.PointerExited += OnImagePointerExited;
 
-        _this.Tag = NavigateUri;
+        @this.Tag = NavigateUri;
     }
 
     static void OnImageOpened(object sender, RoutedEventArgs args)

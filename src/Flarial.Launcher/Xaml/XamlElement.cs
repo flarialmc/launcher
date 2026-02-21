@@ -2,9 +2,9 @@ using Windows.UI.Xaml;
 
 namespace Flarial.Launcher.Xaml;
 
-abstract class XamlElement<T> where T : UIElement
+abstract class XamlElement<T>(T element) where T : UIElement
 {
-    internal readonly T _this;
+    protected readonly T @this = element;
 
-    internal XamlElement(T element) => _this = element; 
+    public static implicit operator T(XamlElement<T> element) => element.@this;
 }

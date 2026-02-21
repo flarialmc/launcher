@@ -9,12 +9,8 @@ using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Versions;
 using Flarial.Launcher.Xaml;
-using Windows.Phone.Notification.Management;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Flarial.Launcher.Pages;
@@ -70,7 +66,7 @@ sealed class HomePage : XamlElement<Grid>
         {
             if (field is null)
             {
-                var registry = (VersionRegistry)_this.Tag;
+                var registry = (VersionRegistry)@this.Tag;
                 field = new(registry.PreferredVersion);
             }
             return field;
@@ -88,29 +84,33 @@ sealed class HomePage : XamlElement<Grid>
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        _leftImageButton._this.Margin = new(12, 0, 0, 12);
-        _leftImageButton._this.HorizontalAlignment = HorizontalAlignment.Left;
+        FrameworkElement leftImageButton = _leftImageButton;
+        FrameworkElement centerImageButton = _centerImageButton;
+        FrameworkElement rightImageButton = _rightImageButton;
 
-        _centerImageButton._this.Margin = new(0, 0, 0, 12);
-        _centerImageButton._this.HorizontalAlignment = HorizontalAlignment.Center;
+        leftImageButton.Margin = new(12, 0, 0, 12);
+        leftImageButton.HorizontalAlignment = HorizontalAlignment.Left;
 
-        _rightImageButton._this.Margin = new(0, 0, 12, 12);
-        _rightImageButton._this.HorizontalAlignment = HorizontalAlignment.Right;
+        centerImageButton.Margin = new(0, 0, 0, 12);
+        centerImageButton.HorizontalAlignment = HorizontalAlignment.Center;
 
-        _this.Children.Add(_leftText);
-        _this.Children.Add(_rightText);
+        rightImageButton.Margin = new(0, 0, 12, 12);
+        rightImageButton.HorizontalAlignment = HorizontalAlignment.Right;
 
-        _this.Children.Add(_button);
-        _this.Children.Add(_logoImage);
+        @this.Children.Add(_leftText);
+        @this.Children.Add(_rightText);
 
-        _this.Children.Add(_leftImageButton._this);
-        _this.Children.Add(_centerImageButton._this);
-        _this.Children.Add(_rightImageButton._this);
+        @this.Children.Add(_button);
+        @this.Children.Add(_logoImage);
+
+        @this.Children.Add(_leftImageButton);
+        @this.Children.Add(_centerImageButton);
+        @this.Children.Add(_rightImageButton);
 
         _button.Click += OnButtonClick;
     }
 
-    void OnFlarialClientDownloadAsync(int value) => _this.Dispatcher.Invoke(() =>
+    void OnFlarialClientDownloadAsync(int value) => @this.Dispatcher.Invoke(() =>
     {
         _button.Content = $"Downloading... {value}%";
     });
@@ -128,12 +128,12 @@ sealed class HomePage : XamlElement<Grid>
             var path = _settings.CustomDllPath;
             var initialized = _settings.WaitForInitialization;
 
-            var registry = (VersionRegistry)_this.Tag;
+            var registry = (VersionRegistry)@this.Tag;
             var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync(_this);
+                await MainDialog.NotInstalled.ShowAsync(this);
                 return;
             }
 
@@ -141,7 +141,7 @@ sealed class HomePage : XamlElement<Grid>
             {
                 if (!Minecraft.IsGamingServicesInstalled)
                 {
-                    await MainDialog.GamingServicesMissing.ShowAsync(_this);
+                    await MainDialog.GamingServicesMissing.ShowAsync(this);
                     return;
                 }
 
@@ -149,34 +149,36 @@ sealed class HomePage : XamlElement<Grid>
                 {
                     if ((bool)Minecraft.AllowUnsignedInstalls!)
                     {
-                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync(_this))
+                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync(this))
                             return;
                     }
                     else
                     {
-                        await MainDialog.UnsignedInstall.ShowAsync(_this);
+                        await MainDialog.UnsignedInstall.ShowAsync(this);
                         return;
                     }
                 }
             }
             else
             {
-                await MainDialog.UWPDeprecated.ShowAsync(_this);
+                await MainDialog.UWPDeprecated.ShowAsync(this);
                 return;
             }
 
             if (!custom && !beta && !registry.IsSupported)
             {
-                switch (await UnsupportedVersion.PromptAsync(_this))
+                NavigationView view = _view;
+                switch (await UnsupportedVersion.PromptAsync(this))
                 {
                     case ContentDialogResult.Primary:
-                        _view._this.SelectedItem = _view._versionsItem;
-                        _view._this.Content = _view._versionsPage._this;
+                        view.SelectedItem = _view._versionsItem;
+                        view.Content = _view._versionsItem.Tag;
                         break;
 
                     case ContentDialogResult.Secondary:
-                        _view._this.Content = _view._settingsPage._this;
-                        _view._this.SelectedItem = (NavigationViewItem)_view._this.SettingsItem;
+                        var settingsItem = (NavigationViewItem)view.SettingsItem;
+                        view.SelectedItem = settingsItem;
+                        view.Content = settingsItem.Tag;
                         break;
                 }
                 return;
@@ -186,7 +188,7 @@ sealed class HomePage : XamlElement<Grid>
             {
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    await MainDialog.InvalidCustomDll.ShowAsync(this);
                     return;
                 }
 
@@ -194,14 +196,14 @@ sealed class HomePage : XamlElement<Grid>
 
                 if (!library.IsLoadable)
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync(_this);
+                    await MainDialog.InvalidCustomDll.ShowAsync(this);
                     return;
                 }
 
                 _button.Content = "Launching...";
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
-                    await MainDialog.LaunchFailure.ShowAsync(_this);
+                    await MainDialog.LaunchFailure.ShowAsync(this);
                     return;
                 }
 
@@ -209,20 +211,20 @@ sealed class HomePage : XamlElement<Grid>
             }
 
 
-            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(_this))
+            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(this))
                 return;
 
             _button.Content = "Verifying...";
             if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
             {
-                await MainDialog.ClientUpdateFailure.ShowAsync(_this);
+                await MainDialog.ClientUpdateFailure.ShowAsync(this);
                 return;
             }
 
             _button.Content = "Launching...";
             if (!await Task.Run(() => client.Launch(initialized)))
             {
-                await MainDialog.LaunchFailure.ShowAsync(_this);
+                await MainDialog.LaunchFailure.ShowAsync(this);
                 return;
             }
         }
