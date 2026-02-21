@@ -31,5 +31,4 @@ sealed class XamlHost : HwndHost
     }
 
     protected override void DestroyWindowCore(HandleRef hwnd) => _host.Dispose();
-
 }
