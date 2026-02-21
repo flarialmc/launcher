@@ -1,4 +1,3 @@
-using System;
 using Windows.UI.Xaml;
 
 namespace Flarial.Launcher.Xaml;
