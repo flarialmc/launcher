@@ -16,23 +16,23 @@ abstract class PromotionImageButton : XamlElement<Image>
 
     protected PromotionImageButton() : base(new())
     {
-        (!this).Width = 320 * 0.95;
-        (!this).Height = 50 * 0.95;
-        (!this).VerticalAlignment = VerticalAlignment.Bottom;
+        (~this).Width = 320 * 0.95;
+        (~this).Height = 50 * 0.95;
+        (~this).VerticalAlignment = VerticalAlignment.Bottom;
 
-        (!this).Source = new BitmapImage
+        (~this).Source = new BitmapImage
         {
             UriSource = new(ImageUri),
             DecodePixelType = DecodePixelType.Logical
         };
 
-        (!this).ImageOpened += OnImageOpened;
-        (!this).PointerPressed += OnImagePointerPressed;
+        (~this).ImageOpened += OnImageOpened;
+        (~this).PointerPressed += OnImagePointerPressed;
 
-        (!this).PointerEntered += OnImagePointerEntered;
-        (!this).PointerExited += OnImagePointerExited;
+        (~this).PointerEntered += OnImagePointerEntered;
+        (~this).PointerExited += OnImagePointerExited;
 
-        (!this).Tag = NavigateUri;
+        (~this).Tag = NavigateUri;
     }
 
     static void OnImageOpened(object sender, RoutedEventArgs args)
