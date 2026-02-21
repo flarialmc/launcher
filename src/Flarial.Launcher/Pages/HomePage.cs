@@ -84,10 +84,6 @@ sealed class HomePage : Grid
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        //  Image leftImageButton = _leftImageButton;
-        // Image centerImageButton = _centerImageButton;
-        // Image rightImageButton = _rightImageButton;
-
         (~_leftImageButton).Margin = new(12, 0, 0, 12);
         (~_leftImageButton).HorizontalAlignment = HorizontalAlignment.Left;
 
