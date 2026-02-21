@@ -7,6 +7,7 @@ using Windows.Win32.System.WinRT.Xaml;
 using static Windows.Win32.Graphics.Gdi.GET_STOCK_OBJECT_FLAGS;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.UI.WindowsAndMessaging.GET_CLASS_LONG_INDEX;
+
 namespace Flarial.Launcher.Xaml;
 
 sealed class XamlHost : HwndHost
@@ -30,4 +31,5 @@ sealed class XamlHost : HwndHost
     }
 
     protected override void DestroyWindowCore(HandleRef hwnd) => _host.Dispose();
+
 }
