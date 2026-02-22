@@ -3,6 +3,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using static Windows.Win32.Foundation.HWND;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.Controls;
 
@@ -35,29 +38,17 @@ abstract class PromotionImageButton : XamlElement<Image>
         (~this).Tag = NavigateUri;
     }
 
-    static void OnImageOpened(object sender, RoutedEventArgs args)
+    unsafe static void OnImagePointerPressed(object sender, RoutedEventArgs args)
     {
-        var image = (Image)sender;
-        image.Visibility = Visibility.Visible;
+        fixed (char* lpFile = (string)((Image)sender).Tag)
+            ShellExecute(Null, null, lpFile, null, null, SW_NORMAL);
     }
 
-    static void OnImagePointerPressed(object sender, RoutedEventArgs args)
-    {
-        var image = (Image)sender;
-        NativeMethods.ShellExecute((string)image.Tag);
-    }
+    static void OnImageOpened(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Visible;
 
-    static void OnImagePointerEntered(object sender, RoutedEventArgs args)
-    {
-        var window = CoreWindow.GetForCurrentThread();
-        window.PointerCursor = _hand;
-    }
+    static void OnImagePointerEntered(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _hand;
 
-    static void OnImagePointerExited(object sender, RoutedEventArgs args)
-    {
-        var window = CoreWindow.GetForCurrentThread();
-        window.PointerCursor = _arrow;
-    }
+    static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
 }
 
 sealed class LiteByteHostingImageButton : PromotionImageButton

@@ -15,6 +15,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
 
 namespace Flarial.Launcher;
 
@@ -34,7 +36,7 @@ Exception: {1}
 
     static Program()
     {
-        NativeMethods.SetErrorMode();
+        SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
     }
 
@@ -54,16 +56,9 @@ Exception: {1}
         Exit(1);
     }
 
-    static void OnUnhandledException(object sender, System.UnhandledExceptionEventArgs args)
-    {
-        OnUnhandledException((Exception)args.ExceptionObject);
-    }
+    static void OnUnhandledException(object sender, System.UnhandledExceptionEventArgs args) => OnUnhandledException((Exception)args.ExceptionObject);
 
-    static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args)
-    {
-        args.Handled = true;
-        OnUnhandledException(args.Exception);
-    }
+    static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args) { args.Handled = true; OnUnhandledException(args.Exception); }
 
     [STAThread]
     static void Main(string[] args)
