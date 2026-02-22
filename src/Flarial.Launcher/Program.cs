@@ -75,9 +75,7 @@ Exception: {1}
             switch (args[index])
             {
                 case "--inject":
-                    if (!(index + 1 < args.Length))
-                        continue;
-
+                    if (!(index + 1 < args.Length)) continue;
                     Injector.Launch(true, new(args[index + 1]));
                     return;
 
