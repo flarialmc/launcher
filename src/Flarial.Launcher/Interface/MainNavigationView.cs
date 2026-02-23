@@ -111,12 +111,12 @@ sealed class MainNavigationView : XamlElement<NavigationView>
 
         if (!await FlarialLauncher.ConnectAsync())
         {
-            await MainDialog.ConnectionFailure.ShowAsync((~this));
+            await MainDialog.ConnectionFailure.ShowAsync(~this);
             System.Windows.Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync((~this))))
+        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync(~this)))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
