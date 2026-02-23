@@ -1,20 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using static System.StringComparison;
+using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.System;
-using System.Runtime.Serialization.Json;
-using System.Collections.Generic;
+using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Services;
+using Flarial.Launcher.Runtime.System;
+using static System.StringComparison;
 
 namespace Flarial.Launcher.Runtime.Client;
 
 sealed class FlarialClientBeta : FlarialClient
 {
-    internal FlarialClientBeta() : base() { }
     protected override string Build => nameof(Beta);
     protected override string Name => $"Flarial.Client.{nameof(Beta)}.dll";
     protected override string Uri => "https://cdn.flarial.xyz/dll/beta.dll";
@@ -23,7 +22,6 @@ sealed class FlarialClientBeta : FlarialClient
 
 sealed class FlarialClientRelease : FlarialClient
 {
-    internal FlarialClientRelease() : base() { }
     protected override string Build => nameof(Release);
     protected override string Uri => "https://cdn.flarial.xyz/dll/latest.dll";
     protected override string Name => $"Flarial.Client.{nameof(Release)}.dll";
@@ -33,7 +31,7 @@ sealed class FlarialClientRelease : FlarialClient
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
-    static readonly JsonService< Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.Get();
+    static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.Get();
 
     protected abstract string Uri { get; }
     protected abstract string Name { get; }
