@@ -1,5 +1,4 @@
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Xaml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -37,11 +36,11 @@ sealed class DllSelectionBox : Grid
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
-        Grid.SetRow(_listBox, 0);
-        Grid.SetColumn(_listBox, 0);
+        SetRow(_listBox, 0);
+        SetColumn(_listBox, 0);
 
-        Grid.SetRow(_button, 1);
-        Grid.SetColumn(_button, 0);
+        SetRow(_button, 1);
+        SetColumn(_button, 0);
 
         Children.Add(_listBox);
         Children.Add(_button);

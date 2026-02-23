@@ -45,7 +45,7 @@ public unsafe sealed class Library
 
                 var dos = (IMAGE_DOS_HEADER*)(void*)module;
                 var nt = (IMAGE_NT_HEADERS64*)((nint)dos + dos->e_lfanew);
-                return nt->FileHeader.Characteristics.HasFlag(IMAGE_FILE_DLL);
+                return (nt->FileHeader.Characteristics & IMAGE_FILE_DLL) != 0;
 
             }
             finally { FreeLibrary(module); }

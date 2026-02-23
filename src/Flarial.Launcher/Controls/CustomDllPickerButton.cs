@@ -31,6 +31,7 @@ sealed class CustomDllPickerButton : Grid
     {
         IsReadOnly = true,
         IsEnabled = false,
+        Padding = new(8, 4, 0, 0),
         VerticalAlignment = VerticalAlignment.Stretch,
         HorizontalAlignment = HorizontalAlignment.Stretch
     };
@@ -46,24 +47,23 @@ sealed class CustomDllPickerButton : Grid
 
     readonly ApplicationSettings _settings;
 
-    internal CustomDllPickerButton(ApplicationSettings settings) 
+    internal CustomDllPickerButton(ApplicationSettings settings)
     {
         _settings = settings;
 
         ColumnDefinitions.Add(new() { Width = GridLength.Auto });
         ColumnDefinitions.Add(new());
 
-        Grid.SetRow(_button, 0);
-        Grid.SetColumn(_button, 0);
+        SetRow(_button, 0);
+        SetColumn(_button, 0);
 
-        Grid.SetRow(_textBox, 0);
-        Grid.SetColumn(_textBox, 1);
+        SetRow(_textBox, 0);
+        SetColumn(_textBox, 1);
 
         Children.Add(_button);
         Children.Add(_textBox);
 
         _button.Click += OnButtonClick;
-
         _textBox.Text = settings.CustomDllPath;
     }
 }
