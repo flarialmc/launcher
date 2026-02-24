@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyCompany("Flarial")]
 [assembly: AssemblyProduct("Services")]
