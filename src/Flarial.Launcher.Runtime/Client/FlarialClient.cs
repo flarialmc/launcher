@@ -12,14 +12,6 @@ using static System.StringComparison;
 
 namespace Flarial.Launcher.Runtime.Client;
 
-sealed class FlarialClientBeta : FlarialClient
-{
-    protected override string Build => nameof(Beta);
-    protected override string Name => $"Flarial.Client.{nameof(Beta)}.dll";
-    protected override string Uri => "https://cdn.flarial.xyz/dll/beta.dll";
-    protected override string Identifer => "6E41334A-423F-4A4F-9F41-5C440C9CCBDC";
-}
-
 sealed class FlarialClientRelease : FlarialClient
 {
     protected override string Build => nameof(Release);
@@ -31,31 +23,23 @@ sealed class FlarialClientRelease : FlarialClient
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
-    static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.Get();
+    static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.GetJson();
 
     protected abstract string Uri { get; }
     protected abstract string Name { get; }
     protected abstract string Build { get; }
     protected abstract string Identifer { get; }
 
-    public static readonly FlarialClient Beta = new FlarialClientBeta();
     public static readonly FlarialClient Release = new FlarialClientRelease();
 
     static FlarialClient? Client
     {
         get
         {
-            using NativeMutex beta = new(Beta.Identifer);
             using NativeMutex release = new(Release.Identifer);
 
             if (!Minecraft.Current.IsRunning)
                 return null;
-
-            if (beta.Exists && release.Exists)
-                return null;
-
-            if (beta.Exists)
-                return Beta;
 
             if (release.Exists)
                 return Release;
@@ -68,9 +52,7 @@ public abstract class FlarialClient
     {
         if (Client is { } client)
         {
-            if (!ReferenceEquals(this, client))
-                return false;
-
+            if (!ReferenceEquals(this, client)) return false;
             return Minecraft.Current.Launch(false) is { };
         }
 
@@ -90,7 +72,7 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        return s_json.Read(stream)[Build];
+        return s_json.ReadStream(stream)[Build];
     }
 
     async Task<string> GetLocalHashAsync() => await Task.Run(() =>

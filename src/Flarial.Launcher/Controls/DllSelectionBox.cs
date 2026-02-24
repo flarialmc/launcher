@@ -1,3 +1,4 @@
+using System;
 using Flarial.Launcher.Management;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -45,8 +46,7 @@ sealed class DllSelectionBox : Grid
         Children.Add(_listBox);
         Children.Add(_button);
 
-        _listBox.Items.Add(new ReleaseDllItem());
-        _listBox.Items.Add(new BetaDllItem());
+        _listBox.Items.Add(new ClientDllItem());
         _listBox.Items.Add(new CustomDllItem());
 
         _listBox.SelectionChanged += OnListBoxSelectionChanged;
@@ -64,21 +64,15 @@ sealed class DllSelectionBox : Grid
         internal abstract DllSelection Value { get; }
     }
 
-    sealed class ReleaseDllItem : DllItem
+    sealed class ClientDllItem : DllItem
     {
-        protected override string String => "Use the release DLL of the client which is stable.";
-        internal override DllSelection Value => DllSelection.Release;
-    }
-
-    sealed class BetaDllItem : DllItem
-    {
-        protected override string String => "Use the beta DLL of the client which is unstable.";
-        internal override DllSelection Value => DllSelection.Beta;
+        protected override string String => "Use the client's DLL with the game.";
+        internal override DllSelection Value => DllSelection.Client;
     }
 
     sealed class CustomDllItem : DllItem
     {
-        protected override string String => "Specify your own custom DLL to be used with the game.";
+        protected override string String => "Use a specified custom DLL with the game.";
         internal override DllSelection Value => DllSelection.Custom;
     }
 }

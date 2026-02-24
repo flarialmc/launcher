@@ -22,7 +22,7 @@ public unsafe abstract class Minecraft
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new PlatformNotSupportedException();
 
     static readonly Minecraft s_gdk = new MinecraftGDK();
-    internal static Package Package => PackageService.Get(PackageFamilyName)!;
+    internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
 
     internal static string Version
     {
@@ -45,7 +45,7 @@ public unsafe abstract class Minecraft
     public bool IsRunning => GetWindow() is { };
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
-    public static bool IsGamingServicesInstalled => PackageService.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
+    public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
     public static bool UsingGameDevelopmentKit => Package.GetAppListEntries()[0].AppUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
 
     private protected NativeWindow? GetWindow()

@@ -18,7 +18,7 @@ sealed class GDKVersionItem : VersionItem
     const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
     static readonly JsonService<Dictionary<string, Dictionary<string, string[]>>> s_json;
-    static GDKVersionItem() => s_json = JsonService<Dictionary<string, Dictionary<string, string[]>>>.Get();
+    static GDKVersionItem() => s_json = JsonService<Dictionary<string, Dictionary<string, string[]>>>.GetJson();
 
     readonly string[] _uris;
     readonly byte[] _gameLaunchHelper;
@@ -34,7 +34,7 @@ sealed class GDKVersionItem : VersionItem
         var gameLaunchHelper = await gameLaunchHelperTask;
         using var msixvcPackages = await msixvcPackagesTask;
 
-        foreach (var item in s_json.Read(msixvcPackages)["release"])
+        foreach (var item in s_json.ReadStream(msixvcPackages)["release"])
         {
             var index = item.Key.LastIndexOf('.');
             var key = item.Key.Substring(0, index);

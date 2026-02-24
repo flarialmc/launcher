@@ -118,14 +118,12 @@ sealed class HomePage : Grid
             button.IsEnabled = false;
             button.Content = "Play";
 
-            var beta = _settings.DllSelection is DllSelection.Beta;
             var custom = _settings.DllSelection is DllSelection.Custom;
 
             var path = _settings.CustomDllPath;
             var initialized = _settings.WaitForInitialization;
 
             var registry = (VersionRegistry)Tag;
-            var client = beta ? FlarialClient.Beta : FlarialClient.Release;
 
             if (!Minecraft.IsInstalled)
             {
@@ -161,7 +159,7 @@ sealed class HomePage : Grid
                 return;
             }
 
-            if (!custom && !beta && !registry.IsSupported)
+            if (!custom && !registry.IsSupported)
             {
                 switch (await UnsupportedVersion.PromptAsync(this))
                 {
@@ -205,19 +203,15 @@ sealed class HomePage : Grid
                 return;
             }
 
-
-            if (beta && !await MainDialog.BetaDllUsage.ShowAsync(this))
-                return;
-
             _button.Content = "Verifying...";
-            if (!await client.DownloadAsync(OnFlarialClientDownloadAsync))
+            if (!await FlarialClient.Release.DownloadAsync(OnFlarialClientDownloadAsync))
             {
                 await MainDialog.ClientUpdateFailure.ShowAsync(this);
                 return;
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(() => client.Launch(initialized)))
+            if (!await Task.Run(() => FlarialClient.Release.Launch(initialized)))
             {
                 await MainDialog.LaunchFailure.ShowAsync(this);
                 return;

@@ -31,6 +31,6 @@ public abstract class VersionItem
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
         await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => callback(_, false));
-        await Task.Run(() => PackageService.Add(new(path), (_) => callback(_, true)));
+        await Task.Run(() => PackageService.AddPackage(new(path), _ => callback(_, true)));
     }
 }

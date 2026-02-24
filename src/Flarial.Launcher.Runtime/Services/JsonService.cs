@@ -18,10 +18,10 @@ sealed class JsonService<T>
         EmitTypeInformation = EmitTypeInformation.Never,
     };
 
-    internal T Read(Stream stream) => (T)_serializer.ReadObject(stream);
+    internal T ReadStream(Stream stream) => (T)_serializer.ReadObject(stream);
     readonly DataContractJsonSerializer _serializer = new(typeof(T), s_settings);
 
-    internal static JsonService<T> Get()
+    internal static JsonService<T> GetJson()
     {
         lock (s_services)
         {

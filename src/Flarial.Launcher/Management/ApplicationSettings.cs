@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace Flarial.Launcher.Management;
 
-internal enum DllSelection { Release, Beta, Custom }
+enum DllSelection { Client, Custom }
 
 [DataContract]
 sealed class ApplicationSettings
@@ -14,7 +14,7 @@ sealed class ApplicationSettings
     internal bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
-    internal DllSelection DllSelection { get; set; } = DllSelection.Release;
+    internal DllSelection DllSelection { get; set; } = DllSelection.Client;
 
     [DataMember]
     internal string CustomDllPath { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ sealed class ApplicationSettings
         AutomaticUpdates = true;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
-        DllSelection = DllSelection.Release;
+        DllSelection = DllSelection.Client;
     }
 
     static readonly XmlWriterSettings s_settings = new() { Indent = true };
@@ -40,9 +40,6 @@ sealed class ApplicationSettings
         {
             using var stream = File.OpenRead("Flarial.Launcher.xml");
             var settings = (ApplicationSettings)s_serializer.ReadObject(stream);
-
-            if (!Enum.IsDefined(typeof(DllSelection), settings.DllSelection))
-                settings.DllSelection = DllSelection.Release;
 
             try
             {
