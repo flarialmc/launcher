@@ -28,8 +28,8 @@ public unsafe abstract class Minecraft
     {
         get
         {
-            var _ = Package.Id.Version;
-            return $"{_.Major}.{_.Minor}.{_.Build / 100}";
+            var version = Package.Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build / 100}";
         }
     }
 

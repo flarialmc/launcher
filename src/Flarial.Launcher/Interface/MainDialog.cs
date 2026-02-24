@@ -35,7 +35,6 @@ abstract class MainDialog
             _dialog.SecondaryButtonText = SecondaryButtonText;
 
             _dialog.XamlRoot = element.XamlRoot;
-
             return await _dialog.ShowAsync();
         }
         finally { s_semaphore.Release(); }
