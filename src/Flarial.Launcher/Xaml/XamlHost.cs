@@ -19,10 +19,13 @@ sealed class XamlHost(UIElement element) : HwndHost
         var dwxsn = (IDesktopWindowXamlSourceNative)_dwxs;
         dwxsn.AttachToWindow((HWND)hwndParent.Handle);
 
-        SwitchToThisWindow(dwxsn.WindowHandle, true);
-        SetClassLongPtr(dwxsn.WindowHandle, GCLP_HBRBACKGROUND, GetStockObject(BLACK_BRUSH));
+        var handle = dwxsn.WindowHandle;
+        SetFocus(handle);
 
-        return new(this, dwxsn.WindowHandle);
+        var value = GetStockObject(BLACK_BRUSH);
+        SetClassLongPtr(handle, GCLP_HBRBACKGROUND, value);
+
+        return new(this, handle);
     }
 
     protected override void DestroyWindowCore(HandleRef hwnd) => _dwxs.Dispose();

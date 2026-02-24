@@ -44,12 +44,15 @@ sealed class MainWindow : Window
         UseLayoutRounding = true;
         SnapsToDevicePixels = true;
 
-        ResizeMode = ResizeMode.NoResize;
+        ResizeMode = ResizeMode.CanMinimize;
         SizeToContent = SizeToContent.WidthAndHeight;
-
-        Title = "Flarial Launcher";
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Content = new XamlHost(~new MainNavigationView(settings)) { Width = 960, Height = 540 };
+        Title = "Flarial Launcher";
+        Content = new XamlHost(~new MainNavigationView(settings))
+        {
+            Width = 960,
+            Height = 540
+        };
     }
 }

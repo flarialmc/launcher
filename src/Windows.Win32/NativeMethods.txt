@@ -1,6 +1,4 @@
-WM_SYSCOMMAND
-SC_KEYMENU
-SC_MOUSEMENU
+SetFocus
 IDesktopWindowXamlSourceNative
 GetStockObject
 SetClassLongPtr
@@ -31,6 +29,9 @@ VirtualAllocEx
 VirtualFreeEx
 CreateMutex
 DuplicateHandle
+WM_SYSCOMMAND
+SC_KEYMENU
+SC_MOUSEMENU
 SHOW_WINDOW_CMD
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64
