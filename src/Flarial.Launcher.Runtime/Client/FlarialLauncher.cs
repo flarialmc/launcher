@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Services;
+using static System.Environment;
+using static System.Environment.SpecialFolder;
 using static Windows.Win32.PInvoke;
 
 namespace Flarial.Launcher.Runtime.Client;
@@ -25,21 +27,18 @@ public static class FlarialLauncher
         s_version = assembly.GetName().Version.ToString();
         var destination = assembly.ManifestModule.FullyQualifiedName;
 
-        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
-
-        s_filename = Path.Combine(system, "cmd.exe");
+        s_content = string.Format(Format, s_source, destination);
+        s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), "cmd.exe");
         s_arguments = string.Format(Arguments, s_script, s_filename, destination, "{0}");
-        s_content = string.Format(Content, Path.Combine(system, "taskkill.exe"), GetCurrentProcessId(), s_source, destination);
     }
 
-    const string Content = @"chcp 65001
-""{0}"" /f /pid ""{1}""
+    const string Format = @"chcp 65001
 :_
-move /y ""{2}"" ""{3}""
+move /y ""{0}"" ""{1}""
 if not %errorlevel%==0 goto _
 del ""%~f0""";
 
-    const string AcceptedUrl = "https://cdn.flarial.xyz/202.txt";
+    const string AcceptedUri = "https://cdn.flarial.xyz/202.txt";
     const string LauncherVersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
     const string LauncherDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
@@ -51,7 +50,7 @@ del ""%~f0""";
     {
         try
         {
-            using var message = await HttpService.GetAsync(AcceptedUrl);
+            using var message = await HttpService.GetAsync(AcceptedUri);
             return message.IsSuccessStatusCode;
         }
         catch { return false; }
@@ -83,6 +82,6 @@ del ""%~f0""";
             Arguments = $"{builder}"
         })) { }
 
-        Environment.Exit(0);
+        Exit(0);
     }
 }
