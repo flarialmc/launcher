@@ -6,6 +6,7 @@ using Flarial.Launcher.Interface;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Versions;
 using Flarial.Launcher.Xaml;
+using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -62,6 +63,12 @@ sealed class VersionsPage : Grid
                 return;
             }
 
+            if (!Minecraft.IsGamingServicesInstalled)
+            {
+                await MainDialog.GamingServicesMissing.ShowAsync(this);
+                return;
+            }
+
             if (_listBox.SelectedItem is null)
             {
                 await MainDialog.SelectVersion.ShowAsync(this);
@@ -70,12 +77,6 @@ sealed class VersionsPage : Grid
 
             if (!await MainDialog.InstallVersion.ShowAsync(this))
                 return;
-
-            if (Minecraft.UsingGameDevelopmentKit && !Minecraft.IsGamingServicesInstalled)
-            {
-                await MainDialog.GamingServicesMissing.ShowAsync(this);
-                return;
-            }
 
             _item = (VersionItem)_listBox.SelectedItem;
             _listBox.ScrollIntoView(_item);
