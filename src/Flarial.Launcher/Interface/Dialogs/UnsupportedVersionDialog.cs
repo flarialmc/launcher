@@ -31,7 +31,6 @@ sealed class UnsupportedVersionDialog(string preferred) : MainDialog
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 
 • Switch to {preferred} on the [Versions] page.
-• Enable the client's beta on the [Settings] page.
 
 If you need help, join our Discord.";
 }

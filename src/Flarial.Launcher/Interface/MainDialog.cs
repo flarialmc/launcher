@@ -41,7 +41,6 @@ abstract class MainDialog
         finally { s_semaphore.Release(); }
     }
 
-    internal static BetaDllUsageDialog BetaDllUsage => field ??= new();
     internal static NotInstalledDialog NotInstalled => field ??= new();
     internal static LaunchFailureDialog LaunchFailure => field ??= new();
     internal static SelectVersionDialog SelectVersion => field ??= new();
