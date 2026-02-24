@@ -82,5 +82,7 @@ del ""%~f0""";
             UseShellExecute = false,
             Arguments = $"{builder}"
         })) { }
+
+        Environment.Exit(0);
     }
 }
