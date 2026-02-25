@@ -17,8 +17,11 @@ sealed class XamlHost(UIElement element) : HwndHost
 
     static void OnThreadFilterMessage(ref MSG msg, ref bool handled)
     {
-        var hWnd = GetAncestor((HWND)msg.hwnd, GA_ROOT);
-        if (!hWnd.IsNull) SendMessage(hWnd, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
+        if (!handled)
+        {
+            var hWnd = GetAncestor((HWND)msg.hwnd, GA_ROOT);
+            if (!hWnd.IsNull) SendMessage(hWnd, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
+        }
     }
 
     readonly DesktopWindowXamlSource _dwxs = new() { Content = element };
