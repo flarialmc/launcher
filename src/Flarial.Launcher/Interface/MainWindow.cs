@@ -11,28 +11,12 @@ namespace Flarial.Launcher.Interface;
 
 sealed class MainWindow : Window
 {
-    static nint HwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
-    {
-        if (msg == WM_SYSCOMMAND)
-        {
-            var command = (uint)wParam & 0xFFF0;
-            handled = command is SC_KEYMENU or SC_MOUSEMENU;
-        }
-        return new();
-    }
-
     internal MainWindow(ApplicationSettings settings)
     {
-        WindowInteropHelper helper = new(this);
-        var handle = (HWND)helper.EnsureHandle();
-
-        var source = HwndSource.FromHwnd(handle);
-        source.AddHook(HwndSourceHook);
-
         unsafe
         {
             BOOL attribute = true;
-            DwmSetWindowAttribute(handle, DWMWA_USE_IMMERSIVE_DARK_MODE, &attribute, (uint)sizeof(BOOL));
+            DwmSetWindowAttribute((HWND)new WindowInteropHelper(this).EnsureHandle(), DWMWA_USE_IMMERSIVE_DARK_MODE, &attribute, (uint)sizeof(BOOL));
         }
 
         using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
@@ -52,7 +36,8 @@ sealed class MainWindow : Window
         Content = new XamlHost(~new MainNavigationView(settings))
         {
             Width = 960,
-            Height = 540
+            Height = 540,
+            Focusable = true
         };
     }
 }
