@@ -53,29 +53,29 @@ sealed class VersionsPage : Grid
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync(this);
+                await MainDialog.NotInstalled.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsPackaged)
             {
-                await MainDialog.UnpackagedInstall.ShowAsync(this);
+                await MainDialog.UnpackagedInstall.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsGamingServicesInstalled)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync(this);
+                await MainDialog.GamingServicesMissing.ShowAsync();
                 return;
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await MainDialog.SelectVersion.ShowAsync(this);
+                await MainDialog.SelectVersion.ShowAsync();
                 return;
             }
 
-            if (!await MainDialog.InstallVersion.ShowAsync(this))
+            if (!await MainDialog.InstallVersion.ShowAsync())
                 return;
 
             _item = (VersionItem)_listBox.SelectedItem;

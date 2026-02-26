@@ -1,4 +1,3 @@
-using System;
 using Flarial.Launcher.Management;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

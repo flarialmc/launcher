@@ -57,8 +57,8 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         (~this).Loaded += OnLoaded;
         (~this).ItemInvoked += OnItemInvoked;
 
-        (~this).SelectedItem = _homeItem;
         (~this).Content = _homePage;
+        (~this).SelectedItem = _homeItem;
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -106,17 +106,19 @@ sealed class MainNavigationView : XamlElement<NavigationView>
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
+        MainDialog.Current.XamlRoot = (~this).XamlRoot;
+
         var settingsItem = (NavigationViewItem)(~this).SettingsItem;
         settingsItem.Tag = _settingsPage;
 
         if (!await FlarialLauncher.ConnectAsync())
         {
-            await MainDialog.ConnectionFailure.ShowAsync(~this);
+            await MainDialog.ConnectionFailure.ShowAsync();
             System.Windows.Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync(~this)))
+        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync()))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);

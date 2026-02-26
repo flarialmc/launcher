@@ -9,10 +9,10 @@ namespace Flarial.Launcher.Interface;
 
 abstract class MainDialog
 {
-    internal MainDialog() { }
-
-    readonly ContentDialog _dialog = new();
+    protected MainDialog() { }
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
+
+    internal static ContentDialog Current => field ??= new();
 
     protected abstract string Title { get; }
     protected abstract string Content { get; }
@@ -20,22 +20,21 @@ abstract class MainDialog
     protected virtual string CloseButtonText { get; } = string.Empty;
     protected virtual string SecondaryButtonText { get; } = string.Empty;
 
-    internal virtual async Task<bool> ShowAsync(UIElement element) => await PromptAsync(element) != ContentDialogResult.None;
+    internal virtual async Task<bool> ShowAsync() => await PromptAsync() != ContentDialogResult.None;
 
-    internal async Task<ContentDialogResult> PromptAsync(UIElement element)
+    internal async Task<ContentDialogResult> PromptAsync()
     {
         await s_semaphore.WaitAsync();
         try
         {
-            _dialog.Title = Title;
-            _dialog.Content = Content;
+            Current.Title = Title;
+            Current.Content = Content;
 
-            _dialog.CloseButtonText = CloseButtonText;
-            _dialog.PrimaryButtonText = PrimaryButtonText;
-            _dialog.SecondaryButtonText = SecondaryButtonText;
+            Current.CloseButtonText = CloseButtonText;
+            Current.PrimaryButtonText = PrimaryButtonText;
+            Current.SecondaryButtonText = SecondaryButtonText;
 
-            _dialog.XamlRoot = element.XamlRoot;
-            return await _dialog.ShowAsync();
+            return await Current.ShowAsync();
         }
         finally { s_semaphore.Release(); }
     }

@@ -1,14 +1,13 @@
 using System.Threading.Tasks;
 using Flarial.Launcher.Management;
-using Windows.UI.Xaml;
 
 namespace Flarial.Launcher.Interface.Dialogs;
 
 sealed class NotInstalledDialog : MainDialog
 {
-    internal override async Task<bool> ShowAsync(UIElement element)
+    internal override async Task<bool> ShowAsync()
     {
-        var result = await base.ShowAsync(element);
+        var result = await base.ShowAsync();
         if (result) MicrosoftStorePage.Minecraft.Open();
         return result;
     }
