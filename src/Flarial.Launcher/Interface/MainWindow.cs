@@ -13,10 +13,16 @@ sealed class MainWindow : Window
 {
     internal MainWindow(ApplicationSettings settings)
     {
+        WindowInteropHelper helper = new(this);
+        var hwnd = (HWND)helper.EnsureHandle();
+
+        var source = HwndSource.FromHwnd(hwnd);
+        source.AddHook(HwndSourceHook);
+
         unsafe
         {
             BOOL attribute = true;
-            DwmSetWindowAttribute((HWND)new WindowInteropHelper(this).EnsureHandle(), DWMWA_USE_IMMERSIVE_DARK_MODE, &attribute, (uint)sizeof(BOOL));
+            DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &attribute, (uint)sizeof(BOOL));
         }
 
         using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
@@ -39,5 +45,20 @@ sealed class MainWindow : Window
             Height = 540,
             Focusable = true
         };
+    }
+
+    static nint HwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+    {
+        if (handled || msg != WM_SYSCOMMAND)
+            return new();
+
+        switch ((uint)wParam & 0xFFF0)
+        {
+            case SC_KEYMENU or SC_MOUSEMENU:
+                handled = true;
+                break;
+        }
+
+        return new();
     }
 }

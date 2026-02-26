@@ -18,9 +18,10 @@ sealed class XamlHost(UIElement element) : HwndHost
     static void OnThreadFilterMessage(ref MSG msg, ref bool handled)
     {
         if (handled) return;
-        var hwnd = GetAncestor((HWND)msg.hwnd, GA_ROOT);
 
+        var hwnd = GetAncestor((HWND)msg.hwnd, GA_ROOT);
         if (msg.hwnd == hwnd || hwnd.IsNull) return;
+
         SendMessage(hwnd, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
     }
 
