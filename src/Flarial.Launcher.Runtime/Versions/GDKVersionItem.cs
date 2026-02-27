@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -39,7 +40,7 @@ sealed class GDKVersionItem : VersionItem
             var index = item.Key.LastIndexOf('.');
             var key = item.Key.Substring(0, index);
 
-            lock (registry)
+            lock (((ICollection)registry).SyncRoot)
             {
                 if (!registry.TryGetValue(key, out var entry))
                     continue;
