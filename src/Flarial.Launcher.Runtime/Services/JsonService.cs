@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -8,7 +9,7 @@ namespace Flarial.Launcher.Runtime.Services;
 
 sealed class JsonService<T>
 {
-    internal JsonService() { }
+    JsonService() { }
 
     static readonly Dictionary<Type, JsonService<T>> s_services = [];
     static readonly DataContractJsonSerializerSettings s_settings = new()
@@ -23,7 +24,7 @@ sealed class JsonService<T>
 
     internal static JsonService<T> GetJson()
     {
-        lock (s_services)
+        lock (((ICollection)s_services).SyncRoot)
         {
             var type = typeof(T);
 
