@@ -47,6 +47,11 @@ public unsafe abstract class Minecraft
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
 
+    /*
+        - The static overloads find windows & processes belonging to the game.
+        - The instance overloads find the game's window & process specifically.
+    */
+
     private protected NativeWindow? GetWindow() => GetWindow(Window);
     private protected uint? GetProcessId() => GetProcessId(Process);
 
