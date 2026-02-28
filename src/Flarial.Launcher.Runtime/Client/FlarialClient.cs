@@ -32,25 +32,19 @@ public abstract class FlarialClient
 
     public static readonly FlarialClient Release = new FlarialClientRelease();
 
-    static FlarialClient? Client
+    static FlarialClient? Current
     {
         get
         {
+            if (!Minecraft.Current.IsRunning) return null;
             using NativeMutex release = new(Release.Identifer);
-
-            if (!Minecraft.Current.IsRunning)
-                return null;
-
-            if (release.Exists)
-                return Release;
-
-            return null;
+            return release.Exists ? Release : null;
         }
     }
 
     public bool Launch(bool initialized)
     {
-        if (Client is { } client)
+        if (Current is { } client)
         {
             if (!ReferenceEquals(this, client)) return false;
             return Minecraft.Current.Launch(false) is { };

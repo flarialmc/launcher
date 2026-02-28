@@ -5,13 +5,12 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
-using Windows.Win32.System.RemoteDesktop;
-using static Windows.Win32.Foundation.HANDLE;
+using static System.Environment;
+using static System.Environment.SpecialFolder;
+using static System.IO.Directory;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 using static Windows.Win32.Foundation.WIN32_ERROR;
-using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
 using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Launcher.Runtime.Game;
@@ -22,6 +21,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
     protected override string Class => "Bedrock";
+    protected override string Executable => "Minecraft.Windows.exe";
 
     static MinecraftGDK()
     {
@@ -30,11 +30,11 @@ unsafe sealed class MinecraftGDK : Minecraft
     }
 
     static readonly InitialSessionState s_state = InitialSessionState.Create();
-    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
     {
-        var path = Path.Combine(Package.InstalledPath, "Minecraft.Windows.exe");
+        var path = Path.Combine(Package.InstalledPath, Executable);
 
         if (!File.Exists(path))
             throw new FileNotFoundException(null, path);
@@ -54,8 +54,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         powershell.AddParameter("Command", path);
         powershell.AddParameter("PackageFamilyName", PackageFamilyName);
 
-        powershell.Invoke();
-        return GetProcessId();
+        powershell.Invoke(); return GetProcessId();
     }
 
     public override uint? Launch(bool initialized)
@@ -100,8 +99,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var @event = CreateEvent(null, true, false, null); try
             {
-                var path = Directory.CreateDirectory(s_path).FullName;
-                using FileSystemWatcher watcher = new(path, initialized ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,
@@ -118,37 +116,6 @@ unsafe sealed class MinecraftGDK : Minecraft
                 return null;
             }
             finally { CloseHandle(@event); }
-        }
-    }
-
-    uint? GetProcessId()
-    {
-        fixed (char* pfn = PackageFamilyName)
-        fixed (char* name = "Minecraft.Windows.exe")
-        {
-            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
-            WTS_PROCESS_INFOW* information = null;
-            var buffer = stackalloc char[(int)length];
-
-            try
-            {
-                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
-                    for (var index = 0; index < count; index++)
-                    {
-                        var entry = information[index];
-                        if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) is not CSTR_EQUAL) continue;
-                        if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
-
-                        using (process)
-                        {
-                            if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
-                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
-                            return entry.ProcessId;
-                        }
-                    }
-                return null;
-            }
-            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
         }
     }
 }
