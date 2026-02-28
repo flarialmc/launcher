@@ -20,6 +20,7 @@ using static System.NativeProcess;
 unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
+
     protected override string Window => "Bedrock";
     protected override string Process => "Minecraft.Windows.exe";
 
