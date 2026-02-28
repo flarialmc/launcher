@@ -20,8 +20,8 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
-    protected abstract string Class { get; }
-    protected abstract string Executable { get; }
+    protected abstract string Window { get; }
+    protected abstract string Process { get; }
 
     public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
     public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new PlatformNotSupportedException();
@@ -47,8 +47,8 @@ public unsafe abstract class Minecraft
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
 
-    private protected NativeWindow? GetWindow() => GetWindow(Class);
-    private protected uint? GetProcessId() => GetProcessId(Executable);
+    private protected NativeWindow? GetWindow() => GetWindow(Window);
+    private protected uint? GetProcessId() => GetProcessId(Process);
 
     public bool IsRunning => GetWindow() is { };
     public static bool IsInstalled => Package is { };

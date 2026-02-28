@@ -20,8 +20,8 @@ using static System.NativeProcess;
 unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
-    protected override string Class => "Bedrock";
-    protected override string Executable => "Minecraft.Windows.exe";
+    protected override string Window => "Bedrock";
+    protected override string Process => "Minecraft.Windows.exe";
 
     static MinecraftGDK()
     {
@@ -34,7 +34,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     protected override uint? Activate()
     {
-        var path = Path.Combine(Package.InstalledPath, Executable);
+        var path = Path.Combine(Package.InstalledPath, Process);
 
         if (!File.Exists(path))
             throw new FileNotFoundException(null, path);
