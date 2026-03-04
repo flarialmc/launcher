@@ -66,13 +66,8 @@ del ""%~f0""";
     {
         StringBuilder builder = new(s_arguments);
 
-        if ((bool)Minecraft.AllowUnsignedInstalls!)
-            builder.Append(' ').Append("--allow-unsigned-installs");
-
         await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
-
-        using (StreamWriter writer = new(s_script))
-            await writer.WriteAsync(s_content);
+        using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
 
         using (Process.Start(new ProcessStartInfo
         {

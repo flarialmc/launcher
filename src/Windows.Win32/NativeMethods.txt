@@ -1,3 +1,4 @@
+IsWindowVisible
 IDesktopWindowXamlSourceNative
 GetAncestor
 SendMessage

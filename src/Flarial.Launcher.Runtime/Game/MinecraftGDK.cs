@@ -71,18 +71,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsGamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
-        /*
-            - Unsigned installs might fail the launch contract.
-            - Prefer to fail unless unsigned installs are allowed.
-        */
-
-        if (!(bool)AllowUnsignedInstalls!) if (!IsPackaged)
-            throw new Win32Exception((int)ERROR_SERVICE_EXISTS_AS_NON_PACKAGED_SERVICE);
-
-        if (GetWindow() is { } window)
+        if (GetWindow() is { } target)
         {
-            window.Switch();
-            return window.ProcessId;
+            target.Switch();
+            return target.ProcessId;
         }
 
         if (Activate() is not { } processId)
@@ -93,12 +85,34 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         using (process)
         {
+
+            /*
+                - Unsigned installs might fail the launch contract.
+                - Instead, wait for the game's window to be visible.
+            */
+
+            if (!IsPackaged)
+            {
+                while (process.Wait(1))
+                {
+                    if (GetWindow() is not { } instance)
+                        continue;
+
+                    if (instance.ProcessId != processId)
+                        continue;
+
+                    if (instance.IsVisible)
+                        return processId;
+                }
+                return null;
+            }
+
             /*
                 - The initialization logic is derived from the UWP builds of the game.
                 - We don't need to resort to polling since symbolic links aren't used.
             */
 
-            var @event = CreateEvent(null, true, false, null); try
+            var handle = CreateEvent(null, true, false, null); try
             {
                 using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
@@ -108,15 +122,15 @@ unsafe sealed class MinecraftGDK : Minecraft
                     NotifyFilter = NotifyFilters.FileName
                 };
 
-                watcher.Deleted += (_, _) => SetEvent(@event);
-                var handles = stackalloc HANDLE[] { @event, process };
+                watcher.Deleted += (_, _) => SetEvent(handle);
+                var handles = stackalloc HANDLE[] { handle, process };
 
                 if (WaitForMultipleObjects(2, handles, false, INFINITE) is WAIT_OBJECT_0)
                     return processId;
 
                 return null;
             }
-            finally { CloseHandle(@event); }
+            finally { CloseHandle(handle); }
         }
     }
 }

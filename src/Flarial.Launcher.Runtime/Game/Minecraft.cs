@@ -38,6 +38,7 @@ public unsafe abstract class Minecraft
         }
     }
 
+    [Obsolete("The runtime now has fallback logic for unsigned installs.", true)]
     public static bool? AllowUnsignedInstalls
     {
         get => field ??= false;

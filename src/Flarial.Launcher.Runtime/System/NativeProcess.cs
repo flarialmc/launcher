@@ -22,5 +22,5 @@ readonly struct NativeProcess : IDisposable
 
     public void Dispose() => CloseHandle(_handle);
 
-    public static implicit operator HANDLE(in NativeProcess @this) => @this._handle;
+    public static implicit operator HANDLE(in NativeProcess process) => process._handle;
 }

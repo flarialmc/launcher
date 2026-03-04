@@ -78,10 +78,6 @@ Exception: {1}
                     if (!(index + 1 < args.Length)) continue;
                     Injector.Launch(true, new(args[index + 1]));
                     return;
-
-                case "--allow-unsigned-installs":
-                    Minecraft.AllowUnsignedInstalls = true;
-                    break;
             }
 
         using (WindowsXamlManager.InitializeForCurrentThread())

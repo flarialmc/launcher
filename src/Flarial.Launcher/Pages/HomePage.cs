@@ -141,16 +141,8 @@ sealed class HomePage : Grid
 
                 if (!Minecraft.IsPackaged)
                 {
-                    if ((bool)Minecraft.AllowUnsignedInstalls!)
-                    {
-                        if (!await MainDialog.AllowUnsignedInstall.ShowAsync())
-                            return;
-                    }
-                    else
-                    {
-                        await MainDialog.UnsignedInstall.ShowAsync();
+                    if (!await MainDialog.UnsignedInstall.ShowAsync())
                         return;
-                    }
                 }
             }
             else
