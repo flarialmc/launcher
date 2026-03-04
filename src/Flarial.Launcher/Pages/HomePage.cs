@@ -57,8 +57,8 @@ sealed class HomePage : Grid
     readonly ApplicationSettings _settings;
 
     readonly PromotionImageButton _leftImageButton = new LiteByteHostingImageButton();
-    readonly PromotionImageButton _rightImageButton = new CollapseNetworkImageButton();
-    readonly PromotionImageButton _centerImageButton = new InfinityNetworkImageButton();
+    readonly PromotionImageButton _centerImageButton = new StubImageButton();
+    readonly PromotionImageButton _rightImageButton = new InfinityNetworkImageButton();
 
     UnsupportedVersionDialog UnsupportedVersion
     {

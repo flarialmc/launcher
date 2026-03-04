@@ -1,3 +1,4 @@
+using System;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -11,8 +12,8 @@ namespace Flarial.Launcher.Controls;
 
 abstract class PromotionImageButton : XamlElement<Image>
 {
-    protected abstract string ImageUri { get; }
-    protected abstract string NavigateUri { get; }
+    protected abstract string? ImageUri { get; }
+    protected abstract string? NavigateUri { get; }
 
     static readonly CoreCursor _hand = new(CoreCursorType.Hand, 0);
     static readonly CoreCursor _arrow = new(CoreCursorType.Arrow, 0);
@@ -25,8 +26,8 @@ abstract class PromotionImageButton : XamlElement<Image>
 
         (~this).Source = new BitmapImage
         {
-            UriSource = new(ImageUri),
-            DecodePixelType = DecodePixelType.Logical
+            DecodePixelType = DecodePixelType.Logical,
+            UriSource = ImageUri is { } ? new(ImageUri) : null
         };
 
         (~this).ImageOpened += OnImageOpened;
@@ -51,12 +52,19 @@ abstract class PromotionImageButton : XamlElement<Image>
     static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
 }
 
+sealed class StubImageButton : PromotionImageButton
+{
+    protected override string ImageUri => null!;
+    protected override string NavigateUri => null!;
+}
+
 sealed class LiteByteHostingImageButton : PromotionImageButton
 {
     protected override string ImageUri => "https://litebyte.co/images/flarial.png";
     protected override string NavigateUri => "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
 }
 
+[Obsolete("", true)]
 sealed class CollapseNetworkImageButton : PromotionImageButton
 {
     protected override string ImageUri => "https://collapsemc.com/assets/other/ad-banner.png";
