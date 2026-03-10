@@ -131,24 +131,16 @@ sealed class HomePage : Grid
                 return;
             }
 
-            if (Minecraft.UsingGameDevelopmentKit)
+            if (!Minecraft.IsGamingServicesInstalled)
             {
-                if (!Minecraft.IsGamingServicesInstalled)
-                {
-                    await MainDialog.GamingServicesMissing.ShowAsync();
-                    return;
-                }
-
-                if (!Minecraft.IsPackaged)
-                {
-                    if (!await MainDialog.UnsignedInstall.ShowAsync())
-                        return;
-                }
-            }
-            else
-            {
-                await MainDialog.UWPDeprecated.ShowAsync();
+                await MainDialog.GamingServicesMissing.ShowAsync();
                 return;
+            }
+
+            if (!Minecraft.IsPackaged)
+            {
+                if (!await MainDialog.UnsignedInstall.ShowAsync())
+                    return;
             }
 
             if (!custom && !registry.IsSupported)

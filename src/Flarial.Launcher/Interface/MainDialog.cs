@@ -42,7 +42,6 @@ abstract class MainDialog
     internal static NotInstalledDialog NotInstalled => field ??= new();
     internal static LaunchFailureDialog LaunchFailure => field ??= new();
     internal static SelectVersionDialog SelectVersion => field ??= new();
-    internal static UWPDeprecatedDialog UWPDeprecated => field ??= new();
     internal static InstallVersionDialog InstallVersion => field ??= new();
     internal static UnsignedInstallDialog UnsignedInstall => field ??= new();
     internal static InvalidCustomDllDialog InvalidCustomDll => field ??= new();

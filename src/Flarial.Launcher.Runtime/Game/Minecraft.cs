@@ -23,10 +23,9 @@ public unsafe abstract class Minecraft
     protected abstract string Window { get; }
     protected abstract string Process { get; }
 
-    public static readonly string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
-    public static Minecraft Current => UsingGameDevelopmentKit ? s_gdk : throw new PlatformNotSupportedException();
+    public static Minecraft Current { get; } = new MinecraftGDK();
+    public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    static readonly Minecraft s_gdk = new MinecraftGDK();
     internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
 
     internal static string Version
@@ -53,6 +52,8 @@ public unsafe abstract class Minecraft
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
+
+    [Obsolete("", true)]
     public static bool UsingGameDevelopmentKit => Package.GetAppListEntries()[0].AppUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
 
     internal static uint? GetProcessId(string target)

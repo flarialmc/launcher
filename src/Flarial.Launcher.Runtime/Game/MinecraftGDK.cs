@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using Flarial.Launcher.Runtime.Services;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using static System.Environment;
@@ -35,13 +36,19 @@ unsafe sealed class MinecraftGDK : Minecraft
 
     protected override uint? Activate()
     {
-        var path = Path.Combine(Package.InstalledPath, Process);
-
-        if (!File.Exists(path))
-            throw new FileNotFoundException(null, path);
-
         if (GetProcessId() is { } processId)
             return processId;
+
+        /*
+            - Register the package to ensure it is installed.
+            - This allows the launcher to discover the game's executable.
+        */
+
+        if (!PackageService.RegisterPackage(Package))
+            throw new Win32Exception((int)ERROR_INSTALL_REGISTRATION_FAILURE);
+
+        var path = Path.Combine(Package.InstalledPath, Process);
+        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
 
         /*
             - We use PowerShell to directly start the game.
@@ -77,11 +84,8 @@ unsafe sealed class MinecraftGDK : Minecraft
             return target.ProcessId;
         }
 
-        if (Activate() is not { } processId)
-            return null;
-
-        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
-            return null;
+        if (Activate() is not { } processId) return null;
+        if (Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
         using (process)
         {
@@ -95,14 +99,9 @@ unsafe sealed class MinecraftGDK : Minecraft
             {
                 while (process.Wait(1))
                 {
-                    if (GetWindow() is not { } instance)
-                        continue;
-
-                    if (instance.ProcessId != processId)
-                        continue;
-
-                    if (instance.IsVisible)
-                        return processId;
+                    if (GetWindow() is not { } instance) continue;
+                    if (instance.ProcessId != processId) continue;
+                    if (instance.IsVisible) return processId;
                 }
                 return null;
             }
