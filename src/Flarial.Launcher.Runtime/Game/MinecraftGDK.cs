@@ -40,17 +40,6 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         /*
-            - Register the package to ensure it is installed.
-            - This allows the launcher to discover the game's executable.
-        */
-
-        if (!PackageService.RegisterPackage(Package))
-            throw new Win32Exception((int)ERROR_INSTALL_REGISTRATION_FAILURE);
-
-        var path = Path.Combine(Package.InstalledPath, Process);
-        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
-
-        /*
             - We use PowerShell to directly start the game.
             - This simplifies the activation contract.
         */
@@ -59,10 +48,11 @@ unsafe sealed class MinecraftGDK : Minecraft
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
 
         powershell.AddParameter("AppId", "Game");
-        powershell.AddParameter("Command", path);
         powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+        powershell.AddParameter("Command", Path.Combine(Package.InstalledPath, Process));
 
-        powershell.Invoke(); return GetProcessId();
+        powershell.Invoke();
+        return GetProcessId();
     }
 
     public override uint? Launch(bool initialized)

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;

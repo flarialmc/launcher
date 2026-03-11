@@ -1,10 +1,8 @@
-using System;
 using Flarial.Launcher.Runtime.Services;
 using Flarial.Launcher.Runtime.System;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.RemoteDesktop;
-using static System.StringComparison;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
@@ -52,9 +50,6 @@ public unsafe abstract class Minecraft
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
-
-    [Obsolete("", true)]
-    public static bool UsingGameDevelopmentKit => Package.GetAppListEntries()[0].AppUserModelId.Equals("Microsoft.MinecraftUWP_8wekyb3d8bbwe!Game", OrdinalIgnoreCase);
 
     internal static uint? GetProcessId(string target)
     {
