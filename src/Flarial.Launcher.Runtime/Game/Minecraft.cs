@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Flarial.Launcher.Runtime.Services;
 using Flarial.Launcher.Runtime.System;
 using Windows.ApplicationModel;
@@ -18,22 +19,15 @@ public unsafe abstract class Minecraft
 {
     internal Minecraft() { }
 
-    protected abstract string Window { get; }
-    protected abstract string Process { get; }
+    protected abstract string WindowClass { get; }
+    protected abstract string ProcessName { get; }
 
     public static Minecraft Current { get; } = new MinecraftGDK();
     public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
+    internal bool IsRunning => GetWindow() is { };
     internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
-
-    internal static string Version
-    {
-        get
-        {
-            var version = Package.Id.Version;
-            return $"{version.Major}.{version.Minor}.{version.Build / 100}";
-        }
-    }
+    internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
     protected abstract uint? Activate();
     public abstract uint? Launch(bool initialized);
@@ -43,17 +37,16 @@ public unsafe abstract class Minecraft
         - The instance overloads find the game's window & process specifically.
     */
 
-    private protected NativeWindow? GetWindow() => GetWindow(Window);
-    private protected uint? GetProcessId() => GetProcessId(Process);
+    private protected uint? GetProcessId() => GetProcessId(ProcessName);
+    private protected NativeWindow? GetWindow([Optional] uint? processId) => GetWindow(WindowClass, processId);
 
-    public bool IsRunning => GetWindow() is { };
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsGamingServicesInstalled => PackageService.GetPackage("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
 
-    internal static uint? GetProcessId(string target)
+    static uint? GetProcessId(string processName)
     {
-        fixed (char* name = target)
+        fixed (char* pn = processName)
         fixed (char* pfn = PackageFamilyName)
         {
             uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
@@ -66,7 +59,7 @@ public unsafe abstract class Minecraft
                     for (var index = 0; index < count; index++)
                     {
                         var entry = information[index];
-                        if (CompareStringOrdinal(name, -1, entry.pProcessName, -1, true) != CSTR_EQUAL) continue;
+                        if (CompareStringOrdinal(pn, -1, entry.pProcessName, -1, true) != CSTR_EQUAL) continue;
                         if (Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
 
                         using (process)
@@ -82,17 +75,20 @@ public unsafe abstract class Minecraft
         }
     }
 
-    internal static NativeWindow? GetWindow(string target)
+    static NativeWindow? GetWindow(string windowClass, [Optional] uint? processId)
     {
-        fixed (char* name = target)
+        fixed (char* wc = windowClass)
         fixed (char* pfn = PackageFamilyName)
         {
             NativeWindow window = HWND.Null;
             var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
             var buffer = stackalloc char[(int)length];
 
-            while ((window = FindWindowEx(HWND.Null, window, name, null)) != HWND.Null)
+            while ((window = FindWindowEx(HWND.Null, window, wc, null)) != HWND.Null)
             {
+                if (processId is { } && processId != window.ProcessId)
+                    continue;
+
                 if (Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
                     continue;
 

@@ -23,8 +23,8 @@ unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
 
-    protected override string Window => "Bedrock";
-    protected override string Process => "Minecraft.Windows.exe";
+    protected override string WindowClass => "Bedrock";
+    protected override string ProcessName => "Minecraft.Windows.exe";
 
     static MinecraftGDK()
     {
@@ -50,7 +50,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
         powershell.AddParameter("AppId", "Game");
         powershell.AddParameter("PackageFamilyName", PackageFamilyName);
-        powershell.AddParameter("Command", Path.Combine(Package.InstalledPath, Process));
+        powershell.AddParameter("Command", Path.Combine(Package.InstalledPath, ProcessName));
 
         powershell.Invoke();
         return GetProcessId();
@@ -93,13 +93,10 @@ unsafe sealed class MinecraftGDK : Minecraft
             {
                 while (process.Wait(1))
                 {
-                    if (GetWindow() is not { } window)
+                    if (GetWindow(processId) is not { } window)
                         continue;
 
                     if (window.IsVisible)
-                        return window.ProcessId;
-
-                    if (window.ProcessId != processId)
                         return processId;
                 }
                 return null;
