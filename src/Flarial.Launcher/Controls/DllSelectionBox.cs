@@ -1,3 +1,4 @@
+using System;
 using Flarial.Launcher.Management;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,13 +15,13 @@ sealed class DllSelectionBox : Grid
         HorizontalAlignment = HorizontalAlignment.Stretch
     };
 
-    readonly CustomDllPickerButton _button;
+    readonly CustomDllButton _button;
 
     void OnListBoxSelectionChanged(object sender, RoutedEventArgs args)
     {
         var listBox = (ListBox)sender;
 
-        var item = (DllItem)listBox.SelectedItem;
+        var item = (ContentItem<DllSelection>)listBox.SelectedItem;
         _settings.DllSelection = item.Value;
 
         var enabled = item.Value is DllSelection.Custom;
@@ -45,8 +46,8 @@ sealed class DllSelectionBox : Grid
         Children.Add(_listBox);
         Children.Add(_button);
 
-        _listBox.Items.Add(new ClientDllItem());
-        _listBox.Items.Add(new CustomDllItem());
+        _listBox.Items.Add(new ClientDll());
+        _listBox.Items.Add(new CustomDll());
 
         _listBox.SelectionChanged += OnListBoxSelectionChanged;
 
@@ -56,6 +57,7 @@ sealed class DllSelectionBox : Grid
         _listBox.SelectedIndex = (int)_settings.DllSelection;
     }
 
+    [Obsolete("", true)]
     abstract class DllItem
     {
         protected abstract string String { get; }
@@ -63,13 +65,13 @@ sealed class DllSelectionBox : Grid
         internal abstract DllSelection Value { get; }
     }
 
-    sealed class ClientDllItem : DllItem
+    sealed class ClientDll : ContentItem<DllSelection>
     {
         protected override string String => "Use the client's DLL with the game.";
         internal override DllSelection Value => DllSelection.Client;
     }
 
-    sealed class CustomDllItem : DllItem
+    sealed class CustomDll : ContentItem<DllSelection>
     {
         protected override string String => "Use a specified custom DLL with the game.";
         internal override DllSelection Value => DllSelection.Custom;

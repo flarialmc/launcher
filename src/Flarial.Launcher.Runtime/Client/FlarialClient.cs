@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
@@ -15,9 +14,9 @@ namespace Flarial.Launcher.Runtime.Client;
 sealed class FlarialClientRelease : FlarialClient
 {
     protected override string Build => nameof(Release);
-    protected override string Uri => "https://cdn.flarial.xyz/dll/latest.dll";
-    protected override string Name => $"Flarial.Client.{nameof(Release)}.dll";
+    protected override string FileName => $"Flarial.Client.{nameof(Release)}.dll";
     protected override string Identifer => "34F45015-6EB6-4213-ABEF-F2967818E628";
+    protected override string DownloadUri => "https://cdn.flarial.xyz/dll/latest.dll";
 }
 
 public abstract class FlarialClient
@@ -25,10 +24,10 @@ public abstract class FlarialClient
     internal FlarialClient() { }
     static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.GetJson();
 
-    protected abstract string Uri { get; }
-    protected abstract string Name { get; }
     protected abstract string Build { get; }
+    protected abstract string FileName { get; }
     protected abstract string Identifer { get; }
+    protected abstract string DownloadUri { get; }
 
     public static readonly FlarialClient Release = new FlarialClientRelease();
 
@@ -42,15 +41,15 @@ public abstract class FlarialClient
         }
     }
 
-    public bool Launch(bool initialized)
+    public bool Launch(bool? initialized)
     {
         if (Current is { } client)
         {
             if (!ReferenceEquals(this, client)) return false;
-            return Minecraft.Current.Launch(false) is { };
+            return Minecraft.Current.Launch(null) is { };
         }
 
-        if (Injector.Launch(initialized, new(Name)) is not { } processId)
+        if (Injector.Launch(initialized, new(FileName)) is not { } processId)
             return false;
 
         using NativeMutex mutex = new(Identifer);
@@ -75,7 +74,7 @@ public abstract class FlarialClient
         {
             lock (_lock)
             {
-                using var stream = File.OpenRead(Name);
+                using var stream = File.OpenRead(FileName);
                 var value = _algorithm.ComputeHash(stream);
                 var @string = BitConverter.ToString(value);
                 return @string.Replace("-", string.Empty);
@@ -93,10 +92,10 @@ public abstract class FlarialClient
         if ((await localHashTask).Equals(await remoteHashTask, OrdinalIgnoreCase))
             return true;
 
-        try { File.Delete(Name); }
+        try { File.Delete(FileName); }
         catch { return false; }
 
-        await HttpService.DownloadAsync(Uri, Name, callback);
+        await HttpService.DownloadAsync(DownloadUri, FileName, callback);
         return true;
     }
 }

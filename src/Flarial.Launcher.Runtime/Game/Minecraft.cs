@@ -30,7 +30,7 @@ public unsafe abstract class Minecraft
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
     protected abstract uint? Activate();
-    public abstract uint? Launch(bool initialized);
+    internal abstract uint? Launch(bool? initialized);
 
     /*
         - The static overloads find windows & processes belonging to the game.

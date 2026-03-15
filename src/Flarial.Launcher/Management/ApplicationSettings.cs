@@ -5,7 +5,11 @@ using System.Xml;
 
 namespace Flarial.Launcher.Management;
 
-enum DllSelection { Client, Custom }
+enum DllSelection
+{
+    Client,
+    Custom
+}
 
 [DataContract]
 sealed class ApplicationSettings
@@ -20,7 +24,7 @@ sealed class ApplicationSettings
     internal string CustomDllPath { get; set; } = string.Empty;
 
     [DataMember]
-    internal bool WaitForInitialization { get; set; } = true;
+    internal bool? WaitForInitialization { get; set; } = true;
 
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)

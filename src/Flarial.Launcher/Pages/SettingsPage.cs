@@ -1,3 +1,4 @@
+using System;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
@@ -10,15 +11,6 @@ namespace Flarial.Launcher.Pages;
 sealed class SettingsPage : Grid
 {
     readonly ApplicationSettings _settings;
-
-    readonly ToggleSwitch _waitForInitialization = new()
-    {
-        Header = "Should the launcher wait for the game to initialize?",
-        VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch,
-        OnContent = "Yes, reduce game crashes.",
-        OffContent = "No, speed up injection."
-    };
 
     readonly ToggleSwitch _automaticUpdates = new()
     {
@@ -33,7 +25,6 @@ sealed class SettingsPage : Grid
     {
         var value = ((ToggleSwitch)sender).IsOn;
         if (ReferenceEquals(_automaticUpdates, sender)) _settings.AutomaticUpdates = value;
-        else if (ReferenceEquals(_waitForInitialization, sender)) _settings.WaitForInitialization = value;
     }
 
     internal SettingsPage(ApplicationSettings settings)
@@ -55,16 +46,14 @@ sealed class SettingsPage : Grid
         SetRow(box, 1);
         SetColumn(box, 0);
 
+        panel.Children.Add(_automaticUpdates);
         panel.Children.Add(new TextBlock { Text = "Select what DLL should be used:" });
         panel.Children.Add(new DllSelectionBox(settings));
-        panel.Children.Add(_waitForInitialization);
-        panel.Children.Add(_automaticUpdates);
+        panel.Children.Add(new TextBlock { Text = "Select what initialization type should be used:" });
+        panel.Children.Add(new InitializationTypeBox(settings));
 
         _automaticUpdates.Toggled += OnToggleSwitchToggled;
-        _waitForInitialization.Toggled += OnToggleSwitchToggled;
-
         _automaticUpdates.IsOn = _settings.AutomaticUpdates;
-        _waitForInitialization.IsOn = _settings.WaitForInitialization;
 
         Children.Add(panel);
         Children.Add(box);

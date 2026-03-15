@@ -28,11 +28,16 @@ public unsafe static class Injector
         }
     }
 
-    public static uint? Launch(bool initialized, Library library)
+    public static uint? Launch(bool? initialized, Library library)
     {
-        if (!library.IsLoadable) throw new FileLoadException(null, library._path);
-        if (Minecraft.Current.Launch(initialized) is not { } processId) return null;
-        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process) return null;
+        if (!library.IsLoadable)
+            throw new FileLoadException(null, library._path);
+
+        if (Minecraft.Current.Launch(initialized) is not { } processId)
+            return null;
+
+        if (Open(PROCESS_ALL_ACCESS, processId) is not { } process)
+            return null;
 
         using (process)
         {

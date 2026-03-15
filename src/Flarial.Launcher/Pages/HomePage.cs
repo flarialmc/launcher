@@ -118,12 +118,10 @@ sealed class HomePage : Grid
             button.IsEnabled = false;
             button.Content = "Play";
 
-            var custom = _settings.DllSelection is DllSelection.Custom;
-
             var path = _settings.CustomDllPath;
-            var initialized = _settings.WaitForInitialization;
-
             var registry = (VersionRegistry)Tag;
+            var initialized = _settings.WaitForInitialization;
+            var custom = _settings.DllSelection is DllSelection.Custom;
 
             if (!Minecraft.IsInstalled)
             {
