@@ -17,7 +17,7 @@ namespace Flarial.Launcher.Pages;
 
 sealed class HomePage : Grid
 {
-    readonly Image _logoImage = new()
+    readonly Image _image = new()
     {
         Width = 96,
         Height = 96,
@@ -76,15 +76,15 @@ sealed class HomePage : Grid
 
         using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
         {
-            var logoBitmap = (BitmapImage)_logoImage.Source;
-            logoBitmap.SetSource(stream.AsRandomAccessStream());
+            var source = (BitmapImage)_image.Source;
+            source.SetSource(stream.AsRandomAccessStream());
         }
 
         Children.Add(_leftText);
         Children.Add(_rightText);
 
         Children.Add(_button);
-        Children.Add(_logoImage);
+        Children.Add(_image);
 
         Children.Add(new PromotionImagesBox()
         {
@@ -95,10 +95,7 @@ sealed class HomePage : Grid
         _button.Click += OnButtonClick;
     }
 
-    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() =>
-    {
-        _button.Content = $"Downloading... {value}%";
-    });
+    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() => _button.Content = $"Downloading... {value}%");
 
     async void OnButtonClick(object sender, RoutedEventArgs args)
     {

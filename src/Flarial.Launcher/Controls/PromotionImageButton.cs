@@ -23,19 +23,22 @@ abstract class PromotionImageButton : XamlElement<Image>
     {
         (~this).Width = 320 * 0.95;
         (~this).Height = 50 * 0.95;
-        (~this).Visibility = Visibility.Collapsed;
 
         (~this).Tag = NavigateUri;
-        (~this).ImageFailed += OnImageFailed;
+        (~this).Visibility = Visibility.Collapsed;
+
+        (~this).Source = new BitmapImage
+        {
+            DecodePixelWidth = (int)(~this).Width,
+            DecodePixelHeight = (int)(~this).Height,
+            DecodePixelType = DecodePixelType.Logical,
+            UriSource = ImageUri is { } ? new(ImageUri) : null,
+        };
+
+        (~this).ImageOpened += OnImageOpened;
         (~this).PointerExited += OnImagePointerExited;
         (~this).PointerEntered += OnImagePointerEntered;
         (~this).PointerPressed += OnImagePointerPressed;
-
-        if (ImageUri is { })
-        {
-            (~this).Visibility = Visibility.Visible;
-            (~this).Source = new BitmapImage { UriSource = new(ImageUri) };
-        }
     }
 
     unsafe static void OnImagePointerPressed(object sender, RoutedEventArgs args)
@@ -44,7 +47,7 @@ abstract class PromotionImageButton : XamlElement<Image>
             ShellExecute(Null, null, lpFile, null, null, SW_NORMAL);
     }
 
-    static void OnImageFailed(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Collapsed;
+    static void OnImageOpened(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Visible;
     static void OnImagePointerEntered(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _hand;
     static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
 }
