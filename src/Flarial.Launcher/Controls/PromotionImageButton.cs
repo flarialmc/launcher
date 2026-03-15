@@ -1,4 +1,5 @@
 using System;
+using System.Management.Automation;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -12,8 +13,8 @@ namespace Flarial.Launcher.Controls;
 
 abstract class PromotionImageButton : XamlElement<Image>
 {
-    protected abstract string? ImageUri { get; }
-    protected abstract string? NavigateUri { get; }
+    protected abstract string ImageUri { get; }
+    protected abstract string NavigateUri { get; }
 
     static readonly CoreCursor _hand = new(CoreCursorType.Hand, 0);
     static readonly CoreCursor _arrow = new(CoreCursorType.Arrow, 0);
@@ -22,21 +23,19 @@ abstract class PromotionImageButton : XamlElement<Image>
     {
         (~this).Width = 320 * 0.95;
         (~this).Height = 50 * 0.95;
-        (~this).VerticalAlignment = VerticalAlignment.Bottom;
-
-        (~this).Source = new BitmapImage
-        {
-            DecodePixelType = DecodePixelType.Logical,
-            UriSource = ImageUri is { } ? new(ImageUri) : null
-        };
-
-        (~this).ImageOpened += OnImageOpened;
-        (~this).PointerPressed += OnImagePointerPressed;
-
-        (~this).PointerEntered += OnImagePointerEntered;
-        (~this).PointerExited += OnImagePointerExited;
+        (~this).Visibility = Visibility.Collapsed;
 
         (~this).Tag = NavigateUri;
+        (~this).ImageFailed += OnImageFailed;
+        (~this).PointerExited += OnImagePointerExited;
+        (~this).PointerEntered += OnImagePointerEntered;
+        (~this).PointerPressed += OnImagePointerPressed;
+
+        if (ImageUri is { })
+        {
+            (~this).Visibility = Visibility.Visible;
+            (~this).Source = new BitmapImage { UriSource = new(ImageUri) };
+        }
     }
 
     unsafe static void OnImagePointerPressed(object sender, RoutedEventArgs args)
@@ -45,10 +44,8 @@ abstract class PromotionImageButton : XamlElement<Image>
             ShellExecute(Null, null, lpFile, null, null, SW_NORMAL);
     }
 
-    static void OnImageOpened(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Visible;
-
+    static void OnImageFailed(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Collapsed;
     static void OnImagePointerEntered(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _hand;
-
     static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
 }
 
@@ -64,15 +61,15 @@ sealed class LiteByteHostingImageButton : PromotionImageButton
     protected override string NavigateUri => "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
 }
 
+sealed class InfinityNetworkImageButton : PromotionImageButton
+{
+    protected override string ImageUri => "https://assets.infinitymcpe.com/banner.png";
+    protected override string NavigateUri => "https://discord.gg/infinitymcpe";
+}
+
 [Obsolete("", true)]
 sealed class CollapseNetworkImageButton : PromotionImageButton
 {
     protected override string ImageUri => "https://collapsemc.com/assets/other/ad-banner.png";
     protected override string NavigateUri => "minecraft://?addExternalServer=Collapse|clps.gg:19132";
-}
-
-sealed class InfinityNetworkImageButton : PromotionImageButton
-{
-    protected override string ImageUri => "https://assets.infinitymcpe.com/banner.png";
-    protected override string NavigateUri => "https://discord.gg/infinitymcpe";
 }

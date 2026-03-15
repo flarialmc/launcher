@@ -61,5 +61,4 @@ sealed class InitializationTypeBox : Grid
         internal override bool? Value => true;
         protected override string String => "Wait for global resources, safe & slow.";
     }
-
 }

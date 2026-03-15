@@ -22,9 +22,9 @@ sealed class HomePage : Grid
         Width = 96,
         Height = 96,
         Margin = new(0, 0, 0, 90),
+        Source = new BitmapImage(),
         VerticalAlignment = VerticalAlignment.Center,
-        HorizontalAlignment = HorizontalAlignment.Center,
-        Source = new BitmapImage { DecodePixelType = DecodePixelType.Logical }
+        HorizontalAlignment = HorizontalAlignment.Center
     };
 
     internal readonly Button _button = new()
@@ -56,10 +56,6 @@ sealed class HomePage : Grid
     readonly MainNavigationView _view;
     readonly ApplicationSettings _settings;
 
-    readonly PromotionImageButton _leftImageButton = new LiteByteHostingImageButton();
-    readonly PromotionImageButton _centerImageButton = new StubImageButton();
-    readonly PromotionImageButton _rightImageButton = new InfinityNetworkImageButton();
-
     UnsupportedVersionDialog UnsupportedVersion
     {
         get
@@ -84,24 +80,17 @@ sealed class HomePage : Grid
             logoBitmap.SetSource(stream.AsRandomAccessStream());
         }
 
-        (~_leftImageButton).Margin = new(12, 0, 0, 12);
-        (~_leftImageButton).HorizontalAlignment = HorizontalAlignment.Left;
-
-        (~_centerImageButton).Margin = new(0, 0, 0, 12);
-        (~_centerImageButton).HorizontalAlignment = HorizontalAlignment.Center;
-
-        (~_rightImageButton).Margin = new(0, 0, 12, 12);
-        (~_rightImageButton).HorizontalAlignment = HorizontalAlignment.Right;
-
         Children.Add(_leftText);
         Children.Add(_rightText);
 
         Children.Add(_button);
         Children.Add(_logoImage);
 
-        Children.Add(~_leftImageButton);
-        Children.Add(~_centerImageButton);
-        Children.Add(~_rightImageButton);
+        Children.Add(new PromotionImagesBox()
+        {
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
 
         _button.Click += OnButtonClick;
     }
