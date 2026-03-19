@@ -106,8 +106,8 @@ sealed class HomePage : Grid
 
             var path = _settings.CustomDllPath;
             var registry = (VersionRegistry)Tag;
+            var custom = _settings.UseCustomDll;
             var initialized = _settings.WaitForInitialization;
-            var custom = _settings.DllSelection is DllSelection.Custom;
 
             if (!Minecraft.IsInstalled)
             {
@@ -119,12 +119,6 @@ sealed class HomePage : Grid
             {
                 await MainDialog.GamingServicesMissing.ShowAsync();
                 return;
-            }
-
-            if (!Minecraft.IsPackaged)
-            {
-                if (!await MainDialog.UnsignedInstall.ShowAsync())
-                    return;
             }
 
             if (!custom && !registry.IsSupported)
@@ -147,15 +141,19 @@ sealed class HomePage : Grid
 
             if (custom)
             {
+                if (!Minecraft.IsPackaged)
+                {
+                    if (!await MainDialog.UnsignedInstall.ShowAsync())
+                        return;
+                }
+
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
                     await MainDialog.InvalidCustomDll.ShowAsync();
                     return;
                 }
 
-                Library library = new(path);
-
-                if (!library.IsLoadable)
+                Library library = new(path); if (!library.IsLoadable)
                 {
                     await MainDialog.InvalidCustomDll.ShowAsync();
                     return;
@@ -172,14 +170,14 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Verifying...";
-            if (!await FlarialClient.Release.DownloadAsync(OnFlarialClientDownloadAsync))
+            if (!await FlarialClient.Current.DownloadAsync(OnFlarialClientDownloadAsync))
             {
                 await MainDialog.ClientUpdateFailure.ShowAsync();
                 return;
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(() => FlarialClient.Release.Launch(initialized)))
+            if (!await Task.Run(FlarialClient.Current.Launch))
             {
                 await MainDialog.LaunchFailure.ShowAsync();
                 return;

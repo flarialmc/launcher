@@ -7,73 +7,49 @@ namespace Flarial.Launcher.Controls;
 
 sealed class DllSelectionBox : Grid
 {
+    readonly CustomDllButton _button;
     readonly ApplicationSettings _settings;
 
-    readonly ListBox _listBox = new()
+    readonly ToggleSwitch _toggleSwitch = new()
     {
+        Header = "Should the launcher use a custom DLL?",
         VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        OnContent = "Yes, use a custom DLL.",
+        OffContent = "No, use the client's DLL."
     };
 
-    readonly CustomDllButton _button;
-
-    void OnListBoxSelectionChanged(object sender, RoutedEventArgs args)
+    void OnToggleSwitchToggled(object sender, RoutedEventArgs args)
     {
-        var listBox = (ListBox)sender;
+        var value = ((ToggleSwitch)sender).IsOn;
 
-        var item = (ContentItem<DllSelection>)listBox.SelectedItem;
-        _settings.DllSelection = item.Value;
+        _button._button.IsEnabled = value;
+        _button._textBox.IsEnabled = value;
 
-        var enabled = item.Value is DllSelection.Custom;
-        _button._button.IsEnabled = enabled;
-        _button._textBox.IsEnabled = enabled;
+        _settings.UseCustomDll = value;
     }
 
     internal DllSelectionBox(ApplicationSettings settings)
     {
         _settings = settings;
-        _button = new(_settings);
+        _button = new(settings);
+
+        RowSpacing = 12;
+        ColumnSpacing = 12;
 
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
-        SetRow(_listBox, 0);
-        SetColumn(_listBox, 0);
+        SetRow(_toggleSwitch, 0);
+        SetColumn(_toggleSwitch, 0);
 
         SetRow(_button, 1);
         SetColumn(_button, 0);
 
-        Children.Add(_listBox);
+        Children.Add(_toggleSwitch);
         Children.Add(_button);
 
-        _listBox.Items.Add(new ClientDll());
-        _listBox.Items.Add(new CustomDll());
-
-        _listBox.SelectionChanged += OnListBoxSelectionChanged;
-
-        _listBox.SetValue(VirtualizingStackPanel.IsVirtualizingProperty, true);
-        VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
-
-        _listBox.SelectedIndex = (int)_settings.DllSelection;
-    }
-
-    [Obsolete("", true)]
-    abstract class DllItem
-    {
-        protected abstract string String { get; }
-        public override string ToString() => String;
-        internal abstract DllSelection Value { get; }
-    }
-
-    sealed class ClientDll : ContentItem<DllSelection>
-    {
-        protected override string String => "Use the client's DLL with the game.";
-        internal override DllSelection Value => DllSelection.Client;
-    }
-
-    sealed class CustomDll : ContentItem<DllSelection>
-    {
-        protected override string String => "Use a specified custom DLL with the game.";
-        internal override DllSelection Value => DllSelection.Custom;
+        _toggleSwitch.Toggled += OnToggleSwitchToggled;
+        _toggleSwitch.IsOn = _settings.UseCustomDll;
     }
 }

@@ -5,6 +5,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Threading;
 using Flarial.Launcher.Runtime.Services;
+using Flarial.Launcher.Runtime.System;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using static System.Environment;
@@ -69,10 +70,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsGamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
-        if (GetWindow() is { } @_ && _.IsVisible)
+        if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
-            _.Switch();
-            return _.ProcessId;
+            foundWindow.SwitchWindow();
+            return foundWindow._processId;
         }
 
         if (Activate() is not { } processId)
@@ -91,14 +92,16 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             if (initialized is null || !IsPackaged)
             {
-                while (process.Wait(1))
-                {
-                    if (GetWindow(processId) is not { } window)
-                        continue;
+                NativeWindow? processWindow = null;
 
-                    if (window.IsVisible)
+                while (process.Wait(1))
+                    if ((processWindow = GetWindow()) is { })
+                        break;
+
+                while (process.Wait(1))
+                    if (processWindow?.IsVisible ?? false)
                         return processId;
-                }
+
                 return null;
             }
 

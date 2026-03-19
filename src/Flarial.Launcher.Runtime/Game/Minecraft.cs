@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using Flarial.Launcher.Runtime.Services;
 using Flarial.Launcher.Runtime.System;
@@ -25,7 +26,9 @@ public unsafe abstract class Minecraft
     public static Minecraft Current { get; } = new MinecraftGDK();
     public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
+    [Obsolete("", true)]
     internal bool IsRunning => GetWindow() is { };
+
     internal static Package Package => PackageService.GetPackage(PackageFamilyName)!;
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
@@ -38,7 +41,7 @@ public unsafe abstract class Minecraft
     */
 
     private protected uint? GetProcessId() => GetProcessId(ProcessName);
-    private protected NativeWindow? GetWindow([Optional] uint? processId) => GetWindow(WindowClass, processId);
+    internal NativeWindow? GetWindow([Optional] uint? processId) => GetWindow(WindowClass, processId);
 
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
@@ -75,7 +78,7 @@ public unsafe abstract class Minecraft
         }
     }
 
-    static NativeWindow? GetWindow(string windowClass, [Optional] uint? processId)
+    internal static NativeWindow? GetWindow(string windowClass, [Optional] uint? processId)
     {
         fixed (char* wc = windowClass)
         fixed (char* pfn = PackageFamilyName)
@@ -86,10 +89,10 @@ public unsafe abstract class Minecraft
 
             while ((window = FindWindowEx(HWND.Null, window, wc, null)) != HWND.Null)
             {
-                if (processId is { } && processId != window.ProcessId)
+                if (processId is { } && processId != window._processId)
                     continue;
 
-                if (Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                if (Open(PROCESS_QUERY_LIMITED_INFORMATION, window._processId) is not { } process)
                     continue;
 
                 using (process)

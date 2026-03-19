@@ -6,58 +6,45 @@ using System.Threading.Tasks;
 using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Modding;
 using Flarial.Launcher.Runtime.Services;
-using Flarial.Launcher.Runtime.System;
 using static System.StringComparison;
 
 namespace Flarial.Launcher.Runtime.Client;
 
 sealed class FlarialClientRelease : FlarialClient
 {
-    protected override string Build => nameof(Release);
-    protected override string FileName => $"Flarial.Client.{nameof(Release)}.dll";
-    protected override string Identifer => "34F45015-6EB6-4213-ABEF-F2967818E628";
+    protected override string Build => "Release";
+    protected override string WindowClass => "Flarial Client";
+    protected override string FileName => "Flarial.Client.Release.dll";
     protected override string DownloadUri => "https://cdn.flarial.xyz/dll/latest.dll";
 }
 
 public abstract class FlarialClient
 {
     internal FlarialClient() { }
+
+    public static FlarialClient Current { get; } = new FlarialClientRelease();
     static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.GetJson();
 
     protected abstract string Build { get; }
     protected abstract string FileName { get; }
-    protected abstract string Identifer { get; }
     protected abstract string DownloadUri { get; }
+    protected abstract string WindowClass { get; }
 
-    public static readonly FlarialClient Release = new FlarialClientRelease();
-
-    static FlarialClient? Current
+    public bool Launch()
     {
-        get
+        if (Minecraft.GetWindow(WindowClass) is { } client)
         {
-            if (!Minecraft.Current.IsRunning) return null;
-            using NativeMutex release = new(Release.Identifer);
-            return release.Exists ? Release : null;
-        }
-    }
-
-    public bool Launch(bool? initialized)
-    {
-        if (Current is { } client)
-        {
-            if (!ReferenceEquals(this, client)) return false;
-            return Minecraft.Current.Launch(null) is { };
-        }
-
-        if (Injector.Launch(initialized, new(FileName)) is not { } processId)
+            if (Minecraft.Current.GetWindow(client._processId) is { } minecraft)
+            {
+                minecraft.SwitchWindow();
+                return true;
+            }
             return false;
-
-        using NativeMutex mutex = new(Identifer);
-        return mutex.Duplicate(processId);
+        }
+        return Injector.Launch(null, new(FileName)) is { };
     }
 
     static readonly object _lock = new();
-
     static readonly HashAlgorithm _algorithm = SHA256.Create();
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";

@@ -1,15 +1,8 @@
-using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 
 namespace Flarial.Launcher.Management;
-
-enum DllSelection
-{
-    Client,
-    Custom
-}
 
 [DataContract]
 sealed class ApplicationSettings
@@ -18,21 +11,21 @@ sealed class ApplicationSettings
     internal bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
-    internal DllSelection DllSelection { get; set; } = DllSelection.Client;
-
-    [DataMember]
     internal string CustomDllPath { get; set; } = string.Empty;
 
     [DataMember]
-    internal bool? WaitForInitialization { get; set; } = true;
+    internal bool WaitForInitialization { get; set; } = true;
+
+    [DataMember]
+    internal bool UseCustomDll { get; set; } = false;
 
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
     {
+        UseCustomDll = false;
         AutomaticUpdates = true;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
-        DllSelection = DllSelection.Client;
     }
 
     static readonly XmlWriterSettings s_settings = new() { Indent = true };
