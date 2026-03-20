@@ -121,6 +121,12 @@ sealed class HomePage : Grid
                 return;
             }
 
+            if (!Minecraft.IsPackaged)
+            {
+                if (!await MainDialog.UnsignedInstall.ShowAsync())
+                    return;
+            }
+
             if (!custom && !registry.IsSupported)
             {
                 switch (await UnsupportedVersion.PromptAsync())
@@ -141,12 +147,6 @@ sealed class HomePage : Grid
 
             if (custom)
             {
-                if (!Minecraft.IsPackaged)
-                {
-                    if (!await MainDialog.UnsignedInstall.ShowAsync())
-                        return;
-                }
-
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
                     await MainDialog.InvalidCustomDll.ShowAsync();
@@ -177,7 +177,7 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(FlarialClient.Current.Launch))
+            if (!await Task.Run(() => FlarialClient.Current.Launch(initialized)))
             {
                 await MainDialog.LaunchFailure.ShowAsync();
                 return;

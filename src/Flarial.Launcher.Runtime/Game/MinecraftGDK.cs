@@ -57,7 +57,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         return GetProcessId();
     }
 
-    internal override uint? Launch(bool? initialized)
+    internal override uint? Launch(bool initialized)
     {
         /*
             - Unlike UWP builds, we are bootstrapping the game manually.
@@ -90,7 +90,7 @@ unsafe sealed class MinecraftGDK : Minecraft
                 - Instead, wait for the game's window to be visible.
             */
 
-            if (initialized is null || !IsPackaged)
+            if (!IsPackaged)
             {
                 NativeWindow? processWindow = null;
 
@@ -112,7 +112,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var handle = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, (bool)initialized ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, initialized ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,

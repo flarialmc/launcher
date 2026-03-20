@@ -30,7 +30,7 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool Launch()
+    public bool Launch(bool initialized)
     {
         if (Minecraft.GetWindow(WindowClass) is { } client)
         {
@@ -41,7 +41,7 @@ public abstract class FlarialClient
             }
             return false;
         }
-        return Injector.Launch(null, new(FileName)) is { };
+        return Injector.Launch(initialized, new(FileName)) is { };
     }
 
     static readonly object _lock = new();
