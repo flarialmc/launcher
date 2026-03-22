@@ -30,7 +30,7 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool Launch(bool initialized)
+    public bool? Launch(bool initialized)
     {
         if (Minecraft.GetWindow(WindowClass) is { } client)
         {
@@ -43,7 +43,7 @@ public abstract class FlarialClient
         }
 
         Library library = new(FileName);
-        if (!library.IsLoadable) return false;
+        if (!library.IsLoadable) return null;
         
         return Injector.Launch(initialized, library) is { };
     }
