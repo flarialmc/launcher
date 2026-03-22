@@ -41,7 +41,11 @@ public abstract class FlarialClient
             }
             return false;
         }
-        return Injector.Launch(initialized, new(FileName)) is { };
+
+        Library library = new(FileName);
+        if (!library.IsLoadable) return false;
+        
+        return Injector.Launch(initialized, library) is { };
     }
 
     static readonly object _lock = new();

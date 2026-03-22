@@ -177,10 +177,15 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(() => FlarialClient.Current.Launch(initialized)))
+            switch (await Task.Run(() => FlarialClient.Current.Launch(initialized)))
             {
-                await MainDialog.LaunchFailure.ShowAsync();
-                return;
+                case false:
+                    await MainDialog.LaunchFailure.ShowAsync();
+                    break;
+
+                case null:
+                    await MainDialog.ClientInjectionFailure.ShowAsync();
+                    break;
             }
         }
         finally
