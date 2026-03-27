@@ -10,7 +10,6 @@ ShellExecute
 GetPackageFamilyName
 OpenProcess
 GetCurrentProcessId
-GetCurrentProcess
 CreateEvent
 SetEvent
 WTSEnumerateProcessesEx
@@ -29,8 +28,6 @@ GetProcAddress
 WriteProcessMemory
 VirtualAllocEx
 VirtualFreeEx
-CreateMutex
-DuplicateHandle
 WM_SYSCOMMAND
 SC_KEYMENU
 SC_MOUSEMENU

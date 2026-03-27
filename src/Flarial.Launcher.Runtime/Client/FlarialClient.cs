@@ -20,17 +20,18 @@ sealed class FlarialClientRelease : FlarialClient
 
 public abstract class FlarialClient
 {
-    internal FlarialClient() { }
+    protected FlarialClient() { }
 
     public static FlarialClient Current { get; } = new FlarialClientRelease();
-    static readonly JsonService<Dictionary<string, string>> s_json = JsonService<Dictionary<string, string>>.GetJson();
+
+    static readonly JsonSerializer<Dictionary<string, string>> s_serializer = JsonSerializer<Dictionary<string, string>>.Get();
 
     protected abstract string Build { get; }
     protected abstract string FileName { get; }
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool? Launch(bool initialized)
+    public bool Launch(bool initialized)
     {
         if (Minecraft.GetWindow(WindowClass) is { } client)
         {
@@ -43,8 +44,8 @@ public abstract class FlarialClient
         }
 
         Library library = new(FileName);
-        if (!library.IsLoadable) return null;
-        
+        if (!library.IsLoadable) return false;
+
         return Injector.Launch(initialized, library) is { };
     }
 
@@ -56,7 +57,7 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        return s_json.ReadStream(stream)[Build];
+        return s_serializer.Deserialize(stream)[Build];
     }
 
     async Task<string> GetLocalHashAsync() => await Task.Run(() =>

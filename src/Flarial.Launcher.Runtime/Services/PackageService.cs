@@ -12,9 +12,9 @@ unsafe static class PackageService
 {
     static readonly PackageManager s_pm = new();
 
-    internal static Package? GetPackage(string packageFamilyName) => s_pm.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
+    internal static Package? Get(string packageFamilyName) => s_pm.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal static bool AddPackage(Uri uri, Action<int> callback)
+    internal static bool Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
         var info = s_pm.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);

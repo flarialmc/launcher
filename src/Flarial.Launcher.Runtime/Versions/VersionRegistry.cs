@@ -18,7 +18,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     }
 
     static readonly VersionItemComparer s_comparer = new();
-    static readonly JsonService<Dictionary<string, bool>> s_json = JsonService<Dictionary<string, bool>>.GetJson();
+    static readonly JsonSerializer<Dictionary<string, bool>> s_serializer = JsonSerializer<Dictionary<string, bool>>.Get();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
 
@@ -56,7 +56,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
         using var stream = await HttpService.GetStreamAsync(SupportedVersionsUri);
 
-        foreach (var item in s_json.ReadStream(stream))
+        foreach (var item in s_serializer.Deserialize(stream))
             registry.Add(item.Key, new(item.Value));
 
         await GDKVersionItem.QueryAsync(registry);

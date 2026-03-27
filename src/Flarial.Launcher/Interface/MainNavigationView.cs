@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Flarial.Launcher.Controls;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Runtime.Client;
 using Flarial.Launcher.Runtime.Game;
+using Flarial.Launcher.Runtime.Services;
 using Flarial.Launcher.Runtime.Versions;
 using Flarial.Launcher.Xaml;
 using Windows.ApplicationModel;
@@ -55,10 +57,20 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         (~this).MenuItems.Add(_versionsItem);
 
         (~this).Loaded += OnLoaded;
+        (~this).Loading += OnLoading;
         (~this).ItemInvoked += OnItemInvoked;
 
         (~this).Content = _homePage;
         (~this).SelectedItem = _homeItem;
+    }
+
+    async void OnLoading(FrameworkElement sender, object args)
+    {
+        _homePage.Children.Add(new PromotionImagesBox(await PromotionManager.GetDetailsAsync())
+        {
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

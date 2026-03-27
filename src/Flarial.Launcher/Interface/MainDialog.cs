@@ -49,6 +49,5 @@ abstract class MainDialog
     internal static UnpackagedInstallDialog UnpackagedInstall => field ??= new();
     internal static ClientUpdateFailureDialog ClientUpdateFailure => field ??= new();
     internal static GamingServicesMissingDialog GamingServicesMissing => field ??= new();
-    internal static ClientInjectionFailureDialog ClientInjectionFailure => field ??= new();
     internal static LauncherUpdateAvailableDialog LauncherUpdateAvailable => field ??= new();
 }

@@ -18,13 +18,17 @@ sealed class GDKVersionItem : VersionItem
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
     const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    static readonly JsonService<Dictionary<string, Dictionary<string, string[]>>> s_json;
-    static GDKVersionItem() => s_json = JsonService<Dictionary<string, Dictionary<string, string[]>>>.GetJson();
+    static readonly JsonSerializer<Dictionary<string, Dictionary<string, string[]>>> s_serializer;
+    static GDKVersionItem() => s_serializer = JsonSerializer<Dictionary<string, Dictionary<string, string[]>>>.Get();
 
-    readonly string[] _uris;
+    readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
 
-    GDKVersionItem(string version, string[] uris, byte[] gameLaunchHelper) : base(version) => (_uris, _gameLaunchHelper) = (uris, gameLaunchHelper);
+    GDKVersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper) : base(version)
+    {
+        _downloadUris = downloadUris;
+        _gameLaunchHelper = gameLaunchHelper;
+    }
 
     internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry) => await Task.Run(async () =>
     {
@@ -35,7 +39,7 @@ sealed class GDKVersionItem : VersionItem
         var gameLaunchHelper = await gameLaunchHelperTask;
         using var msixvcPackages = await msixvcPackagesTask;
 
-        foreach (var item in s_json.ReadStream(msixvcPackages)["release"])
+        foreach (var item in s_serializer.Deserialize(msixvcPackages)["release"])
         {
             var index = item.Key.LastIndexOf('.');
             var key = item.Key.Substring(0, index);
@@ -64,7 +68,7 @@ sealed class GDKVersionItem : VersionItem
     protected override async Task<string> GetUriAsync()
     {
         using CancellationTokenSource source = new();
-        HashSet<Task<string?>> tasks = [.. _uris.Select(_ => PingAsync(_, source.Token))];
+        HashSet<Task<string?>> tasks = [.. _downloadUris.Select(_ => PingAsync(_, source.Token))];
 
         while (tasks.Count > 0)
         {

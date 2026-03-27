@@ -7,7 +7,6 @@ sealed class UnsupportedVersionDialog(string preferred) : MainDialog
 {
     protected override string CloseButtonText => "Back";
     protected override string PrimaryButtonText => "Versions";
-    protected override string SecondaryButtonText => "Settings";
     protected override string Title => "⚠️ Unsupported Version";
 
     protected override string Content
@@ -16,17 +15,17 @@ sealed class UnsupportedVersionDialog(string preferred) : MainDialog
         {
             var version = VersionRegistry.InstalledVersion;
 
-            if (_cache.TryGetValue(version, out var content))
+            if (_contentCache.TryGetValue(version, out var content))
                 return content;
 
             content = string.Format(_format, version);
-            _cache.Add(version, content);
+            _contentCache.Add(version, content);
 
             return content;
         }
     }
 
-    readonly Dictionary<string, string> _cache = [];
+    readonly Dictionary<string, string> _contentCache = [];
 
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 

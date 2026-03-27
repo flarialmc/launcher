@@ -1,16 +1,11 @@
 using System;
 using System.IO;
-using System.Reflection;
-using System.Resources;
 using System.Threading;
 using System.Windows;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Runtime.Game;
 using Flarial.Launcher.Runtime.Modding;
-using Microsoft.VisualBasic;
 using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using static System.Environment;

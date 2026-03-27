@@ -1,5 +1,6 @@
 using System;
 using System.Management.Automation;
+using Flarial.Launcher.Runtime.Services;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -11,28 +12,25 @@ using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.Controls;
 
-abstract class PromotionImageButton : XamlElement<Image>
+sealed class PromotionImage : XamlElement<Image>
 {
-    protected abstract string ImageUri { get; }
-    protected abstract string NavigateUri { get; }
-
     static readonly CoreCursor _hand = new(CoreCursorType.Hand, 0);
     static readonly CoreCursor _arrow = new(CoreCursorType.Arrow, 0);
 
-    protected PromotionImageButton() : base(new())
+    internal PromotionImage(Promotion promotion) : base(new())
     {
         (~this).Width = 320 * 0.95;
         (~this).Height = 50 * 0.95;
 
-        (~this).Tag = NavigateUri;
+        (~this).Tag = promotion.Uri;
         (~this).Visibility = Visibility.Collapsed;
 
         (~this).Source = new BitmapImage
         {
+            UriSource = new(promotion.Image),
             DecodePixelWidth = (int)(~this).Width,
             DecodePixelHeight = (int)(~this).Height,
             DecodePixelType = DecodePixelType.Logical,
-            UriSource = ImageUri is { } ? new(ImageUri) : null,
         };
 
         (~this).ImageOpened += OnImageOpened;
@@ -50,29 +48,4 @@ abstract class PromotionImageButton : XamlElement<Image>
     static void OnImageOpened(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Visible;
     static void OnImagePointerEntered(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _hand;
     static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
-}
-
-sealed class StubImageButton : PromotionImageButton
-{
-    protected override string ImageUri => null!;
-    protected override string NavigateUri => null!;
-}
-
-sealed class LiteByteHostingImageButton : PromotionImageButton
-{
-    protected override string ImageUri => "https://litebyte.co/images/flarial.png";
-    protected override string NavigateUri => "https://litebyte.co/minecraft?utm_source=flarial-client&utm_medium=app&utm_campaign=bedrock-launch";
-}
-
-sealed class InfinityNetworkImageButton : PromotionImageButton
-{
-    protected override string ImageUri => "https://assets.infinitymcpe.com/banner.png";
-    protected override string NavigateUri => "https://discord.gg/infinitymcpe";
-}
-
-[Obsolete("", true)]
-sealed class CollapseNetworkImageButton : PromotionImageButton
-{
-    protected override string ImageUri => "https://collapsemc.com/assets/other/ad-banner.png";
-    protected override string NavigateUri => "minecraft://?addExternalServer=Collapse|clps.gg:19132";
 }

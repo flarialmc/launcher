@@ -86,12 +86,6 @@ sealed class HomePage : Grid
         Children.Add(_button);
         Children.Add(_image);
 
-        Children.Add(new PromotionImagesBox()
-        {
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Center
-        });
-
         _button.Click += OnButtonClick;
     }
 
@@ -177,10 +171,11 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            var value = await Task.Run(() => FlarialClient.Current.Launch(initialized));
-
-            if (value is null) await MainDialog.ClientInjectionFailure.ShowAsync();
-            else if (!(bool)value) await MainDialog.LaunchFailure.ShowAsync();
+            if (!await Task.Run(() => FlarialClient.Current.Launch(initialized)))
+            {
+                await MainDialog.LaunchFailure.ShowAsync();
+                return;
+            }
         }
         finally
         {
