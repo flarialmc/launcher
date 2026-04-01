@@ -123,14 +123,14 @@ sealed class MainNavigationView : XamlElement<NavigationView>
         var settingsItem = (NavigationViewItem)(~this).SettingsItem;
         settingsItem.Tag = _settingsPage;
 
-        if (!await FlarialLauncher.ConnectAsync())
+        if (!await FlarialLauncher.VerifyConnectionAsync())
         {
             await MainDialog.ConnectionFailure.ShowAsync();
             System.Windows.Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync()))
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await MainDialog.LauncherUpdateAvailable.ShowAsync()))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);

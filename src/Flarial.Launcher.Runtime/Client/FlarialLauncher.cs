@@ -42,17 +42,17 @@ del ""%~f0""";
     static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
     static readonly JsonSerializer<Dictionary<string, string> > s_serializer  = JsonSerializer<Dictionary<string, string>>.Get();
 
-    public static async Task<bool> ConnectAsync()
+    public static async Task<bool> VerifyConnectionAsync()
     {
         try
         {
-            using var message = await HttpService.GetAsync(AcceptedUri);
-            return message.IsSuccessStatusCode;
+            _ = await HttpService.GetBytesAsync(AcceptedUri);
+            return true;
         }
         catch { return false; }
     }
 
-    public static async Task<bool> CheckAsync()
+    public static async Task<bool> CheckForUpdatesAsync()
     {
         using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
         return s_version != s_serializer.Deserialize(stream)["version"];
