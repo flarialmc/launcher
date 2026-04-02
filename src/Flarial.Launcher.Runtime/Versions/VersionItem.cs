@@ -30,7 +30,15 @@ public abstract class VersionItem
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var path = Path.Combine(s_path, Path.GetRandomFileName());
-        await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => callback(_, false));
-        await Task.Run(() => PackageService.Add(new(path), _ => callback(_, true)));
+        try
+        {
+            await HttpService.DownloadAsync(await GetUriAsync(), path, (_) => callback(_, false));
+            await Task.Run(() => PackageService.Add(new(path), _ => callback(_, true)));
+        }
+        finally
+        {
+            try { File.Delete(path); }
+            catch { }
+        }
     }
 }

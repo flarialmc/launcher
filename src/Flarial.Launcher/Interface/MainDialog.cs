@@ -43,7 +43,6 @@ abstract class MainDialog
     internal static LaunchFailureDialog LaunchFailure => field ??= new();
     internal static SelectVersionDialog SelectVersion => field ??= new();
     internal static InstallVersionDialog InstallVersion => field ??= new();
-    internal static UnsignedInstallDialog UnsignedInstall => field ??= new();
     internal static InvalidCustomDllDialog InvalidCustomDll => field ??= new();
     internal static ConnectionFailureDialog ConnectionFailure => field ??= new();
     internal static UnpackagedInstallDialog UnpackagedInstall => field ??= new();

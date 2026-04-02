@@ -115,12 +115,6 @@ sealed class HomePage : Grid
                 return;
             }
 
-            if (!Minecraft.IsPackaged)
-            {
-                if (!await MainDialog.UnsignedInstall.ShowAsync())
-                    return;
-            }
-
             if (!custom && !registry.IsSupported)
             {
                 switch (await UnsupportedVersion.PromptAsync())
