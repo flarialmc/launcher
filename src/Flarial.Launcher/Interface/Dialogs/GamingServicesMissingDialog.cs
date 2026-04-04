@@ -3,12 +3,12 @@ using Flarial.Launcher.Management;
 
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class GamingServicesMissingDialog : MainDialog
+sealed class GamingServicesMissingDialog : MasterDialog
 {
     internal override async Task<bool> ShowAsync()
     {
         var result = await base.ShowAsync();
-        if (result) MicrosoftStorePage.GamingServices.Open();
+        if (result) StorePage.GamingServices.Open();
         return result;
     }
 

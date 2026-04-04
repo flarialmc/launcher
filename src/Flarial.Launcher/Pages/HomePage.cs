@@ -1,14 +1,13 @@
 using System.IO;
 using System.Threading.Tasks;
-using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Runtime.Client;
-using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Modding;
-using Flarial.Launcher.Runtime.Versions;
 using Flarial.Launcher.Xaml;
+using Flarial.Runtime.Core;
+using Flarial.Runtime.Game;
+using Flarial.Runtime.Modding;
+using Flarial.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
@@ -50,11 +49,11 @@ sealed class HomePage : Grid
         Margin = new(0, 12, 12, 0),
         VerticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment = HorizontalAlignment.Right,
-        Text = ApplicationManifest.s_version
+        Text = AppManifest.s_version
     };
 
-    readonly MainNavigationView _view;
-    readonly ApplicationSettings _settings;
+    readonly XamlContent _content;
+    readonly AppSettings _settings;
 
     UnsupportedVersionDialog UnsupportedVersion
     {
@@ -69,12 +68,12 @@ sealed class HomePage : Grid
         }
     }
 
-    internal HomePage(MainNavigationView view, ApplicationSettings settings)
+    internal HomePage(XamlContent content, AppSettings settings)
     {
-        _view = view;
+        _content = content;
         _settings = settings;
 
-        using (var stream = ApplicationManifest.GetResourceStream("Application.ico"))
+        using (var stream = AppManifest.GetStream("Application.ico"))
         {
             var source = (BitmapImage)_image.Source;
             source.SetSource(stream.AsRandomAccessStream());
@@ -105,13 +104,13 @@ sealed class HomePage : Grid
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync();
+                await DialogRegistry.NotInstalled.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsGamingServicesInstalled)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync();
+                await DialogRegistry.GamingServicesMissing.ShowAsync();
                 return;
             }
 
@@ -120,14 +119,13 @@ sealed class HomePage : Grid
                 switch (await UnsupportedVersion.PromptAsync())
                 {
                     case ContentDialogResult.Primary:
-                        (~_view).SelectedItem = _view._versionsItem;
-                        (~_view).Content = _view._versionsItem.Tag;
+                        (~_content).SelectedItem = _content._versionsItem;
+                        (~_content).Content = _content._versionsItem.Tag;
                         break;
 
                     case ContentDialogResult.Secondary:
-                        var settingsItem = (NavigationViewItem)(~_view).SettingsItem;
-                        (~_view).SelectedItem = settingsItem;
-                        (~_view).Content = settingsItem.Tag;
+                        var item = (NavigationViewItem)(~_content).SettingsItem;
+                        (~_content).SelectedItem = item; (~_content).Content = item.Tag;
                         break;
                 }
                 return;
@@ -137,20 +135,20 @@ sealed class HomePage : Grid
             {
                 if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync();
+                    await DialogRegistry.InvalidCustomDll.ShowAsync();
                     return;
                 }
 
                 Library library = new(path); if (!library.IsLoadable)
                 {
-                    await MainDialog.InvalidCustomDll.ShowAsync();
+                    await DialogRegistry.InvalidCustomDll.ShowAsync();
                     return;
                 }
 
                 _button.Content = "Launching...";
                 if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
                 {
-                    await MainDialog.LaunchFailure.ShowAsync();
+                    await DialogRegistry.LaunchFailure.ShowAsync();
                     return;
                 }
 
@@ -160,14 +158,14 @@ sealed class HomePage : Grid
             _button.Content = "Verifying...";
             if (!await FlarialClient.Current.DownloadAsync(OnFlarialClientDownloadAsync))
             {
-                await MainDialog.ClientUpdateFailure.ShowAsync();
+                await DialogRegistry.ClientUpdateFailure.ShowAsync();
                 return;
             }
 
             _button.Content = "Launching...";
             if (!await Task.Run(() => FlarialClient.Current.Launch(initialized)))
             {
-                await MainDialog.LaunchFailure.ShowAsync();
+                await DialogRegistry.LaunchFailure.ShowAsync();
                 return;
             }
         }

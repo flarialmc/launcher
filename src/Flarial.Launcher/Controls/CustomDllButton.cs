@@ -44,9 +44,9 @@ sealed class CustomDllButton : Grid
         }
     }
 
-    readonly ApplicationSettings _settings;
+    readonly AppSettings _settings;
 
-    internal CustomDllButton(ApplicationSettings settings)
+    internal CustomDllButton(AppSettings settings)
     {
         _settings = settings;
 

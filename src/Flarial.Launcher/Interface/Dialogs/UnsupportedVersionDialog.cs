@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Flarial.Launcher.Runtime.Versions;
+using Flarial.Runtime.Versions;
 
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class UnsupportedVersionDialog(string preferred) : MainDialog
+sealed class UnsupportedVersionDialog(string preferred) : MasterDialog
 {
     protected override string CloseButtonText => "Back";
     protected override string PrimaryButtonText => "Versions";

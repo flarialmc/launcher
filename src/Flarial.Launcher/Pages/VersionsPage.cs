@@ -1,12 +1,10 @@
-using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface;
-using Flarial.Launcher.Runtime.Game;
-using Flarial.Launcher.Runtime.Versions;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
-using Windows.System.Profile;
+using Flarial.Runtime.Game;
+using Flarial.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -28,7 +26,8 @@ sealed class VersionsPage : Grid
         IsEnabled = false
     };
 
-    readonly MainNavigationView _view;
+    readonly XamlContent _content;
+    readonly AppSettings _settings;
     readonly TextBlockProgressBar _progressBar = new();
 
     void OnVersionItemInstallAsync(int value, bool state) => Dispatcher.Invoke(() =>
@@ -53,35 +52,35 @@ sealed class VersionsPage : Grid
 
             if (!Minecraft.IsInstalled)
             {
-                await MainDialog.NotInstalled.ShowAsync();
+                await DialogRegistry.NotInstalled.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsPackaged)
             {
-                await MainDialog.UnpackagedInstall.ShowAsync();
+                await DialogRegistry.UnpackagedInstall.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsGamingServicesInstalled)
             {
-                await MainDialog.GamingServicesMissing.ShowAsync();
+                await DialogRegistry.GamingServicesMissing.ShowAsync();
                 return;
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await MainDialog.SelectVersion.ShowAsync();
+                await DialogRegistry.SelectVersion.ShowAsync();
                 return;
             }
 
-            if (!await MainDialog.InstallVersion.ShowAsync())
+            if (!await DialogRegistry.InstallVersion.ShowAsync())
                 return;
 
             _item = (VersionItem)_listBox.SelectedItem;
             _listBox.ScrollIntoView(_item);
 
-            await _item.InstallAsync(OnVersionItemInstallAsync);
+            await _item.InstallAsync(_settings.DownloadVersions, OnVersionItemInstallAsync);
         }
         finally
         {
@@ -121,16 +120,17 @@ sealed class VersionsPage : Grid
         if (_item is { })
         {
             args.Cancel = true;
-            (~_view).SelectedItem = _view._versionsItem;
-            (~_view).Content = _view._versionsItem.Tag;
+            (~_content).SelectedItem = _content._versionsItem;
+            (~_content).Content = _content._versionsItem.Tag;
         }
     }
 
     VersionItem? _item = null;
 
-    internal VersionsPage(MainNavigationView view)
+    internal VersionsPage(XamlContent content, AppSettings settings)
     {
-        _view = view;
+        _content = content;
+        _settings = settings;
 
         RowSpacing = 12;
         Margin = new(12);
@@ -158,6 +158,6 @@ sealed class VersionsPage : Grid
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
-        (~view).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
+        (~_content).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
     }
 }

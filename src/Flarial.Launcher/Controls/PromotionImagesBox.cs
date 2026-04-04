@@ -1,4 +1,4 @@
-using Flarial.Launcher.Runtime.Services;
+using Flarial.Runtime.Services;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 

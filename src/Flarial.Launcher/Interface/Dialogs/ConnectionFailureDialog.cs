@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class ConnectionFailureDialog : MainDialog
+sealed class ConnectionFailureDialog : MasterDialog
 {
     protected override string PrimaryButtonText => "Exit";
     protected override string Title => "🚨 Connection Failure";

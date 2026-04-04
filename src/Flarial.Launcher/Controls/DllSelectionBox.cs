@@ -1,4 +1,3 @@
-using System;
 using Flarial.Launcher.Management;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -8,7 +7,7 @@ namespace Flarial.Launcher.Controls;
 sealed class DllSelectionBox : Grid
 {
     readonly CustomDllButton _button;
-    readonly ApplicationSettings _settings;
+    readonly AppSettings _settings;
 
     readonly ToggleSwitch _toggleSwitch = new()
     {
@@ -29,7 +28,7 @@ sealed class DllSelectionBox : Grid
         _settings.UseCustomDll = value;
     }
 
-    internal DllSelectionBox(ApplicationSettings settings)
+    internal DllSelectionBox(AppSettings settings)
     {
         _settings = settings;
         _button = new(settings);

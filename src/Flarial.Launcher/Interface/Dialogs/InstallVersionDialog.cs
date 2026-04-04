@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class InstallVersionDialog : MainDialog
+sealed class InstallVersionDialog : MasterDialog
 {
     protected override string Title => "💡 Install Version";
     protected override string PrimaryButtonText => "Install";

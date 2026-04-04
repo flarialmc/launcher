@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class ClientUpdateFailureDialog : MainDialog
+sealed class ClientUpdateFailureDialog : MasterDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Client Update Failure";

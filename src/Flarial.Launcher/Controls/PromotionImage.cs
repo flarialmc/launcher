@@ -1,6 +1,5 @@
 using System;
-using System.Management.Automation;
-using Flarial.Launcher.Runtime.Services;
+using Flarial.Runtime.Services;
 using Flarial.Launcher.Xaml;
 using Windows.UI.Core;
 using Windows.UI.Xaml;

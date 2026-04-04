@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class InvalidCustomDllDialog : MainDialog
+sealed class InvalidCustomDllDialog : MasterDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Invalid Custom DLL";

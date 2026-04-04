@@ -1,7 +1,5 @@
-using System;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Management;
-using Flarial.Launcher.Xaml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -10,7 +8,7 @@ namespace Flarial.Launcher.Pages;
 
 sealed class SettingsPage : Grid
 {
-    readonly ApplicationSettings _settings;
+    readonly AppSettings _settings;
 
     readonly ToggleSwitch _automaticUpdates = new()
     {
@@ -19,6 +17,15 @@ sealed class SettingsPage : Grid
         HorizontalAlignment = HorizontalAlignment.Stretch,
         OnContent = "Yes, automatically update.",
         OffContent = "No, ask before updating."
+    };
+
+    readonly ToggleSwitch _downloadVersions = new()
+    {
+        Header = "Should the launcher download first then install a version?",
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        OnContent = "Yes, download first then install.",
+        OffContent = "No, download & install at once."
     };
 
     readonly ToggleSwitch _waitForInitialization = new()
@@ -34,10 +41,11 @@ sealed class SettingsPage : Grid
     {
         var value = ((ToggleSwitch)sender).IsOn;
         if (ReferenceEquals(_automaticUpdates, sender)) _settings.AutomaticUpdates = value;
+        else if (ReferenceEquals(_downloadVersions, sender)) _settings.DownloadVersions = value;
         else if (ReferenceEquals(_waitForInitialization, sender)) _settings.WaitForInitialization = value;
     }
 
-    internal SettingsPage(ApplicationSettings settings)
+    internal SettingsPage(AppSettings settings)
     {
         _settings = settings;
 
@@ -61,6 +69,7 @@ sealed class SettingsPage : Grid
         SetColumn(folderButtonsBox, 0);
 
         stackPanel.Children.Add(_automaticUpdates);
+        stackPanel.Children.Add(_downloadVersions);
         stackPanel.Children.Add(_waitForInitialization);
         stackPanel.Children.Add(new DllSelectionBox(settings));
 
@@ -69,8 +78,10 @@ sealed class SettingsPage : Grid
 
         _automaticUpdates.Toggled += OnToggleSwitchToggled;
         _waitForInitialization.Toggled += OnToggleSwitchToggled;
+        _downloadVersions.Toggled += OnToggleSwitchToggled;
 
         _automaticUpdates.IsOn = _settings.AutomaticUpdates;
+        _downloadVersions.IsOn = _settings.DownloadVersions;
         _waitForInitialization.IsOn = _settings.WaitForInitialization;
     }
 }

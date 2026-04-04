@@ -3,12 +3,12 @@ using Flarial.Launcher.Management;
 
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class NotInstalledDialog : MainDialog
+sealed class NotInstalledDialog : MasterDialog
 {
     internal override async Task<bool> ShowAsync()
     {
         var result = await base.ShowAsync();
-        if (result) MicrosoftStorePage.Minecraft.Open();
+        if (result) StorePage.Minecraft.Open();
         return result;
     }
 

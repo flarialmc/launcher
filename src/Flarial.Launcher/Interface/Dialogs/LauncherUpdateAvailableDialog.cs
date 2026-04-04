@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class LauncherUpdateAvailableDialog : MainDialog
+sealed class LauncherUpdateAvailableDialog : MasterDialog
 {
     protected override string Title => "💡 Launcher Update Available";
     protected override string PrimaryButtonText => "Update";

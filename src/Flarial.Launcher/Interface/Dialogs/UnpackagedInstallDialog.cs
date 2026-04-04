@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class UnpackagedInstallDialog : MainDialog
+sealed class UnpackagedInstallDialog : MasterDialog
 {
     protected override string Title => "⚠️ Unpackaged Install";
     protected override string PrimaryButtonText => "Back";

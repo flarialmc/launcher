@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class LaunchFailureDialog : MainDialog
+sealed class LaunchFailureDialog : MasterDialog
 {
     protected override string Title => "⚠️ Launch Failure";
     protected override string PrimaryButtonText => "Back";
