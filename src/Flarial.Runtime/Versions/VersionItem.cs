@@ -11,14 +11,9 @@ namespace Flarial.Runtime.Versions;
 
 public abstract class VersionItem
 {
-    readonly string _version;
     readonly string _string;
 
-    internal VersionItem(string version)
-    {
-        _version = version;
-        _string = Stringify(version);
-    }
+    internal VersionItem(string version) => _string = Stringify(version);
 
     public override string ToString() => _string;
 
