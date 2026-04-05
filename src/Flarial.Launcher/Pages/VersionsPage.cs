@@ -80,7 +80,7 @@ sealed class VersionsPage : Grid
             _item = (VersionItem)_listBox.SelectedItem;
             _listBox.ScrollIntoView(_item);
 
-            await _item.InstallAsync(_settings.DownloadVersions, OnVersionItemInstallAsync);
+            await _item.InstallAsync(OnVersionItemInstallAsync);
         }
         finally
         {

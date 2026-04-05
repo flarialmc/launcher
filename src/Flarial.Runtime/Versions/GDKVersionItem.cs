@@ -83,12 +83,12 @@ sealed class GDKVersionItem : VersionItem
         throw new InvalidOperationException();
     }
 
-    public override async Task InstallAsync(bool download, Action<int, bool> callback)
+    public override async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsGamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
-        await base.InstallAsync(download, callback);
+        await base.InstallAsync(callback);
         var path = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
         using var stream = File.Create(path);

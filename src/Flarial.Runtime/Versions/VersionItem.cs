@@ -27,7 +27,7 @@ public abstract class VersionItem
         return key._minor >= 26 ? $"{key._minor}.{key._build}" : version;
     }
 
-    public virtual async Task InstallAsync(bool download, Action<int, bool> callback)
+    public virtual async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
@@ -38,11 +38,8 @@ public abstract class VersionItem
         var path = Path.Combine(s_path, Path.GetRandomFileName());
         try
         {
-            var downloadUri = await GetUriAsync();
-            Uri appUri = new(download ? path : downloadUri);
-
-            if (download) await HttpStack.DownloadAsync(downloadUri, path, _ => callback(_, false));
-            await Task.Run(() => AppManager.Add(appUri, _ => callback(_, true)));
+            await HttpStack.DownloadAsync(await GetUriAsync(), path, _ => callback(_, false));
+            await Task.Run(() => AppManager.Add(new(path), _ => callback(_, true)));
         }
         finally
         {

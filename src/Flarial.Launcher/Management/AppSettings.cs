@@ -11,9 +11,6 @@ sealed class AppSettings
     internal bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
-    internal bool DownloadVersions { get; set; } = false;
-
-    [DataMember]
     internal bool WaitForInitialization { get; set; } = true;
 
     [DataMember]
@@ -27,7 +24,6 @@ sealed class AppSettings
     {
         UseCustomDll = false;
         AutomaticUpdates = true;
-        DownloadVersions = false;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
     }
