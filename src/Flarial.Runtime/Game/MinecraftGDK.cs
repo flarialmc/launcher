@@ -3,6 +3,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Flarial.Runtime.Unmanaged;
+using Microsoft.PowerShell;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using static System.Environment;
@@ -25,6 +26,7 @@ unsafe sealed class MinecraftGDK : Minecraft
     static MinecraftGDK()
     {
         s_state.ImportPSModule(["Appx"]);
+        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
         s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
     }
 
