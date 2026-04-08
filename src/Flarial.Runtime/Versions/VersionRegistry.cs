@@ -18,7 +18,6 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     }
 
     static readonly VersionItemComparer s_comparer = new();
-    static readonly JsonSerializer<Dictionary<string, bool>> s_serializer = JsonSerializer<Dictionary<string, bool>>.Get();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
 
@@ -44,9 +43,11 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     public static async Task<VersionRegistry> CreateAsync() => await Task.Run(static async () =>
     {
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
-        using var stream = await HttpStack.GetStreamAsync(SupportedVersionsUri);
 
-        foreach (var item in s_serializer.Deserialize(stream))
+        using var stream = await HttpStack.GetStreamAsync(SupportedVersionsUri);
+        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, bool>>(stream);
+
+        foreach (var item in json)
             registry.Add(item.Key, new(item.Value));
 
         await GDKVersionItem.QueryAsync(registry);

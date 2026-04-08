@@ -39,8 +39,12 @@ del ""%~f0""";
     const string LauncherDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
 
-    static readonly string s_filename, s_arguments, s_version, s_source, s_script, s_content;
-    static readonly JsonSerializer<Dictionary<string, string>> s_serializer = JsonSerializer<Dictionary<string, string>>.Get();
+    static readonly string s_source;
+    static readonly string s_script;
+    static readonly string s_content;
+    static readonly string s_version;
+    static readonly string s_filename;
+    static readonly string s_arguments;
 
     public static async Task<bool> VerifyConnectionAsync()
     {
@@ -55,7 +59,8 @@ del ""%~f0""";
     public static async Task<bool> CheckForUpdatesAsync()
     {
         using var stream = await HttpStack.GetStreamAsync(LauncherVersionUri);
-        return s_version != (await s_serializer.DeserializeAsync(stream))["version"];
+        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+        return s_version != json["version"];
     }
 
     public static async Task DownloadAsync(Action<int> callback)

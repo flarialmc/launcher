@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -8,45 +9,20 @@ using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
 
-sealed class JsonSerializer<T>
+static class JsonSerializer
 {
-    JsonSerializer() { }
+    static readonly DataContractJsonSerializerSettings s_settings;
+    static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> s_serializers;
 
     static JsonSerializer()
     {
         s_serializers = [];
-        s_lock = ((ICollection)s_serializers).SyncRoot;
-        s_settings = new()
-        {
-            UseSimpleDictionaryFormat = true,
-            MaxItemsInObjectGraph = int.MaxValue,
-            EmitTypeInformation = EmitTypeInformation.Never
-        };
+        s_settings = new() { UseSimpleDictionaryFormat = true, MaxItemsInObjectGraph = int.MaxValue, EmitTypeInformation = EmitTypeInformation.Never };
     }
 
-    static readonly object s_lock;
-    static readonly Dictionary<Type, JsonSerializer<T>> s_serializers;
-    static readonly DataContractJsonSerializerSettings s_settings = new();
+    static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static _ => new(_, s_settings));
 
-    readonly DataContractJsonSerializer _serializer = new(typeof(T), s_settings);
+    internal static T Deserialize<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
 
-    internal T Deserialize(Stream stream) => (T)_serializer.ReadObject(stream);
-
-    internal async Task<T> DeserializeAsync(Stream stream) => await Task.Run(() => Deserialize(stream));
-
-    internal static JsonSerializer<T> Get()
-    {
-        lock (s_lock)
-        {
-            var type = typeof(T);
-
-            if (!s_serializers.TryGetValue(type, out var serializer))
-            {
-                serializer = new();
-                s_serializers.Add(type, serializer);
-            }
-
-            return serializer;
-        }
-    }
+    internal static async Task<T> DeserializeAsync<T>(Stream stream) => await Task.Run(() => Deserialize<T>(stream));
 }

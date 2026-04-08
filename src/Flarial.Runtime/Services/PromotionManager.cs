@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -5,16 +6,14 @@ namespace Flarial.Runtime.Services;
 
 public static class PromotionManager
 {
-    const string PromotionUri = "https://cdn.flarial.xyz/launcher/Promotions.json";
-
-    static readonly JsonSerializer<Promotion[]> s_serializer = JsonSerializer<Promotion[]>.Get();
+    const string PromotionsUri = "https://cdn.flarial.xyz/launcher/Promotions.json";
 
     public static async Task<Promotion[]> GetDetailsAsync()
     {
         try
         {
-            using var stream = await HttpStack.GetStreamAsync(PromotionUri);
-            return await s_serializer.DeserializeAsync(stream);
+            using var stream = await HttpStack.GetStreamAsync(PromotionsUri);
+            return await JsonSerializer.DeserializeAsync<Promotion[]>(stream);
         }
         catch { return []; }
     }

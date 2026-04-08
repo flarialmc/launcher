@@ -19,9 +19,6 @@ sealed class GDKVersionItem : VersionItem
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
     const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    static readonly JsonSerializer<Dictionary<string, Dictionary<string, string[]>>> s_serializer;
-    static GDKVersionItem() => s_serializer = JsonSerializer<Dictionary<string, Dictionary<string, string[]>>>.Get();
-
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
 
@@ -31,27 +28,26 @@ sealed class GDKVersionItem : VersionItem
         _gameLaunchHelper = gameLaunchHelper;
     }
 
-    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> versionRegistry) => await Task.Run(async () =>
+    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry)
     {
         var msixvcPackagesTask = HttpStack.GetStreamAsync(MSIXVCPackagesUri);
         var gameLaunchHelperTask = HttpStack.GetBytesAsync(GameLaunchHelperUri);
+       
         await Task.WhenAll(msixvcPackagesTask, gameLaunchHelperTask);
-
         var gameLaunchHelper = await gameLaunchHelperTask;
-        using var msixvcPackages = await msixvcPackagesTask;
+       
+        using var stream = await msixvcPackagesTask;
+        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
 
-        foreach (var item in s_serializer.Deserialize(msixvcPackages)["release"])
+        foreach (var item in json["release"])
         {
             var index = item.Key.LastIndexOf('.');
             var key = item.Key.Substring(0, index);
 
-            lock (((ICollection)versionRegistry).SyncRoot)
-            {
-                if (!versionRegistry.TryGetValue(key, out var entry)) continue;
-                entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
-            }
+            if (!registry.TryGetValue(key, out var entry)) continue;
+            entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
         }
-    });
+    }
 
     static async Task<string?> PingAsync(string uri, CancellationToken token)
     {

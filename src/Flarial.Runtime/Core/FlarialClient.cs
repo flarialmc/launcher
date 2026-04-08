@@ -24,8 +24,6 @@ public abstract class FlarialClient
 
     public static FlarialClient Current { get; } = new FlarialClientRelease();
 
-    static readonly JsonSerializer<Dictionary<string, string>> s_serializer = JsonSerializer<Dictionary<string, string>>.Get();
-
     protected abstract string Build { get; }
     protected abstract string FileName { get; }
     protected abstract string DownloadUri { get; }
@@ -57,7 +55,8 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpStack.GetStreamAsync(HashesUrl);
-        return (await s_serializer.DeserializeAsync(stream))[Build];
+        var json = await JsonSerializer.DeserializeAsync<Dictionary<string,string>>(stream);
+        return json[Build];
     }
 
     async Task<string> GetLocalHashAsync() => await Task.Run(() =>
