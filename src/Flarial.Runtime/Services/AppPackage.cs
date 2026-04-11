@@ -8,13 +8,13 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Runtime.Services;
 
-unsafe static class AppManager
+unsafe static class AppPackage
 {
     static readonly PackageManager s_pm = new();
 
     internal static Package? Get(string packageFamilyName) => s_pm.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal static bool Add(Uri uri, Action<int> callback)
+    internal static void Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
         var info = s_pm.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
@@ -26,11 +26,6 @@ unsafe static class AppManager
 
             WaitForSingleObject(handle, INFINITE);
             if (info.Status is Error) throw info.ErrorCode;
-
-            var result = info.GetResults();
-            if (result.ExtendedErrorCode is { } @_) throw @_;
-
-            return result.IsRegistered;
         }
         finally
         {

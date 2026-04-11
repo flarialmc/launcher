@@ -27,12 +27,12 @@ public unsafe static class Injector
         }
     }
 
-    public static uint? Launch(bool initialized, Library library)
+    public static uint? Launch(Library library)
     {
         if (!library.IsLoadable)
             throw new FileLoadException(null, library._path);
 
-        if (Minecraft.Current.Launch(initialized) is not { } processId)
+        if (Minecraft.Current.Launch() is not { } processId)
             return null;
 
         if (NativeProcess.Open(PROCESS_ALL_ACCESS, processId) is not { } process)

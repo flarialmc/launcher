@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
@@ -11,9 +12,6 @@ sealed class AppSettings
     internal bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
-    internal bool WaitForInitialization { get; set; } = true;
-
-    [DataMember]
     internal bool UseCustomDll { get; set; } = false;
 
     [DataMember]
@@ -25,11 +23,9 @@ sealed class AppSettings
         UseCustomDll = false;
         AutomaticUpdates = true;
         CustomDllPath = string.Empty;
-        WaitForInitialization = true;
     }
 
     static readonly XmlWriterSettings s_settings = new() { Indent = true };
-
     static readonly DataContractSerializer s_serializer = new(typeof(AppSettings));
 
     internal static AppSettings Get()
@@ -51,7 +47,7 @@ sealed class AppSettings
         catch { return new(); }
     }
 
-    internal void Flush()
+    internal void Set()
     {
         using var writer = XmlWriter.Create("Flarial.Launcher.xml", s_settings);
         s_serializer.WriteObject(writer, this);

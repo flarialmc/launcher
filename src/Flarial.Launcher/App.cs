@@ -69,7 +69,7 @@ Exception: {1}
             {
                 case "--inject":
                     if (!(index + 1 < args.Length)) continue;
-                    Injector.Launch(true, new(args[index + 1]));
+                    Injector.Launch(new(args[index + 1]));
                     return;
             }
 
@@ -93,6 +93,6 @@ Exception: {1}
     protected override void OnExit(ExitEventArgs args)
     {
         base.OnExit(args);
-        _settings.Flush();
+        _settings.Set();
     }
 }

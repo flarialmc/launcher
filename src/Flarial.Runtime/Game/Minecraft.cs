@@ -24,11 +24,11 @@ public unsafe abstract class Minecraft
     public static Minecraft Current { get; } = new MinecraftGDK();
     public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
-    internal static Package Package => AppManager.Get(PackageFamilyName)!;
+    internal static Package Package => AppPackage.Get(PackageFamilyName)!;
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
     protected abstract uint? Activate();
-    internal abstract uint? Launch(bool initialized);
+    internal abstract uint? Launch();
 
     /*
         - The static overloads find windows & processes belonging to the game.
@@ -40,7 +40,7 @@ public unsafe abstract class Minecraft
 
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
-    public static bool IsGamingServicesInstalled => AppManager.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
+    public static bool IsGamingServicesInstalled => AppPackage.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
 
     static uint? GetProcessId(string processName)
     {

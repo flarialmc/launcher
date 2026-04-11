@@ -19,20 +19,10 @@ sealed class SettingsPage : Grid
         OffContent = "No, ask before updating."
     };
 
-    readonly ToggleSwitch _waitForInitialization = new()
-    {
-        Header = "Should the launcher wait for the game to initialize?",
-        VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Stretch,
-        OnContent = "Yes, reduce game crashes.",
-        OffContent = "No, speed up injection."
-    };
-
     void OnToggleSwitchToggled(object sender, RoutedEventArgs args)
     {
         var value = ((ToggleSwitch)sender).IsOn;
         if (ReferenceEquals(_automaticUpdates, sender)) _settings.AutomaticUpdates = value;
-        else if (ReferenceEquals(_waitForInitialization, sender)) _settings.WaitForInitialization = value;
     }
 
     internal SettingsPage(AppSettings settings)
@@ -45,12 +35,8 @@ sealed class SettingsPage : Grid
         RowDefinitions.Add(new());
         RowDefinitions.Add(new() { Height = GridLength.Auto });
 
-        StackPanel stackPanel = new()
-        {
-            Spacing = 12,
-            Orientation = Orientation.Vertical
-        };
         FolderButtonsBox folderButtonsBox = new();
+        StackPanel stackPanel = new() { Spacing = 12, Orientation = Orientation.Vertical };
 
         SetRow(stackPanel, 0);
         SetColumn(stackPanel, 0);
@@ -59,16 +45,12 @@ sealed class SettingsPage : Grid
         SetColumn(folderButtonsBox, 0);
 
         stackPanel.Children.Add(_automaticUpdates);
-        stackPanel.Children.Add(_waitForInitialization);
         stackPanel.Children.Add(new DllSelectionBox(settings));
 
         Children.Add(stackPanel);
         Children.Add(folderButtonsBox);
 
         _automaticUpdates.Toggled += OnToggleSwitchToggled;
-        _waitForInitialization.Toggled += OnToggleSwitchToggled;
-
         _automaticUpdates.IsOn = _settings.AutomaticUpdates;
-        _waitForInitialization.IsOn = _settings.WaitForInitialization;
     }
 }

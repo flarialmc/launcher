@@ -39,7 +39,7 @@ public abstract class VersionItem
         try
         {
             await HttpStack.DownloadAsync(await GetUriAsync(), path, _ => callback(_, false));
-            await Task.Run(() => AppManager.Add(new(path), _ => callback(_, true)));
+            await Task.Run(() => AppPackage.Add(new(path), _ => callback(_, true)));
         }
         finally
         {

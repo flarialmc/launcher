@@ -29,7 +29,7 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool Launch(bool initialized)
+    public bool Launch()
     {
         if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
         {
@@ -44,7 +44,7 @@ public abstract class FlarialClient
         Library library = new(FileName);
         if (!library.IsLoadable) return false;
 
-        return Injector.Launch(initialized, library) is { };
+        return Injector.Launch(library) is { };
     }
 
     static readonly object _lock = new();
@@ -55,7 +55,7 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpStack.GetStreamAsync(HashesUrl);
-        var json = await JsonSerializer.DeserializeAsync<Dictionary<string,string>>(stream);
+        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
         return json[Build];
     }
 

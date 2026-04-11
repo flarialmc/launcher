@@ -100,7 +100,6 @@ sealed class HomePage : Grid
             var path = _settings.CustomDllPath;
             var registry = (VersionRegistry)Tag;
             var custom = _settings.UseCustomDll;
-            var initialized = _settings.WaitForInitialization;
 
             if (!Minecraft.IsInstalled)
             {
@@ -146,7 +145,7 @@ sealed class HomePage : Grid
                 }
 
                 _button.Content = "Launching...";
-                if (await Task.Run(() => Injector.Launch(initialized, library)) is null)
+                if (await Task.Run(() => Injector.Launch(library)) is null)
                 {
                     await DialogRegistry.LaunchFailure.ShowAsync();
                     return;
@@ -163,7 +162,7 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(() => FlarialClient.Current.Launch(initialized)))
+            if (!await Task.Run(() => FlarialClient.Current.Launch()))
             {
                 await DialogRegistry.LaunchFailure.ShowAsync();
                 return;
