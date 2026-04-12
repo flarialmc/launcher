@@ -40,7 +40,6 @@ sealed class XamlContent : XamlElement<NavigationView>
         _settings = settings;
         _catalog = PackageCatalog.OpenForCurrentUser();
 
-
         _settingsPage = new(settings);
         _homePage = new(this, settings);
         _versionsPage = new(this, settings);
@@ -57,20 +56,10 @@ sealed class XamlContent : XamlElement<NavigationView>
         (~this).MenuItems.Add(_versionsItem);
 
         (~this).Loaded += OnLoaded;
-        (~this).Loading += OnLoading;
         (~this).ItemInvoked += OnItemInvoked;
 
         (~this).Content = _homePage;
         (~this).SelectedItem = _homeItem;
-    }
-
-    async void OnLoading(FrameworkElement sender, object args)
-    {
-        _homePage.Children.Add(new PromotionImagesBox(await PromotionManager.GetDetailsAsync())
-        {
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Center
-        });
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

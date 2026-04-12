@@ -5,7 +5,6 @@ using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Pages;
 
-
 sealed class SettingsPage : Grid
 {
     readonly AppSettings _settings;

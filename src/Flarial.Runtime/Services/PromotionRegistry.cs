@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
 
-public static class PromotionManager
+public static class PromotionRegistry
 {
     const string PromotionsUri = "https://cdn.flarial.xyz/launcher/Promotions.json";
 
-    public static async Task<Promotion[]> GetDetailsAsync()
+    public static async Task<Promotion[]> GetAsync()
     {
         try
         {

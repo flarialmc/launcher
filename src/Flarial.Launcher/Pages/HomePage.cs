@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
@@ -84,6 +85,12 @@ sealed class HomePage : Grid
 
         Children.Add(_button);
         Children.Add(_image);
+
+        Children.Add(new PromotionImagesBox()
+        {
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
 
         _button.Click += OnButtonClick;
     }
