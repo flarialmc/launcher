@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Flarial.Analytics;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
@@ -162,7 +163,7 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            if (!await Task.Run(() => FlarialClient.Current.Launch()))
+            if (!await FlarialClient.Current.LaunchAsync() ?? false)
             {
                 await DialogRegistry.LaunchFailure.ShowAsync();
                 return;

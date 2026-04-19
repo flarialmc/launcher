@@ -29,14 +29,14 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool Launch()
+    public bool? Launch()
     {
         if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
         {
             if (Minecraft.Current.GetWindow(clientWindow._processId) is { } minecraftWindow)
             {
                 minecraftWindow.Switch();
-                return true;
+                return null;
             }
             return false;
         }
