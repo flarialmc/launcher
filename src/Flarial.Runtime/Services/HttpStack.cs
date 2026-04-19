@@ -27,6 +27,8 @@ static class HttpStack
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, ResponseHeadersRead, token);
 
+    internal static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await s_client.SendAsync(request);
+
     internal static async Task DownloadAsync(string uri, string path, Action<int> callback)
     {
         using var message = await GetAsync(uri);
