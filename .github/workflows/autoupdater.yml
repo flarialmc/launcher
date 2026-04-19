@@ -77,11 +77,19 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build
+        env:
+          ANALYTICS_HMAC_SECRET: ${{ secrets.ANALYTICS_HMAC_SECRET }}
+          ANALYTICS_ENDPOINT: ${{ secrets.ANALYTICS_ENDPOINT }}
+        shell: bash
         run: |
-          dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj"
+          ENDPOINT_ARG=""
+          if [ -n "$ANALYTICS_ENDPOINT" ]; then
+            ENDPOINT_ARG="/p:AnalyticsEndpoint=$ANALYTICS_ENDPOINT"
+          fi
+          dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj" \
+            /p:AnalyticsSecret="$ANALYTICS_HMAC_SECRET" \
+            $ENDPOINT_ARG
           # dotnet publish "extras/Flarial.Version.Changer/src/Flarial.Version.Changer.csproj"
-          # msbuild -t:Restore Flarial.Launcher.csproj
-          # msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
       - name: update new version
         if: success()

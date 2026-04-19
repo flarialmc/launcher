@@ -7,6 +7,7 @@ using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Modding;
+using Flarial.Runtime.Services;
 using Flarial.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -151,6 +152,7 @@ sealed class HomePage : Grid
                     return;
                 }
 
+                Analytics.TrackLaunch(_settings.AnalyticsInstallId);
                 return;
             }
 
@@ -167,6 +169,8 @@ sealed class HomePage : Grid
                 await DialogRegistry.LaunchFailure.ShowAsync();
                 return;
             }
+
+            Analytics.TrackLaunch(_settings.AnalyticsInstallId);
         }
         finally
         {
