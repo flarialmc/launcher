@@ -32,6 +32,9 @@ sealed class Configuration
         }
     } = true;
 
+    [DataMember]
+    internal string AnalyticsInstallId { get; set; } = string.Empty;
+
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
     {
@@ -39,14 +42,16 @@ sealed class Configuration
         DllBuild = DllBuild.Release;
         CustomDllPath = string.Empty;
         WaitForInitialization = true;
+        AnalyticsInstallId = string.Empty;
     }
 
     internal static Configuration Get()
     {
+        Configuration configuration;
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.xml");
-            var configuration = (Configuration)s_serializer.ReadObject(stream);
+            configuration = (Configuration)s_serializer.ReadObject(stream);
 
             if (!Enum.IsDefined(typeof(DllBuild), configuration.DllBuild))
                 configuration.DllBuild = DllBuild.Release;
@@ -57,10 +62,16 @@ sealed class Configuration
                 configuration.CustomDllPath = Path.GetFullPath(path);
             }
             catch { configuration.CustomDllPath = string.Empty; }
-
-            return configuration;
         }
-        catch { return new(); }
+        catch { configuration = new(); }
+
+        if (!Guid.TryParse(configuration.AnalyticsInstallId, out _))
+        {
+            configuration.AnalyticsInstallId = Guid.NewGuid().ToString("N");
+            try { configuration.Save(); } catch { }
+        }
+
+        return configuration;
     }
 
     internal void Save()

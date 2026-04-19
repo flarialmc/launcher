@@ -232,6 +232,7 @@ Need help? Join our Discord.";
                     return;
                 }
 
+                Analytics.TrackLaunch(_configuration.AnalyticsInstallId);
                 return;
             }
 
@@ -255,6 +256,8 @@ Need help? Join our Discord.";
                 await _launchFailure.ShowAsync();
                 return;
             }
+
+            Analytics.TrackLaunch(_configuration.AnalyticsInstallId);
         }
         finally { SetVisibility(true); }
     }

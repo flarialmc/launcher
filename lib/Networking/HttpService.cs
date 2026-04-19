@@ -33,6 +33,8 @@ public static class HttpService
 
     internal static async Task<HttpResponseMessage> PostAsync(string url, HttpContent content) => await HttpClient.PostAsync(url, content);
 
+    public static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await HttpClient.SendAsync(request);
+
     internal static async Task<HttpResponseMessage> GetAsync(string url, [Optional] CancellationToken token) => await HttpClient.GetAsync(url, ResponseHeadersRead, token);
 
     internal static async Task DownloadAsync(string url, string path, Action<int> action)
