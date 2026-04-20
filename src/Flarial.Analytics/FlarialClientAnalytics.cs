@@ -20,7 +20,7 @@ public static class FlarialClientAnalytics
 
     extension(FlarialClient client)
     {
-        public async Task<bool?> LaunchAsync()
+        public async Task<bool?> TrackedLaunchAsync()
         {
             var launched = await Task.Run(client.Launch);
             if (launched ?? false) _ = PostAsync();

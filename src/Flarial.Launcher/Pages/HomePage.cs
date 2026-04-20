@@ -163,7 +163,7 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Launching...";
-            if (!await FlarialClient.Current.LaunchAsync() ?? false)
+            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? false)
             {
                 await DialogRegistry.LaunchFailure.ShowAsync();
                 return;
