@@ -87,7 +87,7 @@ unsafe sealed class MinecraftGDK : Minecraft
                 - Instead, wait for the game's window to be visible.
             */
 
-            if (true || !IsPackaged)
+            if (!IsPackaged)
             {
                 NativeWindow? processWindow = null;
 
