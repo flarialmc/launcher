@@ -1,0 +1,128 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
+             xmlns:tooltip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Flarial.Launcher.Controls.SegmentedBar.SegmentedBar"
+             x:Name="Root">
+    <UserControl.Styles>
+        <Style Selector="RadioButton">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            
+            <Setter Property="Template">
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border Name="ContainerBorder"
+                                Background="#ffffff"
+                                Opacity="0"
+                                CornerRadius="10"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"/>
+                        
+                        <TextBlock Text="{TemplateBinding Content}"
+                                   Foreground="White"
+                                   FontWeight="Medium"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+            
+            <Style Selector="^:disabled /template/ TextBlock">
+                <Setter Property="Opacity" Value="0.5"/>
+            </Style>
+            
+            <Style Selector="^:pointerover /template/ Border#ContainerBorder">
+                <Setter Property="Opacity" Value="0.1"/>
+            </Style>
+        
+            <Style Selector="^ /template/ Border#ContainerBorder">
+                <Setter Property="Transitions">
+                    <Setter.Value>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                        </Transitions>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+    <!-- Main Container -->
+    <Border Background="#363031"
+            Height="35"
+            ClipToBounds="False"
+            CornerRadius="12.5"
+            Padding="2.5, 2.5, -7.5, 2.5">
+        
+        <Grid ClipToBounds="False">
+            <!-- 1. The Sliding Red Pill -->
+            <Border Name="SelectionIndicator"
+                    HorizontalAlignment="Left"
+                    Background="#FF2438"
+                    BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource PrimaryBorderColor}"
+                    CornerRadius="10"
+                    Width="100" Margin="25,0,0,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" OffsetX="0" OffsetY="0" Color="Black" Opacity="0.3"/>
+                </Border.Effect>
+                
+                <Border.RenderTransform>
+                    <TranslateTransform X="25" Y="0"/>
+                </Border.RenderTransform>
+                
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Border.Transitions>
+            </Border>
+
+            <!-- 2. The Items List -->
+            <!-- 
+                 We bind to the UserControl's Items.
+                 We force HorizontalAlignment to Stretch so items fill the width.
+            -->
+            <ItemsControl Name="ItemsContainer"
+                          ItemsSource="{Binding Items, ElementName=Root}"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                
+                <!-- Layout: UniformGrid divides space equally -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" 
+                                     HorizontalAlignment="Stretch" 
+                                     VerticalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="local:SegmentItem">
+                        <RadioButton GroupName="SegmentGroup"
+                                     Content="{Binding Title}"
+                                     IsEnabled="{Binding IsEnabled}"
+                                     Click="OnRadioButtonClick"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     Cursor="Hand"
+                                     tooltip:CustomToolTip.Content="{Binding Tooltip}"
+                                     tooltip:CustomToolTip.Placement="Bottom">
+                        </RadioButton>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</UserControl>
+

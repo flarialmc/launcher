@@ -1,0 +1,31 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Expander">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <LayoutTransformControl Name="PART_ContentTransform" ClipToBounds="True">
+                    <ContentPresenter Content="{TemplateBinding Content}" 
+                                      VerticalAlignment="Top"/>
+                </LayoutTransformControl>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ LayoutTransformControl#PART_ContentTransform">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="LayoutTransform" 
+                                                   Duration="0:0:0.3" 
+                                                   Easing="QuadraticEaseInOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:expanded /template/ LayoutTransformControl#PART_ContentTransform">
+            <Setter Property="LayoutTransform" Value="scaleY(1)"/>
+        </Style>
+
+        <Style Selector="^:not(:expanded) /template/ LayoutTransformControl#PART_ContentTransform">
+            <Setter Property="LayoutTransform" Value="scaleY(0.0001)"/>
+        </Style>
+    </Style>
+</Styles>

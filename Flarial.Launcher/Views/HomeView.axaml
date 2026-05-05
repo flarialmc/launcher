@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:types="clr-namespace:Flarial.Launcher.Types"
+             xmlns:controls="clr-namespace:Flarial.Launcher.Controls.ToolTip"
+             xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Flarial.Launcher.Views.HomeView"
+             x:DataType="vm:HomeViewModel"
+             BorderThickness="{StaticResource ButtonBorderThickness}"
+             BorderBrush="{StaticResource BackgroundBorderColor}"
+             CornerRadius="25"
+             Width="800" Height="500">
+    <Grid>
+        <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="25">
+            <Grid>
+                
+                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.png"/>
+                
+                <Grid Margin="0,75,0,0" VerticalAlignment="Top" Height="150">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
+                            <GradientStop Color="#ff201A1B" Offset="0"/>
+                            <GradientStop Color="#00201A1B" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                </Grid>
+                
+                <Grid Margin="0,0,0,75" VerticalAlignment="Bottom" Height="150">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
+                            <GradientStop Color="#00201A1B" Offset="0"/>
+                            <GradientStop Color="#ff201A1B" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                </Grid>
+                
+                <!--Flarial Logo-->
+                <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
+                    <Image Source="/Assets/icon.png" Height="40" Margin="0" />
+                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" FontWeight="Medium" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
+                </Grid>
+            </Grid>
+        </Border>
+        
+        <Grid>
+            <!--Window State Buttons-->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
+                <Button x:Name="MinimizeButton" Classes="MinimizeButton" Command="{Binding Launch}"/>
+                <Button x:Name="CloseButton" Classes="CloseButton" Command="{Binding CloseWindow}"/>
+            </StackPanel>
+            
+            <!--Center Content and Buttons-->
+            <StackPanel IsEnabled="true" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" HorizontalAlignment="Center" FontSize="28" Foreground="White"/>
+                <TextBlock Margin="0,0,0,0" Text="Ready to play?" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5"/>
+                <VisualLayerManager>
+                    <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+                        <StackPanel Background="Transparent">
+                            <Button Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}"/>
+                            <Button Name="SettingsButton" Classes="SettingsButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsPage}"/>
+                        </StackPanel>
+                    </spotlightDecorator:SpotlightDecorator>
+                </VisualLayerManager>
+            </StackPanel>
+                
+            <!--Launcher Version + License Indicator-->
+            <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                <TextBlock Name="LicenseText" Grid.Column="0" Margin="0,0,0,0" Text="⚫" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="Gray"/>
+                <TextBlock Name="LauncherVersion" Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Text="{Binding LauncherVersion}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White"/>
+                <TextBlock Name="StatusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready!" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676"/>
+            </Grid>
+                
+                <!--Version Indicator-->
+            <Border Name="VersionTextBorder" CornerRadius="15" HorizontalAlignment="Left" Background="DarkRed" Opacity="1" VerticalAlignment="Bottom" Margin="20,0,0,25" controls:CustomToolTip.Content="Your Minecraft version is unsupported by Flarial">
+                <TextBlock TextAlignment="Left" IsHitTestVisible="False" Name="VersionLabel" Margin="10,5,10,5" Text="{Binding MinecraftVersion}" FontSize="16" Foreground="White"/>
+            </Border>
+                
+            <Border Cursor="Hand" Name="AdBorder" Height="50" Width="320" CornerRadius="10" Margin="0,12.5,0,20" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        </Grid>
+    </Grid>
+</UserControl>

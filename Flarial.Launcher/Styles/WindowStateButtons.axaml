@@ -1,0 +1,86 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Button.CloseButton">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent">
+                    <Viewbox Stretch="Uniform">
+                        <Canvas Width="45" Height="45">
+                            <Path Data="M3 38.3553L38.3553 3.00001M3 3L38.3553 38.3553" 
+                                  Name="Path" 
+                                  Stroke="White" 
+                                  StrokeThickness="6" 
+                                  StrokeLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    
+    <Style Selector="Button.CloseButton:pointerover /template/ Path#Path">
+        <Style.Animations>
+            <Animation Duration="0:0:0.1" FillMode="Forward">
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    
+    <Style Selector="Button.CloseButton:not(:pointerover) /template/ Path#Path">
+        <Style.Animations>
+            <Animation Duration="0:0:0.1" FillMode="Forward">
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    
+    <Style Selector="Button.MinimizeButton">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Margin" Value="0,0,15,0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent">
+                    <Viewbox Stretch="Uniform">
+                        <Canvas Width="48" Height="12">
+                            <Path Data="M3 3H42" 
+                                  Name="Path" 
+                                  Opacity="1" 
+                                  Stroke="White" 
+                                  StrokeThickness="6" 
+                                  StrokeLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    
+    <Style Selector="Button.MinimizeButton:pointerover /template/ Path#Path">
+        <Style.Animations>
+            <Animation Duration="0:0:0.1" FillMode="Forward">
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <Style Selector="Button.MinimizeButton:not(:pointerover) /template/ Path#Path">
+        <Style.Animations>
+            <Animation Duration="0:0:0.1" FillMode="Forward">
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+</Styles>

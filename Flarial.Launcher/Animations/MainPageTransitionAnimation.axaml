@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Animation x:Key="HomePageEnterTransition" Duration="0:0:0.500" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="UserControl.IsVisible" Value="True"/>
+            <Setter Property="ScaleTransform.ScaleX" Value="0.9625"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="0.94"/>
+            <Setter Property="TranslateTransform.Y" Value="-500"/>
+        </KeyFrame>
+        <KeyFrame Cue="45%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.9625"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="0.94"/>
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="55%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.9625"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="0.94"/>
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+            <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="HomePageLeaveTransition" Duration="0:0:0.500" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="45%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.9625"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="0.94"/>
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="55%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.9625"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="0.94"/>
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="-500"/>
+            <Setter Property="UserControl.IsVisible" Value="False"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="SettingsPageEnterTransition" Duration="0:0:0.500" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+            <Setter Property="UserControl.IsVisible" Value="True"/>
+        </KeyFrame>
+        <KeyFrame Cue="45%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+        </KeyFrame>
+        <KeyFrame Cue="55%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="SettingsPageLeaveTransition" Duration="0:0:0.500" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+        </KeyFrame>
+        <KeyFrame Cue="45%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+        </KeyFrame>
+        <KeyFrame Cue="55%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="500"/>
+            <Setter Property="UserControl.IsVisible" Value="False"/>
+        </KeyFrame>
+    </Animation>
+</ResourceDictionary>
