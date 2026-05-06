@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>x64;arm64</Platforms>
     <TargetFramework>net48</TargetFramework>
 
     <Optimize>true</Optimize>
