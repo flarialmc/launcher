@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
@@ -15,6 +16,8 @@ namespace Flarial.Runtime.Modding;
 
 public unsafe static class Injector
 {
+    internal const string HandshakeToken = "Flarial.Handshake.2026";
+
     static readonly LPTHREAD_START_ROUTINE s_routine;
 
     static Injector()
@@ -48,6 +51,10 @@ public unsafe static class Injector
                 fixed (char* buffer = library._path) WriteProcessMemory(process, address, buffer, size, null);
 
                 thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
+
+                fixed (char* token = HandshakeToken)
+                    SetThreadDescription(thread, new(token));
+
                 WaitForSingleObject(thread, INFINITE);
 
                 return processId;
