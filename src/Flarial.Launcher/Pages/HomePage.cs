@@ -1,10 +1,10 @@
 using System.IO;
 using System.Threading.Tasks;
-using Flarial.Analytics;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
+using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Modding;

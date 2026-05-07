@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +7,9 @@ using Flarial.Runtime.Services;
 using Windows.Security.Cryptography;
 using Windows.System.Profile;
 
-namespace Flarial.Analytics;
+namespace Flarial.Runtime.Analytics;
 
-public static class FlarialClientAnalytics
+public static class LaunchAnalytics
 {
     const string UserAgent = "Samsung Smart Fridge";
     const string AnalyticsUri = "https://api.flarial.xyz/launcher/events/launch";
@@ -23,25 +22,18 @@ public static class FlarialClientAnalytics
         public async Task<bool?> TrackedLaunchAsync()
         {
             var launched = await Task.Run(client.Launch);
-            if (launched ?? false) _ = PostAsync();
+            if (launched ?? false) await SendAsync();
             return launched;
         }
     }
 
-    static async Task PostAsync()
+    static async Task SendAsync()
     {
         var timestamp = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var json = $"{{\"timestamp\":\"{timestamp}\",\"installId\":\"{s_identifier}\"}}";
 
-        var content = await JsonSerializer.SerializeAsync(new Dictionary<string, string>
-        {
-            ["timestamp"] = timestamp,
-            ["installId"] = s_identifier
-        });
-
-        using HttpRequestMessage request = new(HttpMethod.Post, s_uri)
-        {
-            Content = new StringContent(content, Encoding.UTF8, "application/json")
-        };
+        using StringContent content = new(json, Encoding.UTF8, "application/json");
+        using HttpRequestMessage request = new(HttpMethod.Post, s_uri) { Content = content };
 
         request.Headers.Add("User-Agent", UserAgent);
         request.Headers.Add("X-Flarial.Timestamp", timestamp);

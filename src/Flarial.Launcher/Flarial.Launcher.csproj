@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\Flarial.Analytics\Flarial.Analytics.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
   </ItemGroup>
 
