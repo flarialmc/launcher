@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
+    <PackageReference Include="Costura.Fody" Version="6.1.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.2" PrivateAssets="All" />
   </ItemGroup>
 
