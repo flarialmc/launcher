@@ -11,7 +11,7 @@ using static Windows.Win32.UI.WindowsAndMessaging.GET_CLASS_LONG_INDEX;
 
 namespace Flarial.Launcher.Xaml;
 
-sealed class XamlHost(UIElement element) : HwndHost
+sealed class XamlHost(UIElement content) : HwndHost
 {
     static XamlHost() => ComponentDispatcher.ThreadFilterMessage += OnThreadFilterMessage;
 
@@ -19,23 +19,23 @@ sealed class XamlHost(UIElement element) : HwndHost
     {
         if (handled) return;
 
-        var hwnd = GetAncestor((HWND)msg.hwnd, GA_ROOT);
-        if (msg.hwnd == hwnd || hwnd.IsNull) return;
+        var root = GetAncestor((HWND)msg.hwnd, GA_ROOT);
+        if (msg.hwnd == root || root.IsNull) return;
 
-        SendMessage(hwnd, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
+        SendMessage(root, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
     }
 
-    readonly DesktopWindowXamlSource _dwxs = new() { Content = element };
+    readonly DesktopWindowXamlSource _xaml = new() { Content = content };
 
     protected override HandleRef BuildWindowCore(HandleRef hwndParent)
     {
-        var dwxsn = (IDesktopWindowXamlSourceNative)_dwxs;
+        var native = (IDesktopWindowXamlSourceNative)_xaml;
 
-        dwxsn.AttachToWindow((HWND)hwndParent.Handle);
-        SetClassLongPtr(dwxsn.WindowHandle, GCLP_HBRBACKGROUND, GetStockObject(BLACK_BRUSH));
+        native.AttachToWindow((HWND)hwndParent.Handle);
+        SetClassLongPtr(native.WindowHandle, GCLP_HBRBACKGROUND, GetStockObject(BLACK_BRUSH));
 
-        return new(this, dwxsn.WindowHandle);
+        return new(this, native.WindowHandle);
     }
 
-    protected override void DestroyWindowCore(HandleRef hwnd) => _dwxs.Dispose();
+    protected override void DestroyWindowCore(HandleRef hwnd) => _xaml.Dispose();
 }

@@ -8,7 +8,7 @@ public static class PromotionManager
 {
     const string PromotionsUri = "https://cdn.flarial.xyz/launcher/Promotions.json";
 
-    public static async Task<Promotion[]> GetDetailsAsync()
+    public static async Task<Promotion[]> GetAsync()
     {
         try
         {

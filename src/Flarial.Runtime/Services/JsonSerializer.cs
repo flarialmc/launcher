@@ -25,7 +25,7 @@ static class JsonSerializer
 
     static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static _ => new(_, s_settings));
 
-    internal static T Deserialize<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
+    static T Deserialize<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
 
     internal static async Task<T> DeserializeAsync<T>(Stream stream) => (T)await Task.Run(() => Deserialize<T>(stream));
 }

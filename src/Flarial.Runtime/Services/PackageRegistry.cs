@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 using static Windows.Foundation.AsyncStatus;
@@ -8,16 +9,16 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Runtime.Services;
 
-unsafe static class AppPackage
+static class PackageRegistry
 {
-    static readonly PackageManager s_pm = new();
+    static readonly PackageManager s_manager = new();
 
-    internal static Package? Get(string packageFamilyName) => s_pm.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
+    internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal static void Add(Uri uri, Action<int> callback)
+    unsafe static void Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
-        var info = s_pm.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+        var info = s_manager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
         try
         {
@@ -33,4 +34,6 @@ unsafe static class AppPackage
             info.Close();
         }
     }
+
+    internal static async Task AddAsync(Uri uri, Action<int> callback) => await Task.Run(() => Add(uri, callback));
 }

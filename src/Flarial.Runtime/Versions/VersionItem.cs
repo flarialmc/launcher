@@ -17,7 +17,7 @@ public abstract class VersionItem
 
     public override string ToString() => _string;
 
-    static readonly string s_path = Path.GetTempPath();
+    static readonly string s_temp = Path.GetTempPath();
 
     protected abstract Task<string> GetUriAsync();
 
@@ -35,11 +35,11 @@ public abstract class VersionItem
         if (!Minecraft.IsPackaged)
             throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
-        var path = Path.Combine(s_path, Path.GetRandomFileName());
+        var path = Path.Combine(s_temp, Path.GetRandomFileName());
         try
         {
             await HttpStack.DownloadAsync(await GetUriAsync(), path, _ => callback(_, false));
-            await Task.Run(() => AppPackage.Add(new(path), _ => callback(_, true)));
+            await PackageRegistry.AddAsync(new(path), _ => callback(_, true));
         }
         finally
         {
