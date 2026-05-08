@@ -8,6 +8,7 @@ using Flarial.Runtime.Modding;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static Windows.Win32.PInvoke;

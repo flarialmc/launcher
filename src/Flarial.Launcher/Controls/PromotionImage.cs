@@ -1,9 +1,10 @@
-using System;
-using Flarial.Runtime.Services;
 using Flarial.Launcher.Xaml;
+using Flarial.Runtime.Services;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using static Windows.Win32.Foundation.HWND;
 using static Windows.Win32.PInvoke;
@@ -11,8 +12,10 @@ using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.Controls;
 
-sealed class PromotionImage : XamlElement<Image>
+sealed class PromotionImage : XamlElement<Border>
 {
+    readonly CoreWindow _window = CoreWindow.GetForCurrentThread();
+
     static readonly CoreCursor _hand = new(CoreCursorType.Hand, 0);
     static readonly CoreCursor _arrow = new(CoreCursorType.Arrow, 0);
 
@@ -20,31 +23,46 @@ sealed class PromotionImage : XamlElement<Image>
     {
         (~this).Width = 320 * 0.95;
         (~this).Height = 50 * 0.95;
-
-        (~this).Tag = promotion.Uri;
         (~this).Visibility = Visibility.Collapsed;
 
-        (~this).Source = new BitmapImage
+        (~this).BorderThickness = new(1);
+        (~this).BorderBrush = new SolidColorBrush(Colors.IndianRed);
+
+        BitmapImage image = new()
         {
             UriSource = new(promotion.Image),
             DecodePixelWidth = (int)(~this).Width,
             DecodePixelHeight = (int)(~this).Height,
-            DecodePixelType = DecodePixelType.Logical,
+            DecodePixelType = DecodePixelType.Logical
         };
 
-        (~this).ImageOpened += OnImageOpened;
-        (~this).PointerExited += OnImagePointerExited;
-        (~this).PointerEntered += OnImagePointerEntered;
-        (~this).PointerPressed += OnImagePointerPressed;
+        (~this).Tag = promotion.Uri;
+        (~this).Background = new ImageBrush { ImageSource = image };
+
+        image.ImageOpened += OnImageOpened;
+        (~this).PointerExited += OnPointerExited;
+        (~this).PointerEntered += OnPointerEntered;
+        (~this).PointerPressed += OnPointerPressed;
     }
 
-    unsafe static void OnImagePointerPressed(object sender, RoutedEventArgs args)
+    void OnPointerEntered(object sender, RoutedEventArgs args)
     {
-        fixed (char* lpFile = (string)((Image)sender).Tag)
+        _window.PointerCursor = _hand;
+    }
+
+    void OnPointerExited(object sender, RoutedEventArgs args)
+    {
+        _window.PointerCursor = _arrow;
+    }
+
+    unsafe void OnPointerPressed(object sender, RoutedEventArgs args)
+    {
+        fixed (char* lpFile = (string)(~this).Tag)
             ShellExecute(Null, null, lpFile, null, null, SW_NORMAL);
     }
 
-    static void OnImageOpened(object sender, RoutedEventArgs args) => ((Image)sender).Visibility = Visibility.Visible;
-    static void OnImagePointerEntered(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _hand;
-    static void OnImagePointerExited(object sender, RoutedEventArgs args) => CoreWindow.GetForCurrentThread().PointerCursor = _arrow;
+    void OnImageOpened(object sender, RoutedEventArgs args)
+    {
+        (~this).Visibility = Visibility.Visible;
+    }
 }

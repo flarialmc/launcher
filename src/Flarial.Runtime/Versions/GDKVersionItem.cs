@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
@@ -32,10 +29,10 @@ sealed class GDKVersionItem : VersionItem
     {
         var msixvcPackagesTask = HttpStack.GetStreamAsync(MSIXVCPackagesUri);
         var gameLaunchHelperTask = HttpStack.GetBytesAsync(GameLaunchHelperUri);
-       
+
         await Task.WhenAll(msixvcPackagesTask, gameLaunchHelperTask);
         var gameLaunchHelper = await gameLaunchHelperTask;
-       
+
         using var stream = await msixvcPackagesTask;
         var json = await JsonSerializer.DeserializeAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
 

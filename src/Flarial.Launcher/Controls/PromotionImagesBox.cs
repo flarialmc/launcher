@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Flarial.Runtime.Services;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -6,20 +7,30 @@ namespace Flarial.Launcher.Controls;
 
 sealed class PromotionImagesBox : Grid
 {
-    internal PromotionImagesBox(Promotion[] promotions)
+    internal PromotionImagesBox()
     {
         Margin = new(12);
+
         RowSpacing = 12;
         ColumnSpacing = 12;
 
-        foreach (var promotion in promotions)
+        Loading += OnLoading;
+    }
+
+    async void OnLoading(FrameworkElement sender, object args)
+    {
+        try
         {
-            Image image = ~new PromotionImage(promotion);
+            foreach (var promotion in await PromotionManager.GetAsync())
+            {
+                var image = ~new PromotionImage(promotion);
 
-            Children.Add(image);
-            ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+                ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+                SetColumn(image, ColumnDefinitions.Count - 1);
 
-            SetColumn(image, ColumnDefinitions.Count - 1);
+                Children.Add(image);
+            }
         }
+        finally { Loading -= OnLoading; }
     }
 }

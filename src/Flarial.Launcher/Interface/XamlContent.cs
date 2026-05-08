@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Flarial.Launcher.Controls;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
-using Flarial.Runtime.Services;
 using Flarial.Runtime.Versions;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
@@ -56,20 +54,10 @@ sealed class XamlContent : XamlElement<NavigationView>
         (~this).MenuItems.Add(_versionsItem);
 
         (~this).Loaded += OnLoaded;
-        (~this).Loading += OnLoading;
         (~this).ItemInvoked += OnItemInvoked;
 
         (~this).Content = _homePage;
         (~this).SelectedItem = _homeItem;
-    }
-
-    async void OnLoading(FrameworkElement sender, object args)
-    {
-        _homePage.Children.Add(new PromotionImagesBox(await PromotionManager.GetAsync())
-        {
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Center
-        });
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -117,47 +105,51 @@ sealed class XamlContent : XamlElement<NavigationView>
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
-        MasterDialog.Current.XamlRoot = (~this).XamlRoot;
-
-        var settingsItem = (NavigationViewItem)(~this).SettingsItem;
-        settingsItem.Tag = _settingsPage;
-
-        if (!await FlarialLauncher.VerifyConnectionAsync())
+        try
         {
-            await DialogRegistry.ConnectionFailure.ShowAsync();
-            System.Windows.Application.Current.Shutdown();
-            return;
-        }
+            MasterDialog.Current.XamlRoot = (~this).XamlRoot;
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await DialogRegistry.LauncherUpdateAvailable.ShowAsync()))
-        {
-            _homePage._button.Content = "Updating...";
-            await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
-            return;
-        }
+            var settingsItem = (NavigationViewItem)(~this).SettingsItem;
+            settingsItem.Tag = _settingsPage;
 
-        var registry = await VersionRegistry.CreateAsync();
-        FrameworkElement homePage = _homePage;
-        (~this).Tag = homePage.Tag = registry;
-
-        var task = Task.Run(() =>
-        {
-            foreach (var item in registry) (~this).Dispatcher.Invoke(() =>
+            if (!await FlarialLauncher.VerifyConnectionAsync())
             {
-                var listBox = _versionsPage._listBox;
-                listBox.Items.Add(item);
+                await DialogRegistry.ConnectionFailure.ShowAsync();
+                System.Windows.Application.Current.Shutdown();
+                return;
+            }
+
+            if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await DialogRegistry.LauncherUpdateAvailable.ShowAsync()))
+            {
+                _homePage._button.Content = "Updating...";
+                await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
+                return;
+            }
+
+            var registry = await VersionRegistry.CreateAsync();
+            FrameworkElement homePage = _homePage;
+            (~this).Tag = homePage.Tag = registry;
+
+            var task = Task.Run(() =>
+            {
+                foreach (var item in registry) (~this).Dispatcher.Invoke(() =>
+                {
+                    var listBox = _versionsPage._listBox;
+                    listBox.Items.Add(item);
+                });
             });
-        });
 
-        OnPackageStatusChanged(Minecraft.PackageFamilyName);
+            OnPackageStatusChanged(Minecraft.PackageFamilyName);
 
-        _catalog.PackageUpdating += OnPackageUpdating;
-        _catalog.PackageInstalling += OnPackageInstalling;
-        _catalog.PackageUninstalling += OnPackageUninstalling;
+            _catalog.PackageUpdating += OnPackageUpdating;
+            _catalog.PackageInstalling += OnPackageInstalling;
+            _catalog.PackageUninstalling += OnPackageUninstalling;
 
-        _homePage._button.Content = "Play";
-        _homePage._button.IsEnabled = true;
+            _homePage._button.Content = "Play";
+            _homePage._button.IsEnabled = true;
 
-        await task; _versionsPage._button.IsEnabled = true;
+            await task; _versionsPage._button.IsEnabled = true;
+        }
+        finally { (~this).Loaded -= OnLoaded; }
     }
 }
