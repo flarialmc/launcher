@@ -41,6 +41,15 @@ public partial class MainWindow : Window
             .Subscribe(PageTransition);
     }
 
+    protected override async void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+
+        if (DataContext is not MainWindowViewModel vm) return;
+        await Task.Delay(500);
+        await vm.InitializeSettingsAsync();
+    }
+    
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
 
     private async void PageTransition(PageTransitions page)

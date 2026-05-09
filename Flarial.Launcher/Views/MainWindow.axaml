@@ -32,7 +32,7 @@
                     </TransformGroup>
                 </ContentControl.RenderTransform>
             </ContentControl>
-            <ContentControl IsVisible="False" Name="SettingsViewControl" Content="{Binding SettingsViewModel}">
+            <ContentControl IsHitTestVisible="False" Opacity="0" Name="SettingsViewControl" Content="{Binding SettingsViewModel}">
                 <ContentControl.RenderTransform>
                     <TranslateTransform Y="0"/>
                 </ContentControl.RenderTransform>

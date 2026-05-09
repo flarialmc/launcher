@@ -14,14 +14,25 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
     }
 
     public HomeViewModel HomeViewModel { get; }
-    public SettingsViewModel SettingsViewModel { get; } = new();
+
+    public SettingsViewModel? SettingsViewModel
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     public NotificationAreaViewModel NotificationArea { get; } = new();
     
     public MainWindowViewModel()
     {
         HomeViewModel = new HomeViewModel(this, this);
     }
-
+    
+    public Task InitializeSettingsAsync()
+    {
+        SettingsViewModel = new SettingsViewModel();
+        return Task.CompletedTask;
+    }
     
     public async Task<string> ShowMessageBoxAsync(
         string title,

@@ -50,7 +50,8 @@
     <Animation x:Key="SettingsPageEnterTransition" Duration="0:0:0.500" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
         <KeyFrame Cue="0%">
             <Setter Property="TranslateTransform.Y" Value="500"/>
-            <Setter Property="UserControl.IsVisible" Value="True"/>
+            <Setter Property="UserControl.IsHitTestVisible" Value="True"/>
+            <Setter Property="UserControl.Opacity" Value="1"/>
         </KeyFrame>
         <KeyFrame Cue="45%">
             <Setter Property="TranslateTransform.Y" Value="500"/>
@@ -75,7 +76,8 @@
         </KeyFrame>
         <KeyFrame Cue="100%">
             <Setter Property="TranslateTransform.Y" Value="500"/>
-            <Setter Property="UserControl.IsVisible" Value="False"/>
+            <Setter Property="UserControl.IsHitTestVisible" Value="False"/>
+            <Setter Property="UserControl.Opacity" Value="0"/>
         </KeyFrame>
     </Animation>
 </ResourceDictionary>
