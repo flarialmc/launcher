@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using System.IO;
 using System.Management.Automation;
@@ -45,7 +44,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
+        if (!File.Exists(path)) return null;
 
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");
