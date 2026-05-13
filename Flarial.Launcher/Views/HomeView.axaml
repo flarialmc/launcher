@@ -48,7 +48,7 @@
         <Grid>
             <!--Window State Buttons-->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
-                <Button x:Name="MinimizeButton" Classes="MinimizeButton" Command="{Binding Launch}"/>
+                <Button x:Name="MinimizeButton" Classes="MinimizeButton" Command="{Binding MinimizeWindow}"/>
                 <Button x:Name="CloseButton" Classes="CloseButton" Command="{Binding CloseWindow}"/>
             </StackPanel>
             
@@ -59,7 +59,7 @@
                 <VisualLayerManager>
                     <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
                         <StackPanel Background="Transparent">
-                            <Button Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}"/>
+                            <Button Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}" Content="{Binding LaunchText}" IsEnabled="{Binding IsLaunchEnabled}"/>
                             <Button Name="SettingsButton" Classes="SettingsButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsPage}"/>
                         </StackPanel>
                     </spotlightDecorator:SpotlightDecorator>
@@ -70,7 +70,7 @@
             <Grid Height="45" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                 <TextBlock Name="LicenseText" Grid.Column="0" Margin="0,0,0,0" Text="⚫" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="Gray"/>
                 <TextBlock Name="LauncherVersion" Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Text="{Binding LauncherVersion}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="16" Foreground="White"/>
-                <TextBlock Name="StatusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="Ready!" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676"/>
+                <TextBlock Name="StatusLabel" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,0" Text="{Binding Status}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Foreground="#797676"/>
             </Grid>
                 
                 <!--Version Indicator-->

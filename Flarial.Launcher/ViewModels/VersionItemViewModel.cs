@@ -2,37 +2,50 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using Flarial.Launcher.Models;
+using Flarial.Runtime.Game;
+using Flarial.Runtime.Versions;
 using ReactiveUI;
-using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
-public partial class VersionItemViewModel : ViewModelBase
+public class VersionItemViewModel : ViewModelBase
 {
+    readonly VersionItem _item;
+    readonly MainWindowViewModel _host;
+    readonly HomeViewModel _home;
 
     public string Version { get; }
 
-    [Reactive]
-    private VersionItemState _state;
+    public VersionItemState State
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
-    [Reactive] 
-    private double _installPercentage;
-    
+    public double InstallPercentage
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     public ReactiveCommand<Unit, Unit> InstallCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-    
-    public bool IsNotInstalled => State == VersionItemState.NotInstalled;
-    public bool IsDownloading  => State == VersionItemState.Downloading;
-    public bool IsInstalled    => State == VersionItemState.Installed;
 
-    
-    
-    public VersionItemViewModel(VersionItemData data)
+    public bool IsNotInstalled => State == VersionItemState.NotInstalled;
+    public bool IsDownloading => State == VersionItemState.Downloading;
+    public bool IsInstalled => State == VersionItemState.Installed;
+
+    public VersionItemViewModel(VersionItem item, VersionItemState state, MainWindowViewModel host, HomeViewModel home)
     {
-        Version = data.Version;
-        _state = data.State;
-        
+        _item = item;
+        _host = host;
+        _home = home;
+
+        Version = item.ToString();
+        State = state;
+
         this.WhenAnyValue(x => x.State)
             .Subscribe(_ =>
             {
@@ -41,41 +54,71 @@ public partial class VersionItemViewModel : ViewModelBase
                 this.RaisePropertyChanged(nameof(IsInstalled));
             });
 
-
-        
         InstallCommand = ReactiveCommand.CreateFromTask(
             InstallAsync,
-            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.NotInstalled)
-        );
-        
-        InstallCommand.ThrownExceptions
-            .Subscribe(ex => throw ex);
-        
+            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.NotInstalled));
+
         DeleteCommand = ReactiveCommand.CreateFromTask(
             DeleteAsync,
-            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.Installed)
-        );
-        
-        DeleteCommand.ThrownExceptions
-            .Subscribe(ex => throw ex);
+            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.Installed));
+
+        InstallCommand.ThrownExceptions.Subscribe(ex => _ = ShowFailureAsync(ex));
+        DeleteCommand.ThrownExceptions.Subscribe(ex => _ = ShowFailureAsync(ex));
     }
-    
-    private async Task InstallAsync()
+
+    async Task InstallAsync()
     {
-        State = VersionItemState.Downloading;
-        
-        while (InstallPercentage < 100)
+        if (!Minecraft.IsInstalled)
         {
-            InstallPercentage += 1;
-            await Task.Delay(20);
+            await _host.ShowMessageBoxAsync("Minecraft not installed", "Minecraft for Windows is not installed.", ["OK"]);
+            return;
         }
-        
-        State = VersionItemState.Installed;
+
+        if (!Minecraft.IsPackaged)
+        {
+            await _host.ShowMessageBoxAsync("Unpackaged install", "Version changing requires the packaged Store installation of Minecraft.", ["OK"]);
+            return;
+        }
+
+        if (!Minecraft.IsGamingServicesInstalled)
+        {
+            await _host.ShowMessageBoxAsync("Gaming Services missing", "Microsoft Gaming Services is required to install Minecraft versions.", ["OK"]);
+            return;
+        }
+
+        if (!await _host.ConfirmAsync("Install version", $"Install Minecraft {Version}?", "Install", "Cancel"))
+            return;
+
+        State = VersionItemState.Downloading;
         InstallPercentage = 0;
+
+        try
+        {
+            await _item.InstallAsync((value, _) =>
+            {
+                Dispatcher.UIThread.Post(() => InstallPercentage = Math.Clamp(value, 0, 100));
+            });
+
+            State = VersionItemState.Installed;
+            _home.UpdateMinecraftStatus();
+        }
+        finally
+        {
+            InstallPercentage = 0;
+            if (State == VersionItemState.Downloading)
+                State = VersionItemState.NotInstalled;
+        }
     }
-    
-    private async Task DeleteAsync()
+
+    async Task DeleteAsync()
     {
+        await _host.ShowMessageBoxAsync("Not available", "The backend does not expose version deletion.", ["OK"]);
+    }
+
+    async Task ShowFailureAsync(Exception exception)
+    {
+        await _host.ShowMessageBoxAsync("Version install failed", exception.Message, ["OK"]);
         State = VersionItemState.NotInstalled;
+        InstallPercentage = 0;
     }
 }

@@ -16,7 +16,6 @@ public partial class SettingsView : UserControl
     public SettingsView()
     {
         InitializeComponent();
-        DataContext = new SettingsViewModel();
         
         MessageBus.Current.Listen<PageTransitions>()
             .Subscribe(PageTransition);
