@@ -3,6 +3,7 @@ using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Avalonia.Media;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Services;
 using Flarial.Launcher.Types;
@@ -27,6 +28,18 @@ public class HomeViewModel : ViewModelBase
         get;
         private set => this.RaiseAndSetIfChanged(ref field, value);
     } = "0.0.0";
+
+    public IBrush MinecraftVersionBackground
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = Brushes.Gray;
+
+    public string MinecraftVersionTooltip
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = "Minecraft is not installed.";
 
     public string LauncherVersion { get; } = LauncherInfo.Version;
 
@@ -66,11 +79,17 @@ public class HomeViewModel : ViewModelBase
         if (!Minecraft.IsInstalled)
         {
             MinecraftVersion = "0.0.0";
+            MinecraftVersionBackground = Brushes.Gray;
+            MinecraftVersionTooltip = "Minecraft is not installed.";
             return;
         }
 
         var supported = _versionRegistry?.IsSupported ?? false;
         MinecraftVersion = $"{(supported ? "Supported," : "Unsupported,")} {VersionRegistry.InstalledVersion}";
+        MinecraftVersionBackground = supported ? Brushes.ForestGreen : Brushes.DarkRed;
+        MinecraftVersionTooltip = supported
+            ? "Your Minecraft version is supported by Flarial."
+            : "Your Minecraft version is unsupported by Flarial.";
     }
 
     async Task LaunchAsync()
