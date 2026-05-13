@@ -33,6 +33,12 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
 
     public NotificationAreaViewModel NotificationArea { get; } = new();
 
+    public bool IsVersionInstallActive
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     public MainWindowViewModel(AppSettings settings)
     {
         _settings = settings;
@@ -92,6 +98,10 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
 
     public async Task<bool> ConfirmAsync(string title, string message, string accept, string cancel)
         => await ShowMessageBoxAsync(title, message, [accept, cancel]) == accept;
+
+    public void SetVersionInstallActive(bool active) => IsVersionInstallActive = active;
+
+    public void NotifyInstallCloseBlocked() => NotificationArea.Add("You cannot close the launcher while a version installation is in progress.");
 
     public async Task<string> ShowMessageBoxAsync(
         string title,

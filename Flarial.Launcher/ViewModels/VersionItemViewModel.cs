@@ -91,6 +91,7 @@ public class VersionItemViewModel : ViewModelBase
 
         State = VersionItemState.Downloading;
         InstallPercentage = 0;
+        _host.SetVersionInstallActive(true);
 
         try
         {
@@ -104,6 +105,7 @@ public class VersionItemViewModel : ViewModelBase
         }
         finally
         {
+            _host.SetVersionInstallActive(false);
             InstallPercentage = 0;
             if (State == VersionItemState.Downloading)
                 State = VersionItemState.NotInstalled;

@@ -58,6 +58,18 @@ public partial class MainWindow : Window
         await vm.InitializeSettingsAsync();
     }
 
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel { IsVersionInstallActive: true } vm)
+        {
+            e.Cancel = true;
+            vm.NotifyInstallCloseBlocked();
+            return;
+        }
+
+        base.OnClosing(e);
+    }
+
     void ApplyRoundedWindowRegion()
     {
         var handle = TryGetPlatformHandle()?.Handle ?? 0;
