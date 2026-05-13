@@ -77,28 +77,6 @@
             <Border Name="VersionTextBorder" CornerRadius="15" HorizontalAlignment="Left" Background="{Binding MinecraftVersionBackground}" Opacity="1" VerticalAlignment="Bottom" Margin="20,0,0,25" controls:CustomToolTip.Content="{Binding MinecraftVersionTooltip}">
                 <TextBlock TextAlignment="Left" IsHitTestVisible="False" Name="VersionLabel" Margin="10,5,10,5" Text="{Binding MinecraftVersion}" FontSize="16" Foreground="White"/>
             </Border>
-                
-            <Popup Name="AdPopup"
-                   PlacementTarget="{Binding #MainBorder}"
-                   Placement="Bottom"
-                   HorizontalOffset="240"
-                   VerticalOffset="-2"
-                   IsLightDismissEnabled="False">
-                <Border Cursor="Hand"
-                        Name="AdBorder"
-                        Height="50"
-                        Width="320"
-                        CornerRadius="10"
-                        BorderThickness="1"
-                        BorderBrush="{StaticResource PrimaryColor}"
-                        ClipToBounds="True"
-                        PointerPressed="AdBorder_OnPointerPressed">
-                    <Border.RenderTransform>
-                        <TranslateTransform Y="-60"/>
-                    </Border.RenderTransform>
-                    <Image Name="AdImage" Stretch="Fill"/>
-                </Border>
-            </Popup>
         </Grid>
     </Grid>
 </UserControl>

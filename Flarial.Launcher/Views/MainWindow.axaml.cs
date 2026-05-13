@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -7,9 +10,13 @@ using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Styling;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
+using Flarial.Runtime.Services;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -19,10 +26,17 @@ namespace Flarial.Launcher.Views;
 public partial class MainWindow : Window
 {
     const int NativeCornerRadius = 25;
+    const int LauncherWidth = 800;
+    const int LauncherHeight = 500;
+    const int AdWidth = 320;
     const int DwmwaWindowCornerPreference = 33;
     const int DwmwaBorderColor = 34;
     const int DwmwcpRound = 2;
     const uint DwmColorNone = 0xFFFFFFFE;
+
+    static readonly HttpClient s_httpClient = new();
+    Uri? _adUri;
+    bool _promotionLoaded;
 
     public static Canvas? ToolTipLayerInstance { get; private set; }
     
@@ -35,6 +49,8 @@ public partial class MainWindow : Window
         ExtendClientAreaToDecorationsHint = true;
         ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
         ExtendClientAreaTitleBarHeightHint = -1;
+        Activated += OnActivated;
+        Deactivated += OnDeactivated;
         
         MessageBus.Current.Listen<WindowStateArgs>()
             .Where(e => e == WindowStateArgs.Minimize)
@@ -56,6 +72,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm) return;
         //await Task.Delay(200);
         await vm.InitializeSettingsAsync();
+        _ = ShowPromotionAfterDelayAsync();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
@@ -70,6 +87,17 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+    void OnActivated(object? sender, EventArgs e)
+    {
+        if (_promotionLoaded)
+            AdPopup.IsOpen = true;
+    }
+
+    void OnDeactivated(object? sender, EventArgs e)
+    {
+        AdPopup.IsOpen = false;
+    }
+
     void ApplyRoundedWindowRegion()
     {
         var handle = TryGetPlatformHandle()?.Handle ?? 0;
@@ -78,16 +106,17 @@ public partial class MainWindow : Window
         DisableNativeWindowBorder(handle);
 
         var scale = RenderScaling;
-        var width = Math.Max(1, (int)Math.Round(Bounds.Width * scale));
-        var height = Math.Max(1, (int)Math.Round(Bounds.Height * scale));
-        var radius = Math.Max(1, (int)Math.Round(NativeCornerRadius * scale));
-
-        var region = CreateRoundRectRgn(0, 0, width + 1, height + 1, radius * 2, radius * 2);
+        var launcherWidth = ScaleToPixels(LauncherWidth, scale);
+        var launcherHeight = ScaleToPixels(LauncherHeight, scale);
+        var launcherRadius = ScaleToPixels(NativeCornerRadius, scale) * 2;
+        var region = CreateRoundRectRgn(0, 0, launcherWidth + 1, launcherHeight + 1, launcherRadius, launcherRadius);
         if (region == 0) return;
 
         if (SetWindowRgn(handle, region, true) == 0)
             DeleteObject(region);
     }
+
+    static int ScaleToPixels(double value, double scale) => Math.Max(1, (int)Math.Round(value * scale));
 
     static void DisableNativeWindowBorder(nint handle)
     {
@@ -97,8 +126,80 @@ public partial class MainWindow : Window
         var borderColor = DwmColorNone;
         DwmSetWindowAttribute(handle, DwmwaBorderColor, ref borderColor, sizeof(uint));
     }
+
+    async Task ShowPromotionAfterDelayAsync()
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(500));
+
+        try
+        {
+            var promotions = await PromotionManager.GetAsync();
+            if (promotions.Length == 0) return;
+
+            var promotion = promotions[0];
+            if (!Uri.TryCreate(promotion.Uri, UriKind.Absolute, out _adUri)
+                || !Uri.TryCreate(promotion.Image, UriKind.Absolute, out var imageUri))
+            {
+                return;
+            }
+
+            using var response = await s_httpClient.GetAsync(imageUri);
+            if (!response.IsSuccessStatusCode || response.Content.Headers.ContentType?.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) != true)
+                return;
+
+            await using var stream = await response.Content.ReadAsStreamAsync();
+            using MemoryStream buffer = new();
+            await stream.CopyToAsync(buffer);
+            buffer.Position = 0;
+
+            Bitmap bitmap;
+            try
+            {
+                bitmap = new Bitmap(buffer);
+            }
+            catch
+            {
+                return;
+            }
+
+            AdImage.Source = bitmap;
+            _promotionLoaded = true;
+            AdPopup.IsOpen = IsActive;
+
+            var animation = new Animation
+            {
+                Duration = TimeSpan.FromMilliseconds(350),
+                FillMode = FillMode.Forward,
+                Children =
+                {
+                    new KeyFrame
+                    {
+                        Cue = new Cue(1),
+                        Setters = { new Setter(TranslateTransform.YProperty, 0d) }
+                    }
+                }
+            };
+
+            await animation.RunAsync(AdBorder);
+        }
+        catch
+        {
+            // Promotions are optional; ad failures should never interrupt the launcher.
+        }
+    }
     
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
+
+    void AdBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_adUri is null) return;
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = _adUri.ToString(),
+            UseShellExecute = true
+        });
+    }
 
     private async void PageTransition(PageTransitions page)
     {
