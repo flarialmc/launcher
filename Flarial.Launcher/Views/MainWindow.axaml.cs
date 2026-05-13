@@ -46,7 +46,7 @@ public partial class MainWindow : Window
         base.OnOpened(e);
 
         if (DataContext is not MainWindowViewModel vm) return;
-        await Task.Delay(500);
+        //await Task.Delay(200);
         await vm.InitializeSettingsAsync();
     }
     
