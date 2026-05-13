@@ -70,7 +70,7 @@ public class HomeViewModel : ViewModelBase
         }
 
         var supported = _versionRegistry?.IsSupported ?? false;
-        MinecraftVersion = $"{(supported ? "Supported" : "Unsupported")} {VersionRegistry.InstalledVersion}";
+        MinecraftVersion = $"{(supported ? "Supported," : "Unsupported,")} {VersionRegistry.InstalledVersion}";
     }
 
     async Task LaunchAsync()
