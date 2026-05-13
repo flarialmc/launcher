@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -124,6 +125,11 @@ public class HomeViewModel : ViewModelBase
             {
                 await _dialogService.ShowMessageBoxAsync("Launch failed", "Unable to launch and inject Flarial.", ["OK"]);
             }
+        }
+        catch (Exception exception)
+        {
+            var message = exception.GetBaseException().Message;
+            await _dialogService.ShowMessageBoxAsync("Launch failed", message, ["OK"]);
         }
         finally
         {

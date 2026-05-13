@@ -1,9 +1,8 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
+using System.Threading;
 using Flarial.Runtime.Unmanaged;
-using Microsoft.PowerShell;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using static System.Environment;
@@ -23,14 +22,6 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
 
-    static MinecraftGDK()
-    {
-        s_state.ImportPSModule(["Appx"]);
-        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
-        s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
-    }
-
-    static readonly InitialSessionState s_state = InitialSessionState.Create();
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
@@ -46,16 +37,32 @@ unsafe sealed class MinecraftGDK : Minecraft
         var path = Path.Combine(Package.InstalledPath, ProcessName);
         if (!File.Exists(path)) return null;
 
-        using var powershell = PowerShell.Create(s_state);
-        powershell.AddCommand("Invoke-CommandInDesktopPackage");
+        var command = string.Join("; ",
+            "Import-Module Appx",
+            $"Invoke-CommandInDesktopPackage -AppId 'Game' -Command {Quote(path)} -PackageFamilyName {Quote(PackageFamilyName)}");
 
-        powershell.AddParameter("AppId", "Game");
-        powershell.AddParameter("Command", path);
-        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+        using var powershell = Process.Start(new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command}\"",
+            CreateNoWindow = true,
+            UseShellExecute = false
+        });
 
-        powershell.Invoke();
-        return GetProcessId();
+        powershell?.WaitForExit();
+
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            if (GetProcessId() is { } launchedProcessId)
+                return launchedProcessId;
+
+            Thread.Sleep(100);
+        }
+
+        return null;
     }
+
+    static string Quote(string value) => $"'{value.Replace("'", "''")}'";
 
     internal override uint? Launch()
     {
