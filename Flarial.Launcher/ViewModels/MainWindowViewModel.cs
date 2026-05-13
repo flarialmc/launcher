@@ -51,15 +51,6 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync()
-            && (_settings.AutomaticUpdates || await ConfirmAsync("Launcher update available", "A launcher update is available.", "Update", "Skip")))
-        {
-            HomeViewModel.IsLaunchEnabled = false;
-            HomeViewModel.LaunchText = "Updating...";
-            await FlarialLauncher.DownloadAsync(value => HomeViewModel.LaunchText = $"Updating... {value}%");
-            return;
-        }
-
         var registry = await VersionRegistry.CreateAsync();
         HomeViewModel.SetVersionRegistry(registry);
         SettingsViewModel.SettingsVersionsViewModel.SetVersionRegistry(registry);
