@@ -155,7 +155,7 @@ public partial class MainWindow : Window
             Bitmap bitmap;
             try
             {
-                bitmap = new Bitmap(buffer);
+                bitmap = CreatePromotionBitmap(buffer);
             }
             catch
             {
@@ -187,7 +187,23 @@ public partial class MainWindow : Window
             // Promotions are optional; ad failures should never interrupt the launcher.
         }
     }
-    
+
+    static Bitmap CreatePromotionBitmap(Stream stream)
+    {
+        using var skStream = new SKManagedStream(stream);
+        using var source = SKBitmap.Decode(skStream) ?? throw new InvalidDataException("Unable to decode promotion image.");
+        using var surface = SKSurface.Create(new SKImageInfo(source.Width, source.Height, SKColorType.Bgra8888, SKAlphaType.Opaque));
+
+        var canvas = surface.Canvas;
+        canvas.Clear(SKColors.Black);
+        canvas.DrawBitmap(source, 0, 0);
+        canvas.Flush();
+
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        return new Bitmap(data.AsStream());
+    }
+
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
 
     void AdBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)

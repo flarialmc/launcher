@@ -72,7 +72,6 @@
                     Name="AdBorder"
                     Height="50"
                     Width="320"
-                    CornerRadius="10"
                     Background="Black"
                     ClipToBounds="True"
                     PointerPressed="AdBorder_OnPointerPressed">
