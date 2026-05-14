@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Threading;
 using Avalonia.Styling;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
@@ -68,7 +66,6 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm) return;
         //await Task.Delay(200);
         await vm.InitializeSettingsAsync();
-        await WarmUpTransitionViewsAsync();
         _ = ShowPromotionAfterDelayAsync();
     }
 
@@ -193,63 +190,6 @@ public partial class MainWindow : Window
             FileName = _adUri.ToString(),
             UseShellExecute = true
         });
-    }
-
-    async Task WarmUpTransitionViewsAsync()
-    {
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            WarmUpView(HomeViewControl);
-            WarmUpView(SettingsViewControl);
-            WarmUpTransitionTransforms();
-        }, DispatcherPriority.Background);
-    }
-
-    void WarmUpView(Control view)
-    {
-        if (view.Bounds.Width <= 0 || view.Bounds.Height <= 0) return;
-
-        var scale = RenderScaling;
-        var pixelSize = new PixelSize(
-            ScaleToPixels(view.Bounds.Width, scale),
-            ScaleToPixels(view.Bounds.Height, scale));
-
-        using var bitmap = new RenderTargetBitmap(pixelSize, new Vector(96 * scale, 96 * scale));
-        bitmap.Render(view);
-    }
-
-    void WarmUpTransitionTransforms()
-    {
-        if (HomeViewControl.RenderTransform is not TransformGroup homeTransforms)
-            return;
-
-        var homeScale = homeTransforms.Children.OfType<ScaleTransform>().FirstOrDefault();
-        var homeTranslate = homeTransforms.Children.OfType<TranslateTransform>().FirstOrDefault();
-        if (homeScale is null || homeTranslate is null)
-            return;
-
-        var originalScaleX = homeScale.ScaleX;
-        var originalScaleY = homeScale.ScaleY;
-        var originalHomeY = homeTranslate.Y;
-
-        homeScale.ScaleX = 0.9625;
-        homeScale.ScaleY = 0.94;
-        homeTranslate.Y = -500;
-        WarmUpView(HomeViewControl);
-
-        if (SettingsViewControl.RenderTransform is TranslateTransform settingsTranslate)
-        {
-            var originalSettingsY = settingsTranslate.Y;
-            settingsTranslate.Y = 500;
-            SettingsViewControl.Opacity = 1;
-            WarmUpView(SettingsViewControl);
-            settingsTranslate.Y = originalSettingsY;
-            SettingsViewControl.Opacity = 0;
-        }
-
-        homeScale.ScaleX = originalScaleX;
-        homeScale.ScaleY = originalScaleY;
-        homeTranslate.Y = originalHomeY;
     }
 
     private async void PageTransition(PageTransitions page)
