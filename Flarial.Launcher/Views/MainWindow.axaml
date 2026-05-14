@@ -58,27 +58,6 @@
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>
-
-        <Popup Name="AdPopup"
-               PlacementTarget="{Binding #MainBorder}"
-               Placement="Bottom"
-               HorizontalOffset="0"
-               VerticalOffset="0"
-               IsLightDismissEnabled="False"
-               IsOpen="False">
-            <Border Cursor="Hand"
-                    Name="AdBorder"
-                    Height="50"
-                    Width="320"
-                    Background="Black"
-                    ClipToBounds="True"
-                    PointerPressed="AdBorder_OnPointerPressed">
-                <Border.RenderTransform>
-                    <TranslateTransform Y="-60"/>
-                </Border.RenderTransform>
-                <Image Name="AdImage" Stretch="Fill"/>
-            </Border>
-        </Popup>
         </Grid>
     </Border>
 </Window>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -9,12 +8,10 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
-using Flarial.Runtime.Services;
 using ReactiveUI;
 
 namespace Flarial.Launcher.Views;
@@ -25,14 +22,10 @@ public partial class MainWindow : Window
     const int NativeCornerRadius = 25;
     const int LauncherWidth = 800;
     const int LauncherHeight = 500;
-    const int AdWidth = 320;
     const int DwmwaWindowCornerPreference = 33;
     const int DwmwaBorderColor = 34;
     const int DwmwcpRound = 2;
     const uint DwmColorNone = 0xFFFFFFFE;
-
-    Uri? _adUri;
-    bool _promotionLoaded;
 
     public static Canvas? ToolTipLayerInstance { get; private set; }
     
@@ -43,8 +36,6 @@ public partial class MainWindow : Window
         ToolTipLayerInstance = ToolTipLayer;
         
         SystemDecorations = SystemDecorations.None;
-        Activated += OnActivated;
-        Deactivated += OnDeactivated;
         
         MessageBus.Current.Listen<WindowStateArgs>()
             .Where(e => e == WindowStateArgs.Minimize)
@@ -66,7 +57,6 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm) return;
         //await Task.Delay(200);
         await vm.InitializeSettingsAsync();
-        _ = ShowPromotionAfterDelayAsync();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
@@ -85,17 +75,6 @@ public partial class MainWindow : Window
     {
         base.OnClosed(e);
         TerminateProcess(GetCurrentProcess(), 0);
-    }
-
-    void OnActivated(object? sender, EventArgs e)
-    {
-        if (_promotionLoaded)
-            AdPopup.IsOpen = true;
-    }
-
-    void OnDeactivated(object? sender, EventArgs e)
-    {
-        AdPopup.IsOpen = false;
     }
 
     void ApplyRoundedWindowRegion()
@@ -127,70 +106,7 @@ public partial class MainWindow : Window
         DwmSetWindowAttribute(handle, DwmwaBorderColor, ref borderColor, sizeof(uint));
     }
 
-    async Task ShowPromotionAfterDelayAsync()
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(500));
-
-        try
-        {
-            var promotions = await PromotionManager.GetAsync();
-            if (promotions.Length == 0) return;
-
-            var promotion = promotions[0];
-            if (!Uri.TryCreate(promotion.Uri, UriKind.Absolute, out _adUri))
-                return;
-
-            Bitmap bitmap;
-            try
-            {
-                using var stream = await PromotionManager.GetImageStreamAsync(promotion);
-                if (stream is null) return;
-
-                bitmap = new Bitmap(stream);
-            }
-            catch
-            {
-                return;
-            }
-
-            AdImage.Source = bitmap;
-            _promotionLoaded = true;
-            AdPopup.IsOpen = IsActive;
-
-            var animation = new Animation
-            {
-                Duration = TimeSpan.FromMilliseconds(350),
-                FillMode = FillMode.Forward,
-                Children =
-                {
-                    new KeyFrame
-                    {
-                        Cue = new Cue(1),
-                        Setters = { new Setter(TranslateTransform.YProperty, 0d) }
-                    }
-                }
-            };
-
-            await animation.RunAsync(AdBorder);
-        }
-        catch
-        {
-            // Promotions are optional; ad failures should never interrupt the launcher.
-        }
-    }
-
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
-
-    void AdBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (_adUri is null) return;
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = _adUri.ToString(),
-            UseShellExecute = true
-        });
-    }
 
     private async void PageTransition(PageTransitions page)
     {
