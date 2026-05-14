@@ -11,6 +11,9 @@ public sealed class AppSettings
     public bool AutomaticUpdates { get; set; } = true;
 
     [DataMember]
+    public bool HardwareAcceleration { get; set; } = true;
+
+    [DataMember]
     public bool UseCustomDll { get; set; }
 
     [DataMember]
@@ -20,6 +23,7 @@ public sealed class AppSettings
     void OnDeserializing(StreamingContext context)
     {
         AutomaticUpdates = true;
+        HardwareAcceleration = true;
         UseCustomDll = false;
         CustomDllPath = string.Empty;
     }

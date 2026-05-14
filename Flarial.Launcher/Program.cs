@@ -4,6 +4,7 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Skia;
 using Avalonia.Win32;
+using Flarial.Launcher.Management;
 using Flarial.Runtime.Modding;
 using ReactiveUI.Avalonia;
 using static System.Environment;
@@ -34,9 +35,19 @@ sealed class Program
     }
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        var settings = AppSettings.Get();
+
+        return AppBuilder.Configure<App>()
             .UseWin32()
+            .With(new Win32PlatformOptions
+            {
+                RenderingMode = settings.HardwareAcceleration
+                    ? [Win32RenderingMode.AngleEgl, Win32RenderingMode.Software]
+                    : [Win32RenderingMode.Software]
+            })
             .UseSkia()
             .LogToTrace()
             .UseReactiveUI();
+    }
 }

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using ReactiveUI;
@@ -9,6 +10,8 @@ namespace Flarial.Launcher.ViewModels;
 public class SettingsGeneralViewModel : ViewModelBase
 {
     readonly AppSettings _settings;
+    readonly object _saveLock = new();
+    Timer? _customDllPathSaveTimer;
 
     public bool CustomDllSelected
     {
@@ -21,7 +24,23 @@ public class SettingsGeneralViewModel : ViewModelBase
         get => _settings.AutomaticUpdates;
         set
         {
+            if (_settings.AutomaticUpdates == value) return;
+
             _settings.AutomaticUpdates = value;
+            _settings.Set();
+            this.RaisePropertyChanged();
+        }
+    }
+
+    public bool HardwareAcceleration
+    {
+        get => _settings.HardwareAcceleration;
+        set
+        {
+            if (_settings.HardwareAcceleration == value) return;
+
+            _settings.HardwareAcceleration = value;
+            _settings.Set();
             this.RaisePropertyChanged();
         }
     }
@@ -31,7 +50,10 @@ public class SettingsGeneralViewModel : ViewModelBase
         get => _settings.CustomDllPath;
         set
         {
+            if (_settings.CustomDllPath == value) return;
+
             _settings.CustomDllPath = value;
+            SaveSettingsDebounced();
             this.RaisePropertyChanged();
         }
     }
@@ -67,6 +89,18 @@ public class SettingsGeneralViewModel : ViewModelBase
         if (item is null) return;
 
         _settings.UseCustomDll = item.Title == "Custom";
+        _settings.Set();
         CustomDllSelected = _settings.UseCustomDll;
+    }
+
+    void SaveSettingsDebounced()
+    {
+        _customDllPathSaveTimer ??= new Timer(_ =>
+        {
+            lock (_saveLock)
+                _settings.Set();
+        });
+
+        _customDllPathSaveTimer.Change(500, Timeout.Infinite);
     }
 }
