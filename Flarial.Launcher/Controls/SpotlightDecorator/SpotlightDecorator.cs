@@ -144,7 +144,7 @@ public class SpotlightDecorator : Decorator
                     half3 light = uColor;
                     float finalIntensity = mix(0.15, 0.8, borderIntensity * 0.8);
 
-                    float overlayAlpha = spotIntensity * finalIntensity * uOpacity * 0.45;
+                    float overlayAlpha = spotIntensity * finalIntensity * uOpacity * 0.7;
                     return half4(light * overlayAlpha, overlayAlpha);
                 }";
 
