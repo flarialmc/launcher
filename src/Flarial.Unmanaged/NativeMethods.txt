@@ -1,5 +1,7 @@
 IsWindowVisible
 IDesktopWindowXamlSourceNative
+CreateWindowEx
+DestroyWindow
 GetAncestor
 SendMessage
 GetStockObject
