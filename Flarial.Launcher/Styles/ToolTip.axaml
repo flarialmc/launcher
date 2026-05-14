@@ -6,6 +6,15 @@
     <Style Selector="controls|ToolTipControl">
         <Setter Property="Padding" Value="15,8,15,24"/>
         <Setter Property="Margin" Value="0,0,0,-15"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="RenderTransform" Value="scale(0.88)"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.22"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
         <Setter Property="Template">
             <ControlTemplate>
                 <!-- 1️⃣ Shadow space -->
@@ -53,6 +62,10 @@
         <Style Selector="^[Placement=Bottom]">
             <Setter Property="Padding" Value="15,24,15,8"/>
             <Setter Property="Margin" Value="0,-8,0,0"/>
+        </Style>
+        <Style Selector="^.open">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="scale(1)"/>
         </Style>
     </Style>
 

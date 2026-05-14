@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -119,11 +120,11 @@ public abstract class CustomToolTip : AvaloniaObject
         Timer.Start();
     }
 
-    private static void OnPointerExited(object? sender, PointerEventArgs e)
+    private static async void OnPointerExited(object? sender, PointerEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("Tooltip: Pointer exited");
         Timer.Stop();
-        HideToolTip();
+        await HideToolTipAsync();
     }
 
     private static void OnTimerTick(object? sender, EventArgs e)
@@ -164,6 +165,7 @@ public abstract class CustomToolTip : AvaloniaObject
         if (_currentTooltip != null)
         {
             var parent = _currentTooltip.Parent as Canvas;
+            _currentTooltip.HideImmediately();
             parent?.Children.Remove(_currentTooltip);
             _currentTooltip = null;
         }
@@ -231,13 +233,17 @@ public abstract class CustomToolTip : AvaloniaObject
     }
 
 
-    private static void HideToolTip()
+    private static async Task HideToolTipAsync()
     {
         if (_currentTooltip != null)
         {
-            var parent = _currentTooltip.Parent as Canvas;
-            parent?.Children.Remove(_currentTooltip);
+            var tooltip = _currentTooltip;
             _currentTooltip = null;
+
+            await tooltip.HideAsync();
+
+            var parent = tooltip.Parent as Canvas;
+            parent?.Children.Remove(tooltip);
         }
 
         _currentTarget = null;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -10,6 +11,8 @@ namespace Flarial.Launcher.Controls.ToolTip;
 
 public class ToolTipControl : ContentControl
 {
+    const int AnimationDurationMs = 220;
+
     private Control? _geometryHost;
     private AcrylicBlur.AcrylicBlur? _acrylic;
     private Path? _border;
@@ -166,6 +169,18 @@ public class ToolTipControl : ContentControl
     {
         base.OnAttachedToVisualTree(e);
         InvalidateMeasure();
+        Dispatcher.UIThread.Post(() => Classes.Add("open"), DispatcherPriority.Render);
+    }
+
+    public async Task HideAsync()
+    {
+        Classes.Remove("open");
+        await Task.Delay(AnimationDurationMs);
+    }
+
+    public void HideImmediately()
+    {
+        Classes.Remove("open");
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
