@@ -1,6 +1,6 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using ReactiveUI.Avalonia;
-using System;
 
 namespace Flarial.Launcher;
 

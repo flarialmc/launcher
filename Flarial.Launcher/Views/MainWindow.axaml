@@ -9,6 +9,8 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/app.ico" CanResize="False"
         Title="Flarial Launcher" Height="500" Width="800"
+        TransparencyLevelHint="Transparent"
+        WindowStartupLocation="CenterScreen"
         Background="Transparent">
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
@@ -16,7 +18,7 @@
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-    
+
     <Border CornerRadius="25" Background="{StaticResource WindowColor}">
         <Grid>
             <Grid Background="Transparent" PointerPressed="DragWindow"/>
@@ -24,7 +26,7 @@
                 <Grid.Effect>
                     <BlurEffect Radius="0"/>
                 </Grid.Effect>
-            
+
                 <ContentControl Name="HomeViewControl" Content="{Binding HomeViewModel}">
                     <ContentControl.RenderTransform>
                         <TransformGroup>
@@ -39,13 +41,13 @@
                     </ContentControl.RenderTransform>
                 </ContentControl>
             </Grid>
-        
+
             <Canvas x:Name="ToolTipLayer"
                     IsHitTestVisible="False"
                     ZIndex="10000"/>
-        
+
             <views:NotificationAreaView DataContext="{Binding NotificationArea}"/>
-        
+
             <ContentControl Content="{Binding CurrentDialog}"
                             IsHitTestVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
                             IsVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -55,7 +57,7 @@
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>
-        
+
         </Grid>
     </Border>
 </Window>

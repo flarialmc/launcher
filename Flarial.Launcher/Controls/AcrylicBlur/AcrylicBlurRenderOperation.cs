@@ -129,8 +129,6 @@ public class AcrylicBlurRenderOperation(
             using SKPaint acrylliPaint = new SKPaint();
             acrylliPaint.IsAntialias = true;
 
-            double opacity = 1;
-
             const double noiseOpacity = 0.0225;
 
             Color tintColor = _material.TintColor;
