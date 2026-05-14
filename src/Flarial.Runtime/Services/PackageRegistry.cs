@@ -9,11 +9,36 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Runtime.Services;
 
-static class PackageRegistry
+public static class PackageRegistry
 {
     static readonly PackageManager s_manager = new();
+    static readonly PackageCatalog s_catalog = PackageCatalog.OpenForCurrentUser();
 
     internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
+
+    public static void WatchPackageChanges(string packageFamilyName, Action callback)
+    {
+        s_catalog.PackageInstalling += (_, args) =>
+        {
+            if (args.IsComplete && IsPackage(args.Package.Id.FamilyName, packageFamilyName))
+                callback();
+        };
+
+        s_catalog.PackageUninstalling += (_, args) =>
+        {
+            if (args.IsComplete && IsPackage(args.Package.Id.FamilyName, packageFamilyName))
+                callback();
+        };
+
+        s_catalog.PackageUpdating += (_, args) =>
+        {
+            if (args.IsComplete && IsPackage(args.TargetPackage.Id.FamilyName, packageFamilyName))
+                callback();
+        };
+    }
+
+    static bool IsPackage(string candidate, string packageFamilyName) =>
+        candidate.Equals(packageFamilyName, StringComparison.OrdinalIgnoreCase);
 
     unsafe static void Add(Uri uri, Action<int> callback)
     {

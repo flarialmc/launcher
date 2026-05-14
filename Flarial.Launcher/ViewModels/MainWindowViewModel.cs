@@ -6,16 +6,15 @@ using Flarial.Launcher.Management;
 using Flarial.Launcher.Services;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
+using Flarial.Runtime.Services;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
-using Windows.ApplicationModel;
 
 namespace Flarial.Launcher.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationService
 {
     readonly AppSettings _settings;
-    readonly PackageCatalog _catalog;
 
     public MessageBoxViewModel? CurrentDialog
     {
@@ -42,7 +41,6 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
     public MainWindowViewModel(AppSettings settings)
     {
         _settings = settings;
-        _catalog = PackageCatalog.OpenForCurrentUser();
         HomeViewModel = new HomeViewModel(settings, this, this);
     }
 
@@ -89,30 +87,10 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
 
     void RegisterPackageEvents()
     {
-        _catalog.PackageInstalling += (_, args) =>
-        {
-            if (args.IsComplete) UpdateMinecraftStatus(args.Package.Id.FamilyName);
-        };
-        _catalog.PackageUninstalling += (_, args) =>
-        {
-            if (args.IsComplete) UpdateMinecraftStatus(args.Package.Id.FamilyName);
-        };
-        _catalog.PackageUpdating += (_, args) =>
-        {
-            if (args.IsComplete) UpdateMinecraftStatus(args.TargetPackage.Id.FamilyName);
-        };
+        PackageRegistry.WatchPackageChanges(Minecraft.PackageFamilyName, UpdateMinecraftStatus);
     }
 
-    void UpdateMinecraftStatus(string? packageFamilyName = null)
-    {
-        if (packageFamilyName is not null
-            && !packageFamilyName.Equals(Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        Dispatcher.UIThread.Post(HomeViewModel.UpdateMinecraftStatus);
-    }
+    void UpdateMinecraftStatus() => Dispatcher.UIThread.Post(HomeViewModel.UpdateMinecraftStatus);
 
     public async Task<bool> ConfirmAsync(string title, string message, string accept, string cancel)
         => await ShowMessageBoxAsync(title, message, [accept, cancel]) == accept;

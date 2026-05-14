@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -20,7 +18,6 @@ using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
 using Flarial.Runtime.Services;
 using ReactiveUI;
-using SkiaSharp;
 
 namespace Flarial.Launcher.Views;
 
@@ -36,7 +33,6 @@ public partial class MainWindow : Window
     const int DwmwcpRound = 2;
     const uint DwmColorNone = 0xFFFFFFFE;
 
-    static readonly HttpClient s_httpClient = new();
     Uri? _adUri;
     bool _promotionLoaded;
 
@@ -144,25 +140,16 @@ public partial class MainWindow : Window
             if (promotions.Length == 0) return;
 
             var promotion = promotions[0];
-            if (!Uri.TryCreate(promotion.Uri, UriKind.Absolute, out _adUri)
-                || !Uri.TryCreate(promotion.Image, UriKind.Absolute, out var imageUri))
-            {
+            if (!Uri.TryCreate(promotion.Uri, UriKind.Absolute, out _adUri))
                 return;
-            }
-
-            using var response = await s_httpClient.GetAsync(imageUri);
-            if (!response.IsSuccessStatusCode || response.Content.Headers.ContentType?.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) != true)
-                return;
-
-            using var stream = await response.Content.ReadAsStreamAsync();
-            using MemoryStream buffer = new();
-            await stream.CopyToAsync(buffer);
-            buffer.Position = 0;
 
             Bitmap bitmap;
             try
             {
-                bitmap = CreatePromotionBitmap(buffer);
+                using var stream = await PromotionManager.GetImageStreamAsync(promotion);
+                if (stream is null) return;
+
+                bitmap = new Bitmap(stream);
             }
             catch
             {
@@ -193,22 +180,6 @@ public partial class MainWindow : Window
         {
             // Promotions are optional; ad failures should never interrupt the launcher.
         }
-    }
-
-    static Bitmap CreatePromotionBitmap(Stream stream)
-    {
-        using var skStream = new SKManagedStream(stream);
-        using var source = SKBitmap.Decode(skStream) ?? throw new InvalidDataException("Unable to decode promotion image.");
-        using var surface = SKSurface.Create(new SKImageInfo(source.Width, source.Height, SKColorType.Bgra8888, SKAlphaType.Opaque));
-
-        var canvas = surface.Canvas;
-        canvas.Clear(SKColors.Black);
-        canvas.DrawBitmap(source, 0, 0);
-        canvas.Flush();
-
-        using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        return new Bitmap(data.AsStream());
     }
 
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);

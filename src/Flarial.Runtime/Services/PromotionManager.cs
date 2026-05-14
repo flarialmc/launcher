@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -16,6 +17,29 @@ public static class PromotionManager
             return await JsonSerializer.DeserializeAsync<Promotion[]>(stream);
         }
         catch { return []; }
+    }
+
+    public static async Task<Stream?> GetImageStreamAsync(Promotion promotion)
+    {
+        try
+        {
+            if (!Uri.TryCreate(promotion.Image, UriKind.Absolute, out var imageUri))
+                return null;
+
+            using var response = await HttpStack.GetAsync(imageUri.ToString());
+            if (!response.IsSuccessStatusCode ||
+                response.Content.Headers.ContentType?.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) != true)
+            {
+                return null;
+            }
+
+            var buffer = new MemoryStream();
+            using var stream = await response.Content.ReadAsStreamAsync();
+            await stream.CopyToAsync(buffer);
+            buffer.Position = 0;
+            return buffer;
+        }
+        catch { return null; }
     }
 }
 

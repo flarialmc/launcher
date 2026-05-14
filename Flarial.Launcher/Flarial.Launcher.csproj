@@ -39,11 +39,6 @@
     <ItemGroup>
         <ProjectReference Include="..\src\Flarial.Runtime\Flarial.Runtime.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="System.Net.Http" />
-    </ItemGroup>
-
     <Target Name="KeepSinglePublishedExe" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
         <ItemGroup>
             <PublishedFiles Include="$(PublishDir)**\*" Exclude="$(PublishDir)$(AssemblyName).exe" />
