@@ -13,25 +13,13 @@ namespace Flarial.Launcher.Xaml;
 
 sealed class XamlHost(UIElement content) : HwndHost
 {
-    static XamlHost() => ComponentDispatcher.ThreadFilterMessage += OnThreadFilterMessage;
-
-    static void OnThreadFilterMessage(ref MSG msg, ref bool handled)
-    {
-        if (handled) return;
-
-        var root = GetAncestor((HWND)msg.hwnd, GA_ROOT);
-        if (msg.hwnd == root || root.IsNull) return;
-
-        SendMessage(root, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
-    }
-
     readonly DesktopWindowXamlSource _xaml = new() { Content = content };
 
     protected override HandleRef BuildWindowCore(HandleRef hwndParent)
     {
         var native = (IDesktopWindowXamlSourceNative)_xaml;
 
-        native.AttachToWindow((HWND)hwndParent.Handle);
+        native.AttachToWindow(new(hwndParent.Handle));
         SetClassLongPtr(native.WindowHandle, GCLP_HBRBACKGROUND, GetStockObject(BLACK_BRUSH));
 
         return new(this, native.WindowHandle);

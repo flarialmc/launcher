@@ -2,17 +2,18 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Management;
 using Flarial.Runtime.Modding;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Media;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
+using static Windows.Win32.UI.WindowsAndMessaging.GET_ANCESTOR_FLAGS;
 
 namespace Flarial.Launcher;
 
@@ -32,8 +33,19 @@ Exception: {1}
 
     static App()
     {
-        SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
+        SetErrorMode(SEM_FAILCRITICALERRORS);
+        ComponentDispatcher.ThreadFilterMessage += OnThreadFilterMessage;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    }
+
+    static void OnThreadFilterMessage(ref MSG msg, ref bool handled)
+    {
+        if (handled) return;
+
+        var root = GetAncestor(new(msg.hwnd), GA_ROOT);
+        if (msg.hwnd == root || root.IsNull) return;
+
+        SendMessage(root, (uint)msg.message, (nuint)(nint)msg.wParam, msg.lParam);
     }
 
     static void OnUnhandledException(Exception exception)

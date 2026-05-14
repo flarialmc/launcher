@@ -17,24 +17,26 @@ sealed class WebView : HwndHost
 {
     static readonly WebViewControlProcess s_process = new();
 
-    static WebView() => AppDomain.CurrentDomain.ProcessExit += static (_, _) =>
+    internal Task Task { get; set; } = null!;
+
+    internal WebViewControl Current { get; private set; } = null!;
+
+    void OnProcessExit([Optional] object sender, [Optional] EventArgs args)
     {
-        foreach (var control in s_process.GetWebViewControls()) control.Close();
-        try { s_process.Terminate(); } catch { }
-    };
+        AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
+        try { Current.Close(); } catch { }
+    }
 
-    internal Task Task { get; set { field ??= value; } } = null!;
-
-    internal WebViewControl Control { get; private set { field ??= value; } } = null!;
+    internal WebView() => AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
     async Task CreateAsync(nint handle)
     {
-        Control = await s_process.CreateWebViewControlAsync(handle, new());
+        Current = await s_process.CreateWebViewControlAsync(handle, new());
 
         DpiChanged += OnSizeChanged;
         SizeChanged += OnSizeChanged;
 
-        OnSizeChanged(null!, null!);
+        OnSizeChanged();
     }
 
     protected unsafe override HandleRef BuildWindowCore(HandleRef hwndParent)
@@ -51,17 +53,17 @@ sealed class WebView : HwndHost
 
     protected override void DestroyWindowCore(HandleRef hwnd)
     {
-        Control.Close();
+        OnProcessExit();
         DestroyWindow(new(Handle));
     }
 
-    void OnSizeChanged(object sender, EventArgs args)
+    void OnSizeChanged([Optional] object sender, [Optional] EventArgs args)
     {
         var dpi = VisualTreeHelper.GetDpi(this);
 
         var width = dpi.DpiScaleX * ActualWidth;
         var height = dpi.DpiScaleY * ActualHeight;
 
-        Control.Bounds = new(0, 0, width, height);
+        Current.Bounds = new(0, 0, width, height);
     }
 }
