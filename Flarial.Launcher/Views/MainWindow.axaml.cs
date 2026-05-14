@@ -24,10 +24,11 @@ public partial class MainWindow : Window
         InitializeComponent();
         
         ToolTipLayerInstance = ToolTipLayer;
-        
-        ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
-        ExtendClientAreaTitleBarHeightHint = -1;
+
+        SystemDecorations = SystemDecorations.None;
+        //ExtendClientAreaToDecorationsHint = true;
+        //ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
+        //ExtendClientAreaTitleBarHeightHint = -1;
         
         MessageBus.Current.Listen<WindowStateArgs>()
             .Where(e => e == WindowStateArgs.Minimize)

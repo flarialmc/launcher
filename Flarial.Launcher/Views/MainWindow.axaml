@@ -9,7 +9,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/app.ico" CanResize="False"
         Title="Flarial Launcher" Height="500" Width="800"
-        Background="{StaticResource WindowColor}">
+        Background="Transparent">
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
     </Window.Clip>
@@ -17,43 +17,45 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Grid>
-        <Grid Background="Transparent" PointerPressed="DragWindow"/>
+    <Border CornerRadius="25" Background="{StaticResource WindowColor}">
         <Grid>
-            <Grid.Effect>
-                <BlurEffect Radius="0"/>
-            </Grid.Effect>
+            <Grid Background="Transparent" PointerPressed="DragWindow"/>
+            <Grid>
+                <Grid.Effect>
+                    <BlurEffect Radius="0"/>
+                </Grid.Effect>
             
-            <ContentControl Name="HomeViewControl" Content="{Binding HomeViewModel}">
-                <ContentControl.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                <ContentControl Name="HomeViewControl" Content="{Binding HomeViewModel}">
+                    <ContentControl.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            <TranslateTransform Y="0"/>
+                        </TransformGroup>
+                    </ContentControl.RenderTransform>
+                </ContentControl>
+                <ContentControl IsHitTestVisible="False" Opacity="0" Name="SettingsViewControl" Content="{Binding SettingsViewModel}">
+                    <ContentControl.RenderTransform>
                         <TranslateTransform Y="0"/>
-                    </TransformGroup>
-                </ContentControl.RenderTransform>
+                    </ContentControl.RenderTransform>
+                </ContentControl>
+            </Grid>
+        
+            <Canvas x:Name="ToolTipLayer"
+                    IsHitTestVisible="False"
+                    ZIndex="10000"/>
+        
+            <views:NotificationAreaView DataContext="{Binding NotificationArea}"/>
+        
+            <ContentControl Content="{Binding CurrentDialog}"
+                            IsHitTestVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            IsVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="vm:MessageBoxViewModel">
+                        <views:MessageBoxView/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
             </ContentControl>
-            <ContentControl IsHitTestVisible="False" Opacity="0" Name="SettingsViewControl" Content="{Binding SettingsViewModel}">
-                <ContentControl.RenderTransform>
-                    <TranslateTransform Y="0"/>
-                </ContentControl.RenderTransform>
-            </ContentControl>
+        
         </Grid>
-        
-        <Canvas x:Name="ToolTipLayer"
-                IsHitTestVisible="False"
-                ZIndex="10000"/>
-        
-        <views:NotificationAreaView DataContext="{Binding NotificationArea}"/>
-        
-        <ContentControl Content="{Binding CurrentDialog}"
-                        IsHitTestVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        IsVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <ContentControl.DataTemplates>
-                <DataTemplate DataType="vm:MessageBoxViewModel">
-                    <views:MessageBoxView/>
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-        
-    </Grid>
+    </Border>
 </Window>
