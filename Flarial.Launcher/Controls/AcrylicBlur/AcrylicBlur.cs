@@ -41,6 +41,6 @@ public class AcrylicBlur : ContentControl
     public override void Render(DrawingContext context)
     {
         ImmutableExperimentalAcrylicMaterial mat = Material != null ? (ImmutableExperimentalAcrylicMaterial) Material.ToImmutable() : DefaultAcrylicMaterial;
-        context.Custom(new AcrylicBlurRenderOperation(this, mat, Blur, new Rect(default, Bounds.Size), CornerRadius));
+        context.Custom(new AcrylicBlurRenderOperation(mat, Blur, new Rect(default, Bounds.Size), CornerRadius));
     }
 }

@@ -97,7 +97,6 @@ public class SpotlightDecorator : Decorator
         private SKRuntimeEffect? _effect;
         private Point _mousePosition;
         private RenderTargetBitmap? _buffer;
-        private bool _isActive;
 
         public SpotlightAdorner(SpotlightDecorator host)
         {
@@ -163,14 +162,12 @@ public class SpotlightDecorator : Decorator
                 _mousePosition = e.GetPosition(_host);
                 // Trigger Fade In
                 _host.SpotlightOpacity = 1.0;
-                _isActive = true;
                 InvalidateVisual();
             };
             
             _host.PointerEntered += (s, e) => {
                  // Trigger Fade In
                 _host.SpotlightOpacity = 1.0;
-                _isActive = true;
             };
 
             _host.PointerExited += (s, e) => {
@@ -178,33 +175,9 @@ public class SpotlightDecorator : Decorator
                 // Note: We DO NOT reset _mousePosition here. 
                 // This lets the light fade out right where the mouse left.
                 _host.SpotlightOpacity = 0.0;
-                _isActive = false;
             };
         }
         
-        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-        {
-            base.OnAttachedToVisualTree(e);
-            // Subscribe to render events to catch visual changes
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel != null)
-            {
-                topLevel.RequestAnimationFrame(OnAnimationFrame);
-            }
-        }
-
-        private void OnAnimationFrame(TimeSpan time)
-        {
-            // Keep requesting frames while active or animating
-            if (_isActive || _host.SpotlightOpacity > 0.01)
-            {
-                InvalidateVisual();
-            }
-            
-            var topLevel = TopLevel.GetTopLevel(this);
-            topLevel?.RequestAnimationFrame(OnAnimationFrame);
-        }
-
         public override void Render(DrawingContext context)
         {
             if (_host.Child == null || _host.Bounds.Width <= 0 || _host.Bounds.Height <= 0) return;

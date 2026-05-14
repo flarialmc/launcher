@@ -5,13 +5,11 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
-using Avalonia.Threading;
 using SkiaSharp;
 
 namespace Flarial.Launcher.Controls.AcrylicBlur;
 
 public class AcrylicBlurRenderOperation(
-    AcrylicBlur acrylicBlur,
     ImmutableExperimentalAcrylicMaterial material,
     int blur,
     Rect bounds,
@@ -84,17 +82,8 @@ public class AcrylicBlurRenderOperation(
         if (!lease.SkCanvas.TotalMatrix.TryInvert(out SKMatrix currentInvertedTransform) || lease.SkSurface == null)
             return;
 
-        if (lease.SkCanvas.GetLocalClipBounds(out SKRect bounds) && !bounds.Contains(SKRect.Create(bounds.Left, bounds.Top, (float) acrylicBlur.Bounds.Width, (float) acrylicBlur.Bounds.Height)))
-        {
-            Dispatcher.UIThread.Invoke(() => acrylicBlur.InvalidateVisual());
-        }
-        else
-        {
-            _backgroundSnapshot?.Dispose();
-            _backgroundSnapshot = lease.SkSurface.Snapshot();
-        }
-        
-        _backgroundSnapshot ??= lease.SkSurface.Snapshot();
+        _backgroundSnapshot?.Dispose();
+        _backgroundSnapshot = lease.SkSurface.Snapshot();
         
         float width = (float)_bounds.Width;
         float height = (float)_bounds.Height;
@@ -128,8 +117,6 @@ public class AcrylicBlurRenderOperation(
 
             using SKPaint acrylliPaint = new SKPaint();
             acrylliPaint.IsAntialias = true;
-
-            double opacity = 1;
 
             const double noiseOpacity = 0.0225;
 
