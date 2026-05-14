@@ -61,9 +61,10 @@
                              CornerRadius="7.5,0,0,7.5" 
                              Blur="25" 
                              Name="Card"
+                             Opacity="0"
                              Margin="10,10,0,10">
         <acrylicBlur:AcrylicBlur.RenderTransform>
-            <TranslateTransform/>
+            <TranslateTransform X="120"/>
         </acrylicBlur:AcrylicBlur.RenderTransform>
         <acrylicBlur:AcrylicBlur.Effect>
             <DropShadowEffect OffsetX="0" OffsetY="0" 

@@ -22,7 +22,7 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
 
         this.WhenActivated(disposables =>
         {
-            Dispatcher.UIThread.Post(PlayEnterAnimation, DispatcherPriority.Render);
+            PlayEnterAnimation();
 
             this.WhenAnyValue(x => x.ViewModel)
                 .WhereNotNull()
@@ -38,7 +38,7 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
         var translate = (TranslateTransform)card.RenderTransform!;
 
         card.Opacity = 0;
-        translate.X  = 1200;
+        translate.X  = 120;
 
         var anim = new Animation
         {
