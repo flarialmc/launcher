@@ -5,6 +5,7 @@
              xmlns:vm="using:Flarial.Launcher.ViewModels"
              xmlns:types="clr-namespace:Flarial.Launcher.Types"
              xmlns:controls="clr-namespace:Flarial.Launcher.Controls.ToolTip"
+             xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Flarial.Launcher.Views.HomeView"
              x:DataType="vm:HomeViewModel"
@@ -54,10 +55,14 @@
             <StackPanel IsEnabled="true" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" HorizontalAlignment="Center" FontSize="28" Foreground="White"/>
                 <TextBlock Margin="0,0,0,0" Text="Ready to play?" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5"/>
-                <StackPanel Background="Transparent">
-                    <Button Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}" Content="{Binding LaunchText}" IsEnabled="{Binding IsLaunchEnabled}"/>
-                    <Button Name="SettingsButton" Classes="SettingsButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsPage}"/>
-                </StackPanel>
+                <VisualLayerManager>
+                    <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+                        <StackPanel Background="Transparent">
+                            <Button Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}" Content="{Binding LaunchText}" IsEnabled="{Binding IsLaunchEnabled}"/>
+                            <Button Name="SettingsButton" Classes="SettingsButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsPage}"/>
+                        </StackPanel>
+                    </spotlightDecorator:SpotlightDecorator>
+                </VisualLayerManager>
             </StackPanel>
                 
             <!--Launcher Version + License Indicator-->

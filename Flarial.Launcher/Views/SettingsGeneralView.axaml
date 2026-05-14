@@ -5,6 +5,7 @@
              xmlns:vm="using:Flarial.Launcher.ViewModels"
              xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
              xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
+             xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
              mc:Ignorable="d" 
              x:Class="Flarial.Launcher.Views.SettingsGeneralView"
              x:DataType="vm:SettingsGeneralViewModel"
@@ -65,42 +66,46 @@
             </Setter>
         </Style>
     </UserControl.Styles>
-    <StackPanel Margin="20" Background="Transparent">
-        <Grid HorizontalAlignment="Left">
-            <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
-            <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-        </Grid>
+    <VisualLayerManager>
+        <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+            <StackPanel Margin="20" Background="Transparent">
+                <Grid HorizontalAlignment="Left">
+                    <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
+                    <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                </Grid>
 
-        <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
-                                   SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
-        <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-            <Grid ColumnDefinitions="*,Auto" Height="38" Margin="0,10,0,5">
-                <TextBox Grid.Column="0"
-                         Height="38"
-                         VerticalAlignment="Center"
-                         Watermark="Custom DLL Path"
-                         Text="{Binding CustomDllPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                <Button Grid.Column="1"
-                        Classes="BrowseDllButton"
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center"
-                        Content="Browse"
-                        Click="BrowseCustomDll_OnClick"/>
-            </Grid>
-        </Expander>
+                <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
+                                           SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
+                <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
+                    <Grid ColumnDefinitions="*,Auto" Height="38" Margin="0,10,0,5">
+                        <TextBox Grid.Column="0"
+                                 Height="38"
+                                 VerticalAlignment="Center"
+                                 Watermark="Custom DLL Path"
+                                 Text="{Binding CustomDllPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                    <Button Classes="BrowseDllButton"
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Content="Browse"
+                            Click="BrowseCustomDll_OnClick"/>
+                    </Grid>
+                </Expander>
 
-        <Grid HorizontalAlignment="Left">
-            <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
-            <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-        </Grid>
+                <Grid HorizontalAlignment="Left">
+                    <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
+                    <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                </Grid>
 
-        <Grid>
-            <TextBlock Text="Automatic Updates" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Downloads launcher updates automatically"/>
-            <ToggleButton IsChecked="{Binding AutomaticUpdates, Mode=TwoWay}"/>
-        </Grid>
-        <Grid>
-            <TextBlock Text="Hardware Acceleration" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Uses your GPU to improve launcher performance, turn this off if it's causing issues"/>
-            <ToggleButton IsChecked="{Binding HardwareAcceleration, Mode=TwoWay}"/>
-        </Grid>
-    </StackPanel>
+                <Grid>
+                    <TextBlock Text="Automatic Updates" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Downloads launcher updates automatically"/>
+                    <ToggleButton IsChecked="{Binding AutomaticUpdates, Mode=TwoWay}"/>
+                </Grid>
+                <Grid>
+                    <TextBlock Text="Hardware Acceleration" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Uses your GPU to improve launcher performance, turn this off if it's causing issues"/>
+                    <ToggleButton IsChecked="{Binding HardwareAcceleration, Mode=TwoWay}"/>
+                </Grid>
+            </StackPanel>
+        </spotlightDecorator:SpotlightDecorator>
+    </VisualLayerManager>
 </UserControl>

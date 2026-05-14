@@ -144,14 +144,8 @@ public class SpotlightDecorator : Decorator
                     half3 light = uColor;
                     float finalIntensity = mix(0.15, 0.8, borderIntensity * 0.8);
 
-                    // switch r and b channels because windows is just dumb like that idk
-                    half4 c2 = c;
-                    c2.r = c.b;
-                    c2.b = c.r;
-
-                    // Combine and Apply Opacity
-                    // We multiply the added light by uOpacity
-                    return c2 + half4(light * spotIntensity * finalIntensity * uOpacity * 0.7, 0);
+                    float overlayAlpha = spotIntensity * finalIntensity * uOpacity * 0.45;
+                    return half4(light * overlayAlpha, overlayAlpha);
                 }";
 
             _effect = SKRuntimeEffect.CreateShader(shaderCode, out string error);
