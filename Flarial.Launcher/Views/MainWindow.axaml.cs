@@ -46,9 +46,7 @@ public partial class MainWindow : Window
         
         ToolTipLayerInstance = ToolTipLayer;
         
-        ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
-        ExtendClientAreaTitleBarHeightHint = -1;
+        SystemDecorations = SystemDecorations.None;
         Activated += OnActivated;
         Deactivated += OnDeactivated;
         

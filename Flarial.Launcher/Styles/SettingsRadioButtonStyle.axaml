@@ -41,12 +41,7 @@
                             </Viewbox>
                         </Border>
                         <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{TemplateBinding Property=RadioButton.Content}" VerticalAlignment="Center" FontSize="18" Foreground="White"/>
-                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="#ffffff" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource SecondaryBorderColor}" Opacity="0.0" CornerRadius="15">
-                            <Border.Styles>
-                                <Style Selector="Border:pointerover">
-                                    <Setter Property="Opacity" Value="0.025"/>
-                                </Style>
-                            </Border.Styles>
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="#ffffff" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource SecondaryBorderColor}" Opacity="0.0" CornerRadius="15" Name="HoverBorder">
                             <Border.Transitions>
                                 <Transitions>
                                     <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
@@ -84,6 +79,10 @@
         
         <Style Selector="^:checked /template/ Border#UncheckedIconBorder">
             <Setter Property="Opacity" Value="0.0"/>
+        </Style>
+
+        <Style Selector="^:pointerover:not(:checked):enabled /template/ Border#HoverBorder">
+            <Setter Property="Opacity" Value="0.025"/>
         </Style>
     </Style>
     
