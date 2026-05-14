@@ -4,17 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Flarial.Launcher.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         x:Class="Flarial.Launcher.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/app.ico" CanResize="False"
+        Icon="/Assets/app.ico" CanResize="True"
         Title="Flarial Launcher" Height="500" Width="800"
+        MinHeight="420" MinWidth="680"
         SystemDecorations="None"
         Background="Transparent"
         TransparencyLevelHint="Transparent">
-    <Window.Clip>
-        <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
-    </Window.Clip>
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
@@ -22,6 +20,14 @@
     <Border Name="MainBorder" Background="{StaticResource WindowColor}" CornerRadius="25" ClipToBounds="True">
         <Grid>
             <Grid Background="Transparent" PointerPressed="DragWindow"/>
+            <Border x:Name="ResizeNorth" ZIndex="10001" Height="8" VerticalAlignment="Top" Background="Transparent" Cursor="SizeNorthSouth" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeSouth" ZIndex="10001" Height="8" VerticalAlignment="Bottom" Background="Transparent" Cursor="SizeNorthSouth" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeWest" ZIndex="10001" Width="8" HorizontalAlignment="Left" Background="Transparent" Cursor="SizeWestEast" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeEast" ZIndex="10001" Width="8" HorizontalAlignment="Right" Background="Transparent" Cursor="SizeWestEast" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeNorthWest" ZIndex="10002" Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="TopLeftCorner" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeNorthEast" ZIndex="10002" Width="14" Height="14" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="TopRightCorner" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeSouthWest" ZIndex="10002" Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomLeftCorner" PointerPressed="ResizeWindow"/>
+            <Border x:Name="ResizeSouthEast" ZIndex="10002" Width="14" Height="14" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomRightCorner" PointerPressed="ResizeWindow"/>
             <Grid>
                 <Grid.Effect>
                     <BlurEffect Radius="0"/>

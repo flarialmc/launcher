@@ -21,19 +21,19 @@ public partial class SettingsView : UserControl
             .Subscribe(PageTransition);
     }
 
-    private double _currentPageY;
+    private int _currentPageIndex;
 
     private async void PageTransition(PageTransitions page)
     {
-        var selectedPageY = page switch
+        var selectedPageIndex = page switch
         {
             PageTransitions.SettingsGeneralPage => 0,
-            PageTransitions.SettingsVersionsPage => 500,
-            PageTransitions.SettingsConfigsPage => 1000,
-            _ => _currentPageY
+            PageTransitions.SettingsVersionsPage => 1,
+            PageTransitions.SettingsConfigsPage => 2,
+            _ => _currentPageIndex
         };
 
-        if (Math.Abs(selectedPageY - _currentPageY) < 1)
+        if (selectedPageIndex == _currentPageIndex)
             return;
 
         if (DataContext is not SettingsViewModel settingsViewModel) return;
@@ -42,6 +42,9 @@ public partial class SettingsView : UserControl
         UserControlGrid.IsEnabled = false;
 
         if (UserControlGrid.RenderTransform is not ScaleTransform) return;
+
+        var pageHeight = GetPageHeight();
+        var selectedPageY = selectedPageIndex * pageHeight;
         
         var zoomOut = new Animation
         {
@@ -63,8 +66,8 @@ public partial class SettingsView : UserControl
         };
 
         var generalMove = CreateMove(0 - selectedPageY);
-        var versionsMove = CreateMove(500 - selectedPageY);
-        var configsMove = CreateMove(1000 - selectedPageY);
+        var versionsMove = CreateMove(pageHeight - selectedPageY);
+        var configsMove = CreateMove(pageHeight * 2 - selectedPageY);
         
         var zoomIn = new Animation
         {
@@ -95,7 +98,7 @@ public partial class SettingsView : UserControl
         await Task.Delay(700);
 
         UserControlGrid.IsEnabled = true;
-        _currentPageY = selectedPageY;
+        _currentPageIndex = selectedPageIndex;
         settingsViewModel.IsAnimating = false;
         return;
 
@@ -114,5 +117,23 @@ public partial class SettingsView : UserControl
                 }
             }
         };
+    }
+
+    private void UserControlGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e) => PositionPages();
+
+    private void PositionPages()
+    {
+        var pageHeight = GetPageHeight();
+        SetPageOffset(SettingsGeneralViewControl, -_currentPageIndex * pageHeight);
+        SetPageOffset(SettingsVersionsViewControl, (1 - _currentPageIndex) * pageHeight);
+        SetPageOffset(SettingsConfigsViewControl, (2 - _currentPageIndex) * pageHeight);
+    }
+
+    private double GetPageHeight() => Math.Max(1, UserControlGrid.Bounds.Height);
+
+    private static void SetPageOffset(Control control, double y)
+    {
+        if (control.RenderTransform is TranslateTransform translate)
+            translate.Y = y;
     }
 }

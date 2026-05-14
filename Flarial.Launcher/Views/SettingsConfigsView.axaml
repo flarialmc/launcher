@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Flarial.Launcher.ViewModels"
              mc:Ignorable="d"
-             Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsConfigsView"
              x:DataType="vm:SettingsConfigsViewModel"
              Background="#201A1B" CornerRadius="20">

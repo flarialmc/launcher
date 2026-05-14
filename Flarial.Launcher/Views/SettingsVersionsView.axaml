@@ -6,7 +6,6 @@
              xmlns:views="clr-namespace:Flarial.Launcher.Views"
              xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
              mc:Ignorable="d"
-             Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsVersionsView"
              x:DataType="vm:SettingsVersionsViewModel"
              Background="#201A1B" 

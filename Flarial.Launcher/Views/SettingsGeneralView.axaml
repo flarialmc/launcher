@@ -6,7 +6,6 @@
              xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
              xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
              mc:Ignorable="d" 
-             Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsGeneralView"
              x:DataType="vm:SettingsGeneralViewModel"
              Background="{StaticResource BackgroundColor}" 
@@ -66,9 +65,6 @@
             </Setter>
         </Style>
     </UserControl.Styles>
-    <UserControl.Clip>
-        <RectangleGeometry Rect="0,0,555,470"/>
-    </UserControl.Clip>
     <StackPanel Margin="20" Background="Transparent">
         <Grid HorizontalAlignment="Left">
             <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>

@@ -6,11 +6,7 @@
              xmlns:types="clr-namespace:Flarial.Launcher.Types"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Flarial.Launcher.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel"
-             Width="800" Height="500">
-    <UserControl.Clip>
-        <RectangleGeometry Rect="0,0,800,500"/>
-    </UserControl.Clip>
+             x:DataType="vm:SettingsViewModel">
     <Grid Margin="15" ColumnDefinitions="200,15,*">
         <Border Grid.Column="0" IsHitTestVisible="False" Background="#201A1B" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource BackgroundBorderColor}" CornerRadius="20"/>
         <Grid Grid.Column="0" RowDefinitions="Auto,*">
@@ -47,7 +43,7 @@
             </Grid>
             
         </Grid>
-        <Grid Grid.Column="2" Height="470" Width="555" Name="UserControlGrid">
+        <Grid Grid.Column="2" Name="UserControlGrid" ClipToBounds="True" SizeChanged="UserControlGrid_OnSizeChanged">
             <Grid.RenderTransform>
                 <ScaleTransform ScaleX="1" ScaleY="1"/>
             </Grid.RenderTransform>
