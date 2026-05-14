@@ -275,7 +275,7 @@ public class ToolTipControl : ContentControl
         const double arrowHalfWidth = 6; // arrowW / 2
         const double margin = cornerRadius + arrowHalfWidth + 2;
 
-        return Math.Clamp(x, margin, width - margin);
+        return Math.Min(Math.Max(x, margin), width - margin);
     }
 
     

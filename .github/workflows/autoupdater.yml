@@ -1,0 +1,96 @@
+name: Build launcher and bump version number
+on:
+  push:
+    branches: ["v3-backend"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version-number:
+    outputs:
+      version_number: ${{ steps.get_new_version.outputs.version_no }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: check commit type
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "${{ github.event.head_commit.message }}" == *"release:"* ]]; then
+              echo "Continuing to build as release"
+          else
+              echo "Not a release commit, exiting (note: this may take 5-10 seconds)"
+              gh run cancel ${{ github.run_id }}
+              gh run watch ${{ github.run_id }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: setup git
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "actions@github.com"
+      - name: update file version
+        id: get_new_version
+        run: |
+          old_version=$(sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' "src/AssemblyVersion.cs")
+          new_version=$(tail -n 1 "src/AssemblyVersion.cs" | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          echo "$old_version"
+          echo "$new_version"
+          echo "version=$new_version" >> "$GITHUB_ENV"
+          echo "version_no=$new_version" >> "$GITHUB_OUTPUT"
+          sed -i "s/$old_version/$new_version/g" "src/AssemblyVersion.cs"
+
+      - name: push to origin
+        run: |
+          git add "src/AssemblyVersion.cs"
+          git commit -m "Update file version"
+          git push origin v3-backend
+
+  deploy:
+    needs: bump-version-number
+    runs-on: windows-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Checkout cdn repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'flarialmc/newcdn'
+          ref: 'main'
+          path: 'cdn'
+          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet publish "Flarial.Launcher/Flarial.Launcher.csproj"
+
+      - name: update new version
+        if: success()
+        run: |
+          cd cdn
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@example.com"
+          new_version="${{ needs.bump-version-number.outputs.version_number }}"
+          contents="$(jq '.version = "'$new_version'"' launcher/launcherVersion.txt)" && \
+          echo -E "${contents}" > launcher/launcherVersion.txt
+
+          cat launcher/launcherVersion.txt
+          git add launcher/launcherVersion.txt
+          git commit -m "Bump launcher version"
+          git push origin main
+
+          cp D:/a/launcher/launcher/Flarial.Launcher/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/Flarial.Launcher.exe ./launcher/Flarial.Launcher.exe
+          git add launcher/Flarial.Launcher.exe
+          git commit -a -m "Update launcher"
+          git push origin main
+        shell: bash

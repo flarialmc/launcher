@@ -97,7 +97,7 @@ public class VersionItemViewModel : ViewModelBase
         {
             await _item.InstallAsync((value, _) =>
             {
-                Dispatcher.UIThread.Post(() => InstallPercentage = Math.Clamp(value, 0, 100));
+                Dispatcher.UIThread.Post(() => InstallPercentage = Math.Min(Math.Max(value, 0), 100));
             });
 
             State = VersionItemState.Installed;

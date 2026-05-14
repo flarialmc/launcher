@@ -57,6 +57,24 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
             return;
         }
 
+        if (await FlarialLauncher.CheckForUpdatesAsync())
+        {
+            if (_settings.AutomaticUpdates
+                || await ConfirmAsync(
+                    "Launcher update available",
+                    "An update is available for the launcher.\n\nUpdating the launcher provides fixes and new features. New versions of the client and Minecraft might require a launcher update.",
+                    "Update",
+                    "Later"))
+            {
+                HomeViewModel.Status = "Updating...";
+                HomeViewModel.LaunchText = "Updating...";
+
+                await FlarialLauncher.DownloadAsync(value =>
+                    Dispatcher.UIThread.Post(() => HomeViewModel.LaunchText = $"Updating... {value}%"));
+                return;
+            }
+        }
+
         var registry = await VersionRegistry.CreateAsync();
         HomeViewModel.SetVersionRegistry(registry);
         SettingsViewModel.SettingsVersionsViewModel.SetVersionRegistry(registry);

@@ -31,7 +31,7 @@ public class GradientStopOffset() : IValueConverter
             _ => center
         };
         
-        result = Math.Clamp(result, 0d, 1d);
+        result = Math.Min(Math.Max(result, 0d), 1d);
 
         return result;
     }

@@ -100,8 +100,8 @@ public partial class MainWindow : Window
 
     void ApplyRoundedWindowRegion()
     {
-        var handle = TryGetPlatformHandle()?.Handle ?? 0;
-        if (handle == 0) return;
+        var handle = TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
+        if (handle == IntPtr.Zero) return;
 
         DisableNativeWindowBorder(handle);
 
@@ -147,7 +147,7 @@ public partial class MainWindow : Window
             if (!response.IsSuccessStatusCode || response.Content.Headers.ContentType?.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) != true)
                 return;
 
-            await using var stream = await response.Content.ReadAsStreamAsync();
+            using var stream = await response.Content.ReadAsStreamAsync();
             using MemoryStream buffer = new();
             await stream.CopyToAsync(buffer);
             buffer.Position = 0;
