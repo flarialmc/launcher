@@ -1,6 +1,9 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Flarial.Launcher.Controls;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
 using Windows.Win32.Foundation;
@@ -39,12 +42,34 @@ sealed class HostWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         Title = "Flarial Launcher";
-        Content = new XamlHost(~new XamlContent(settings))
+
+        const double sideWidth = 200;
+        const double centerWidth = 960;
+        const double height = 540;
+
+        Grid grid = new() { Background = Brushes.Black };
+        grid.ColumnDefinitions.Add(new() { Width = new(sideWidth) });
+        grid.ColumnDefinitions.Add(new() { Width = new(centerWidth) });
+        grid.ColumnDefinitions.Add(new() { Width = new(sideWidth) });
+
+        var leftAd = new BannerAdsView(0) { Width = sideWidth, Height = height };
+        Grid.SetColumn(leftAd, 0);
+        grid.Children.Add(leftAd);
+
+        var host = new XamlHost(~new XamlContent(settings))
         {
-            Width = 960,
-            Height = 540,
+            Width = centerWidth,
+            Height = height,
             Focusable = true
         };
+        Grid.SetColumn(host, 1);
+        grid.Children.Add(host);
+
+        var rightAd = new BannerAdsView(1) { Width = sideWidth, Height = height };
+        Grid.SetColumn(rightAd, 2);
+        grid.Children.Add(rightAd);
+
+        Content = grid;
     }
 
     static nint HwndSourceHook(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)

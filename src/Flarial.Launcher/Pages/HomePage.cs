@@ -89,7 +89,7 @@ sealed class HomePage : Grid
 
         Children.Add(new PromotionImagesBox
         {
-            VerticalAlignment = VerticalAlignment.Bottom,
+            VerticalAlignment = VerticalAlignment.Top,
             HorizontalAlignment = HorizontalAlignment.Center
         });
 
