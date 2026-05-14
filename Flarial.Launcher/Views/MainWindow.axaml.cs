@@ -87,6 +87,12 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        TerminateProcess(GetCurrentProcess(), 0);
+    }
+
     void OnActivated(object? sender, EventArgs e)
     {
         if (_promotionLoaded)
@@ -271,4 +277,10 @@ public partial class MainWindow : Window
 
     [DllImport("dwmapi.dll")]
     static extern int DwmSetWindowAttribute(nint hwnd, int attribute, ref uint attributeValue, int attributeSize);
+
+    [DllImport("kernel32.dll")]
+    static extern nint GetCurrentProcess();
+
+    [DllImport("kernel32.dll")]
+    static extern bool TerminateProcess(nint processHandle, uint exitCode);
 }

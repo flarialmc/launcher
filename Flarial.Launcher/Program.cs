@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Threading;
 using Avalonia;
+using Avalonia.Skia;
+using Avalonia.Win32;
 using Flarial.Runtime.Modding;
 using ReactiveUI.Avalonia;
 using static System.Environment;
@@ -33,7 +35,8 @@ sealed class Program
 
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
+            .UseWin32()
+            .UseSkia()
             .LogToTrace()
             .UseReactiveUI();
 }
