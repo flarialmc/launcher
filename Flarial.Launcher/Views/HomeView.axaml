@@ -16,9 +16,9 @@
         <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="25">
             <Grid>
                 
-                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.png"/>
+                <Image Margin="0,70,0,70" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.png"/>
                 
-                <Grid Margin="0,75,0,0" VerticalAlignment="Top" Height="150">
+                <Grid Margin="0,65,0,0" VerticalAlignment="Top" Height="160">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
                             <GradientStop Color="#ff201A1B" Offset="0"/>
@@ -27,7 +27,7 @@
                     </Grid.Background>
                 </Grid>
                 
-                <Grid Margin="0,0,0,75" VerticalAlignment="Bottom" Height="150">
+                <Grid Margin="0,0,0,65" VerticalAlignment="Bottom" Height="160">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
                             <GradientStop Color="#00201A1B" Offset="0"/>

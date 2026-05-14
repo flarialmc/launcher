@@ -34,6 +34,7 @@
                             <TranslateTransform Y="0"/>
                         </TransformGroup>
                     </ContentControl.RenderTransform>
+                    <ContentControl.RenderTransformOrigin>50%,0%</ContentControl.RenderTransformOrigin>
                 </ContentControl>
                 <ContentControl IsHitTestVisible="False" Opacity="0" Name="SettingsViewControl" Content="{Binding SettingsViewModel}">
                     <ContentControl.RenderTransform>
