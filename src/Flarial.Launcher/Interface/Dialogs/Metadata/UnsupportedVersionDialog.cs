@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Flarial.Launcher.Interface.Presentation;
 using Flarial.Runtime.Versions;
 
-namespace Flarial.Launcher.Interface.Dialogs;
+namespace Flarial.Launcher.Interface.Dialogs.Metadata;
 
-sealed class UnsupportedVersionDialog(string preferred) : MasterDialog
+sealed class UnsupportedVersionDialog(string preferred) : AppDialog
 {
     protected override string CloseButtonText => "Back";
     protected override string PrimaryButtonText => "Versions";
@@ -15,17 +16,17 @@ sealed class UnsupportedVersionDialog(string preferred) : MasterDialog
         {
             var version = VersionRegistry.InstalledVersion;
 
-            if (_contentCache.TryGetValue(version, out var content))
+            if (_cache.TryGetValue(version, out var content))
                 return content;
 
             content = string.Format(_format, version);
-            _contentCache.Add(version, content);
+            _cache.Add(version, content);
 
             return content;
         }
     }
 
-    readonly Dictionary<string, string> _contentCache = [];
+    readonly Dictionary<string, string> _cache = [];
 
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 

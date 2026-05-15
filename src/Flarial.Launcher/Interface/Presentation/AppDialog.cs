@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
-namespace Flarial.Launcher.Interface;
+namespace Flarial.Launcher.Interface.Presentation;
 
-abstract class MasterDialog
+abstract class AppDialog
 {
-    protected MasterDialog() { }
+    protected AppDialog() { }
 
     static readonly SemaphoreSlim s_semaphore = new(1, 1);
 
@@ -16,6 +16,7 @@ abstract class MasterDialog
     protected abstract string Title { get; }
     protected abstract string Content { get; }
     protected abstract string PrimaryButtonText { get; }
+
     protected virtual string CloseButtonText { get; } = string.Empty;
     protected virtual string SecondaryButtonText { get; } = string.Empty;
 

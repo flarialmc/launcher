@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Flarial.Launcher.Interface.Dialogs;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Pages;
 using Flarial.Launcher.Xaml;
@@ -10,9 +11,9 @@ using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace Flarial.Launcher.Interface;
+namespace Flarial.Launcher.Interface.Presentation;
 
-sealed class XamlContent : XamlElement<NavigationView>
+sealed class AppContent : XamlElement<NavigationView>
 {
     internal readonly NavigationViewItem _homeItem = new()
     {
@@ -33,7 +34,7 @@ sealed class XamlContent : XamlElement<NavigationView>
     readonly PackageCatalog _catalog;
     readonly AppSettings _settings;
 
-    internal XamlContent(AppSettings settings) : base(new())
+    internal AppContent(AppSettings settings) : base(new())
     {
         _settings = settings;
         _catalog = PackageCatalog.OpenForCurrentUser();
@@ -105,51 +106,49 @@ sealed class XamlContent : XamlElement<NavigationView>
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
-        try
+        (~this).Loaded -= OnLoaded;
+        AppDialog.Current.XamlRoot = (~this).XamlRoot;
+
+        var settingsItem = (NavigationViewItem)(~this).SettingsItem;
+        settingsItem.Tag = _settingsPage;
+
+        if (!await FlarialLauncher.VerifyConnectionAsync())
         {
-            MasterDialog.Current.XamlRoot = (~this).XamlRoot;
-
-            var settingsItem = (NavigationViewItem)(~this).SettingsItem;
-            settingsItem.Tag = _settingsPage;
-
-            if (!await FlarialLauncher.VerifyConnectionAsync())
-            {
-                await DialogRegistry.ConnectionFailure.ShowAsync();
-                System.Windows.Application.Current.Shutdown();
-                return;
-            }
-
-            if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await DialogRegistry.LauncherUpdateAvailable.ShowAsync()))
-            {
-                _homePage._button.Content = "Updating...";
-                await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
-                return;
-            }
-
-            var registry = await VersionRegistry.CreateAsync();
-            FrameworkElement homePage = _homePage;
-            (~this).Tag = homePage.Tag = registry;
-
-            var task = Task.Run(() =>
-            {
-                foreach (var item in registry) (~this).Dispatcher.Invoke(() =>
-                {
-                    var listBox = _versionsPage._listBox;
-                    listBox.Items.Add(item);
-                });
-            });
-
-            OnPackageStatusChanged(Minecraft.PackageFamilyName);
-
-            _catalog.PackageUpdating += OnPackageUpdating;
-            _catalog.PackageInstalling += OnPackageInstalling;
-            _catalog.PackageUninstalling += OnPackageUninstalling;
-
-            _homePage._button.Content = "Play";
-            _homePage._button.IsEnabled = true;
-
-            await task; _versionsPage._button.IsEnabled = true;
+            await DialogRegistry.ConnectionFailure.ShowAsync();
+            System.Windows.Application.Current.Shutdown();
+            return;
         }
-        finally { (~this).Loaded -= OnLoaded; }
+
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await DialogRegistry.LauncherUpdateAvailable.ShowAsync()))
+        {
+            _homePage._button.Content = "Updating...";
+            await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
+            return;
+        }
+
+        var registry = await VersionRegistry.CreateAsync();
+        FrameworkElement homePage = _homePage;
+        (~this).Tag = homePage.Tag = registry;
+
+        var task = Task.Run(() =>
+        {
+            foreach (var item in registry) (~this).Dispatcher.Invoke(() =>
+            {
+                var listBox = _versionsPage._listBox;
+                listBox.Items.Add(item);
+            });
+        });
+
+        OnPackageStatusChanged(Minecraft.PackageFamilyName);
+
+        _catalog.PackageUpdating += OnPackageUpdating;
+        _catalog.PackageInstalling += OnPackageInstalling;
+        _catalog.PackageUninstalling += OnPackageUninstalling;
+
+        _homePage._button.Content = "Play";
+        _homePage._button.IsEnabled = true;
+
+        await task;
+        _versionsPage._button.IsEnabled = true;
     }
 }

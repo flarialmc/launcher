@@ -1,6 +1,8 @@
-namespace Flarial.Launcher.Interface.Dialogs;
+using Flarial.Launcher.Interface.Presentation;
 
-sealed class SelectVersionDialog : MasterDialog
+namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+
+sealed class SelectVersionDialog : AppDialog
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "💡 Select Version";

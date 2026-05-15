@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using Flarial.Launcher.Interface;
+using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 using Flarial.Runtime.Modding;
 using Windows.UI;
@@ -95,7 +96,7 @@ Exception: {1}
             application.Resources.MergedDictionaries.Add(new ColorPaletteResources { Accent = Colors.IndianRed });
 
             var settings = AppSettings.Get();
-            new App(settings).Run(new HostWindow(settings));
+            new App(settings).Run(new AppWindow(settings));
         }
     }
 

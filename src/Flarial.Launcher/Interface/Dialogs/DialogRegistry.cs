@@ -1,6 +1,6 @@
-using Flarial.Launcher.Interface.Dialogs;
+using Flarial.Launcher.Interface.Dialogs.Metadata;
 
-namespace Flarial.Launcher.Interface;
+namespace Flarial.Launcher.Interface.Dialogs;
 
 static class DialogRegistry
 {

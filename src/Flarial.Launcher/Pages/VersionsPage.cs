@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Flarial.Launcher.Controls;
-using Flarial.Launcher.Interface;
+using Flarial.Launcher.Interface.Dialogs;
+using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Game;
@@ -26,7 +27,7 @@ sealed class VersionsPage : Grid
         IsEnabled = false
     };
 
-    readonly XamlContent _content;
+    readonly AppContent _content;
     readonly AppSettings _settings;
     readonly TextBlockProgressBar _progressBar = new();
 
@@ -127,7 +128,7 @@ sealed class VersionsPage : Grid
 
     VersionItem? _item = null;
 
-    internal VersionsPage(XamlContent content, AppSettings settings)
+    internal VersionsPage(AppContent content, AppSettings settings)
     {
         _content = content;
         _settings = settings;

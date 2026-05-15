@@ -7,11 +7,11 @@ using Windows.Win32.Foundation;
 using static Windows.Win32.Graphics.Dwm.DWMWINDOWATTRIBUTE;
 using static Windows.Win32.PInvoke;
 
-namespace Flarial.Launcher.Interface;
+namespace Flarial.Launcher.Interface.Presentation;
 
-sealed class HostWindow : Window
+sealed class AppWindow : Window
 {
-    internal HostWindow(AppSettings settings)
+    internal AppWindow(AppSettings settings)
     {
         WindowInteropHelper helper = new(this);
         var hwnd = (HWND)helper.EnsureHandle();
@@ -39,7 +39,7 @@ sealed class HostWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         Title = "Flarial Launcher";
-        Content = new XamlHost(~new XamlContent(settings))
+        Content = new XamlHost(~new AppContent(settings))
         {
             Width = 960,
             Height = 540,

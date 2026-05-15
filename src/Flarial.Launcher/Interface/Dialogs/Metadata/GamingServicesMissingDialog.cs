@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 
-namespace Flarial.Launcher.Interface.Dialogs;
+namespace Flarial.Launcher.Interface.Dialogs.Metadata;
 
-sealed class GamingServicesMissingDialog : MasterDialog
+sealed class GamingServicesMissingDialog : AppDialog
 {
     internal override async Task<bool> ShowAsync()
     {

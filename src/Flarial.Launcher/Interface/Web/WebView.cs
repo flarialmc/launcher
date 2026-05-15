@@ -1,11 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Windows.Foundation;
 using Windows.Web.UI.Interop;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
@@ -19,19 +16,19 @@ sealed class WebView : HwndHost
 
     internal Task Task { get; set; } = null!;
 
-    internal WebViewControl Current { get; private set; } = null!;
+    internal WebViewControl Instance { get; private set; } = null!;
 
     void OnProcessExit([Optional] object sender, [Optional] EventArgs args)
     {
         AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
-        try { Current.Close(); } catch { }
+        try { Instance.Close(); } catch { }
     }
 
     internal WebView() => AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
     async Task CreateAsync(nint handle)
     {
-        Current = await s_process.CreateWebViewControlAsync(handle, new());
+        Instance = await s_process.CreateWebViewControlAsync(handle, new());
 
         DpiChanged += OnSizeChanged;
         SizeChanged += OnSizeChanged;
@@ -64,6 +61,6 @@ sealed class WebView : HwndHost
         var width = dpi.DpiScaleX * ActualWidth;
         var height = dpi.DpiScaleY * ActualHeight;
 
-        Current.Bounds = new(0, 0, width, height);
+        Instance.Bounds = new(0, 0, width, height);
     }
 }

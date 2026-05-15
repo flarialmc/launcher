@@ -2,11 +2,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
-using Windows.Win32.Foundation;
 using Windows.Win32.System.WinRT.Xaml;
 using static Windows.Win32.Graphics.Gdi.GET_STOCK_OBJECT_FLAGS;
 using static Windows.Win32.PInvoke;
-using static Windows.Win32.UI.WindowsAndMessaging.GET_ANCESTOR_FLAGS;
 using static Windows.Win32.UI.WindowsAndMessaging.GET_CLASS_LONG_INDEX;
 
 namespace Flarial.Launcher.Xaml;

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Dialogs;
+using Flarial.Launcher.Interface.Dialogs.Metadata;
+using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Analytics;
@@ -54,7 +56,7 @@ sealed class HomePage : Grid
         Text = AppManifest.s_version
     };
 
-    readonly XamlContent _content;
+    readonly AppContent _content;
     readonly AppSettings _settings;
 
     UnsupportedVersionDialog UnsupportedVersion
@@ -70,7 +72,7 @@ sealed class HomePage : Grid
         }
     }
 
-    internal HomePage(XamlContent content, AppSettings settings)
+    internal HomePage(AppContent content, AppSettings settings)
     {
         _content = content;
         _settings = settings;
@@ -131,8 +133,11 @@ sealed class HomePage : Grid
                         break;
 
                     case ContentDialogResult.Secondary:
-                        var item = (NavigationViewItem)(~_content).SettingsItem;
-                        (~_content).SelectedItem = item; (~_content).Content = item.Tag;
+                        var value = (~_content).SettingsItem;
+                        var item = (NavigationViewItem)value;
+
+                        (~_content).SelectedItem = item;
+                        (~_content).Content = item.Tag;
                         break;
                 }
                 return;
