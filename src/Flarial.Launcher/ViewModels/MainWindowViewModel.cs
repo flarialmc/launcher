@@ -78,16 +78,10 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
         SettingsViewModel.SettingsVersionsViewModel.SetVersionRegistry(registry);
 
         UpdateMinecraftStatus();
-        RegisterPackageEvents();
 
         HomeViewModel.IsLaunchEnabled = true;
         HomeViewModel.LaunchText = "Launch";
         HomeViewModel.Status = "Ready!";
-    }
-
-    void RegisterPackageEvents()
-    {
-        PackageRegistry.WatchPackageChanges(Minecraft.PackageFamilyName, UpdateMinecraftStatus);
     }
 
     void UpdateMinecraftStatus() => Dispatcher.UIThread.Post(HomeViewModel.UpdateMinecraftStatus);

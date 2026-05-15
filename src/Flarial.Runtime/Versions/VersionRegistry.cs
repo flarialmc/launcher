@@ -70,11 +70,8 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     sealed class VersionItemComparer : IComparer<string>
     {
-        public int Compare(string? x, string? y)
+        public int Compare(string x, string y)
         {
-            if (x is null) return y is null ? 0 : 1;
-            if (y is null) return -1;
-
             NumericVersion a = new(x), b = new(y);
 
             if (b._major != a._major)

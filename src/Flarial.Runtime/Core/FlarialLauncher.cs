@@ -14,13 +14,13 @@ public static class FlarialLauncher
 {
     static FlarialLauncher()
     {
-        var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetEntryAssembly();
 
         var temp = Path.GetTempPath();
         s_source = $"{Path.Combine(temp, Path.GetRandomFileName())}.exe";
         s_script = $"{Path.Combine(temp, Path.GetRandomFileName())}.cmd";
 
-        s_version = assembly.GetName().Version?.ToString() ?? "0.0.0.0";
+        s_version = assembly.GetName().Version.ToString();
         var destination = assembly.ManifestModule.FullyQualifiedName;
 
         s_content = string.Format(Format, s_source, destination);

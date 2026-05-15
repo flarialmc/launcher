@@ -10,7 +10,7 @@ using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Runtime.Services;
 
-public static class HttpStack
+static class HttpStack
 {
     static readonly HttpClient s_client = new(new HttpClientHandler
     {
@@ -23,7 +23,7 @@ public static class HttpStack
 
     internal static async Task<Stream> GetStreamAsync(string uri) => await s_client.GetStreamAsync(uri);
 
-    public static async Task<byte[]> GetBytesAsync(string uri) => await s_client.GetByteArrayAsync(uri);
+    internal static async Task<byte[]> GetBytesAsync(string uri) => await s_client.GetByteArrayAsync(uri);
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, ResponseHeadersRead, token);
 
