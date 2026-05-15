@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using Flarial.Launcher.Interface.Web;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Xaml;
 using Windows.Win32.Foundation;
@@ -42,8 +43,7 @@ sealed class AppWindow : Window
         Content = new XamlHost(~new AppContent(settings))
         {
             Width = 960,
-            Height = 540,
-            Focusable = true
+            Height = 540
         };
     }
 

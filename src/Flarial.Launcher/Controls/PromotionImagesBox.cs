@@ -19,18 +19,16 @@ sealed class PromotionImagesBox : Grid
 
     async void OnLoading(FrameworkElement sender, object args)
     {
-        try
+        Loading -= OnLoading;
+        
+        foreach (var promotion in await PromotionManager.GetAsync())
         {
-            foreach (var promotion in await PromotionManager.GetAsync())
-            {
-                var image = ~new PromotionImage(promotion);
+            var image = ~new PromotionImage(promotion);
 
-                ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-                SetColumn(image, ColumnDefinitions.Count - 1);
+            ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+            SetColumn(image, ColumnDefinitions.Count - 1);
 
-                Children.Add(image);
-            }
+            Children.Add(image);
         }
-        finally { Loading -= OnLoading; }
     }
 }
