@@ -10,25 +10,25 @@ using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_STYLE;
 
 namespace Flarial.Launcher.Interface.Web;
 
-sealed class WebView : HwndHost
+sealed class WebViewHost : HwndHost
 {
     static readonly WebViewControlProcess s_process = new();
 
-    internal Task Task { get; set; } = null!;
+    internal Task Task { get; private set; } = null!;
 
-    internal WebViewControl Instance { get; private set; } = null!;
+    internal WebViewControl WebView { get; private set; } = null!;
 
     void OnProcessExit([Optional] object sender, [Optional] EventArgs args)
     {
         AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
-        try { Instance.Close(); } catch { }
+        try { WebView.Close(); } catch { }
     }
 
-    internal WebView() => AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+    internal WebViewHost() => AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
     async Task CreateAsync(nint handle)
     {
-        Instance = await s_process.CreateWebViewControlAsync(handle, new());
+        WebView = await s_process.CreateWebViewControlAsync(handle, new());
 
         DpiChanged += OnSizeChanged;
         SizeChanged += OnSizeChanged;
@@ -38,13 +38,13 @@ sealed class WebView : HwndHost
 
     protected unsafe override HandleRef BuildWindowCore(HandleRef hwndParent)
     {
-        fixed (char* @class = "Static")
+        fixed (char* name = "Static")
         {
             var parent = (HWND)hwndParent.Handle;
-            var child = CreateWindowEx(0, @class, null, WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, parent);
+            var child = CreateWindowEx(0, name, null, WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, parent);
 
             Task = CreateAsync(child);
-            return new(null, child);
+            return new(this, child);
         }
     }
 
@@ -61,6 +61,6 @@ sealed class WebView : HwndHost
         var width = dpi.DpiScaleX * ActualWidth;
         var height = dpi.DpiScaleY * ActualHeight;
 
-        Instance.Bounds = new(0, 0, width, height);
+        WebView.Bounds = new(0, 0, width, height);
     }
 }

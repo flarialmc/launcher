@@ -9,20 +9,20 @@ namespace Flarial.Launcher.Interface.Web;
 
 sealed class WebViewContent : System.Windows.Controls.Grid
 {
-    readonly WebView _view;
+    readonly WebViewHost _webViewHost;
 
     internal WebViewContent(AppSettings settings)
     {
         AppContent content = new(settings);
         (~content).PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
 
-        XamlHost host = new(~content)
+        XamlHost _xamlHost = new(~content)
         {
             Width = 960,
             Height = 540
         };
 
-        _view = new()
+        _webViewHost = new()
         {
             Width = 96,
             Height = 540
@@ -31,11 +31,11 @@ sealed class WebViewContent : System.Windows.Controls.Grid
         ColumnDefinitions.Add(new());
         ColumnDefinitions.Add(new() { Width = GridLength.Auto });
 
-        SetColumn(host, 0);
-        SetColumn(_view, 1);
+        SetColumn(_xamlHost, 0);
+        SetColumn(_webViewHost, 1);
 
-        Children.Add(host);
-        Children.Add(_view);
+        Children.Add(_xamlHost);
+        Children.Add(_webViewHost);
 
         Loaded += OnLoaded;
     }
@@ -43,8 +43,8 @@ sealed class WebViewContent : System.Windows.Controls.Grid
     async void OnLoaded(object sender, EventArgs args)
     {
         Loaded -= OnLoaded;
-        await _view.Task;
+        await _webViewHost.Task;
 
-        _view.Instance.Navigate(new("https://example.com"));
+        _webViewHost.WebView.Navigate(new("https://example.com"));
     }
 }
