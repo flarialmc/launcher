@@ -12,6 +12,7 @@ namespace Flarial.Launcher.Controls.AcrylicBlur;
 public class AcrylicBlurRenderOperation(
     ImmutableExperimentalAcrylicMaterial material,
     int blur,
+    double opacity,
     Rect bounds,
     CornerRadius cornerRadius)
     : ICustomDrawOperation
@@ -19,10 +20,19 @@ public class AcrylicBlurRenderOperation(
     private static SKShader? _acrylicNoiseShader;
 
     private readonly ImmutableExperimentalAcrylicMaterial _material = material;
+    private readonly double _opacity = ClampOpacity(opacity);
     private readonly Rect _bounds = bounds;
     private readonly CornerRadius _cornerRadius = cornerRadius;
     private SKImage? _backgroundSnapshot;
     private bool _disposed;
+
+    static double ClampOpacity(double value)
+    {
+        if (value < 0)
+            return 0;
+
+        return value > 1 ? 1 : value;
+    }
 
     public void Dispose()
     {
@@ -102,13 +112,13 @@ public class AcrylicBlurRenderOperation(
             new SKImageInfo((int) Math.Ceiling(_bounds.Width), (int) Math.Ceiling(_bounds.Height), SKImageInfo.PlatformColorType, SKAlphaType.Premul)
         );
         using (SKImageFilter? filter = SKImageFilter.CreateBlur(blur, blur, SKShaderTileMode.Clamp))
-        using (SKPaint blurPaint = new SKPaint {Shader = backdropShader, ImageFilter = filter})
+        using (SKPaint blurPaint = new SKPaint {Shader = backdropShader, ImageFilter = filter, ColorFilter = CreateAlphaColorFilter(_opacity)})
         {
             blurred.Canvas.DrawRect(0, 0, width, height, blurPaint);
 
             using (SKImage? blurSnap = blurred.Snapshot())
             using (SKShader? blurSnapShader = SKShader.CreateImage(blurSnap))
-            using (SKPaint blurSnapPaint = new SKPaint {Shader = blurSnapShader, IsAntialias = true})
+            using (SKPaint blurSnapPaint = new SKPaint {Shader = blurSnapShader, IsAntialias = true, ColorFilter = CreateAlphaColorFilter(_opacity)})
             {
                 // Rendering twice to reduce opacity
                 lease.SkCanvas.DrawRect(0, 0, width, height, blurSnapPaint);
@@ -117,6 +127,7 @@ public class AcrylicBlurRenderOperation(
 
             using SKPaint acrylliPaint = new SKPaint();
             acrylliPaint.IsAntialias = true;
+            acrylliPaint.ColorFilter = CreateAlphaColorFilter(_opacity);
 
             const double noiseOpacity = 0.0225;
 
@@ -152,6 +163,7 @@ public class AcrylicBlurRenderOperation(
         return other is AcrylicBlurRenderOperation op && 
                op._bounds == _bounds && 
                op._material.Equals(_material) &&
+               op._opacity.Equals(_opacity) &&
                op._cornerRadius == _cornerRadius;
     }
 }

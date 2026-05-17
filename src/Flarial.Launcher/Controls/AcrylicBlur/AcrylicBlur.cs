@@ -36,11 +36,12 @@ public class AcrylicBlur : ContentControl
         AffectsRender<AcrylicBlur>(MaterialProperty);
         AffectsRender<AcrylicBlur>(BlurProperty);
         AffectsRender<AcrylicBlur>(CornerRadiusProperty);
+        AffectsRender<AcrylicBlur>(OpacityProperty);
     }
 
     public override void Render(DrawingContext context)
     {
         ImmutableExperimentalAcrylicMaterial mat = Material != null ? (ImmutableExperimentalAcrylicMaterial) Material.ToImmutable() : DefaultAcrylicMaterial;
-        context.Custom(new AcrylicBlurRenderOperation(mat, Blur, new Rect(default, Bounds.Size), CornerRadius));
+        context.Custom(new AcrylicBlurRenderOperation(mat, Blur, Opacity, new Rect(default, Bounds.Size), CornerRadius));
     }
 }

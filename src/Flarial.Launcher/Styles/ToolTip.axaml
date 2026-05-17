@@ -6,13 +6,10 @@
     <Style Selector="controls|ToolTipControl">
         <Setter Property="Padding" Value="15,8,15,24"/>
         <Setter Property="Margin" Value="0,0,0,-15"/>
-        <Setter Property="Opacity" Value="0"/>
-        <Setter Property="RenderTransform" Value="scale(0.88)"/>
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="FadeOpacity" Value="0"/>
         <Setter Property="Transitions">
             <Transitions>
-                <DoubleTransition Property="Opacity" Duration="0:0:0.22"/>
-                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                <DoubleTransition Property="FadeOpacity" Duration="0:0:0.22"/>
             </Transitions>
         </Setter>
         <Setter Property="Template">
@@ -25,7 +22,7 @@
                         <Grid.Effect>
                             <DropShadowEffect
                                 BlurRadius="15"
-                                Opacity="0.75"
+                                Opacity="{TemplateBinding FadeOpacity}"
                                 OffsetX="0"
                                 OffsetY="0"
                                 Color="Black"/>
@@ -34,10 +31,12 @@
                         <!-- Acrylic -->
                         <acrylicBlur:AcrylicBlur
                             x:Name="PART_Acrylic"
+                            Opacity="{TemplateBinding FadeOpacity}"
                             Blur="25">
 
                             <!-- 3️⃣ Content space -->
                             <ContentPresenter
+                                Opacity="{TemplateBinding FadeOpacity}"
                                 Padding="{TemplateBinding Padding}"
                                 Content="{TemplateBinding Content}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}" />
@@ -49,6 +48,7 @@
                             Stroke="#0fffffff"
                             StrokeThickness="2"
                             Fill="Transparent"
+                            Opacity="{TemplateBinding FadeOpacity}"
                             IsHitTestVisible="False"/>
                     </Grid>
                 </Border>
@@ -64,8 +64,7 @@
             <Setter Property="Margin" Value="0,-8,0,0"/>
         </Style>
         <Style Selector="^.open">
-            <Setter Property="Opacity" Value="1"/>
-            <Setter Property="RenderTransform" Value="scale(1)"/>
+            <Setter Property="FadeOpacity" Value="1"/>
         </Style>
     </Style>
 

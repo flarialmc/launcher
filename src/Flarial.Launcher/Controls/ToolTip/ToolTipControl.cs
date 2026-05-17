@@ -32,6 +32,11 @@ public class ToolTipControl : ContentControl
             nameof(Offset), 
             defaultValue: 8.0);
 
+    public static readonly StyledProperty<double> FadeOpacityProperty =
+        AvaloniaProperty.Register<ToolTipControl, double>(
+            nameof(FadeOpacity),
+            defaultValue: 0.0);
+
     public Control? Target
     {
         get => GetValue(TargetProperty);
@@ -48,6 +53,12 @@ public class ToolTipControl : ContentControl
     {
         get => GetValue(OffsetProperty);
         set => SetValue(OffsetProperty, value);
+    }
+
+    public double FadeOpacity
+    {
+        get => GetValue(FadeOpacityProperty);
+        set => SetValue(FadeOpacityProperty, value);
     }
 
     static ToolTipControl()
