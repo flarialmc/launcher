@@ -45,5 +45,7 @@
         <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" />
         <PackageReference Include="SkiaSharp" Version="3.119.2" />
+        <PackageReference Include="Fody" Version="6.8.2" PrivateAssets="All" />
+        <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="All" />
     </ItemGroup>
 </Project>
