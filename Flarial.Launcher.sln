@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flarial.Runtime", "src\Flar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flarial.Unmanaged", "src\Flarial.Unmanaged\Flarial.Unmanaged.csproj", "{A767912D-9DDD-44E4-860E-AF578C56A1FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flarial.SelfExtract", "src\Flarial.SelfExtract\Flarial.SelfExtract.csproj", "{0180AD54-4F3D-4379-8931-D9973CCAD3BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,18 @@ Global
 		{A767912D-9DDD-44E4-860E-AF578C56A1FC}.Release|x64.Build.0 = Release|Any CPU
 		{A767912D-9DDD-44E4-860E-AF578C56A1FC}.Release|x86.ActiveCfg = Release|Any CPU
 		{A767912D-9DDD-44E4-860E-AF578C56A1FC}.Release|x86.Build.0 = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|x64.Build.0 = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,5 +75,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AF9ED3DE-A5E6-49C9-A803-DA8963268D01} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{A767912D-9DDD-44E4-860E-AF578C56A1FC} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{0180AD54-4F3D-4379-8931-D9973CCAD3BA} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
