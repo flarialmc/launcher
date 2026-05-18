@@ -3,12 +3,15 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Avalonia.Threading;
 using SkiaSharp;
 
 namespace Flarial.Launcher.Controls.SpotlightDecorator;
@@ -74,6 +77,7 @@ public class SpotlightDecorator : Decorator
         base.OnDetachedFromVisualTree(e);
         if (_adorner != null)
         {
+            _adorner.Detach();
             AdornerLayer.GetAdornerLayer(this)?.Children.Remove(_adorner);
             _adorner = null;
         }
@@ -97,6 +101,9 @@ public class SpotlightDecorator : Decorator
         private SKRuntimeEffect? _effect;
         private Point _mousePosition;
         private RenderTargetBitmap? _buffer;
+        private readonly DispatcherTimer _refreshTimer;
+        private DateTime _refreshUntilUtc;
+        private bool _isPointerInside;
 
         public SpotlightAdorner(SpotlightDecorator host)
         {
@@ -157,25 +164,94 @@ public class SpotlightDecorator : Decorator
             _effect = SKRuntimeEffect.CreateShader(shaderCode, out string error);
             if (_effect == null) throw new Exception(error);
 
-            // 3. Logic: Trigger Fades on Input
-            _host.PointerMoved += (s, e) => {
-                _mousePosition = e.GetPosition(_host);
-                // Trigger Fade In
-                _host.SpotlightOpacity = 1.0;
-                InvalidateVisual();
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(16)
             };
-            
-            _host.PointerEntered += (s, e) => {
-                 // Trigger Fade In
-                _host.SpotlightOpacity = 1.0;
-            };
+            _refreshTimer.Tick += OnRefreshTimerTick;
 
-            _host.PointerExited += (s, e) => {
-                // Trigger Fade Out
-                // Note: We DO NOT reset _mousePosition here. 
-                // This lets the light fade out right where the mouse left.
-                _host.SpotlightOpacity = 0.0;
-            };
+            _host.PointerMoved += OnPointerMoved;
+            _host.PointerEntered += OnPointerEntered;
+            _host.PointerExited += OnPointerExited;
+            _host.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+            _host.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        }
+
+        public void Detach()
+        {
+            _refreshTimer.Stop();
+            _refreshTimer.Tick -= OnRefreshTimerTick;
+
+            _host.PointerMoved -= OnPointerMoved;
+            _host.PointerEntered -= OnPointerEntered;
+            _host.PointerExited -= OnPointerExited;
+            _host.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
+            _host.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
+        }
+
+        private void OnPointerMoved(object? sender, PointerEventArgs e)
+        {
+            _mousePosition = e.GetPosition(_host);
+            _host.SpotlightOpacity = 1.0;
+            InvalidateVisual();
+        }
+
+        private void OnPointerEntered(object? sender, PointerEventArgs e)
+        {
+            _isPointerInside = true;
+            _mousePosition = e.GetPosition(_host);
+            _host.SpotlightOpacity = 1.0;
+            InvalidateVisual();
+        }
+
+        private void OnPointerExited(object? sender, PointerEventArgs e)
+        {
+            _isPointerInside = false;
+            // Keep the last mouse position so the light fades out from the exit point.
+            _host.SpotlightOpacity = 0.0;
+            RefreshFor(TimeSpan.FromMilliseconds(220));
+        }
+
+        private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (!_isPointerInside) return;
+
+            _mousePosition = e.GetPosition(_host);
+            RefreshFor(TimeSpan.FromMilliseconds(350));
+        }
+
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (!_isPointerInside) return;
+
+            _mousePosition = e.GetPosition(_host);
+            RefreshFor(TimeSpan.FromMilliseconds(350));
+        }
+
+        private void RefreshFor(TimeSpan duration)
+        {
+            var refreshUntilUtc = DateTime.UtcNow + duration;
+            if (refreshUntilUtc > _refreshUntilUtc)
+            {
+                _refreshUntilUtc = refreshUntilUtc;
+            }
+
+            InvalidateVisual();
+            if (!_refreshTimer.IsEnabled)
+            {
+                _refreshTimer.Start();
+            }
+        }
+
+        private void OnRefreshTimerTick(object? sender, EventArgs e)
+        {
+            if (DateTime.UtcNow >= _refreshUntilUtc)
+            {
+                _refreshTimer.Stop();
+                return;
+            }
+
+            InvalidateVisual();
         }
         
         public override void Render(DrawingContext context)
