@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia.Threading;
 using Avalonia.Media;
 using Flarial.Launcher.Management;
@@ -12,7 +12,6 @@ using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Modding;
 using Flarial.Runtime.Versions;
-using ReactiveUI;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -58,10 +57,16 @@ public class HomeViewModel : ViewModelBase
     public bool IsLaunchEnabled
     {
         get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref field, value);
+            _launch?.RaiseCanExecuteChanged();
+        }
     }
 
-    public ReactiveCommand<Unit, Unit> Launch { get; }
+    readonly AsyncRelayCommand _launch;
+
+    public ICommand Launch => _launch;
 
     public HomeViewModel(AppSettings settings, IDialogService dialogService, INotificationService notificationService)
     {
@@ -69,7 +74,7 @@ public class HomeViewModel : ViewModelBase
         _dialogService = dialogService;
         _notificationService = notificationService;
 
-        Launch = ReactiveCommand.CreateFromTask(LaunchAsync, this.WhenAnyValue(x => x.IsLaunchEnabled));
+        _launch = new AsyncRelayCommand(LaunchAsync, () => IsLaunchEnabled);
     }
 
     public void SetVersionRegistry(VersionRegistry registry) => _versionRegistry = registry;
@@ -182,13 +187,13 @@ public class HomeViewModel : ViewModelBase
 
     static void NavigateToSettings(PageTransitions page)
     {
-        MessageBus.Current.SendMessage(PageTransitions.SettingsPage);
-        MessageBus.Current.SendMessage(page);
+        AppMessageBus.Send(PageTransitions.SettingsPage);
+        AppMessageBus.Send(page);
     }
 
-    public ReactiveCommand<Unit, Unit> MinimizeWindow { get; } =
-        ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Minimize));
+    public ICommand MinimizeWindow { get; } =
+        new RelayCommand(() => AppMessageBus.Send(WindowStateArgs.Minimize));
 
-    public ReactiveCommand<Unit, Unit> CloseWindow { get; } =
-        ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Close));
+    public ICommand CloseWindow { get; } =
+        new RelayCommand(() => AppMessageBus.Send(WindowStateArgs.Close));
 }

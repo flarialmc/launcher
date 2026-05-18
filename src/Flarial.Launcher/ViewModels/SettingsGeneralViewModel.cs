@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
-using ReactiveUI;
 
 namespace Flarial.Launcher.ViewModels;
 

@@ -1,23 +1,43 @@
-﻿using System.Reactive;
-using System.Reactive.Linq;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Flarial.Launcher.Types;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
-public abstract partial class ViewModelBase : ReactiveObject
+public abstract class ViewModelBase : INotifyPropertyChanged
 {
-    // wtf why did i think this was going to work
-    // todo: change this to be static instead
-    [Reactive] 
-    private bool _isAnimating;
+    readonly RelayCommand<PageTransitions> _navigateCommand;
+    bool _isAnimating;
 
-    public ReactiveCommand<PageTransitions, Unit> NavigateCommand { get; }
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public bool IsAnimating
+    {
+        get => _isAnimating;
+        set
+        {
+            RaiseAndSetIfChanged(ref _isAnimating, value);
+            _navigateCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    public ICommand NavigateCommand => _navigateCommand;
 
     protected ViewModelBase()
+        => _navigateCommand = new(AppMessageBus.Send, _ => !IsAnimating);
+
+    protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    protected bool RaiseAndSetIfChanged<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        var canNavigate = this.WhenAnyValue(x => x.IsAnimating).Select(anim => !anim);
-        NavigateCommand = ReactiveCommand.Create<PageTransitions>(page => MessageBus.Current.SendMessage(page), canNavigate);
+        if (EqualityComparer<T>.Default.Equals(field, value))
+            return false;
+
+        field = value;
+        RaisePropertyChanged(propertyName);
+        return true;
     }
 }

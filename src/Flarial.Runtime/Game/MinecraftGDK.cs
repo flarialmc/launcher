@@ -1,9 +1,7 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using Flarial.Runtime.Unmanaged;
-using Microsoft.PowerShell;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using static System.Environment;
@@ -23,14 +21,6 @@ unsafe sealed class MinecraftGDK : Minecraft
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
 
-    static MinecraftGDK()
-    {
-        s_state.ImportPSModule(["Appx"]);
-        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
-        s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
-    }
-
-    static readonly InitialSessionState s_state = InitialSessionState.Create();
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
@@ -46,16 +36,24 @@ unsafe sealed class MinecraftGDK : Minecraft
         var path = Path.Combine(Package.InstalledPath, ProcessName);
         if (!File.Exists(path)) return null;
 
-        using var powershell = PowerShell.Create(s_state);
-        powershell.AddCommand("Invoke-CommandInDesktopPackage");
+        using var powershell = Process.Start(new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            Arguments =
+                "-NoLogo -NoProfile -ExecutionPolicy Bypass -Command " +
+                "\"Invoke-CommandInDesktopPackage " +
+                "-AppId 'Game' " +
+                $"-Command '{EscapePowerShellSingleQuotedString(path)}' " +
+                $"-PackageFamilyName '{EscapePowerShellSingleQuotedString(PackageFamilyName)}'\""
+        });
 
-        powershell.AddParameter("AppId", "Game");
-        powershell.AddParameter("Command", path);
-        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
-
-        powershell.Invoke();
+        powershell?.WaitForExit(10_000);
         return GetProcessId();
     }
+
+    static string EscapePowerShellSingleQuotedString(string value) => value.Replace("'", "''");
 
     internal override uint? Launch()
     {

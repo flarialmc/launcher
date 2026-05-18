@@ -14,14 +14,16 @@ public static class FlarialLauncher
 {
     static FlarialLauncher()
     {
-        var assembly = Assembly.GetEntryAssembly();
+        var assembly = Assembly.GetEntryAssembly() ?? typeof(FlarialLauncher).Assembly;
 
         var temp = Path.GetTempPath();
         s_source = $"{Path.Combine(temp, Path.GetRandomFileName())}.exe";
         s_script = $"{Path.Combine(temp, Path.GetRandomFileName())}.cmd";
 
-        s_version = assembly.GetName().Version.ToString();
-        var destination = assembly.ManifestModule.FullyQualifiedName;
+        s_version = assembly.GetName().Version?.ToString() ?? "0.0.0.0";
+        var destination = Process.GetCurrentProcess().MainModule?.FileName
+            ?? Environment.ProcessPath
+            ?? throw new InvalidOperationException("Unable to locate the launcher executable.");
 
         s_content = string.Format(Format, s_source, destination);
         s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), "cmd.exe");

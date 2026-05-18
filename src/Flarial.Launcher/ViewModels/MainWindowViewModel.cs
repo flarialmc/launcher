@@ -8,7 +8,6 @@ using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Versions;
-using ReactiveUI;
 
 namespace Flarial.Launcher.ViewModels;
 

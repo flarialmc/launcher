@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Optimize>true</Optimize>
+    <PublishAot>true</PublishAot>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <StackTraceSupport>false</StackTraceSupport>
+    <EventSourceSupport>false</EventSourceSupport>
+    <DebuggerSupport>false</DebuggerSupport>
+    <DebugType>none</DebugType>
+    <StripSymbols>true</StripSymbols>
+    <ApplicationIcon>..\Flarial.Launcher\Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('payload.zip')">
+    <EmbeddedResource Include="payload.zip" LogicalName="payload.zip" />
+  </ItemGroup>
+
+  <Target Name="RequirePayloadZip" BeforeTargets="Build" Condition="!Exists('payload.zip')">
+    <Error Text="payload.zip is missing. Run scripts\publish-nativeaot-selfextract.ps1 from the repository root to build the launcher payload and self-extracting exe." />
+  </Target>
+
+  <Target Name="RemoveNativeAotPublishSymbols" AfterTargets="Publish">
+    <ItemGroup>
+      <NativeAotPublishSymbols Include="$(PublishDir)**\*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(NativeAotPublishSymbols)" />
+  </Target>
+</Project>

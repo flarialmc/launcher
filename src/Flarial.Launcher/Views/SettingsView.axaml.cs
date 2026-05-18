@@ -7,7 +7,6 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
-using ReactiveUI;
 
 namespace Flarial.Launcher.Views;
 
@@ -17,8 +16,7 @@ public partial class SettingsView : UserControl
     {
         InitializeComponent();
         
-        MessageBus.Current.Listen<PageTransitions>()
-            .Subscribe(PageTransition);
+        AppMessageBus.PageTransitionRequested += PageTransition;
     }
 
     private int _currentPageIndex;

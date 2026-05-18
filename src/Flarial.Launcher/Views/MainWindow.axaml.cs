@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -13,7 +12,6 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
-using ReactiveUI;
 
 namespace Flarial.Launcher.Views;
 
@@ -44,17 +42,17 @@ public partial class MainWindow : Window
         
         SystemDecorations = SystemDecorations.None;
         
-        MessageBus.Current.Listen<WindowStateArgs>()
-            .Where(e => e == WindowStateArgs.Minimize)
-            .Subscribe(_ => WindowState = WindowState.Minimized);
-        
-        MessageBus.Current.Listen<WindowStateArgs>()
-            .Where(e => e == WindowStateArgs.Close)
-            .Subscribe(_ => Close());
-        
-        MessageBus.Current.Listen<PageTransitions>()
-            .Subscribe(PageTransition);
+        AppMessageBus.WindowStateRequested += OnWindowStateRequested;
+        AppMessageBus.PageTransitionRequested += PageTransition;
 
+    }
+
+    void OnWindowStateRequested(WindowStateArgs args)
+    {
+        if (args == WindowStateArgs.Minimize)
+            WindowState = WindowState.Minimized;
+        else if (args == WindowStateArgs.Close)
+            Close();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -89,6 +87,8 @@ public partial class MainWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        AppMessageBus.WindowStateRequested -= OnWindowStateRequested;
+        AppMessageBus.PageTransitionRequested -= PageTransition;
         base.OnClosed(e);
         TerminateProcess(GetCurrentProcess(), 0);
     }

@@ -1,6 +1,4 @@
 using System;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
@@ -10,27 +8,30 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Flarial.Launcher.Controls.AcrylicBlur;
 using Flarial.Launcher.ViewModels;
-using ReactiveUI;
-using ReactiveUI.Avalonia;
 
 namespace Flarial.Launcher.Views;
 
-public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
+public partial class MessageBoxView : UserControl
 {
+    MessageBoxViewModel? _subscribedViewModel;
+
     public MessageBoxView()
     {
         InitializeComponent();
 
-        this.WhenActivated(disposables =>
-        {
-            Dispatcher.UIThread.Post(PlayEnterAnimation, DispatcherPriority.Render);
+        DataContextChanged += (_, _) => SubscribeViewModel();
+        Dispatcher.UIThread.Post(PlayEnterAnimation, DispatcherPriority.Render);
+    }
 
-            this.WhenAnyValue(x => x.ViewModel)
-                .WhereNotNull()
-                .SelectMany(vm => vm.CloseRequested.Select(_ => vm))
-                .Subscribe(PlayExitAnimation)
-                .DisposeWith(disposables);
-        });
+    void SubscribeViewModel()
+    {
+        if (_subscribedViewModel is not null)
+            _subscribedViewModel.CloseRequested -= PlayExitAnimation;
+
+        _subscribedViewModel = DataContext as MessageBoxViewModel;
+
+        if (_subscribedViewModel is not null)
+            _subscribedViewModel.CloseRequested += PlayExitAnimation;
     }
 
     private async void PlayEnterAnimation()

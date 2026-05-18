@@ -6,7 +6,6 @@ using Avalonia.Skia;
 using Avalonia.Win32;
 using Flarial.Launcher.Management;
 using Flarial.Runtime.Modding;
-using ReactiveUI.Avalonia;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
 
@@ -47,7 +46,6 @@ sealed class Program
                     : [Win32RenderingMode.Software]
             })
             .UseSkia()
-            .LogToTrace()
-            .UseReactiveUI();
+            .LogToTrace();
     }
 }

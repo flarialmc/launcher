@@ -1,17 +1,15 @@
 using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-using ReactiveUI;
+using System.Windows.Input;
 
 namespace Flarial.Launcher.ViewModels;
 
-public class NotificationViewModel : ReactiveObject
+public class NotificationViewModel : ViewModelBase
 {
     public string Message { get; }
     
-    public Subject<Unit> CloseRequested { get; } = new();
+    public event Action<NotificationViewModel>? CloseRequested;
 
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ICommand CloseCommand { get; }
 
     private readonly Action _onDismissed;
 
@@ -19,7 +17,7 @@ public class NotificationViewModel : ReactiveObject
     {
         Message = message;
         _onDismissed = onDismissed;
-        CloseCommand = ReactiveCommand.Create(() => CloseRequested.OnNext(Unit.Default));
+        CloseCommand = new RelayCommand(() => CloseRequested?.Invoke(this));
     }
     
     public void CompleteDismiss() => _onDismissed();

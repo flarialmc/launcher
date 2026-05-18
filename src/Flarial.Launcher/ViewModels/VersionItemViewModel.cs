@@ -1,12 +1,10 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia.Threading;
 using Flarial.Launcher.Models;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
-using ReactiveUI;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -21,7 +19,15 @@ public class VersionItemViewModel : ViewModelBase
     public VersionItemState State
     {
         get;
-        private set => this.RaiseAndSetIfChanged(ref field, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref field, value);
+            this.RaisePropertyChanged(nameof(IsNotInstalled));
+            this.RaisePropertyChanged(nameof(IsDownloading));
+            this.RaisePropertyChanged(nameof(IsInstalled));
+            _installCommand?.RaiseCanExecuteChanged();
+            _deleteCommand?.RaiseCanExecuteChanged();
+        }
     }
 
     public double InstallPercentage
@@ -30,8 +36,11 @@ public class VersionItemViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    public ReactiveCommand<Unit, Unit> InstallCommand { get; }
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+    readonly AsyncRelayCommand _installCommand;
+    readonly AsyncRelayCommand _deleteCommand;
+
+    public ICommand InstallCommand => _installCommand;
+    public ICommand DeleteCommand => _deleteCommand;
 
     public bool IsNotInstalled => State == VersionItemState.NotInstalled;
     public bool IsDownloading => State == VersionItemState.Downloading;
@@ -46,24 +55,15 @@ public class VersionItemViewModel : ViewModelBase
         Version = item.ToString();
         State = state;
 
-        this.WhenAnyValue(x => x.State)
-            .Subscribe(_ =>
-            {
-                this.RaisePropertyChanged(nameof(IsNotInstalled));
-                this.RaisePropertyChanged(nameof(IsDownloading));
-                this.RaisePropertyChanged(nameof(IsInstalled));
-            });
-
-        InstallCommand = ReactiveCommand.CreateFromTask(
+        _installCommand = new AsyncRelayCommand(
             InstallAsync,
-            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.NotInstalled));
+            () => State == VersionItemState.NotInstalled,
+            ex => _ = ShowFailureAsync(ex));
 
-        DeleteCommand = ReactiveCommand.CreateFromTask(
+        _deleteCommand = new AsyncRelayCommand(
             DeleteAsync,
-            this.WhenAnyValue(x => x.State).Select(x => x == VersionItemState.Installed));
-
-        InstallCommand.ThrownExceptions.Subscribe(ex => _ = ShowFailureAsync(ex));
-        DeleteCommand.ThrownExceptions.Subscribe(ex => _ = ShowFailureAsync(ex));
+            () => State == VersionItemState.Installed,
+            ex => _ = ShowFailureAsync(ex));
     }
 
     async Task InstallAsync()

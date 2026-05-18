@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
@@ -19,14 +18,9 @@ public static class PromotionManager
     }
 }
 
-[DataContract]
 public sealed class Promotion
 {
-    Promotion() { }
+    public string Uri { get; set; } = string.Empty;
 
-    [DataMember]
-    public readonly string Uri = null!;
-
-    [DataMember]
-    public readonly string Image = null!;
+    public string Image { get; set; } = string.Empty;
 }

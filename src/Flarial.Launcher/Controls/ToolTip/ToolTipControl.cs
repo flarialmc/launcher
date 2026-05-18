@@ -203,7 +203,7 @@ public class ToolTipControl : ContentControl
         _border = e.NameScope.Find<Path>("PART_Border");
 
         _geometryHost?.GetObservable(BoundsProperty)
-            .Subscribe(_ => UpdateGeometry());
+            .Subscribe(new ActionObserver<Rect>(_ => UpdateGeometry()));
         
         // Initial setup
         UpdatePadding();
@@ -339,4 +339,13 @@ public class ToolTipControl : ContentControl
             Math.Max(margin, Math.Min(position.Y, bounds.Height - height - margin))
         );
     }
+}
+
+sealed class ActionObserver<T>(Action<T> onNext) : IObserver<T>
+{
+    public void OnCompleted() { }
+
+    public void OnError(Exception error) { }
+
+    public void OnNext(T value) => onNext(value);
 }

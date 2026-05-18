@@ -1,6 +1,4 @@
 using System;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
@@ -9,27 +7,30 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Flarial.Launcher.Controls.AcrylicBlur;
 using Flarial.Launcher.ViewModels;
-using ReactiveUI;
-using ReactiveUI.Avalonia;
 
 namespace Flarial.Launcher.Views;
 
-public partial class NotificationView : ReactiveUserControl<NotificationViewModel>
+public partial class NotificationView : UserControl
 {
+    NotificationViewModel? _subscribedViewModel;
+
     public NotificationView()
     {
         InitializeComponent();
 
-        this.WhenActivated(disposables =>
-        {
-            PlayEnterAnimation();
+        DataContextChanged += (_, _) => SubscribeViewModel();
+        PlayEnterAnimation();
+    }
 
-            this.WhenAnyValue(x => x.ViewModel)
-                .WhereNotNull()
-                .SelectMany(vm => vm.CloseRequested.Select(_ => vm))
-                .Subscribe(PlayExitAnimation)
-                .DisposeWith(disposables);
-        });
+    void SubscribeViewModel()
+    {
+        if (_subscribedViewModel is not null)
+            _subscribedViewModel.CloseRequested -= PlayExitAnimation;
+
+        _subscribedViewModel = DataContext as NotificationViewModel;
+
+        if (_subscribedViewModel is not null)
+            _subscribedViewModel.CloseRequested += PlayExitAnimation;
     }
 
     private async void PlayEnterAnimation()

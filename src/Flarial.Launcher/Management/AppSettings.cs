@@ -1,42 +1,24 @@
 using System.IO;
-using System.Runtime.Serialization;
-using System.Xml;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Flarial.Launcher.Management;
 
-[DataContract]
 public sealed class AppSettings
 {
-    [DataMember]
+    const string FileName = "Flarial.Launcher.json";
+
     public bool AutomaticUpdates { get; set; } = true;
-
-    [DataMember]
     public bool HardwareAcceleration { get; set; } = true;
-
-    [DataMember]
     public bool UseCustomDll { get; set; }
-
-    [DataMember]
     public string CustomDllPath { get; set; } = string.Empty;
-
-    [OnDeserializing]
-    void OnDeserializing(StreamingContext context)
-    {
-        AutomaticUpdates = true;
-        HardwareAcceleration = true;
-        UseCustomDll = false;
-        CustomDllPath = string.Empty;
-    }
-
-    static readonly XmlWriterSettings s_settings = new() { Indent = true };
-    static readonly DataContractSerializer s_serializer = new(typeof(AppSettings));
 
     public static AppSettings Get()
     {
         try
         {
-            using var stream = File.OpenRead("Flarial.Launcher.xml");
-            var settings = (AppSettings)s_serializer.ReadObject(stream)!;
+            using var stream = File.OpenRead(FileName);
+            var settings = JsonSerializer.Deserialize(stream, LauncherJsonContext.Default.AppSettings) ?? new();
 
             try
             {
@@ -57,7 +39,11 @@ public sealed class AppSettings
 
     public void Set()
     {
-        using var writer = XmlWriter.Create("Flarial.Launcher.xml", s_settings);
-        s_serializer.WriteObject(writer, this);
+        using var stream = File.Create(FileName);
+        JsonSerializer.Serialize(stream, this, LauncherJsonContext.Default.AppSettings);
     }
 }
+
+[JsonSerializable(typeof(AppSettings))]
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
+partial class LauncherJsonContext : JsonSerializerContext;
