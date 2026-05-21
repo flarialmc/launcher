@@ -24,7 +24,7 @@ public abstract class MessageDialog
             _buttons.Add(Buttons[index], index);
     }
 
-    public static MessageDialog Get<T>() where T : MessageDialog, new()
+    static MessageDialog Get<T>() where T : MessageDialog, new()
     {
         if (!s_dialogs.TryGetValue(typeof(T), out var dialog))
         {

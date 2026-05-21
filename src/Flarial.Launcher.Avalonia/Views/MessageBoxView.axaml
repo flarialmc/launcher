@@ -71,9 +71,9 @@
                             <ItemsControl ItemsSource="{Binding Buttons}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"
-                                                    HorizontalAlignment="Left"
-                                                    Spacing="8"/>
+                                        <UniformGrid Rows="1"
+                                                    HorizontalAlignment="Stretch"
+                                                    ColumnSpacing="8"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.Template>
