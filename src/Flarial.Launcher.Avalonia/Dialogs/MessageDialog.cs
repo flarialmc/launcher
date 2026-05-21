@@ -26,29 +26,24 @@ public abstract class MessageDialog
 
     public static MessageDialog Get<T>() where T : MessageDialog, new()
     {
-        if (!Dispatcher.UIThread.CheckAccess())
-            throw new InvalidOperationException();
-
         if (!s_dialogs.TryGetValue(typeof(T), out var dialog))
         {
             dialog = new T();
             s_dialogs.Add(typeof(T), dialog);
         }
-
         return dialog;
     }
 
-    protected virtual async Task<int?> ShowAsync()
+    protected virtual async Task<int> ShowAsync()
     {
-        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime lifetime)
-            throw new InvalidOperationException();
+        var application = Application.Current!;
+        var lifetime = (IClassicDesktopStyleApplicationLifetime)application.ApplicationLifetime!;
 
         var view = (MainWindow)lifetime.MainWindow!;
         var model = (MainWindowViewModel)view.DataContext!;
 
-        var result = await model.ShowMessageBoxAsync(Title, Message, Buttons);
-        return _buttons.TryGetValue(result, out var index) ? index : null;
+        return _buttons[await model.ShowMessageBoxAsync(Title, Message, Buttons)];
     }
 
-    public static async Task<int?> ShowAsync<T>() where T : MessageDialog, new() => await Get<T>().ShowAsync();
+    public static async Task<int> ShowAsync<T>() where T : MessageDialog, new() => await Get<T>().ShowAsync();
 }
