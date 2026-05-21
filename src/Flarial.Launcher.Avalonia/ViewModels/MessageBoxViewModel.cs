@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using ReactiveUI;
 
@@ -21,11 +22,11 @@ public class MessageBoxViewModel : ReactiveObject
 
     public Task<string> Result => _tcs.Task;
 
-    public MessageBoxViewModel(string title, string message, IEnumerable<string> buttons)
+    public MessageBoxViewModel(string title, string message, IReadOnlyList<string> buttons)
     {
         Title = title;
         Message = message;
-        Buttons = buttons.ToList();
+        Buttons = buttons;
 
         SelectButtonCommand = ReactiveCommand.Create<string>(button =>
         {
@@ -33,6 +34,6 @@ public class MessageBoxViewModel : ReactiveObject
             CloseRequested.OnNext(Unit.Default);
         });
     }
-    
+
     public void CompleteClose() => _tcs.TrySetResult(_pendingResult ?? string.Empty);
 }

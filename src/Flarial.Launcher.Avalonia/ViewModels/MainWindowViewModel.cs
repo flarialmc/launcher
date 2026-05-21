@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Launcher.Services;
 using ReactiveUI;
@@ -9,6 +10,8 @@ namespace Flarial.Launcher.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationService
 {
+    readonly SemaphoreSlim _semaphore = new(1, 1);
+
     public MessageBoxViewModel? CurrentDialog
     {
         get;
@@ -28,21 +31,20 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
         NotificationArea = new();
     }
 
-    [Obsolete("", true)]
-    public Task InitializeSettingsAsync()
+    public async Task<string> ShowMessageBoxAsync(string title, string message, IReadOnlyList<string> buttons)
     {
-        return Task.CompletedTask;
-    }
+        await _semaphore.WaitAsync();
+        try
+        {
+            MessageBoxViewModel dialog = new(title, message, buttons);
+            CurrentDialog = dialog;
 
-    public async Task<string> ShowMessageBoxAsync(string title, string message, IEnumerable<string> buttons)
-    {
-        var dialog = new MessageBoxViewModel(title, message, buttons);
-        CurrentDialog = dialog;
+            var result = await dialog.Result;
 
-        var result = await dialog.Result;
-
-        CurrentDialog = null;
-        return result;
+            CurrentDialog = null;
+            return result;
+        }
+        finally { _semaphore.Release(); }
     }
 
     void INotificationService.Show(string message) => NotificationArea.Add(message);

@@ -1,5 +1,7 @@
 using System.Reactive;
 using System.Reflection;
+using Flarial.Launcher.Dialogs;
+using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Services;
 using Flarial.Launcher.Types;
 using ReactiveUI;
@@ -21,15 +23,19 @@ public class HomeViewModel : ViewModelBase
 
     public HomeViewModel(IDialogService dialogService, INotificationService notificationService)
     {
-        //var dialogs = dialogService;
+        var dialogs = dialogService;
         var notifications = notificationService;
+
         Launch = ReactiveCommand.CreateFromTask(async () =>
             {
                 /*var result = await dialogs.ShowMessageBoxAsync(
                     "Test Message Box", 
                     "hello world type shit", 
                     ["button 1", "button 2", "button 3"]);*/
-                notifications.Show($"Unable to inject! Flarial is incompatible with your current MC:BE version.");
+
+                await MessageDialog.ShowAsync<ExampleDialog>();
+                
+                // notifications.Show($"Unable to inject! Flarial is incompatible with your current MC:BE version.");
             });
     }
 

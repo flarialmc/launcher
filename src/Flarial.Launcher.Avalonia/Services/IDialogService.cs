@@ -8,5 +8,5 @@ public interface IDialogService
     Task<string> ShowMessageBoxAsync(
         string title,
         string message,
-        IEnumerable<string> buttons);
+        IReadOnlyList<string> buttons);
 }
