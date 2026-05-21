@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Flarial.Launcher.Controls.ToolTip"
+        xmlns:acrylicBlur="clr-namespace:Flarial.Launcher.Controls.AcrylicBlur">
+    
+    <Style Selector="controls|ToolTipControl">
+        <Setter Property="Padding" Value="15,8,15,24"/>
+        <Setter Property="Margin" Value="0,0,0,-15"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- 1️⃣ Shadow space -->
+                <Border Margin="{TemplateBinding Margin}" Padding="20" Background="Transparent">
+
+                    <!-- 2️⃣ Geometry space -->
+                    <Grid x:Name="PART_GeometryHost">
+                        <Grid.Effect>
+                            <DropShadowEffect
+                                BlurRadius="15"
+                                Opacity="0.75"
+                                OffsetX="0"
+                                OffsetY="0"
+                                Color="Black"/>
+                        </Grid.Effect>
+
+                        <!-- Acrylic -->
+                        <acrylicBlur:AcrylicBlur
+                            x:Name="PART_Acrylic"
+                            Blur="25">
+
+                            <!-- 3️⃣ Content space -->
+                            <ContentPresenter
+                                Padding="{TemplateBinding Padding}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </acrylicBlur:AcrylicBlur>
+
+                        <!-- Border -->
+                        <Path
+                            x:Name="PART_Border"
+                            Stroke="#0fffffff"
+                            StrokeThickness="2"
+                            Fill="Transparent"
+                            IsHitTestVisible="False"/>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^[Placement=Top]">
+            <Setter Property="Padding" Value="15,8,15,24"/>
+            <Setter Property="Margin" Value="0,0,0,-15"/>
+        </Style>
+        <Style Selector="^[Placement=Bottom]">
+            <Setter Property="Padding" Value="15,24,15,8"/>
+            <Setter Property="Margin" Value="0,-8,0,0"/>
+        </Style>
+    </Style>
+
+
+    <!-- Text styling -->
+    <Style Selector="controls|ToolTipControl TextBlock">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="MaxWidth" Value="300"/>
+    </Style>
+</Styles>

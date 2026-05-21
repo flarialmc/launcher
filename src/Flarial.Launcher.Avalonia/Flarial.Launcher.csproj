@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <PlatformTarget>x64</PlatformTarget>
+        <TargetFramework>net48</TargetFramework>
+
+        <Optimize>true</Optimize>
+        <PublishRelease>true</PublishRelease>
+
+        <NoWarn>IDE0130</NoWarn>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <DeterministicSourcePaths>true</DeterministicSourcePaths>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+        <Compile Include="..\AssemblyVersion.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Polyfill" Version="10.6.0" />
+        <PackageReference Include="SkiaSharp" Version="3.119.2" />
+
+        <PackageReference Include="Avalonia" Version="11.3.16" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.16" />
+
+        <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
+        <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" />
+    </ItemGroup>
+
+</Project>

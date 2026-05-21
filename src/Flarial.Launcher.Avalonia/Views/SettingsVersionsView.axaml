@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:views="clr-namespace:Flarial.Launcher.Views"
+             xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
+             mc:Ignorable="d"
+             Width="555" Height="470"
+             x:Class="Flarial.Launcher.Views.SettingsVersionsView"
+             x:DataType="vm:SettingsVersionsViewModel"
+             Background="#201A1B" 
+             BorderThickness="{StaticResource ButtonBorderThickness}" 
+             BorderBrush="{StaticResource BackgroundBorderColor}"
+             CornerRadius="20">
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <VisualLayerManager>
+            <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+                <ItemsControl ItemsSource="{Binding Versions}"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            Margin="15"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="10"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <views:VersionItemView/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </spotlightDecorator:SpotlightDecorator>
+        </VisualLayerManager>
+    </ScrollViewer>
+</UserControl>

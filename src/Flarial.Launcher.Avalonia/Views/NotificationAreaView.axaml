@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:views="clr-namespace:Flarial.Launcher.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Flarial.Launcher.Views.NotificationAreaView"
+             x:DataType="vm:NotificationAreaViewModel">
+    
+    <ItemsControl ItemsSource="{Binding Notifications}"
+                  IsHitTestVisible="True"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,0,65">
+        <ItemsControl.Template>
+            <ControlTemplate>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ControlTemplate>
+        </ItemsControl.Template>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="-10"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:NotificationViewModel">
+                <views:NotificationView/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    
+</UserControl>

@@ -1,0 +1,144 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="RadioButton.SettingsRadioButton">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="22.5,0,22.5,15"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid Height="50" RenderTransformOrigin="0.5,0.5" ColumnDefinitions="Auto,*">
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="{StaticResource BackgroundColor}" Opacity="1" CornerRadius="15">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource PrimaryBorderColor}" Background="#FF2438" Opacity="0.0" Name="CheckedBorder" CornerRadius="15">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                        <Border Grid.Column="0" Background="#ffffff" Opacity="0.1" Name="UncheckedIconBorder" CornerRadius="10" Margin="7.5">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                        <Border Grid.Column="0" Background="#000000" Opacity="0.0" Name="CheckedIconBorder" CornerRadius="10" Margin="7.5">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                        <Border Grid.Column="0" CornerRadius="10" Padding="7.5" Margin="7.5">
+                            <Viewbox>
+                                <ContentPresenter Content="{TemplateBinding Tag}"/>
+                            </Viewbox>
+                        </Border>
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{TemplateBinding Property=RadioButton.Content}" VerticalAlignment="Center" FontSize="18" Foreground="White"/>
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="#ffffff" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource SecondaryBorderColor}" Opacity="0.0" CornerRadius="15">
+                            <Border.Styles>
+                                <Style Selector="Border:pointerover">
+                                    <Setter Property="Opacity" Value="0.025"/>
+                                </Style>
+                            </Border.Styles>
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Style Selector="^">
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.90)"/>
+        </Style>
+        
+        <Setter Property="Transitions">
+            <Setter.Value>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                </Transitions>
+            </Setter.Value>
+        </Setter>
+        
+        <Style Selector="^:checked /template/ Border#CheckedBorder">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        
+        <Style Selector="^:checked /template/ Border#CheckedIconBorder">
+            <Setter Property="Opacity" Value="0.4"/>
+        </Style>
+        
+        <Style Selector="^:checked /template/ Border#UncheckedIconBorder">
+            <Setter Property="Opacity" Value="0.0"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="Button.ReturnButton">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Margin" Value="22.5,0,22.5,22.5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid Height="50" RenderTransformOrigin="0.5,0.5" ColumnDefinitions="Auto,*">
+                        <Grid.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Grid.RenderTransform>
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="{StaticResource SecondaryColor}" CornerRadius="15" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource SecondaryBorderColor}"/>
+                        <Border Grid.Column="0" CornerRadius="10" Padding="8.5" Margin="7.5">
+                            <Border.Background>
+                                <SolidColorBrush Color="#FF2438" Opacity="1"/>
+                            </Border.Background>
+                            <Viewbox>
+                                <Path Data="M15.9003 0.806543C16.2831 1.18941 16.4981 1.70862 16.4981 2.25C16.4981 2.79138 16.2831 3.31059 15.9003 3.69346L7.13546 12.4583H30.7902C31.3317 12.4583 31.851 12.6734 32.2339 13.0563C32.6168 13.4392 32.8319 13.9585 32.8319 14.5C32.8319 15.0415 32.6168 15.5608 32.2339 15.9437C31.851 16.3266 31.3317 16.5417 30.7902 16.5417H7.13546L15.9003 25.3065C16.2722 25.6916 16.478 26.2073 16.4734 26.7427C16.4687 27.278 16.254 27.79 15.8755 28.1686C15.4969 28.5471 14.9848 28.7619 14.4495 28.7665C13.9142 28.7712 13.3985 28.5654 13.0134 28.1935L0.763422 15.9435C0.380669 15.5606 0.165649 15.0414 0.165649 14.5C0.165649 13.9586 0.380669 13.4394 0.763422 13.0565L13.0134 0.806543C13.3963 0.42379 13.9155 0.208771 14.4569 0.208771C14.9983 0.208771 15.5175 0.42379 15.9003 0.806543Z" Fill="White"/>
+                            </Viewbox>
+                        </Border>
+                        <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Return" VerticalAlignment="Center" FontSize="18" Foreground="White"/>
+                        <Border Grid.ColumnSpan="2" Grid.Column="0" Background="#ffffff" Opacity="0.0" CornerRadius="15" Margin="0">
+                            <Border.Styles>
+                                <Style Selector="Border:pointerover">
+                                    <Setter Property="Opacity" Value="0.025"/>
+                                </Style>
+                            </Border.Styles>
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Style Selector="^">
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.90)"/>
+        </Style>
+        
+        <Setter Property="Transitions">
+            <Setter.Value>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                </Transitions>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</Styles>

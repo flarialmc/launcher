@@ -1,0 +1,193 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:converters="clr-namespace:Flarial.Launcher.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Flarial.Launcher.Views.VersionItemView"
+             x:DataType="vm:VersionItemViewModel"
+             Background="{StaticResource SecondaryColor}"
+             BorderBrush="{StaticResource SecondaryBorderColor}"
+             BorderThickness="{StaticResource ButtonBorderThickness}"
+             Padding="7.5"
+             CornerRadius="15">
+    <UserControl.Resources>
+        <converters:RoundToWholeNumber x:Key="RoundToWholeNumber"/>
+        <converters:GradientStopOffset x:Key="GradientStopOffset" OffsetAmount="0.0125"/>
+</UserControl.Resources>
+
+    <UserControl.Styles>
+
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource SpaceGrotesk}"/>
+            <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="RenderTransform" Value="scale(1, 1)"/>
+        </Style>
+
+        <Style Selector="Button:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9, 0.9)"/>
+        </Style>
+
+        <Style Selector="Button.not-installed">
+            <Setter Property="Background" Value="#188830"/>
+            <Setter Property="Content" Value="Download"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Command" Value="{Binding InstallCommand}"/>
+            <Setter Property="Tag">
+                <Setter.Value>
+                    <Template>
+                        <Grid>
+                            <Path StrokeJoin="Round" StrokeLineCap="Round" StrokeThickness="2" Fill="White" Data="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"/>
+                            <Path StrokeJoin="Round" StrokeLineCap="Round" StrokeThickness="2" Fill="White" Data="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"/>
+                        </Grid>
+                    </Template>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.downloading">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#FF2438"
+                                      Offset="{Binding InstallPercentage,
+                                      Converter={StaticResource GradientStopOffset},
+                                      ConverterParameter=Left}"/>
+                        <GradientStop Color="#188830"
+                                      Offset="{Binding InstallPercentage,
+                                      Converter={StaticResource GradientStopOffset},
+                                      ConverterParameter=Right}"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Content" Value="Downloading"/>
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="MinWidth" Value="175"/>
+            <Setter Property="Tag">
+                <Setter.Value>
+                    <Template>
+                        <Grid>
+                            <Path StrokeJoin="Round" StrokeLineCap="Round" StrokeThickness="2" Fill="White" Data="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"/>
+                            <Path StrokeJoin="Round" StrokeLineCap="Round" StrokeThickness="2" Fill="White" Data="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"/>
+                        </Grid>
+                    </Template>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.installed">
+            <Setter Property="Background" Value="#FF2438"/>
+            <Setter Property="Content" Value="Launch"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Tag">
+                <Setter.Value>
+                    <Template>
+                        <Grid Margin="1">
+                            <Path Fill="White"
+                                  StrokeJoin="Round"
+                                  StrokeLineCap="Round"
+                                  Stretch="Uniform"
+                                  Data="M9.074 7.7335 L3.308 11.6315 C1.903 12.5815 0 11.5835 0 9.8985 L0 2.1015 C0 0.4155 1.903 -0.5815 3.308 0.3685 L9.074 4.2665 C10.306 5.0995 10.306 6.9005 9.074 7.7335 Z"/>
+                        </Grid>
+                    </Template>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.DeleteBtn">
+            <Setter Property="Background" Value="#201a1b"/>
+        </Style>
+
+        <Style Selector="Button.DeleteBtn:pointerover">
+            <Setter Property="Background" Value="#272022"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="*,Auto,Auto">
+        <TextBlock Margin="7.5,0,0,0" VerticalAlignment="Center" Grid.Column="0" FontSize="20" Text="{Binding Version}"/>
+
+        <Button Grid.Column="1"
+                Cursor="Hand"
+                Margin="0,0,10,0"
+                Classes="DeleteBtn"
+                IsVisible="{Binding IsInstalled}"
+                Command="{Binding DeleteCommand}">
+            <Button.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.1"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                </Transitions>
+            </Button.Transitions>
+            <Button.Template>
+                <ControlTemplate>
+                    <Border Height="38" Width="38" Background="{TemplateBinding Button.Background}" CornerRadius="12.5">
+                        <Grid>
+                            <Border Background="White" Opacity="0" CornerRadius="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=CornerRadius}">
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Duration="0:0:0.1" Property="Opacity"/>
+                                    </Transitions>
+                                </Border.Transitions>
+                                <Border.Styles>
+                                    <Style Selector="Border:pointerover">
+                                        <Setter Property="Opacity" Value="0.0125"/>
+                                    </Style>
+                                </Border.Styles>
+                            </Border>
+                            <Viewbox Margin="12.5" IsHitTestVisible="False">
+                                <Path Fill="White" Stretch="Uniform" Data="M413.7,133.4 C411.3,124.4 409.7,119.4 409.7,119.4 C407.1,110.1 400.5,110.1 390.7,108.5 L337.6,101.8 C331,100.7 331,100.7 328.4,95 C319.7,75.4 317,64 307.5,64 H204.5 C195,64 192.4,75.4 183.7,95.1 C181.1,100.7 181.1,100.7 174.5,101.9 L121.3,108.6 C111.6,110.2 104.6,111.1 102,120.4 C102,120.4 100.8,124.5 98.3,133.4 C95.1,145.3 93.8,144 104.8,144 H407.2 C418.2,144 417,145.3 413.7,133.4 Z M379.4,176 H132.6 C116,176 115.2,178.2 116.2,190.7 L134.9,433.3 C136.5,445.6 137.7,448.1 152.4,448.1 H359.6 C374.3,448.1 375.5,445.6 377.1,433.3 L395.8,190.7 C396.8,178.1 396,176 379.4,176 Z" />
+                            </Viewbox>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+
+        </Button>
+
+        <Button Grid.Column="2"
+                Cursor="Hand"
+                Classes.not-installed="{Binding IsNotInstalled}"
+                Classes.downloading="{Binding IsDownloading}"
+                Classes.installed="{Binding IsInstalled}">
+            <Button.Transitions>
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.2"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                </Transitions>
+            </Button.Transitions>
+            <Button.Template>
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Button.Background}" CornerRadius="12.5">
+                        <Grid>
+                            <Border Background="White" Opacity="0" CornerRadius="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=CornerRadius}">
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Duration="0:0:0.1" Property="Opacity"/>
+                                    </Transitions>
+                                </Border.Transitions>
+                                <Border.Styles>
+                                    <Style Selector="Border:pointerover">
+                                        <Setter Property="Opacity" Value="0.05"/>
+                                    </Style>
+                                </Border.Styles>
+                            </Border>
+                            <StackPanel IsHitTestVisible="False" Margin="10" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+                                <Viewbox Width="15" Height="15">
+                                    <ContentControl Content="{TemplateBinding Button.Tag}"/>
+                                </Viewbox>
+                                <TextBlock FontSize="14" Text="{TemplateBinding Button.Content}"/>
+                                <TextBlock FontSize="14"
+                                           IsVisible="{Binding IsDownloading}"
+                                           Text="{Binding InstallPercentage, StringFormat='-  {0}%', Converter={StaticResource RoundToWholeNumber}}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+    </Grid>
+</UserControl>

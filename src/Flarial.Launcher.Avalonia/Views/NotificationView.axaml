@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:acrylicBlur="clr-namespace:Flarial.Launcher.Controls.AcrylicBlur"
+             xmlns:vms="using:Flarial.Launcher.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="100"
+             x:Class="Flarial.Launcher.Views.NotificationView"
+             x:DataType="vms:NotificationViewModel"
+             VerticalAlignment="Bottom" HorizontalAlignment="Right"
+             MaxWidth="350">
+    <UserControl.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="RenderTransformOrigin" Value="0,0.5"/>
+            <Setter Property="RenderTransform" Value="scaleX(0)"/>
+            
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid Background="Transparent">
+                            <Border Background="{TemplateBinding Background}"
+                                    Padding="0,7.5,7.5,7.5"
+                                    Margin="7.5,0,0,0">
+                                <Viewbox Stretch="Uniform" VerticalAlignment="Center">
+                                    <Panel Margin="5,2,5,5">
+                                        <Path Data="M3 38.3553L38.3553 3.00001M3 3L38.3553 38.3553" 
+                                              Stroke="White"
+                                              StrokeThickness="5" 
+                                              StrokeLineCap="Round"/>
+                                    </Panel>
+                                </Viewbox>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="#ff4554"/>
+            </Style>
+            
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <Transitions>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                        <BrushTransition Property="Background" Duration="0:0:0.1"/>
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="acrylicBlur|AcrylicBlur:pointerover Grid Button">
+            <Setter Property="RenderTransform" Value="scaleX(1)"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <acrylicBlur:AcrylicBlur Background="#3f000000"
+                             CornerRadius="7.5,0,0,7.5" 
+                             Blur="25" 
+                             Name="Card"
+                             Margin="10,10,0,10">
+        <acrylicBlur:AcrylicBlur.RenderTransform>
+            <TranslateTransform/>
+        </acrylicBlur:AcrylicBlur.RenderTransform>
+        <acrylicBlur:AcrylicBlur.Effect>
+            <DropShadowEffect OffsetX="0" OffsetY="0" 
+                              BlurRadius="15" 
+                              Color="Black"
+                              Opacity="0.25"/>
+        </acrylicBlur:AcrylicBlur.Effect>
+        <Grid ColumnDefinitions="Auto,*">
+            <Border Background="{Binding ElementName=CloseButton, Path=Background}"
+                    HorizontalAlignment="Left"
+                    Width="7.5"
+                    CornerRadius="{Binding $parent[acrylicBlur:AcrylicBlur].CornerRadius}">
+            
+            </Border>
+            <TextBlock Grid.Column="1" 
+                       Margin="7.5" 
+                       Text="{Binding Message}" 
+                       FontSize="16" 
+                       Foreground="{StaticResource ForegroundColor}"
+                       TextWrapping="Wrap"/>
+            
+            
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Width="35" Name="CloseButton" Command="{Binding CloseCommand}"/>
+
+        </Grid>
+    </acrylicBlur:AcrylicBlur>
+</UserControl>

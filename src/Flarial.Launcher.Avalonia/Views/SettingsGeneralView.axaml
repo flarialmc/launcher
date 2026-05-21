@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
+             xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
+             xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
+             mc:Ignorable="d" 
+             Width="555" Height="470"
+             x:Class="Flarial.Launcher.Views.SettingsGeneralView"
+             x:DataType="vm:SettingsGeneralViewModel"
+             Background="{StaticResource BackgroundColor}" 
+             BorderThickness="{StaticResource ButtonBorderThickness}" 
+             BorderBrush="{StaticResource BackgroundBorderColor}" 
+             CornerRadius="20">
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.Clip>
+        <RectangleGeometry Rect="0,0,555,470"/>
+    </UserControl.Clip>
+    <StackPanel Margin="20">
+        <VisualLayerManager>
+            <spotlightDecorator:SpotlightDecorator Height="500" SpotlightColor="#9f9f9f" SpotlightRadius="120">
+                <StackPanel Background="Transparent">
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+                    
+                    <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
+                                               SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
+                    <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
+                        <TextBox Watermark="Custom DLL Path" Margin="0,10,0,5"/>
+                    </Expander>
+                    
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+        
+                    <Grid>
+                        <TextBlock Text="Wait For Initialization" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Reduces game crashes at the cost of injection speed"/>
+                        <ToggleButton/>
+                    </Grid>
+                    <Grid>
+                        <TextBlock Text="Hardware Acceleration" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Uses your GPU to improve launcher performance, turn this off if it's causing issues"/>
+                        <ToggleButton/>
+                    </Grid>
+                </StackPanel>
+            </spotlightDecorator:SpotlightDecorator>
+        </VisualLayerManager>
+        
+        
+        
+    </StackPanel>
+</UserControl>
