@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Polyfill" Version="10.6.0" />
+        <PackageReference Include="Polyfill" Version="10.7.0" />
         <PackageReference Include="SkiaSharp" Version="3.119.2" />
 
         <PackageReference Include="Avalonia" Version="11.3.16" />

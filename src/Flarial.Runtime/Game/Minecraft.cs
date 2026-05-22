@@ -5,6 +5,7 @@ using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.RemoteDesktop;
+using static System.StringComparison;
 using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
@@ -16,11 +17,45 @@ namespace Flarial.Runtime.Game;
 
 public unsafe abstract class Minecraft
 {
-    internal Minecraft() { }
+    static Minecraft()
+    {
+        s_catalog.PackageUpdating += OnPackageUpdating;
+        s_catalog.PackageInstalling += OnPackageInstalling;
+        s_catalog.PackageUninstalling += OnPackageUninstalling;
+    }
+
+    static readonly PackageCatalog s_catalog = PackageCatalog.OpenForCurrentUser();
+
+    static void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.TargetPackage);
+    }
+
+    static void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.Package);
+    }
+
+    static void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.Package);
+    }
+
+    static void OnPackageStatusChanged(Package package)
+    {
+        if (PackageFamilyName.Equals(package.Id.FamilyName, OrdinalIgnoreCase))
+            PackageStatusChanged?.Invoke();
+    }
+
+    protected Minecraft() { }
 
     protected abstract string WindowClass { get; }
     protected abstract string ProcessName { get; }
 
+    public static event Action? PackageStatusChanged;
     public static Minecraft Current { get; } = new MinecraftGDK();
     public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 

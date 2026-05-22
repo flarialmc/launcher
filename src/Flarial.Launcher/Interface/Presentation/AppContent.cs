@@ -31,13 +31,11 @@ sealed class AppContent : XamlElement<NavigationView>
     readonly VersionsPage _versionsPage;
     readonly SettingsPage _settingsPage;
 
-    readonly PackageCatalog _catalog;
     readonly AppSettings _settings;
 
     internal AppContent(AppSettings settings) : base(new())
     {
         _settings = settings;
-        _catalog = PackageCatalog.OpenForCurrentUser();
 
         _settingsPage = new(settings);
         _homePage = new(this, settings);
@@ -59,6 +57,8 @@ sealed class AppContent : XamlElement<NavigationView>
 
         (~this).Content = _homePage;
         (~this).SelectedItem = _homeItem;
+
+        Minecraft.PackageStatusChanged += OnPackageStatusChanged;
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -72,25 +72,13 @@ sealed class AppContent : XamlElement<NavigationView>
         _homePage._button.Content = $"Updating... {value}%";
     });
 
-    void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
+    void OnPackageStatusChanged()
     {
-        if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName);
-    }
-
-    void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
-    {
-        if (args.IsComplete) OnPackageStatusChanged(args.Package.Id.FamilyName);
-    }
-
-    void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
-    {
-        if (args.IsComplete) OnPackageStatusChanged(args.TargetPackage.Id.FamilyName);
-    }
-
-    void OnPackageStatusChanged(string packageFamilyName) => (~this).Dispatcher.Invoke(() =>
-    {
-        if (!packageFamilyName.Equals(Minecraft.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
+        if (!(~this).Dispatcher.HasThreadAccess)
+        {
+            (~this).Dispatcher.Invoke(OnPackageStatusChanged);
             return;
+        }
 
         if (!Minecraft.IsInstalled)
         {
@@ -102,7 +90,7 @@ sealed class AppContent : XamlElement<NavigationView>
         var text = $"{(registry.IsSupported ? "🟢" : "🔴")} {VersionRegistry.InstalledVersion}";
 
         _homePage._leftText.Text = text;
-    });
+    }
 
     async void OnLoaded(object sender, RoutedEventArgs args)
     {
@@ -139,11 +127,7 @@ sealed class AppContent : XamlElement<NavigationView>
             });
         });
 
-        OnPackageStatusChanged(Minecraft.PackageFamilyName);
-
-        _catalog.PackageUpdating += OnPackageUpdating;
-        _catalog.PackageInstalling += OnPackageInstalling;
-        _catalog.PackageUninstalling += OnPackageUninstalling;
+        OnPackageStatusChanged();
 
         _homePage._button.Content = "Play";
         _homePage._button.IsEnabled = true;

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Interactivity;
-using Flarial.Launcher.Dialogs;
-using Flarial.Launcher.Dialogs.Metadata;
-using Flarial.Launcher.Services;
+using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
-using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -28,11 +23,14 @@ public class MainWindowViewModel : ViewModelBase
 
     public NotificationAreaViewModel NotificationArea { get; }
 
+    public VersionRegistry VersionRegistry { get; private set; }
+
     public MainWindowViewModel()
     {
-        HomeViewModel = new();
+        HomeViewModel = new(this);
         SettingsViewModel = new();
         NotificationArea = new();
+        VersionRegistry = null!;
     }
 
     public async Task<string> ShowMessageBoxAsync(string title, string message, string[] buttons)
@@ -53,8 +51,10 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        var registry = await VersionRegistry.CreateAsync();
-        _ = registry;
+        VersionRegistry = await VersionRegistry.CreateAsync();
+
+        HomeViewModel.OnPackageStatusChanged();
+        Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;
 
         HomeViewModel.LauncherStatus = "Ready!";
         HomeViewModel.IsInitialized = true;

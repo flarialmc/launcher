@@ -52,7 +52,7 @@
                 <Button x:Name="CloseButton" Classes="CloseButton" Command="{Binding CloseWindow}"/>
             </StackPanel>
 
-            <Border Name="VersionTextBorder" CornerRadius="15" HorizontalAlignment="Left" Background="Gray" Opacity="1" VerticalAlignment="Top" Margin="20,75,0,25" controls:CustomToolTip.Content="Your Minecraft version is unsupported by Flarial">
+            <Border Name="VersionTextBorder" CornerRadius="15" HorizontalAlignment="Left" Background="{Binding GameVersionColor}" Opacity="1" VerticalAlignment="Top" Margin="20,75,0,25" controls:CustomToolTip.Content="Your Minecraft version is unsupported by Flarial">
                 <TextBlock TextAlignment="Left" IsHitTestVisible="False" Name="VersionLabel" Margin="10,5,10,5" Text="{Binding GameVersion}" FontSize="16" Foreground="White"/>
             </Border>
 
