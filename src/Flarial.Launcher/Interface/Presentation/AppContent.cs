@@ -114,12 +114,12 @@ sealed class AppContent : XamlElement<NavigationView>
 
         if (!await FlarialLauncher.VerifyConnectionAsync())
         {
-            await DialogRegistry.ConnectionFailure.ShowAsync();
+            await ConnectionFailureDialog.ShowAsync();
             System.Windows.Application.Current.Shutdown();
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await DialogRegistry.LauncherUpdateAvailable.ShowAsync()))
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);

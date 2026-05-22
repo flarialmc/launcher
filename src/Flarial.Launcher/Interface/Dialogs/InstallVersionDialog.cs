@@ -1,8 +1,8 @@
 using Flarial.Launcher.Interface.Presentation;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class InstallVersionDialog : AppDialog
+sealed class InstallVersionDialog : AppDialog<InstallVersionDialog>
 {
     protected override string Title => "💡 Install Version";
     protected override string PrimaryButtonText => "Install";

@@ -1,8 +1,8 @@
 using Flarial.Launcher.Interface.Presentation;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class UnpackagedInstallDialog : AppDialog
+sealed class UnpackagedInstallDialog : AppDialog<UnpackagedInstallDialog>
 {
     protected override string Title => "⚠️ Unpackaged Install";
     protected override string PrimaryButtonText => "Back";

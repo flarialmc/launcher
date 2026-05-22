@@ -14,10 +14,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
-    <DebugType>none</DebugType>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

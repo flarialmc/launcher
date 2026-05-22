@@ -1,9 +1,19 @@
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
 namespace Flarial.Launcher.Interface.Presentation;
+
+abstract class AppDialog<T> : AppDialog where T : AppDialog<T>, new()
+{
+    static readonly ConcurrentDictionary<Type, AppDialog<T>> s_dialogs = [];
+
+    static AppDialog<T> Get() => s_dialogs.GetOrAdd(typeof(T), static type => new T());
+
+    public static async Task<bool> ShowAsync() => await Get().OnShowAsync();
+}
 
 abstract class AppDialog
 {
@@ -20,9 +30,7 @@ abstract class AppDialog
     protected virtual string CloseButtonText { get; } = string.Empty;
     protected virtual string SecondaryButtonText { get; } = string.Empty;
 
-    internal virtual async Task<bool> ShowAsync() => await PromptAsync() != ContentDialogResult.None;
-
-    internal async Task<ContentDialogResult> PromptAsync()
+    internal virtual async Task<bool> OnShowAsync()
     {
         await s_semaphore.WaitAsync();
         try
@@ -34,7 +42,7 @@ abstract class AppDialog
             Current.PrimaryButtonText = PrimaryButtonText;
             Current.SecondaryButtonText = SecondaryButtonText;
 
-            return await Current.ShowAsync();
+            return (await Current.ShowAsync()) > 0;
         }
         finally { s_semaphore.Release(); }
     }

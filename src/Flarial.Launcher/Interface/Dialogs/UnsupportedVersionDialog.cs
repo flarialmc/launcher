@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Flarial.Launcher.Interface.Presentation;
 using Flarial.Runtime.Versions;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
 sealed class UnsupportedVersionDialog(string preferred) : AppDialog
 {

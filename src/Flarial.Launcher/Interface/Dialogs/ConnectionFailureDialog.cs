@@ -1,8 +1,8 @@
 using Flarial.Launcher.Interface.Presentation;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class ConnectionFailureDialog : AppDialog
+sealed class ConnectionFailureDialog : AppDialog<ConnectionFailureDialog>
 {
     protected override string PrimaryButtonText => "Exit";
     protected override string Title => "🚨 Connection Failure";

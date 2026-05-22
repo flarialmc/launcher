@@ -1,8 +1,8 @@
 using Flarial.Launcher.Interface.Presentation;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class ClientUpdateFailureDialog: AppDialog
+sealed class ClientUpdateFailureDialog : AppDialog<ClientUpdateFailureDialog>
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Client Update Failure";

@@ -1,26 +1,41 @@
+using System;
+using System.Collections.Concurrent;
 using static Windows.Win32.Foundation.HWND;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.Management;
 
-sealed class MinecraftPage : StorePage { protected override string ProductId => "9NBLGGH2JHXJ"; }
-sealed class GamingServicesPage : StorePage { protected override string ProductId => "9MWPM2CQNLHN"; }
-
-abstract class StorePage
+sealed class MinecraftPage : StorePage<MinecraftPage>
 {
-    internal static MinecraftPage Minecraft => field ??= new();
-    internal static GamingServicesPage GamingServices => field ??= new();
+    protected override string ProductId => "9NBLGGH2JHXJ";
+}
 
+sealed class GamingServicesPage : StorePage<GamingServicesPage>
+{
+    protected override string ProductId => "9MWPM2CQNLHN";
+}
+
+abstract class StorePage<T> : StorePage where T : StorePage<T>, new()
+{
+    static readonly ConcurrentDictionary<Type, StorePage<T>> s_pages = [];
+
+    static StorePage<T> Get() => s_pages.GetOrAdd(typeof(T), static type => new T());
+
+    public static void Open() => Get().OnOpen();
+}
+
+unsafe abstract class StorePage
+{
     readonly string _uri;
 
     protected abstract string ProductId { get; }
 
     internal StorePage() => _uri = $"ms-windows-store://pdp/?ProductId={ProductId}";
 
-    unsafe internal void Open()
+    internal void OnOpen()
     {
-        fixed (char* lpFile = _uri)
-            ShellExecute(Null, null, lpFile, null, null, SW_NORMAL);
+        fixed (char* uri = _uri)
+            ShellExecute(new(), null, uri, null, null, SW_NORMAL);
     }
 }

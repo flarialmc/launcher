@@ -1,8 +1,8 @@
 using Flarial.Launcher.Interface.Presentation;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class InvalidCustomDllDialog : AppDialog
+sealed class InvalidCustomDllDialog : AppDialog<InvalidCustomDllDialog>
 {
     protected override string PrimaryButtonText => "Back";
     protected override string Title => "⚠️ Invalid Custom DLL";

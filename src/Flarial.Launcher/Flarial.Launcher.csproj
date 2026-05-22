@@ -17,16 +17,18 @@
     <Optimize>true</Optimize>
     <PublishRelease>true</PublishRelease>
 
-    <DebugType>embedded</DebugType>
-    <DeterministicSourcePaths>true</DeterministicSourcePaths>
-
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\AssemblyVersion.cs" />
     <EmbeddedResource Include="Resources\Application.ico" LogicalName="Application.ico" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Compile Remove="Interface\Web\**\*" />
   </ItemGroup>
 
   <ItemGroup>

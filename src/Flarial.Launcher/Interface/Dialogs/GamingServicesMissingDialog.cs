@@ -2,15 +2,15 @@ using System.Threading.Tasks;
 using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 
-namespace Flarial.Launcher.Interface.Dialogs.Metadata;
+namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class GamingServicesMissingDialog : AppDialog
+sealed class GamingServicesMissingDialog : AppDialog<GamingServicesMissingDialog>
 {
-    internal override async Task<bool> ShowAsync()
+    internal override async Task<bool> OnShowAsync()
     {
-        var result = await base.ShowAsync();
-        if (result) StorePage.GamingServices.Open();
-        return result;
+        var _= await base.OnShowAsync();
+        if (_) GamingServicesPage.Open();
+        return _;
     }
 
     protected override string CloseButtonText => "Cancel";
