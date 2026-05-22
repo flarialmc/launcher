@@ -78,6 +78,7 @@
         <!-- Disabled State -->
         <Style Selector="^:disabled /template/ Border#MainBorder">
             <Setter Property="Background" Value="#FF606060"/>
+            <Setter Property="BorderBrush" Value="#FF606060"/>
         </Style>
 
         <Style Selector="^:disabled /template/ Path#SettingsIcon">

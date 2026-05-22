@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
@@ -41,6 +42,7 @@ public partial class MainWindow : Window
         MessageBus.Current.Listen<PageTransitions>()
             .Subscribe(PageTransition);
     }
+
 
     protected override async void OnOpened(EventArgs e)
     {
@@ -91,5 +93,11 @@ public partial class MainWindow : Window
         await Task.WhenAll(tasks);
 
         vm.IsAnimating = false;
+    }
+
+    async void OnLoaded(object sender, RoutedEventArgs args)
+    {
+        Loaded -= OnLoaded;
+        ((MainWindowViewModel)DataContext!).OnLoaded();
     }
 }

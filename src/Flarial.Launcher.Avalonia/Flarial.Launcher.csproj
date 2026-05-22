@@ -27,6 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" PrivateAssets="All" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Polyfill" Version="10.6.0" />
         <PackageReference Include="SkiaSharp" Version="3.119.2" />
 

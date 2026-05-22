@@ -1,0 +1,16 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Flarial.Launcher.Dialogs.Metadata;
+
+sealed class GamingServicesMissingDialog : MessageDialog
+{
+    protected override string Title { get; } = "⚠️ Gaming Services Missing";
+    protected override string Message { get; } = @"Gaming Services isn't installed, please install it.
+
+• Gaming Services is required for GDK builds.
+• You may install Gaming Services via the Microsoft Store.
+
+If you need help, join our Discord.";
+    protected override IReadOnlyList<string> Buttons { get; } = ["Install", "Cancel"];
+}

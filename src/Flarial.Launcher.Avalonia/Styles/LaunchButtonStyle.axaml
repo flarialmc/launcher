@@ -4,11 +4,11 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Margin" Value="0,12.5,0,0"/>
-        
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border Width="300" Height="55" Background="{StaticResource PrimaryColor}" CornerRadius="10" RenderTransformOrigin="0.5,0.5" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource PrimaryBorderColor}">
+                    <Border Name="MainBorder" Width="300" Height="55" Background="{StaticResource PrimaryColor}" CornerRadius="10" RenderTransformOrigin="0.5,0.5" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource PrimaryBorderColor}">
                         <Grid>
                             <Border CornerRadius="10" Background="White" Opacity="0">
                                 <Border.Styles>
@@ -28,7 +28,7 @@
                                 </Viewbox>
 
                                 <TextBlock x:Name="LaunchText" Margin="10,0,0,0" Text="Launch"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" 
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"
                                            Foreground="#ffffff"/>
                             </StackPanel>
                         </Grid>
@@ -36,7 +36,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Style Selector="^">
             <Setter Property="RenderTransform" Value="scale(1)"/>
         </Style>
@@ -50,5 +50,18 @@
                 </Transitions>
             </Setter.Value>
         </Setter>
+
+        <Style Selector="^:disabled /template/ Border#MainBorder">
+            <Setter Property="Background" Value="#FF606060"/>
+            <Setter Property="BorderBrush" Value="#FF606060"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Path#LaunchIcon">
+            <Setter Property="Fill" Value="#FFA0A0A0"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ TextBlock#LaunchText">
+            <Setter Property="Foreground" Value="#FFA0A0A0"/>
+        </Style>
     </Style>
 </Styles>

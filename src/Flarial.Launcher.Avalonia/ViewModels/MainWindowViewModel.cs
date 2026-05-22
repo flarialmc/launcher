@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Interactivity;
+using Flarial.Launcher.Dialogs;
+using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Services;
+using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 
@@ -48,4 +52,12 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
     }
 
     void INotificationService.Show(string message) => NotificationArea.Add(message);
+
+    public async void OnLoaded()
+    {
+        var registry = await VersionRegistry.CreateAsync();
+
+        HomeViewModel.LauncherStatus = "Ready!";
+        HomeViewModel.IsInitialized = true;
+    }
 }

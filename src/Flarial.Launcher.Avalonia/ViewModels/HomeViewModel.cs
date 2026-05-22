@@ -1,43 +1,77 @@
 using System.Reactive;
 using System.Reflection;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Services;
 using Flarial.Launcher.Types;
+using Flarial.Runtime.Analytics;
+using Flarial.Runtime.Core;
+using Flarial.Runtime.Game;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
-public class HomeViewModel : ViewModelBase
+public partial class HomeViewModel : ViewModelBase
 {
-    static readonly string _launcherVersion;
+    [Reactive] bool _isLaunched = true;
+    [Reactive] bool _isInitialized = false;
 
-    static HomeViewModel()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        _launcherVersion = $"{assembly.GetName().Version}";
-    }
+    [Reactive] string _launcherStatus = "Preparing...";
 
-    public string GameVersion { get; } = "0.0.0";
-    public string LauncherVersion { get; } = _launcherVersion;
+    [Reactive] string _gameVersion = "0.0.0";
+    [Reactive] string _launcherVersion;
 
     public HomeViewModel(IDialogService dialogService, INotificationService notificationService)
     {
         var dialogs = dialogService;
         var notifications = notificationService;
 
-        Launch = ReactiveCommand.CreateFromTask(async () =>
-            {
-                /*var result = await dialogs.ShowMessageBoxAsync(
-                    "Test Message Box", 
-                    "hello world type shit", 
-                    ["button 1", "button 2", "button 3"]);*/
+        var assembly = Assembly.GetExecutingAssembly();
+        _launcherVersion = $"{assembly.GetName().Version}";
 
-                await MessageDialog.ShowAsync<ExampleDialog>();
-                
-                // notifications.Show($"Unable to inject! Flarial is incompatible with your current MC:BE version.");
-            });
+        Launch = ReactiveCommand.CreateFromTask(OnLaunchClickedAsync);
     }
+
+    async Task OnLaunchClickedAsync()
+    {
+        IsLaunched = false; try
+        {
+            if (!Minecraft.IsGamingServicesInstalled)
+            {
+                await MessageDialog.ShowAsync<GamingServicesMissingDialog>();
+                return;
+            }
+
+            if (!Minecraft.IsInstalled)
+            {
+                await MessageDialog.ShowAsync<NotInstalledDialog>();
+                return;
+            }
+
+            LauncherStatus = "Verifying...";
+            await FlarialClient.Current.DownloadAsync(OnDownload);
+
+            LauncherStatus = "Launching...";
+            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? true)
+            {
+                await MessageDialog.ShowAsync<LaunchFailureDialog>();
+                return;
+            }
+        }
+        finally
+        {
+            IsLaunched = true;
+            LauncherStatus = "Ready!";
+        }
+    }
+
+    async void OnDownload(int value) => Dispatcher.UIThread.Invoke(() =>
+    {
+        LauncherStatus = $"Downloading... {value}%";
+    });
 
     public ReactiveCommand<Unit, Unit> Launch { get; }
 

@@ -11,7 +11,8 @@
         Title="Flarial Launcher" Height="500" Width="800"
         TransparencyLevelHint="Transparent"
         WindowStartupLocation="CenterScreen"
-        Background="Transparent">
+        Background="Transparent"
+        Loaded="OnLoaded">
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
     </Window.Clip>
