@@ -1,6 +1,6 @@
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class ClientUpdateFailureDialog : MessageDialog
+sealed class ClientUpdateFailureDialog : MessageDialog<ClientUpdateFailureDialog>
 {
     protected override string[] Buttons { get; } = ["Back"];
     protected override string Title { get; } = "⚠️ Client Update Failure";

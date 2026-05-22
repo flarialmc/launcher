@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class GamingServicesMissingDialog : MessageDialog
+sealed class GamingServicesMissingDialog : MessageDialog<GamingServicesMissingDialog>
 {
     protected override string Title { get; } = "⚠️ Gaming Services Missing";
     protected override string Message { get; } = @"Gaming Services isn't installed, please install it.

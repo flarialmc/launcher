@@ -29,36 +29,36 @@ public partial class HomeViewModel : ViewModelBase
         var assembly = Assembly.GetExecutingAssembly();
         _launcherVersion = $"{assembly.GetName().Version}";
 
-        Launch = ReactiveCommand.CreateFromTask(OnLaunchClickedAsync);
+        Launch = ReactiveCommand.CreateFromTask(OnLaunchAsync);
     }
 
-    async Task OnLaunchClickedAsync()
+    async Task OnLaunchAsync()
     {
         IsLaunched = false; try
         {
             if (!Minecraft.IsGamingServicesInstalled)
             {
-                await MessageDialog.ShowAsync<GamingServicesMissingDialog>();
+                await GamingServicesMissingDialog.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsInstalled)
             {
-                await MessageDialog.ShowAsync<NotInstalledDialog>();
+                await NotInstalledDialog.ShowAsync();
                 return;
             }
 
             LauncherStatus = "Verifying...";
             if (!await FlarialClient.Current.DownloadAsync(OnDownload))
             {
-                await MessageDialog.ShowAsync<ClientUpdateFailureDialog>();
+                await ClientUpdateFailureDialog.ShowAsync();
                 return;
             }
 
             LauncherStatus = "Launching...";
             if (!await FlarialClient.Current.TrackedLaunchAsync() ?? false)
             {
-                await MessageDialog.ShowAsync<LaunchFailureDialog>();
+                await LaunchFailureDialog.ShowAsync();
                 return;
             }
         }

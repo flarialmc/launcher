@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-public sealed class ExampleDialog : MessageDialog
+public sealed class ExampleDialog : MessageDialog<ExampleDialog>
 {
     protected override string Title { get; } = "Example";
     protected override string Message { get; } = @"This is an example!

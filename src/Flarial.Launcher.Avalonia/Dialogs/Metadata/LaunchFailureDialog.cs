@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class LaunchFailureDialog : MessageDialog
+sealed class LaunchFailureDialog : MessageDialog<LaunchFailureDialog>
 {
     protected override string Title { get; } = "⚠️ Launch Failure";
     protected override string[] Buttons { get; } = ["Back"];
