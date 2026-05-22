@@ -15,14 +15,14 @@ public class MessageBoxViewModel : ReactiveObject
 
     public string Title { get; }
     public string Message { get; }
-    public IReadOnlyList<string> Buttons { get; }
+    public string[] Buttons { get; }
     public Subject<Unit> CloseRequested { get; } = new();
 
     public ReactiveCommand<string, Unit> SelectButtonCommand { get; }
 
     public Task<string> Result => _tcs.Task;
 
-    public MessageBoxViewModel(string title, string message, IReadOnlyList<string> buttons)
+    public MessageBoxViewModel(string title, string message, string[] buttons)
     {
         Title = title;
         Message = message;

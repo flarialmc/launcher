@@ -12,7 +12,7 @@ using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationService
+public class MainWindowViewModel : ViewModelBase
 {
     readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -30,12 +30,12 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
 
     public MainWindowViewModel()
     {
-        HomeViewModel = new(this, this);
+        HomeViewModel = new();
         SettingsViewModel = new();
         NotificationArea = new();
     }
 
-    public async Task<string> ShowMessageBoxAsync(string title, string message, IReadOnlyList<string> buttons)
+    public async Task<string> ShowMessageBoxAsync(string title, string message, string[] buttons)
     {
         await _semaphore.WaitAsync();
         try
@@ -51,11 +51,10 @@ public class MainWindowViewModel : ViewModelBase, IDialogService, INotificationS
         finally { _semaphore.Release(); }
     }
 
-    void INotificationService.Show(string message) => NotificationArea.Add(message);
-
     public async void OnLoaded()
     {
         var registry = await VersionRegistry.CreateAsync();
+        _ = registry;
 
         HomeViewModel.LauncherStatus = "Ready!";
         HomeViewModel.IsInitialized = true;

@@ -24,11 +24,8 @@ public partial class HomeViewModel : ViewModelBase
     [Reactive] string _gameVersion = "0.0.0";
     [Reactive] string _launcherVersion;
 
-    public HomeViewModel(IDialogService dialogService, INotificationService notificationService)
+    public HomeViewModel()
     {
-        var dialogs = dialogService;
-        var notifications = notificationService;
-
         var assembly = Assembly.GetExecutingAssembly();
         _launcherVersion = $"{assembly.GetName().Version}";
 
@@ -52,10 +49,14 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Verifying...";
-            await FlarialClient.Current.DownloadAsync(OnDownload);
+            if (!await FlarialClient.Current.DownloadAsync(OnDownload))
+            {
+                await MessageDialog.ShowAsync<ClientUpdateFailureDialog>();
+                return;
+            }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? true)
+            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? false)
             {
                 await MessageDialog.ShowAsync<LaunchFailureDialog>();
                 return;

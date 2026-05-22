@@ -12,5 +12,5 @@ sealed class GamingServicesMissingDialog : MessageDialog
 • You may install Gaming Services via the Microsoft Store.
 
 If you need help, join our Discord.";
-    protected override IReadOnlyList<string> Buttons { get; } = ["Install", "Cancel"];
+    protected override string[] Buttons { get; } = ["Install", "Cancel"];
 }

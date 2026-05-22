@@ -12,5 +12,5 @@ public sealed class ExampleDialog : MessageDialog
 • This is the third point.
 
 Ask for help!";
-    protected override IReadOnlyList<string> Buttons { get; } = ["Ok", "Cancel", "Yes", "No"];
+    protected override string[] Buttons { get; } = ["Ok", "Cancel", "Yes", "No"];
 }

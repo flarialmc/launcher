@@ -13,14 +13,14 @@ public abstract class MessageDialog
 {
     protected abstract string Title { get; }
     protected abstract string Message { get; }
-    protected abstract IReadOnlyList<string> Buttons { get; }
+    protected abstract string[] Buttons { get; }
 
     readonly Dictionary<string, int> _buttons = [];
     static readonly Dictionary<Type, MessageDialog> s_dialogs = [];
 
     protected MessageDialog()
     {
-        for (var index = 0; index < Buttons.Count; index++)
+        for (var index = 0; index < Buttons.Length; index++)
             _buttons.Add(Buttons[index], index);
     }
 

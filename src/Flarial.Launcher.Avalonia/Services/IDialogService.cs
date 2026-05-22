@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Flarial.Launcher.Services;
 
+[Obsolete(@"Use `MessageDialog` instead to notify the user.", true)]
 public interface IDialogService
 {
     Task<string> ShowMessageBoxAsync(

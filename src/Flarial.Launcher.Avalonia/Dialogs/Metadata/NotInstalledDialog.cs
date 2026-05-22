@@ -12,5 +12,5 @@ sealed class NotInstalledDialog : MessageDialog
 
 If you need help, join our Discord.";
 
-    protected override IReadOnlyList<string> Buttons { get; } = ["Install", "Cancel"];
+    protected override string[] Buttons { get; } = ["Install", "Cancel"];
 }
