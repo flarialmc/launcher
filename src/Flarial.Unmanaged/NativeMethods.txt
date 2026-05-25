@@ -1,4 +1,5 @@
 IsWindowVisible
+MessageBox
 IDesktopWindowXamlSourceNative
 CreateWindowEx
 DestroyWindow

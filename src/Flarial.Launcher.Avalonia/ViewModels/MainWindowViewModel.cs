@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Flarial.Launcher.Dialogs.Metadata;
+using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
@@ -52,15 +55,26 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
+        if (!await FlarialLauncher.VerifyConnectionAsync())
+        {
+            await ConnectionFailureDialog.ShowAsync();
+            Environment.Exit(0);
+            return;
+        }
+
         VersionRegistry = await VersionRegistry.CreateAsync();
 
-        var model = SettingsViewModel.SettingsVersionsViewModel;
-
-        await Task.Run(() =>
+        var task = Task.Run(() =>
         {
-            foreach (var version in VersionRegistry) Dispatcher.UIThread.Invoke(() =>
+            List<VersionItemViewModel> versions = [];
+
+            foreach (var version in VersionRegistry)
+                versions.Add(new(this, version));
+
+            Dispatcher.UIThread.Invoke(() =>
             {
-                model.Versions.Add(new(this, version));
+                var model = SettingsViewModel.SettingsVersionsViewModel;
+                model.Versions = new(versions);
             });
         });
 
@@ -69,5 +83,8 @@ public class MainWindowViewModel : ViewModelBase
 
         HomeViewModel.LauncherStatus = "Ready!";
         HomeViewModel.IsInitialized = true;
+
+        await task;
+        SettingsViewModel.SettingsVersionsViewModel.IsInstalling = false;
     }
 }

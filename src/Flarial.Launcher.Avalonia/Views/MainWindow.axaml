@@ -12,7 +12,8 @@
         TransparencyLevelHint="Transparent"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
-        Loaded="OnLoaded">
+        Loaded="OnLoaded"
+        PointerPressed="DragWindow">
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
     </Window.Clip>
@@ -22,7 +23,7 @@
 
     <Border CornerRadius="25" Background="{StaticResource WindowColor}">
         <Grid>
-            <Grid Background="Transparent" PointerPressed="DragWindow"/>
+            <Grid Background="Transparent"/>
             <Grid>
                 <Grid.Effect>
                     <BlurEffect Radius="0"/>

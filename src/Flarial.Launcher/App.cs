@@ -60,7 +60,7 @@ Exception: {1}
         var message = exception.Message;
 
         var text = string.Format(Format, AppManifest.s_version, name, message, trace);
-        MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        System.Windows.MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
         Environment.Exit(1);
     }

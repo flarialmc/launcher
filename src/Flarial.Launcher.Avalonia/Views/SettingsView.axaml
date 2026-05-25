@@ -17,7 +17,7 @@
         <Border Grid.Column="0" IsHitTestVisible="False" Background="#201A1B" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource BackgroundBorderColor}" CornerRadius="20"/>
         <Grid Grid.Column="0" RowDefinitions="Auto,*">
             <Grid Grid.Row="0" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
-                <Image Grid.Column="0" Source="/Assets/icon.webp" Height="40" Margin="0" />
+                <Image Grid.Column="0" Source="/Assets/app.ico" Height="40" Width="40" Margin="0" Stretch="UniformToFill"/>
                 <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Settings" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
             </Grid>
             <VisualLayerManager Grid.Row="1">
@@ -32,10 +32,10 @@
                             <RadioButton.Tag>
                                 <Viewbox Width="20" Height="20">
                                     <Path Fill="White" Data="M4.5,7A3.477,3.477,0,0,1,2.025,5.975L.5,4.62a1.5,1.5,0,0,1,2-2.24L4.084,3.794A.584.584,0,0,0,4.5,4a.5.5,0,0,0,.353-.146L8.466.414a1.5,1.5,0,0,1,2.068,2.172L6.948,6A3.449,3.449,0,0,1,4.5,7ZM24,3.5A1.5,1.5,0,0,0,22.5,2h-8a1.5,1.5,0,0,0,0,3h8A1.5,1.5,0,0,0,24,3.5ZM6.948,14l3.586-3.414A1.5,1.5,0,0,0,8.466,8.414l-3.613,3.44a.5.5,0,0,1-.707,0L2.561,10.268A1.5,1.5,0,0,0,.439,12.39l1.586,1.585A3.5,3.5,0,0,0,6.948,14ZM24,11.5A1.5,1.5,0,0,0,22.5,10h-8a1.5,1.5,0,0,0,0,3h8A1.5,1.5,0,0,0,24,11.5ZM6.948,22l3.586-3.414a1.5,1.5,0,0,0-2.068-2.172l-3.613,3.44A.5.5,0,0,1,4.5,20a.584.584,0,0,1-.416-.206L2.5,18.38a1.5,1.5,0,0,0-2,2.24l1.523,1.355A3.5,3.5,0,0,0,6.948,22ZM24,19.5A1.5,1.5,0,0,0,22.5,18h-8a1.5,1.5,0,0,0,0,3h8A1.5,1.5,0,0,0,24,19.5Z"/>
-                                </Viewbox>                    
+                                </Viewbox>
                             </RadioButton.Tag>
                         </RadioButton>
-                        <RadioButton Name="ConfigsPageButton" Classes="SettingsRadioButton" Grid.Row="2" Content="Configs" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsConfigsPage}">
+                        <RadioButton IsVisible="False" Name="ConfigsPageButton" Classes="SettingsRadioButton" Grid.Row="2" Content="Configs" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsConfigsPage}">
                             <RadioButton.Tag>
                                 <Viewbox Width="20" Height="20">
                                     <Grid>
@@ -45,31 +45,31 @@
                                 </Viewbox>
                             </RadioButton.Tag>
                         </RadioButton>
-                        
+
                         <Button Grid.Row="3" Classes="ReturnButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.HomePage}"/>
 
                     </Grid>
                 </spotlightDecorator:SpotlightDecorator>
             </VisualLayerManager>
-            
+
         </Grid>
         <Grid Grid.Column="2" Height="470" Width="555" Name="UserControlGrid">
             <Grid.RenderTransform>
                 <ScaleTransform ScaleX="1" ScaleY="1"/>
             </Grid.RenderTransform>
-            
+
             <ContentControl Name="SettingsGeneralViewControl" Content="{Binding SettingsGeneralViewModel}">
                 <ContentControl.RenderTransform>
                     <TranslateTransform Y="0"/>
                 </ContentControl.RenderTransform>
             </ContentControl>
-            
+
             <ContentControl Name="SettingsVersionsViewControl" Content="{Binding SettingsVersionsViewModel}">
                 <ContentControl.RenderTransform>
                     <TranslateTransform Y="500"/>
                 </ContentControl.RenderTransform>
             </ContentControl>
-            
+
             <ContentControl Name="SettingsConfigsViewControl" Content="{Binding SettingsConfigsViewModel}">
                 <ContentControl.RenderTransform>
                     <TranslateTransform Y="1000"/>

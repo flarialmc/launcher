@@ -46,13 +46,10 @@
                     </Grid>
         
                     <Grid>
-                        <TextBlock Text="Wait For Initialization" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Reduces game crashes at the cost of injection speed"/>
+                        <TextBlock Text="Automatic Updates" toolTip:CustomToolTip.Placement="Top"/>
                         <ToggleButton/>
                     </Grid>
-                    <Grid>
-                        <TextBlock Text="Hardware Acceleration" toolTip:CustomToolTip.Placement="Top" toolTip:CustomToolTip.Content="Uses your GPU to improve launcher performance, turn this off if it's causing issues"/>
-                        <ToggleButton/>
-                    </Grid>
+
                 </StackPanel>
             </spotlightDecorator:SpotlightDecorator>
         </VisualLayerManager>

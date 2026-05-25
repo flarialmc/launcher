@@ -1,4 +1,7 @@
+using System;
+using System.Diagnostics;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Flarial.Launcher.ViewModels;
@@ -15,13 +18,12 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime lifetime) return;
+
+        lifetime.MainWindow = new MainWindow
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
-        }
+            DataContext = new MainWindowViewModel()
+        };
 
         base.OnFrameworkInitializationCompleted();
     }

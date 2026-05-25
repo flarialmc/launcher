@@ -1,33 +1,92 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Rendering.Composition;
+using Avalonia.Threading;
+using Avalonia.Win32;
+using HarfBuzzSharp;
 using ReactiveUI.Avalonia;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.PInvoke;
 
 
 namespace Flarial.Launcher;
 
-sealed class Program
+static class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
+    const string Format = @"Looks like the launcher crashed! 
+
+• Please take a screenshot of this.
+• Create a new support post & send the screenshot.
+
+Version: {0}
+Exception: {1}
+
+{2}
+
+{3}";
+
+    static Program() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+    unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var version = $"{assembly.GetName().Version}";
+
+        var exception = (Exception)args.ExceptionObject;
+        var trace = exception.StackTrace.Trim();
+
+        while (exception.InnerException is not null)
+            exception = exception.InnerException;
+
+        var message = exception.Message;
+        var name = exception.GetType().Name;
+
+        fixed (char* caption = "Flarial Launcher: Error")
+        fixed (char* text = string.Format(Format, version, name, message, trace))
+        {
+            var application = Application.Current;
+            var lifetime = (IClassicDesktopStyleApplicationLifetime?)application?.ApplicationLifetime;
+
+            var window = lifetime?.MainWindow;
+            var handle = window?.TryGetPlatformHandle()?.Handle;
+
+            HWND hwnd = new(handle ?? new());
+            MessageBox(hwnd, text, caption, MESSAGEBOX_STYLE.MB_ICONERROR);
+        }
+
+        Environment.Exit(1);
+    }
+
     [STAThread]
     public static void Main(string[] args)
     {
         using Mutex mutex = new(false, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
         if (!created) return;
 
-        var path = Path.Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher");
-        CurrentDirectory = Directory.CreateDirectory(path).FullName;
+        var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        Environment.CurrentDirectory = Directory.CreateDirectory(Path.Combine(path, @"Flarial\Launcher")).FullName;
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-    }
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-    {
-        return AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace().UseReactiveUI();
+        var builder = AppBuilder.Configure<App>();
+
+        builder.UseSkia();
+        builder.UseWin32();
+        builder.UseReactiveUI();
+
+        builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
+        builder.With(new SkiaOptions { MaxGpuResourceSizeBytes = long.MaxValue });
+        builder.With(new RenderOptions { BitmapInterpolationMode = BitmapInterpolationMode.None });
+        builder.With(new Win32PlatformOptions { CompositionMode = [Win32CompositionMode.WinUIComposition] });
+
+        builder.StartWithClassicDesktopLifetime(args);
     }
 }

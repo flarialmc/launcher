@@ -90,10 +90,10 @@ public partial class VersionItemViewModel : ViewModelBase
             while (InstallPercentage < 100)
             {
                 InstallPercentage += 1;
-                await Task.Delay(1000);
+                await Task.Delay(25);
             }
 
-
+            throw new();
         }
         finally
         {

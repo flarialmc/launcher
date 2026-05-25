@@ -7,9 +7,9 @@
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
 
-        <NoWarn>IDE0130</NoWarn>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
         <ApplicationIcon>Assets/app.ico</ApplicationIcon>
@@ -28,14 +28,15 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" PrivateAssets="All" />
+        <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Polyfill" Version="10.7.0" />
-        <PackageReference Include="SkiaSharp" Version="3.119.2" />
+        <PackageReference Include="SkiaSharp" Version="3.119.4" />
 
-        <PackageReference Include="Avalonia" Version="11.3.16" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.16" />
+        <PackageReference Include="Avalonia.Skia" Version="11.3.16" />
+        <PackageReference Include="Avalonia.Win32" Version="11.3.16" />
 
         <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" />

@@ -12,6 +12,7 @@ using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
 using ReactiveUI;
 using SkiaSharp;
+using Windows.Win32;
 
 namespace Flarial.Launcher.Views;
 
@@ -41,16 +42,6 @@ public partial class MainWindow : Window
 
         MessageBus.Current.Listen<PageTransitions>()
             .Subscribe(PageTransition);
-    }
-
-
-    protected override async void OnOpened(EventArgs e)
-    {
-        base.OnOpened(e);
-
-        if (DataContext is not MainWindowViewModel vm) return;
-        //await Task.Delay(200);
-        // await vm.InitializeSettingsAsync();
     }
 
     private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
@@ -100,4 +91,5 @@ public partial class MainWindow : Window
         Loaded -= OnLoaded;
         ((MainWindowViewModel)DataContext!).OnLoaded();
     }
+
 }

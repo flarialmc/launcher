@@ -39,7 +39,7 @@
 
                 <!--Flarial Logo-->
                 <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
-                    <Image Source="/Assets/icon.webp" Height="40" Margin="0" />
+                    <Image Source="/Assets/app.ico" Height="40" Width="40" Margin="0" />
                     <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" FontWeight="Medium" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
                 </Grid>
             </Grid>
@@ -67,8 +67,8 @@
 
             <!--Center Content and Buttons-->
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="{Binding IsInitialized}">
-                <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Good Afternoon!" HorizontalAlignment="Center" FontSize="28" Foreground="White"/>
-                <TextBlock Margin="0,0,0,0" Text="{Binding LauncherStatus}" HorizontalAlignment="Center" FontSize="18" Foreground="#ffffff" Opacity=".5"/>
+                <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Welcome!" HorizontalAlignment="Center" FontSize="28" Foreground="White"/>
+                <TextBlock Margin="0,0,0,0" Text="{Binding LauncherStatus}" HorizontalAlignment="Center" FontSize="18" Foreground="DarkGray" />
                 <VisualLayerManager>
                     <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
                         <StackPanel Background="Transparent">
