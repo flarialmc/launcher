@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -66,16 +67,9 @@ public class MainWindowViewModel : ViewModelBase
 
         var task = Task.Run(() =>
         {
-            List<VersionItemViewModel> versions = [];
-
-            foreach (var version in VersionRegistry)
-                versions.Add(new(this, version));
-
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                var model = SettingsViewModel.SettingsVersionsViewModel;
-                model.Versions = new(versions);
-            });
+            ObservableCollection<VersionItemViewModel> versions = [];
+            foreach (var version in VersionRegistry) versions.Add(new(this, version));
+            Dispatcher.UIThread.Invoke(() => SettingsViewModel.SettingsVersionsViewModel.Versions = versions);
         });
 
         HomeViewModel.OnPackageStatusChanged();

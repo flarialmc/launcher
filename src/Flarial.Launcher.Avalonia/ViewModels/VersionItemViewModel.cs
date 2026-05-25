@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Models;
 using Flarial.Launcher.Views;
+using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -80,11 +81,29 @@ public partial class VersionItemViewModel : ViewModelBase
 
     private async Task InstallAsync()
     {
-        _mainWindow.Closing += OnClosing;
-        _settingsVersionsViewModel.IsInstalling = true;
+        if (!Minecraft.IsInstalled)
+        {
+            await NotInstalledDialog.ShowAsync();
+            return;
+        }
+
+        if (!Minecraft.IsGamingServicesInstalled)
+        {
+            await GamingServicesMissingDialog.ShowAsync();
+            return;
+        }
+
+        if (!Minecraft.IsPackaged)
+        {
+            await UnpackagedInstallDialog.ShowAsync();
+            return;
+        }
 
         try
         {
+            _mainWindow.Closing += OnClosing;
+            _settingsVersionsViewModel.IsInstalling = true;
+
             State = VersionItemState.Downloading;
 
             while (InstallPercentage < 100)

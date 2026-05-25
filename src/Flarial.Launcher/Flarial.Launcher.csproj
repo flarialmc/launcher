@@ -27,10 +27,6 @@
     <EmbeddedResource Include="Resources\Application.ico" LogicalName="Application.ico" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <Compile Remove="Interface\Web\**\*" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />

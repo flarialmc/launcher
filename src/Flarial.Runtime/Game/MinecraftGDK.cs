@@ -112,7 +112,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var handle = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, "*resource_init_lock")
+                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,

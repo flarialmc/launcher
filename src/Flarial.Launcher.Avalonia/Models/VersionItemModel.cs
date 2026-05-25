@@ -1,6 +1,9 @@
+using System;
+
 namespace Flarial.Launcher.Models;
 
-public record VersionItemData (string Version, VersionItemState State);
+[Obsolete]
+public record VersionItemData(string Version, VersionItemState State);
 
 public enum VersionItemState
 {

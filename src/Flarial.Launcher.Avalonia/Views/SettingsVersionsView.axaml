@@ -13,7 +13,7 @@
              BorderThickness="{StaticResource ButtonBorderThickness}"
              BorderBrush="{StaticResource BackgroundBorderColor}"
              CornerRadius="20">
-    <ScrollViewer VerticalScrollBarVisibility="Visible">
+    <ScrollViewer VerticalScrollBarVisibility="Visible" IsDeferredScrollingEnabled="True">
         <VisualLayerManager>
             <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
                 <ItemsControl ItemsSource="{Binding Versions}"
