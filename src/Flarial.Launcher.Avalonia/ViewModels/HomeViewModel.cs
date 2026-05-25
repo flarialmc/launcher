@@ -18,8 +18,8 @@ namespace Flarial.Launcher.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase
 {
-    [Reactive] bool _isLaunched = true;
-    [Reactive] bool _isInitialized = false;
+    [Reactive] bool _isLaunching;
+    [Reactive] bool _isInitialized;
 
     [Reactive] string _launcherVersion;
     [Reactive] string _launcherStatus = "Preparing...";
@@ -41,7 +41,7 @@ public partial class HomeViewModel : ViewModelBase
 
     async Task OnLaunchAsync()
     {
-        IsLaunched = false; try
+        IsLaunching = true; try
         {
             if (!Minecraft.IsGamingServicesInstalled)
             {
@@ -71,7 +71,7 @@ public partial class HomeViewModel : ViewModelBase
         }
         finally
         {
-            IsLaunched = true;
+            IsLaunching = false;
             LauncherStatus = "Ready!";
         }
     }

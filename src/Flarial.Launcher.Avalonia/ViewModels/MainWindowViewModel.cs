@@ -54,11 +54,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         VersionRegistry = await VersionRegistry.CreateAsync();
 
-        var model = SettingsViewModel.SettingsVersionsViewModel; await Task.Run(() =>
+        var model = SettingsViewModel.SettingsVersionsViewModel;
+
+        await Task.Run(() =>
         {
             foreach (var version in VersionRegistry) Dispatcher.UIThread.Invoke(() =>
             {
-                model.Versions.Add(new(new($"{version}", default)));
+                model.Versions.Add(new(this, version));
             });
         });
 

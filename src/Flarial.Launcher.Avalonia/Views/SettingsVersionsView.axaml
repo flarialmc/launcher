@@ -9,8 +9,8 @@
              Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsVersionsView"
              x:DataType="vm:SettingsVersionsViewModel"
-             Background="#201A1B" 
-             BorderThickness="{StaticResource ButtonBorderThickness}" 
+             Background="#201A1B"
+             BorderThickness="{StaticResource ButtonBorderThickness}"
              BorderBrush="{StaticResource BackgroundBorderColor}"
              CornerRadius="20">
     <ScrollViewer VerticalScrollBarVisibility="Visible">
@@ -18,7 +18,8 @@
             <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
                 <ItemsControl ItemsSource="{Binding Versions}"
                               HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch">
+                              VerticalAlignment="Stretch"
+                              IsEnabled="{Binding !IsInstalling}">
 
                     <ItemsControl.Template>
                         <ControlTemplate>
