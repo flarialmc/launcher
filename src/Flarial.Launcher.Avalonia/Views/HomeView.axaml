@@ -72,7 +72,7 @@
                 <VisualLayerManager>
                     <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
                         <StackPanel Background="Transparent">
-                            <Button IsEnabled="{Binding IsLaunched}" Name="LaunchButton" Classes="LaunchButton" Click="LaunchButton_OnClick" Command="{Binding Launch}"/>
+                            <Button IsEnabled="{Binding IsLaunched}" Name="LaunchButton" Classes="LaunchButton" Command="{Binding Launch}"/>
                             <Button Name="SettingsButton" Classes="SettingsButton" Command="{Binding NavigateCommand}" CommandParameter="{x:Static types:PageTransitions.SettingsPage}"/>
                         </StackPanel>
                     </spotlightDecorator:SpotlightDecorator>

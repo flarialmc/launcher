@@ -13,14 +13,6 @@ public partial class HomeView : UserControl
 {
     public HomeView()
     {
-        InitializeComponent();
-        //DataContext = new HomeViewModel();
-        
-        
-    }
-
-    private void LaunchButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        
+        InitializeComponent();   
     }
 }

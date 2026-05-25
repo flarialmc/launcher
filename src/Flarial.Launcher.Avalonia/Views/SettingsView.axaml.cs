@@ -16,10 +16,7 @@ public partial class SettingsView : UserControl
     public SettingsView()
     {
         InitializeComponent();
-        DataContext = new SettingsViewModel();
-        
-        MessageBus.Current.Listen<PageTransitions>()
-            .Subscribe(PageTransition);
+        MessageBus.Current.Listen<PageTransitions>().Subscribe(PageTransition);
     }
 
     private double _currentPageY;
@@ -39,11 +36,11 @@ public partial class SettingsView : UserControl
 
         if (DataContext is not SettingsViewModel settingsViewModel) return;
         settingsViewModel.IsAnimating = true;
-            
+
         UserControlGrid.IsEnabled = false;
 
         if (UserControlGrid.RenderTransform is not ScaleTransform) return;
-        
+
         var zoomOut = new Animation
         {
             Duration = TimeSpan.FromSeconds(0.2),
@@ -66,7 +63,7 @@ public partial class SettingsView : UserControl
         var generalMove = CreateMove(0 - selectedPageY);
         var versionsMove = CreateMove(500 - selectedPageY);
         var configsMove = CreateMove(1000 - selectedPageY);
-        
+
         var zoomIn = new Animation
         {
             Delay = TimeSpan.FromMilliseconds(500),
@@ -86,7 +83,7 @@ public partial class SettingsView : UserControl
                 }
             }
         };
-        
+
         _ = zoomOut.RunAsync(UserControlGrid);
         _ = generalMove.RunAsync(SettingsGeneralViewControl);
         _ = versionsMove.RunAsync(SettingsVersionsViewControl);

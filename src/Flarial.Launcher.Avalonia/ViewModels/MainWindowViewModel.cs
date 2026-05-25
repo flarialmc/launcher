@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
@@ -52,6 +53,14 @@ public class MainWindowViewModel : ViewModelBase
     public async void OnLoaded()
     {
         VersionRegistry = await VersionRegistry.CreateAsync();
+
+        var model = SettingsViewModel.SettingsVersionsViewModel; await Task.Run(() =>
+        {
+            foreach (var version in VersionRegistry) Dispatcher.UIThread.Invoke(() =>
+            {
+                model.Versions.Add(new(new($"{version}", default)));
+            });
+        });
 
         HomeViewModel.OnPackageStatusChanged();
         Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;

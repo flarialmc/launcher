@@ -11,6 +11,5 @@ public partial class SettingsVersionsView : UserControl
     public SettingsVersionsView()
     {
         InitializeComponent();
-        DataContext = new SettingsVersionsViewModel();
     }
 }

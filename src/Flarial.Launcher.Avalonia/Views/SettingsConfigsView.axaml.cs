@@ -10,6 +10,5 @@ public partial class SettingsConfigsView : UserControl
     public SettingsConfigsView()
     {
         InitializeComponent();
-        DataContext = new SettingsConfigsViewModel();
     }
 }
