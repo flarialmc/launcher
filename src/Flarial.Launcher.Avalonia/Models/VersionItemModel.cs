@@ -10,4 +10,5 @@ public enum VersionItemState
     NotInstalled,
     Downloading,
     Installed,
+    Installing
 }

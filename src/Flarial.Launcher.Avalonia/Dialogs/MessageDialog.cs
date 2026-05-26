@@ -26,7 +26,7 @@ public abstract class MessageDialog
     protected abstract string[] Buttons { get; }
 
     readonly Dictionary<string, int> _buttons = [];
-    
+
     protected MessageDialog()
     {
         for (var index = 0; index < Buttons.Length; index++)
@@ -41,6 +41,6 @@ public abstract class MessageDialog
         var view = (MainWindow)lifetime.MainWindow!;
         var model = (MainWindowViewModel)view.DataContext!;
 
-        return _buttons[await model.ShowMessageBoxAsync(Title, Message, Buttons)] > 0;
+        return _buttons[await model.ShowMessageBoxAsync(Title, Message, Buttons)] <= 0;
     }
 }

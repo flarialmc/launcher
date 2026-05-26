@@ -27,6 +27,8 @@ public partial class HomeViewModel : ViewModelBase
     [Reactive] string _gameVersion = "0.0.0";
     [Reactive] IImmutableSolidColorBrush _gameVersionColor = Brushes.Gray;
 
+    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry.PreferredVersion);
+
     readonly MainWindowViewModel _mainWindowViewModel;
 
     public HomeViewModel(MainWindowViewModel mainWindowViewModel)
@@ -41,7 +43,8 @@ public partial class HomeViewModel : ViewModelBase
 
     async Task OnLaunchAsync()
     {
-        IsLaunching = true; try
+        IsLaunching = true;
+        try
         {
             if (!Minecraft.IsGamingServicesInstalled)
             {
@@ -52,6 +55,12 @@ public partial class HomeViewModel : ViewModelBase
             if (!Minecraft.IsInstalled)
             {
                 await NotInstalledDialog.ShowAsync();
+                return;
+            }
+
+            if (!_mainWindowViewModel.VersionRegistry.IsSupported)
+            {
+                await UnsupportedVersionDialog.OnShowAsync();
                 return;
             }
 

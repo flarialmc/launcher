@@ -8,9 +8,8 @@ namespace Flarial.Launcher.ViewModels;
 public partial class SettingsVersionsViewModel : ViewModelBase
 {
     [Reactive]
-    bool _isInstalling = true;
+    bool _isInstalling;
 
     [Reactive]
     ObservableCollection<VersionItemViewModel> _versions = [];
-
 }

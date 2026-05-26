@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Flarial.Launcher.Dialogs.Metadata;
 
 public sealed class ExampleDialog : MessageDialog<ExampleDialog>

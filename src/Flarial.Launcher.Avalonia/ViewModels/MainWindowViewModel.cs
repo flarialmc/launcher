@@ -54,6 +54,11 @@ public class MainWindowViewModel : ViewModelBase
         finally { _semaphore.Release(); }
     }
 
+    void OnLauncherDownload(int value) => Dispatcher.UIThread.Invoke(() =>
+    {
+        HomeViewModel.LauncherStatus = $"Updating... {value}%";
+    });
+
     public async void OnLoaded()
     {
         if (!await FlarialLauncher.VerifyConnectionAsync())
@@ -63,22 +68,24 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        if (await FlarialLauncher.CheckForUpdatesAsync() && await LauncherUpdateAvailableDialog.ShowAsync())
+        {
+            await FlarialLauncher.DownloadAsync(OnLauncherDownload);
+            return;
+        }
+
         VersionRegistry = await VersionRegistry.CreateAsync();
 
-        var task = Task.Run(() =>
+        foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
         {
-            ObservableCollection<VersionItemViewModel> versions = [];
-            foreach (var version in VersionRegistry) versions.Add(new(this, version));
-            Dispatcher.UIThread.Invoke(() => SettingsViewModel.SettingsVersionsViewModel.Versions = versions);
-        });
+            var versions = SettingsViewModel.SettingsVersionsViewModel.Versions;
+            versions.Add(new(this, version));
+        }, DispatcherPriority.Background);
 
         HomeViewModel.OnPackageStatusChanged();
         Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;
 
         HomeViewModel.LauncherStatus = "Ready!";
         HomeViewModel.IsInitialized = true;
-
-        await task;
-        SettingsViewModel.SettingsVersionsViewModel.IsInstalling = false;
     }
 }

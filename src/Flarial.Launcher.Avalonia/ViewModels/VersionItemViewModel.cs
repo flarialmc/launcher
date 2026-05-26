@@ -13,6 +13,7 @@ using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -26,16 +27,36 @@ public partial class VersionItemViewModel : ViewModelBase
     [Reactive]
     double _installPercentage;
 
+    [Reactive]
+    bool _isProgressing;
+
     public ReactiveCommand<Unit, Unit> InstallCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
 
-    public bool IsNotInstalled => State == VersionItemState.NotInstalled;
-    public bool IsDownloading => State == VersionItemState.Downloading;
-    public bool IsInstalled => State == VersionItemState.Installed;
+    public bool IsNotInstalled => State is VersionItemState.NotInstalled;
+    public bool IsDownloading => State is VersionItemState.Downloading;
+    public bool IsInstalled => State is VersionItemState.Installed;
+    public bool IsInstalling => State is VersionItemState.Installing;
 
     readonly MainWindow _mainWindow;
     readonly VersionItem _versionItem;
     readonly SettingsVersionsViewModel _settingsVersionsViewModel;
+
+    InstallVersionDialog InstallVersionDialog => field ??= new($"{_versionItem}");
+    VersionInstalledDialog VersionInstalledDialog => field ??= new($"{_versionItem}");
+    VersionInstallingDialog VersionInstallingDialog => field ??= new($"{_versionItem}");
+
+    Task? VersionInstallingDialogTask
+    {
+        get
+        {
+            if (field is null) return null;
+            if (field.IsCompleted) return null;
+            return field;
+        }
+        set;
+    }
+
 
     public VersionItemViewModel(MainWindowViewModel mainWindowViewModel, VersionItem versionItem)
     {
@@ -45,16 +66,17 @@ public partial class VersionItemViewModel : ViewModelBase
         Version = $"{versionItem}";
 
         _versionItem = versionItem;
-        _mainWindow = (MainWindow)applicationLifetime.MainWindow!;
         _settingsVersionsViewModel = mainWindowViewModel.SettingsViewModel.SettingsVersionsViewModel;
 
-        _ = _versionItem;
+        _mainWindow = (MainWindow)applicationLifetime.MainWindow!;
+
 
         this.WhenAnyValue(static _ => _.State).Subscribe(_ =>
         {
             this.RaisePropertyChanged(nameof(IsNotInstalled));
             this.RaisePropertyChanged(nameof(IsDownloading));
             this.RaisePropertyChanged(nameof(IsInstalled));
+            this.RaisePropertyChanged(nameof(IsInstalling));
         });
 
         DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync, this.WhenAnyValue(static _ => _.State).Select(static _ => _ == VersionItemState.Installed));
@@ -64,19 +86,19 @@ public partial class VersionItemViewModel : ViewModelBase
         InstallCommand.ThrownExceptions.Subscribe(static _ => throw _);
     }
 
-    async void OnInstall(int value, bool state)
+    async void OnInstall(int percentage, bool installing)
     {
-        State = VersionItemState.Downloading;
-        InstallPercentage = value;
+        InstallPercentage = percentage;
+        if (installing) State = VersionItemState.Installing;
     }
 
     async void OnClosing(object sender, WindowClosingEventArgs args)
     {
-        if (State != VersionItemState.NotInstalled)
-        {
-            args.Cancel = true;
-            await ExampleDialog.ShowAsync();
-        }
+        if (!(args.Cancel = IsProgressing)) return;
+        if (VersionInstallingDialogTask is { }) return;
+
+        try { await (VersionInstallingDialogTask = VersionInstallingDialog.OnShowAsync()); }
+        finally { VersionInstallingDialogTask = null; }
     }
 
     private async Task InstallAsync()
@@ -99,29 +121,31 @@ public partial class VersionItemViewModel : ViewModelBase
             return;
         }
 
+        if (!await InstallVersionDialog.OnShowAsync())
+            return;
+
         try
         {
+            IsProgressing = true;
             _mainWindow.Closing += OnClosing;
             _settingsVersionsViewModel.IsInstalling = true;
 
+            InstallPercentage = 0;
             State = VersionItemState.Downloading;
 
-            while (InstallPercentage < 100)
-            {
-                InstallPercentage += 1;
-                await Task.Delay(25);
-            }
-
-            throw new();
+            await _versionItem.InstallAsync(OnInstall);
         }
         finally
         {
             InstallPercentage = 0;
             State = VersionItemState.NotInstalled;
 
-            _mainWindow.Closing -= OnClosing;
+            IsProgressing = false;
+            _mainWindow.Closing += OnClosing;
             _settingsVersionsViewModel.IsInstalling = false;
         }
+
+        await VersionInstalledDialog.OnShowAsync();
     }
 
     async Task DeleteAsync() { }
