@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
-using Flarial.Launcher.Interface;
 using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
 using Flarial.Runtime.Modding;
@@ -65,9 +64,17 @@ Exception: {1}
         Environment.Exit(1);
     }
 
-    static void OnUnhandledException(object sender, System.UnhandledExceptionEventArgs args) => OnUnhandledException((Exception)args.ExceptionObject);
+    static void OnUnhandledException(object sender, System.UnhandledExceptionEventArgs args)
+    {
+        var exception = (Exception)args.ExceptionObject;
+        OnUnhandledException(exception);
+    }
 
-    static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args) { args.Handled = true; OnUnhandledException(args.Exception); }
+    static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args)
+    {
+        args.Handled = true;
+        OnUnhandledException(args.Exception);
+    }
 
     [STAThread]
     static void Main(string[] args)
@@ -106,7 +113,7 @@ Exception: {1}
 
     protected override void OnExit(ExitEventArgs args)
     {
-        base.OnExit(args);
         _settings.Set();
+        base.OnExit(args);
     }
 }

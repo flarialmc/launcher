@@ -31,14 +31,14 @@ sealed class VersionsPage : Grid
     readonly AppSettings _settings;
     readonly TextBlockProgressBar _progressBar = new();
 
-    void OnVersionItemInstallAsync(int value, bool state) => Dispatcher.Invoke(() =>
+    void OnInstall(int percentage, bool installing) => Dispatcher.Invoke(() =>
     {
-        string text = state ? "Installing..." : "Downloading...";
-        _progressBar._progressBar.Value = value <= 0 ? 0 : value;
-        _progressBar._textBlock.Text = value <= 0 ? $"{text}" : $"{text} {value}%";
+        string text = installing ? "Installing..." : "Downloading...";
+        _progressBar._progressBar.Value = percentage <= 0 ? 0 : percentage;
+        _progressBar._textBlock.Text = percentage <= 0 ? $"{text}" : $"{text} {percentage}%";
     });
 
-    async void OnButtonClick(object sender, RoutedEventArgs args)
+    async void OnClick(object sender, RoutedEventArgs args)
     {
         try
         {
@@ -81,7 +81,7 @@ sealed class VersionsPage : Grid
             _item = (VersionItem)_listBox.SelectedItem;
             _listBox.ScrollIntoView(_item);
 
-            await _item.InstallAsync(OnVersionItemInstallAsync);
+            await _item.InstallAsync(OnInstall);
         }
         finally
         {
@@ -98,7 +98,7 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void OnNavigationViewContentChanged(DependencyObject sender, DependencyProperty args)
+    void OnContentChanged(DependencyObject sender, DependencyProperty args)
     {
         if (_item is null)
         {
@@ -107,12 +107,12 @@ sealed class VersionsPage : Grid
         }
     }
 
-    void OnListBoxSelectionChanged(object sender, RoutedEventArgs args)
+    void OnSelectionChanged(object sender, RoutedEventArgs args)
     {
-        var listBox = (ListBox)sender; if (_item is { })
+        if (_item is { })
         {
-            listBox.SelectedItem = _item;
-            listBox.ScrollIntoView(_item);
+            _listBox.SelectedItem = _item;
+            _listBox.ScrollIntoView(_item);
         }
     }
 
@@ -121,8 +121,8 @@ sealed class VersionsPage : Grid
         if (_item is { })
         {
             args.Cancel = true;
-            (~_content).SelectedItem = _content._versionsItem;
             (~_content).Content = _content._versionsItem.Tag;
+            (~_content).SelectedItem = _content._versionsItem;
         }
     }
 
@@ -152,13 +152,13 @@ sealed class VersionsPage : Grid
         Children.Add(_button);
         Children.Add(_progressBar);
 
-        _button.Click += OnButtonClick;
-        _listBox.SelectionChanged += OnListBoxSelectionChanged;
+        _button.Click += OnClick;
+        _listBox.SelectionChanged += OnSelectionChanged;
 
         _listBox.SetValue(VirtualizingStackPanel.IsVirtualizingProperty, true);
         VirtualizingStackPanel.SetVirtualizationMode(_listBox, VirtualizationMode.Recycling);
 
         System.Windows.Application.Current.MainWindow.Closing += OnWindowClosing;
-        (~_content).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnNavigationViewContentChanged);
+        (~_content).RegisterPropertyChangedCallback(ContentControl.ContentProperty, OnContentChanged);
     }
 }

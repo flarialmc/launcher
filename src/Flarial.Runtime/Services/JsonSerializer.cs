@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
 
-static class JsonSerializer
+public static class JsonSerializer
 {
     static readonly DataContractJsonSerializerSettings s_settings;
     static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> s_serializers;
@@ -25,7 +25,11 @@ static class JsonSerializer
 
     static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static _ => new(_, s_settings));
 
-    static T Deserialize<T>(Stream json) => (T)Get<T>().ReadObject(json);
+    public static T Deserialize<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
 
-    internal static async Task<T> DeserializeAsync<T>(Stream json) => await Task.Run(() => Deserialize<T>(json));
+    public static void Serialize<T>(Stream stream, T value) => Get<T>().WriteObject(stream, value);
+
+    public static async Task<T> DeserializeAsync<T>(Stream stream) => await Task.Run(() => Deserialize<T>(stream));
+
+    public static async Task SerializeAsync<T>(Stream stream, T value) => await Task.Run(() => Serialize(stream, value));
 }

@@ -1,7 +1,7 @@
-using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
+using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
 
@@ -15,7 +15,15 @@ sealed class AppSettings
     internal bool UseCustomDll { get; set; } = false;
 
     [DataMember]
-    internal string CustomDllPath { get; set; } = string.Empty;
+    internal string CustomDllPath
+    {
+        get;
+        set
+        {
+            try { field = Path.GetFullPath(value.Trim()); }
+            catch { field = string.Empty; }
+        }
+    } = string.Empty;
 
     [OnDeserializing]
     void OnDeserializing(StreamingContext context)
@@ -32,24 +40,15 @@ sealed class AppSettings
     {
         try
         {
-            using var stream = File.OpenRead("Flarial.Launcher.xml");
-            var settings = (AppSettings)s_serializer.ReadObject(stream);
-
-            try
-            {
-                var path = settings.CustomDllPath.Trim();
-                settings.CustomDllPath = Path.GetFullPath(path);
-            }
-            catch { settings.CustomDllPath = string.Empty; }
-
-            return settings;
+            using var stream = File.OpenRead("Flarial.Launcher.json");
+            return JsonSerializer.Deserialize<AppSettings>(stream);
         }
         catch { return new(); }
     }
 
     internal void Set()
     {
-        using var writer = XmlWriter.Create("Flarial.Launcher.xml", s_settings);
-        s_serializer.WriteObject(writer, this);
+        using var stream = File.OpenWrite("Flarial.Launcher.json");
+        JsonSerializer.Serialize(stream, this);
     }
 }

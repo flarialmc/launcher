@@ -7,7 +7,6 @@ using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
-using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -57,8 +56,6 @@ sealed class AppContent : XamlElement<NavigationView>
 
         (~this).Content = _homePage;
         (~this).SelectedItem = _homeItem;
-
-        Minecraft.PackageStatusChanged += OnPackageStatusChanged;
     }
 
     static void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -67,7 +64,7 @@ sealed class AppContent : XamlElement<NavigationView>
         sender.Content = container.Tag;
     }
 
-    void OnFlarialLauncherDownloadAsync(int value) => (~this).Dispatcher.Invoke(() =>
+    void OnDownload(int value) => (~this).Dispatcher.Invoke(() =>
     {
         _homePage._button.Content = $"Updating... {value}%";
     });
@@ -103,31 +100,30 @@ sealed class AppContent : XamlElement<NavigationView>
         if (!await FlarialLauncher.VerifyConnectionAsync())
         {
             await ConnectionFailureDialog.ShowAsync();
-            System.Windows.Application.Current.Shutdown();
+            Environment.Exit(0);
             return;
         }
 
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
         {
             _homePage._button.Content = "Updating...";
-            await FlarialLauncher.DownloadAsync(OnFlarialLauncherDownloadAsync);
+            await FlarialLauncher.DownloadAsync(OnDownload);
             return;
         }
 
         var registry = await VersionRegistry.CreateAsync();
-        FrameworkElement homePage = _homePage;
-        (~this).Tag = homePage.Tag = registry;
+        (~this).Tag = _homePage.Tag = registry;
 
         var task = Task.Run(() =>
         {
             foreach (var item in registry) (~this).Dispatcher.Invoke(() =>
             {
-                var listBox = _versionsPage._listBox;
-                listBox.Items.Add(item);
+                _versionsPage._listBox.Items.Add(item);
             });
         });
 
         OnPackageStatusChanged();
+        Minecraft.PackageStatusChanged += OnPackageStatusChanged;
 
         _homePage._button.Content = "Play";
         _homePage._button.IsEnabled = true;
