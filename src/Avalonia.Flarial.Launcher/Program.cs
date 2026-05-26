@@ -78,7 +78,8 @@ Exception: {1}
 
         builder.UseSkia();
         builder.UseWin32();
-        builder.UseReactiveUI();
+        builder.UseHarfBuzz();
+        builder.UseReactiveUI(static _ => { });
 
         builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
         builder.With(new SkiaOptions { MaxGpuResourceSizeBytes = long.MaxValue });

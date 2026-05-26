@@ -13,9 +13,9 @@
     </UserControl.Styles>
 
     <Grid>
-        <Panel Name="Scrim"
-               Background="#39000000"
-               Opacity="0"/>
+        <Border CornerRadius="25" ClipToBounds="True">
+            <Panel Name="Scrim" Background="#39000000" Opacity="0"/>
+        </Border>
 
         <acrylicBlur:AcrylicBlur Blur="25"
                                  CornerRadius="15"

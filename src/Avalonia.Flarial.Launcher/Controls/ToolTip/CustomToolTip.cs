@@ -137,7 +137,7 @@ public abstract class CustomToolTip : AvaloniaObject
     {
         if (_currentTarget == null)
             return;
-        
+
         var content = GetContent(_currentTarget);
         switch (content)
         {
@@ -149,9 +149,11 @@ public abstract class CustomToolTip : AvaloniaObject
         var placement = GetPlacement(_currentTarget);
         var offset = GetOffset(_currentTarget);
 
-        var window = _currentTarget.GetVisualRoot() as Window;
-        if (window == null)
-            return;
+        var source = _currentTarget.GetPresentationSource();
+        if (source is null) return;
+
+        var window = source.RootVisual as Window;
+        if (window == null) return;
 
         var canvas = MainWindow.ToolTipLayerInstance;
         if (canvas == null)

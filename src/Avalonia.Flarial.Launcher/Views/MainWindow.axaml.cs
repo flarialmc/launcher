@@ -26,18 +26,17 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ToolTipLayerInstance = ToolTipLayer;
-
-        SystemDecorations = SystemDecorations.None;
+        WindowDecorations = WindowDecorations.None;
         //ExtendClientAreaToDecorationsHint = true;
         //ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
         //ExtendClientAreaTitleBarHeightHint = -1;
 
         MessageBus.Current.Listen<WindowStateArgs>()
-            .Where(e => e == WindowStateArgs.Minimize)
+            .Where(static e => e == WindowStateArgs.Minimize)
             .Subscribe(_ => WindowState = WindowState.Minimized);
 
         MessageBus.Current.Listen<WindowStateArgs>()
-            .Where(e => e == WindowStateArgs.Close)
+            .Where(static e => e == WindowStateArgs.Close)
             .Subscribe(_ => Close());
 
         MessageBus.Current.Listen<PageTransitions>()

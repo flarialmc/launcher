@@ -37,7 +37,7 @@
                     <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
                                                SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
                     <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-                        <TextBox Watermark="Custom DLL Path" Margin="0,10,0,5"/>
+                        <TextBox PlaceholderText="Custom DLL Path" Margin="0,10,0,5"/>
                     </Expander>
 
                     <Grid HorizontalAlignment="Left">
