@@ -1,8 +1,10 @@
+using Flarial.Runtime.Versions;
+
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class VersionInstalledDialog(string version) : MessageDialog
+sealed class InstalledVersionDialog(VersionItem version) : MessageDialog
 {
-    protected override string Title { get; } = "💡 Version Installed";
+    protected override string Title { get; } = "💡 Installed Version";
     protected override string Message { get; } = $@"Minecraft {version} has been installed by the launcher.
 
 • Verify if the correct game version has been installed.

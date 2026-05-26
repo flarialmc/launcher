@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class GamingServicesMissingDialog : MessageDialog<GamingServicesMissingDialog>

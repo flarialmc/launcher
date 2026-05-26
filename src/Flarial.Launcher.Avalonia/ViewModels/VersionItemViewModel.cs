@@ -42,11 +42,11 @@ public partial class VersionItemViewModel : ViewModelBase
     readonly VersionItem _versionItem;
     readonly SettingsVersionsViewModel _settingsVersionsViewModel;
 
-    InstallVersionDialog InstallVersionDialog => field ??= new($"{_versionItem}");
-    VersionInstalledDialog VersionInstalledDialog => field ??= new($"{_versionItem}");
-    VersionInstallingDialog VersionInstallingDialog => field ??= new($"{_versionItem}");
+    InstallVersionDialog InstallVersionDialog => field ??= new(_versionItem);
+    InstalledVersionDialog InstalledVersionDialog => field ??= new(_versionItem);
+    InstallingVersionDialog InstallingVersionDialog => field ??= new(_versionItem);
 
-    Task? VersionInstallingDialogTask
+    Task? InstallingVersionDialogTask
     {
         get
         {
@@ -95,10 +95,10 @@ public partial class VersionItemViewModel : ViewModelBase
     async void OnClosing(object sender, WindowClosingEventArgs args)
     {
         if (!(args.Cancel = IsProgressing)) return;
-        if (VersionInstallingDialogTask is { }) return;
+        if (InstallingVersionDialogTask is { }) return;
 
-        try { await (VersionInstallingDialogTask = VersionInstallingDialog.OnShowAsync()); }
-        finally { VersionInstallingDialogTask = null; }
+        try { await (InstallingVersionDialogTask = InstallingVersionDialog.OnShowAsync()); }
+        finally { InstallingVersionDialogTask = null; }
     }
 
     private async Task InstallAsync()
@@ -145,7 +145,7 @@ public partial class VersionItemViewModel : ViewModelBase
             _settingsVersionsViewModel.IsInstalling = false;
         }
 
-        await VersionInstalledDialog.OnShowAsync();
+        await InstalledVersionDialog.OnShowAsync();
     }
 
     async Task DeleteAsync() { }

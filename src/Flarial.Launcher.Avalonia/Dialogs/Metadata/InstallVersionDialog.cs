@@ -1,6 +1,8 @@
+using Flarial.Runtime.Versions;
+
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class InstallVersionDialog(string version) : MessageDialog
+sealed class InstallVersionDialog(VersionItem version) : MessageDialog
 {
     protected override string Title { get; } = "💡 Install Version";
     protected override string[] Buttons { get; } = ["Install", "Cancel"];
