@@ -86,7 +86,7 @@ public partial class MainWindow : Window
         vm.IsAnimating = false;
     }
 
-    async void OnLoaded(object sender, RoutedEventArgs args)
+    async void OnLoaded(object? sender, RoutedEventArgs args)
     {
         Loaded -= OnLoaded;
         ((MainWindowViewModel)DataContext!).OnLoaded();

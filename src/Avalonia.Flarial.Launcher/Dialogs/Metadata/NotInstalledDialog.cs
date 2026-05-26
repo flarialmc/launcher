@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Flarial.Launcher.Management;
 
 namespace Flarial.Launcher.Dialogs.Metadata;
 
@@ -13,4 +14,11 @@ sealed class NotInstalledDialog : MessageDialog<NotInstalledDialog>
 If you need help, join our Discord.";
 
     protected override string[] Buttons { get; } = ["Install", "Cancel"];
+
+    internal override async Task<bool> OnShowAsync()
+    {
+        var _ = await base.OnShowAsync();
+        if (_) MinecraftPage.Open();
+        return _;
+    }
 }

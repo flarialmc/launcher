@@ -1,23 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
-using Avalonia.Threading;
-using Avalonia.Win32;
-using HarfBuzzSharp;
 using ReactiveUI.Avalonia;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
-
+using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
 
 namespace Flarial.Launcher;
 
@@ -35,7 +29,11 @@ Exception: {1}
 
 {3}";
 
-    static Program() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    static Program()
+    {
+        SetErrorMode(SEM_FAILCRITICALERRORS);
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    }
 
     unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
@@ -43,7 +41,7 @@ Exception: {1}
         var version = $"{assembly.GetName().Version}";
 
         var exception = (Exception)args.ExceptionObject;
-        var trace = exception.StackTrace.Trim();
+        var trace = exception.StackTrace!.Trim();
 
         while (exception.InnerException is not null)
             exception = exception.InnerException;

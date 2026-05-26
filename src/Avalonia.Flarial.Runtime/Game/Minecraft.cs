@@ -1,0 +1,139 @@
+using System;
+using System.Runtime.InteropServices;
+using Flarial.Runtime.Services;
+using Flarial.Runtime.Unmanaged;
+using Windows.ApplicationModel;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.RemoteDesktop;
+using static System.StringComparison;
+using static Windows.Win32.Foundation.HANDLE;
+using static Windows.Win32.Foundation.WIN32_ERROR;
+using static Windows.Win32.Globalization.COMPARESTRING_RESULT;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.RemoteDesktop.WTS_TYPE_CLASS;
+using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+
+namespace Flarial.Runtime.Game;
+
+public unsafe abstract class Minecraft
+{
+    static Minecraft()
+    {
+        s_catalog.PackageUpdating += OnPackageUpdating;
+        s_catalog.PackageInstalling += OnPackageInstalling;
+        s_catalog.PackageUninstalling += OnPackageUninstalling;
+    }
+
+    static readonly PackageCatalog s_catalog = PackageCatalog.OpenForCurrentUser();
+
+    static void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.TargetPackage);
+    }
+
+    static void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.Package);
+    }
+
+    static void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
+    {
+        if (args.IsComplete)
+            OnPackageStatusChanged(args.Package);
+    }
+
+    static void OnPackageStatusChanged(Package package)
+    {
+        if (PackageFamilyName.Equals(package.Id.FamilyName, OrdinalIgnoreCase))
+            PackageStatusChanged?.Invoke();
+    }
+
+    protected Minecraft() { }
+
+    protected abstract string WindowClass { get; }
+    protected abstract string ProcessName { get; }
+
+    public static event Action? PackageStatusChanged;
+    public static Minecraft Current { get; } = new MinecraftGDK();
+    public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
+    internal static Package Package => PackageRegistry.Get(PackageFamilyName)!;
+    internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
+
+    protected abstract uint? Activate();
+    internal abstract uint? Launch();
+
+    /*
+        - The static overloads find windows & processes belonging to the game.
+        - The instance overloads find the game's window & process specifically.
+    */
+
+    private protected uint? GetProcessId() => GetProcessId(ProcessName);
+    internal NativeWindow? GetWindow([Optional] uint? processId) => GetWindow(WindowClass, processId);
+
+    public static bool IsInstalled => Package is { };
+    public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
+    public static bool IsGamingServicesInstalled => PackageRegistry.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
+
+    static uint? GetProcessId(string processName)
+    {
+        fixed (char* pn = processName)
+        fixed (char* pfn = PackageFamilyName)
+        {
+            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
+            WTS_PROCESS_INFOW* information = null;
+            var buffer = stackalloc char[(int)length];
+
+            try
+            {
+                if (WTSEnumerateProcessesEx(WTS_CURRENT_SERVER_HANDLE, &level, WTS_CURRENT_SESSION, (PWSTR*)&information, &count))
+                    for (var index = 0; index < count; index++)
+                    {
+                        var entry = information[index];
+                        if (CompareStringOrdinal(pn, -1, entry.pProcessName, -1, true) != CSTR_EQUAL) continue;
+                        if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
+
+                        using (process)
+                        {
+                            if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
+                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
+                            return entry.ProcessId;
+                        }
+                    }
+                return null;
+            }
+            finally { WTSFreeMemoryEx(WTSTypeProcessInfoLevel0, information, count); }
+        }
+    }
+
+    internal static NativeWindow? GetWindow(string windowClass, [Optional] uint? processId)
+    {
+        fixed (char* wc = windowClass)
+        fixed (char* pfn = PackageFamilyName)
+        {
+            NativeWindow window = HWND.Null;
+            var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
+            var buffer = stackalloc char[(int)length];
+
+            while ((window = FindWindowEx(HWND.Null, window, wc, null)) != HWND.Null)
+            {
+                if (processId is { } && processId != window._processId)
+                    continue;
+
+                if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window._processId) is not { } process)
+                    continue;
+
+                using (process)
+                {
+                    if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
+                    if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
+                    return window;
+                }
+            }
+
+            return null;
+        }
+    }
+}

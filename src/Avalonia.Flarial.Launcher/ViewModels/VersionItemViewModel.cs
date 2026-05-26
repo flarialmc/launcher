@@ -92,7 +92,7 @@ public partial class VersionItemViewModel : ViewModelBase
         if (installing) State = VersionItemState.Installing;
     }
 
-    async void OnClosing(object sender, WindowClosingEventArgs args)
+    async void OnClosing(object? sender, WindowClosingEventArgs args)
     {
         if (!(args.Cancel = IsProgressing)) return;
         if (InstallingVersionDialogTask is { }) return;

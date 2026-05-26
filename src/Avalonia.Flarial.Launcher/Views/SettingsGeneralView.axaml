@@ -6,13 +6,13 @@
              xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
              xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
              xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsGeneralView"
              x:DataType="vm:SettingsGeneralViewModel"
-             Background="{StaticResource BackgroundColor}" 
-             BorderThickness="{StaticResource ButtonBorderThickness}" 
-             BorderBrush="{StaticResource BackgroundBorderColor}" 
+             Background="{StaticResource BackgroundColor}"
+             BorderThickness="{StaticResource ButtonBorderThickness}"
+             BorderBrush="{StaticResource BackgroundBorderColor}"
              CornerRadius="20">
     <UserControl.Styles>
         <Style Selector="TextBlock">
@@ -33,28 +33,28 @@
                         <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
-                    
+
                     <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
                                                SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
                     <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
                         <TextBox Watermark="Custom DLL Path" Margin="0,10,0,5"/>
                     </Expander>
-                    
+
                     <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
-        
+
                     <Grid>
                         <TextBlock Text="Automatic Updates" toolTip:CustomToolTip.Placement="Top"/>
-                        <ToggleButton/>
+                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
 
                 </StackPanel>
             </spotlightDecorator:SpotlightDecorator>
         </VisualLayerManager>
-        
-        
-        
+
+
+
     </StackPanel>
 </UserControl>

@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Flarial.Launcher.Management;
+
 namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class GamingServicesMissingDialog : MessageDialog<GamingServicesMissingDialog>
@@ -10,4 +13,11 @@ sealed class GamingServicesMissingDialog : MessageDialog<GamingServicesMissingDi
 
 If you need help, join our Discord.";
     protected override string[] Buttons { get; } = ["Install", "Cancel"];
+
+    internal override async Task<bool> OnShowAsync()
+    {
+        var _ = await base.OnShowAsync();
+        if (_) GamingServicesPage.Open();
+        return _;
+    }
 }

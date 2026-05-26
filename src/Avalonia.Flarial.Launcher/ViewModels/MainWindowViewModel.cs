@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using Flarial.Launcher.Dialogs.Metadata;
+using Flarial.Launcher.Management;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -30,10 +31,10 @@ public class MainWindowViewModel : ViewModelBase
 
     public VersionRegistry VersionRegistry { get; private set; }
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(AppSettings appSettings)
     {
         HomeViewModel = new(this);
-        SettingsViewModel = new();
+        SettingsViewModel = new(appSettings);
         NotificationArea = new();
         VersionRegistry = null!;
     }
