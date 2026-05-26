@@ -17,6 +17,8 @@ namespace Flarial.Runtime.Game;
 
 public unsafe abstract class Minecraft
 {
+    protected const string PackageFamilyName = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
+
     static Minecraft()
     {
         s_catalog.PackageUpdating += OnPackageUpdating;
@@ -57,7 +59,6 @@ public unsafe abstract class Minecraft
 
     public static event Action? PackageStatusChanged;
     public static Minecraft Current { get; } = new MinecraftGDK();
-    public static string PackageFamilyName { get; } = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 
     internal static Package Package => PackageRegistry.Get(PackageFamilyName)!;
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }

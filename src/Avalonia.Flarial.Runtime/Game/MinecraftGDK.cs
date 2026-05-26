@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
@@ -20,12 +19,13 @@ unsafe sealed class MinecraftGDK : Minecraft
 {
     internal MinecraftGDK() : base() { }
 
+    const string Command = $"Invoke-CommandInDesktopPackage -PackageFamilyName '{PackageFamilyName}' -AppId 'Game' -Command '{{0}}'";
+
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
 
     static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
     static readonly string s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
-    static readonly string s_command = $"Invoke-CommandInDesktopPackage -PackageFamilyName \"{PackageFamilyName}\" -AppId \"Game\" -Command \"{{0}}\"";
 
     protected override uint? Activate()
     {
@@ -40,14 +40,11 @@ unsafe sealed class MinecraftGDK : Minecraft
         var path = Path.Combine(Package.InstalledPath, ProcessName);
         if (!File.Exists(path)) throw new FileNotFoundException(null, path);
 
-        var command = string.Format(s_command, path);
-        var bytes = MemoryMarshal.AsBytes(command.AsSpan());
-
         using var process = Process.Start(new ProcessStartInfo
         {
             CreateNoWindow = true,
             FileName = s_filename,
-            ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand", $"\"{Convert.ToBase64String(bytes)}\"" }
+            ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", string.Format(Command, path) }
         });
 
         process?.WaitForExit();
