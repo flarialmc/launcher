@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using static Windows.Win32.Foundation.HWND;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 

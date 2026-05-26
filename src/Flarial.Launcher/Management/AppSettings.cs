@@ -1,6 +1,5 @@
 using System.IO;
 using System.Runtime.Serialization;
-using System.Xml;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
@@ -32,9 +31,6 @@ sealed class AppSettings
         AutomaticUpdates = true;
         CustomDllPath = string.Empty;
     }
-
-    static readonly XmlWriterSettings s_settings = new() { Indent = true };
-    static readonly DataContractSerializer s_serializer = new(typeof(AppSettings));
 
     internal static AppSettings Get()
     {
