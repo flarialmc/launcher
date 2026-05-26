@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\Avalonia.Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
