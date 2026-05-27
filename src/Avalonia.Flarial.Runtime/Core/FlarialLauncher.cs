@@ -50,7 +50,7 @@ del ""%~f0""";
     {
         try
         {
-            using var response = await HttpStack.GetAsync(AcceptedUri);
+            using var response = await HttpService.GetAsync(AcceptedUri);
             return response.IsSuccessStatusCode;
         }
         catch { return false; }
@@ -58,8 +58,8 @@ del ""%~f0""";
 
     public static async Task<bool> CheckForUpdatesAsync()
     {
-        using var stream = await HttpStack.GetStreamAsync(LauncherVersionUri);
-        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+        using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
+        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
         return s_version != json["version"];
     }
 
@@ -67,7 +67,7 @@ del ""%~f0""";
     {
         StringBuilder builder = new(s_arguments);
 
-        await HttpStack.DownloadAsync(LauncherDownloadUri, s_source, callback);
+        await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
         using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
 
         using (Process.Start(new ProcessStartInfo

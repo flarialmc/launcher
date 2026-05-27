@@ -54,8 +54,8 @@ public abstract class FlarialClient
 
     async Task<string> GetRemoteHashAsync()
     {
-        using var stream = await HttpStack.GetStreamAsync(HashesUrl);
-        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+        using var stream = await HttpService.GetStreamAsync(HashesUrl);
+        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
         return json[Build];
     }
 
@@ -86,7 +86,7 @@ public abstract class FlarialClient
         try { File.Delete(FileName); }
         catch { return false; }
 
-        await HttpStack.DownloadAsync(DownloadUri, FileName, callback);
+        await HttpService.DownloadAsync(DownloadUri, FileName, callback);
         return true;
     }
 }

@@ -6,6 +6,7 @@
     <NoWarn>PInvoke009,CS2008</NoWarn>
 
     <Optimize>true</Optimize>
+    <IsTrimmable>true</IsTrimmable>
     <PublishRelease>true</PublishRelease>
 
     <Nullable>enable</Nullable>

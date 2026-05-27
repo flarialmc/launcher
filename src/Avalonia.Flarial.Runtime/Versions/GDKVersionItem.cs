@@ -27,14 +27,14 @@ sealed class GDKVersionItem : VersionItem
 
     internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry)
     {
-        var msixvcPackagesTask = HttpStack.GetStreamAsync(MSIXVCPackagesUri);
-        var gameLaunchHelperTask = HttpStack.GetBytesAsync(GameLaunchHelperUri);
+        var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUri);
+        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
 
         await Task.WhenAll(msixvcPackagesTask, gameLaunchHelperTask);
         var gameLaunchHelper = await gameLaunchHelperTask;
 
         using var stream = await msixvcPackagesTask;
-        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
+        var json = await JsonService.ReadAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
 
         foreach (var item in json["release"])
         {
@@ -50,7 +50,7 @@ sealed class GDKVersionItem : VersionItem
     {
         try
         {
-            using var message = await HttpStack.GetAsync(uri, token);
+            using var message = await HttpService.GetAsync(uri, token);
             return message.IsSuccessStatusCode ? uri : null;
         }
         catch { return null; }

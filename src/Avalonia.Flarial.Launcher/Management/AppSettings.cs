@@ -1,19 +1,20 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization;
-using Flarial.Runtime.Services;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Flarial.Launcher.Management;
 
-[DataContract]
+[JsonSerializable(typeof(AppSettings))]
+sealed partial class AppSettingsContext : JsonSerializerContext;
+
 public sealed class AppSettings
 {
-    [DataMember]
     public bool AutomaticUpdates { get; set; } = true;
 
-    [DataMember]
     public bool UseCustomDll { get; set; } = false;
 
-    [DataMember]
     public string CustomDllPath
     {
         get;
@@ -24,7 +25,7 @@ public sealed class AppSettings
         }
     } = string.Empty;
 
-    [OnDeserializing]
+    [OnDeserializing, Obsolete]
     void OnDeserializing(StreamingContext context)
     {
         UseCustomDll = false;
@@ -37,14 +38,14 @@ public sealed class AppSettings
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.json");
-            return JsonSerializer.Deserialize<AppSettings>(stream);
+            return JsonSerializer.Deserialize(stream, AppSettingsContext.Default.AppSettings)!;
         }
         catch { return new(); }
     }
 
     internal void Set()
     {
-        using var stream = File.OpenWrite("Flarial.Launcher.json");
-        JsonSerializer.Serialize(stream, this);
+        using var stream = File.Create("Flarial.Launcher.json");
+        JsonSerializer.Serialize(stream, this, AppSettingsContext.Default.AppSettings);
     }
 }

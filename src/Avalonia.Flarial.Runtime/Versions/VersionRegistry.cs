@@ -44,8 +44,8 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     {
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
 
-        using var stream = await HttpStack.GetStreamAsync(SupportedVersionsUri);
-        var json = await JsonSerializer.DeserializeAsync<Dictionary<string, bool>>(stream);
+        using var stream = await HttpService.GetStreamAsync(SupportedVersionsUri);
+        var json = await JsonService.ReadAsync<Dictionary<string, bool>>(stream);
 
         foreach (var item in json)
             registry.Add(item.Key, new(item.Value));

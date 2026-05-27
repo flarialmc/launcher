@@ -24,14 +24,6 @@ sealed class AppSettings
         }
     } = string.Empty;
 
-    [OnDeserializing]
-    void OnDeserializing(StreamingContext context)
-    {
-        UseCustomDll = false;
-        AutomaticUpdates = true;
-        CustomDllPath = string.Empty;
-    }
-
     internal static AppSettings Get()
     {
         try
@@ -44,7 +36,7 @@ sealed class AppSettings
 
     internal void Set()
     {
-        using var stream = File.OpenWrite("Flarial.Launcher.json");
+        using var stream = File.Create("Flarial.Launcher.json");
         JsonService.Write(stream, this);
     }
 }

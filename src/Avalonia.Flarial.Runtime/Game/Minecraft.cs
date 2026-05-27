@@ -60,7 +60,7 @@ public unsafe abstract class Minecraft
     public static event Action? PackageStatusChanged;
     public static Minecraft Current { get; } = new MinecraftGDK();
 
-    internal static Package Package => PackageRegistry.Get(PackageFamilyName)!;
+    internal static Package Package => PackageService.Get(PackageFamilyName)!;
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
     protected abstract uint? Activate();
@@ -76,7 +76,7 @@ public unsafe abstract class Minecraft
 
     public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
-    public static bool IsGamingServicesInstalled => PackageRegistry.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
+    public static bool IsGamingServicesInstalled => PackageService.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
 
     static uint? GetProcessId(string processName)
     {
