@@ -4,12 +4,10 @@
         <PlatformTarget>x64</PlatformTarget>
         <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
 
+        <NoWarn>IL2057,IL2026,IL2104</NoWarn>
+
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
-
-        <SelfContained>false</SelfContained>
-        <PublishSingleFile>true</PublishSingleFile>
-        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -23,6 +21,22 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <SelfContained>true</SelfContained>
+        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
+
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
+
+        <TrimMode>full</TrimMode>
+        <PublishTrimmed>true</PublishTrimmed>
+        <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+
+        <PublishSingleFile>true</PublishSingleFile>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     </PropertyGroup>
 
     <ItemGroup>
@@ -45,5 +59,4 @@
         <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.1" />
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" />
     </ItemGroup>
-
 </Project>

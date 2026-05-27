@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Diagnostics;
 using Flarial.Launcher.ViewModels;
+using Flarial.Launcher.Views;
 
 namespace Flarial.Launcher;
 
@@ -12,24 +15,39 @@ namespace Flarial.Launcher;
 
 public class ViewLocator : IDataTemplate
 {
-    public Control? Build(object? param)
+    static readonly Dictionary<Type, Func<Control>> s_views = [];
+
+    internal static Func<Control>? Get(object? value)
     {
-        if (param is null)
+        if (value?.GetType() is not { } type)
             return null;
 
-        var name = param.GetType().FullName!.Replace("ViewModel", "View");
-        var type = Type.GetType(name);
+        if (s_views.TryGetValue(type, out var function))
+            return function;
 
-        if (type != null)
-        {
-            return (Control)Activator.CreateInstance(type)!;
-        }
-
-        return new TextBlock { Text = "Not Found: " + name };
+        return null;
     }
 
-    public bool Match(object? data)
+    internal static void Add<TViewModel, TView>() where TView : Control, new() => s_views.Add(typeof(TViewModel), static () => new TView());
+
+    static ViewLocator()
     {
-        return data is ViewModelBase;
+        Add<MainWindowViewModel, MainWindow>();
+
+        Add<HomeViewModel, HomeView>();
+        Add<SettingsViewModel, SettingsView>();
+
+        Add<MessageBoxViewModel, MessageBoxView>();
+        Add<NotificationViewModel, NotificationView>();
+        Add<NotificationAreaViewModel, NotificationAreaView>();
+
+        Add<VersionItemViewModel, VersionItemView>();
+        Add<SettingsConfigsViewModel, SettingsConfigsView>();
+        Add<SettingsGeneralViewModel, SettingsGeneralView>();
+        Add<SettingsVersionsViewModel, SettingsVersionsView>();
     }
+
+    public Control? Build(object? param) => (Get(param) ?? throw new TypeAccessException())();
+
+    public bool Match(object? data) => data is ViewModelBase;
 }
