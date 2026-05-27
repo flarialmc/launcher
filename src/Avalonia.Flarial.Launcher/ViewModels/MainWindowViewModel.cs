@@ -77,11 +77,13 @@ public class MainWindowViewModel : ViewModelBase
 
         VersionRegistry = await VersionRegistry.CreateAsync();
 
-        foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
+        _ = Task.Run(() =>
         {
-            var versions = SettingsViewModel.SettingsVersionsViewModel.Versions;
-            versions.Add(new(this, version));
-        }, DispatcherPriority.Background);
+            foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
+            {
+                SettingsViewModel.SettingsVersionsViewModel.Versions.Add(new(this, version));
+            }, DispatcherPriority.Background);
+        });
 
         HomeViewModel.OnPackageStatusChanged();
         Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;
