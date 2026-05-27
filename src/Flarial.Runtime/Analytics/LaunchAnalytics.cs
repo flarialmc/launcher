@@ -40,6 +40,6 @@ public static class LaunchAnalytics
         request.Headers.Add("X-Flarial-InstallId", s_identifier);
         request.Headers.Add("X-Flarial-Nonce", $"{Guid.NewGuid():N}");
 
-        using (await HttpStack.SendAsync(request)) { }
+        using (await HttpService.SendAsync(request)) { }
     }
 }

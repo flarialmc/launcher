@@ -10,7 +10,7 @@ using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Runtime.Services;
 
-static class HttpStack
+static class HttpService
 {
     static readonly HttpClient s_client = new(new HttpClientHandler
     {

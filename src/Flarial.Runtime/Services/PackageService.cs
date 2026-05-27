@@ -9,13 +9,13 @@ using static Windows.Win32.PInvoke;
 
 namespace Flarial.Runtime.Services;
 
-static class PackageRegistry
+static class PackageService
 {
     static readonly PackageManager s_manager = new();
 
     internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    unsafe static void Add(Uri uri, Action<int> callback)
+    internal unsafe static void Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
         var info = s_manager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);

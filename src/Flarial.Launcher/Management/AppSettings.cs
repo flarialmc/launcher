@@ -37,7 +37,7 @@ sealed class AppSettings
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.json");
-            return JsonSerializer.Deserialize<AppSettings>(stream);
+            return JsonService.Read<AppSettings>(stream);
         }
         catch { return new(); }
     }
@@ -45,6 +45,6 @@ sealed class AppSettings
     internal void Set()
     {
         using var stream = File.OpenWrite("Flarial.Launcher.json");
-        JsonSerializer.Serialize(stream, this);
+        JsonService.Write(stream, this);
     }
 }

@@ -44,7 +44,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) return null;
+        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
 
         using var powershell = PowerShell.Create(s_state);
         powershell.AddCommand("Invoke-CommandInDesktopPackage");

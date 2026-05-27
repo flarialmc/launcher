@@ -21,7 +21,7 @@ sealed class PromotionImagesBox : Grid
     {
         Loading -= OnLoading;
         
-        foreach (var promotion in await PromotionManager.GetAsync())
+        foreach (var promotion in await PromotionService.GetAsync())
         {
             var image = ~new PromotionImage(promotion);
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
 
-public static class PromotionManager
+public static class PromotionService
 {
     const string PromotionsUri = "https://cdn.flarial.xyz/launcher/Promotions.json";
 
@@ -12,8 +12,8 @@ public static class PromotionManager
     {
         try
         {
-            using var stream = await HttpStack.GetStreamAsync(PromotionsUri);
-            return await JsonSerializer.DeserializeAsync<Promotion[]>(stream);
+            using var stream = await HttpService.GetStreamAsync(PromotionsUri);
+            return await JsonService.ReadAsync<Promotion[]>(stream);
         }
         catch { return []; }
     }
