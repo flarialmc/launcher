@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
-using static System.Environment;
 
 namespace Flarial.Runtime.Core;
 
@@ -17,14 +16,16 @@ public static class FlarialLauncher
         var assembly = Assembly.GetEntryAssembly()!;
 
         var temp = Path.GetTempPath();
+        var destination = Environment.ProcessPath;
+        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
+
         s_source = $"{Path.Combine(temp, Path.GetRandomFileName())}.exe";
         s_script = $"{Path.Combine(temp, Path.GetRandomFileName())}.cmd";
 
         s_version = $"{assembly.GetName().Version}";
-        var destination = assembly.ManifestModule.FullyQualifiedName;
+        s_filename = Path.Combine(system, "cmd.exe");
 
         s_content = string.Format(Format, s_source, destination);
-        s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), "cmd.exe");
         s_arguments = string.Format(Arguments, s_script, s_filename, destination, "{0}");
     }
 
@@ -78,6 +79,6 @@ del ""%~f0""";
             Arguments = $"{builder}"
         })) { }
 
-        Exit(0);
+        Environment.Exit(0);
     }
 }

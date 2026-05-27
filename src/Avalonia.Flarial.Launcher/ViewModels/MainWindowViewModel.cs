@@ -31,8 +31,12 @@ public class MainWindowViewModel : ViewModelBase
 
     public VersionRegistry VersionRegistry { get; private set; }
 
+    readonly AppSettings _appSettings;
+
     public MainWindowViewModel(AppSettings appSettings)
     {
+        _appSettings = appSettings;
+
         HomeViewModel = new(this);
         SettingsViewModel = new(appSettings);
         NotificationArea = new();
@@ -69,7 +73,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (await BetaBuildDialog.ShowAsync() && await FlarialLauncher.CheckForUpdatesAsync() && await LauncherUpdateAvailableDialog.ShowAsync())
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_appSettings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnLauncherDownload);
             return;
@@ -79,7 +83,7 @@ public class MainWindowViewModel : ViewModelBase
 
         _ = Task.Run(() =>
         {
-            foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
+            foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(async () =>
             {
                 SettingsViewModel.SettingsVersionsViewModel.Versions.Add(new(this, version));
             }, DispatcherPriority.Background);
