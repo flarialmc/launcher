@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-public sealed class BetaBuildDialog : MessageDialog<BetaBuildDialog>
+sealed class BetaBuildDialog : MessageDialog<BetaBuildDialog>
 {
     protected override string Title { get; } = "⚠️ Beta Build";
     protected override string Message { get; } = @"This is a beta build of the launcher.
