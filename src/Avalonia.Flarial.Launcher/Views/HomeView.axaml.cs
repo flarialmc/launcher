@@ -19,7 +19,6 @@ public partial class HomeView : UserControl
     public HomeView()
     {
         InitializeComponent();
-        Initialized += OnInitialized;
     }
 
     async void OnInitialized(object? sender, EventArgs args)
