@@ -5,11 +5,13 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.Services;
 using Flarial.Launcher.Types;
 using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
+using Flarial.Runtime.Modding;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -30,10 +32,12 @@ public partial class HomeViewModel : ViewModelBase
     UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry.PreferredVersion);
 
     readonly MainWindowViewModel _mainWindowViewModel;
+    readonly AppSettings _appSettings;
 
-    public HomeViewModel(MainWindowViewModel mainWindowViewModel)
+    public HomeViewModel(MainWindowViewModel mainWindowViewModel, AppSettings appSettings)
     {
         _mainWindowViewModel = mainWindowViewModel;
+        _appSettings = appSettings;
 
         var assembly = Assembly.GetExecutingAssembly();
         _launcherVersion = $"{assembly.GetName().Version}";
@@ -46,6 +50,9 @@ public partial class HomeViewModel : ViewModelBase
         IsLaunching = true;
         try
         {
+            var path = _appSettings.CustomDllPath;
+            var custom = _appSettings.UseCustomDll;
+
             if (!Minecraft.IsGamingServicesInstalled)
             {
                 await GamingServicesMissingDialog.ShowAsync();
@@ -58,9 +65,33 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (!_mainWindowViewModel.VersionRegistry.IsSupported)
+            if (!custom && !_mainWindowViewModel.VersionRegistry.IsSupported)
             {
                 await UnsupportedVersionDialog.OnShowAsync();
+                return;
+            }
+
+            if (custom)
+            {
+                if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
+                {
+                    await InvalidCustomDllDialog.ShowAsync();
+                    return;
+                }
+
+                Library library = new(path); if (!library.IsLoadable)
+                {
+                    await InvalidCustomDllDialog.ShowAsync();
+                    return;
+                }
+
+                LauncherStatus = "Launching...";
+                if (await Task.Run(() => Injector.Launch(library)) is null)
+                {
+                    await LaunchFailureDialog.ShowAsync();
+                    return;
+                }
+
                 return;
             }
 

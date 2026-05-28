@@ -37,7 +37,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         _appSettings = appSettings;
 
-        HomeViewModel = new(this);
+        HomeViewModel = new(this, appSettings);
         SettingsViewModel = new(appSettings);
         NotificationArea = new();
         VersionRegistry = null!;

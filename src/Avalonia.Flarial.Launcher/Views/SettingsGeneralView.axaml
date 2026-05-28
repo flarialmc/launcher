@@ -37,7 +37,14 @@
                     <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
                                                SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
                     <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-                        <TextBox PlaceholderText="Custom DLL Path" Margin="0,10,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Margin="0,10,10,5" IsReadOnly="True" Text="{Binding CustomDllPath}"/>
+                            <Button Classes="GenericButton" Grid.Column="1" Margin="0,10,0,5" Content="Open" Command="{Binding Open}"/>
+                        </Grid>
                     </Expander>
 
                     <Grid HorizontalAlignment="Left">

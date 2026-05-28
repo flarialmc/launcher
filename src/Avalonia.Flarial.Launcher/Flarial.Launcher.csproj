@@ -30,9 +30,9 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
 
-        <TrimMode>full</TrimMode>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 
         <PublishSingleFile>true</PublishSingleFile>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>

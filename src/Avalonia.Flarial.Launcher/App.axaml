@@ -42,6 +42,7 @@
         <StyleInclude Source="Styles/SettingsButtonStyle.axaml"/>
         <StyleInclude Source="Styles/WindowStateButtons.axaml"/>
         <StyleInclude Source="Styles/SettingsRadioButtonStyle.axaml"/>
+           <StyleInclude Source="Styles/GenericButtonStyle.axaml"/>
         <StyleInclude Source="Styles/Expander.axaml"/>
         <StyleInclude Source="Styles/ToolTip.axaml"/>
     </Application.Styles>

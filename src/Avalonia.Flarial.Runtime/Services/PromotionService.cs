@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
@@ -19,14 +21,13 @@ public static class PromotionService
     }
 }
 
-[DataContract]
 public sealed class Promotion
 {
-    Promotion() { }
+    public string Uri { get; }
+    public string Image { get; }
 
-    [DataMember]
-    public readonly string Uri = null!;
+    [JsonConstructor]
+    internal Promotion(string uri, string image) => (Uri, Image) = (uri, image);
 
-    [DataMember]
-    public readonly string Image = null!;
+    public async Task<Stream> GetAsync() => new MemoryStream(await HttpService.GetBytesAsync(Image));
 }
