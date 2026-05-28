@@ -10,7 +10,7 @@ namespace Flarial.Runtime.Modding;
 
 public unsafe sealed class Library
 {
-    internal string? FileName { get; }
+    internal string FileName { get; }
 
     /*
         - A caller should apply `SEM_FAILCRITICALERRORS` via `SetErrorMode()`.
@@ -56,8 +56,8 @@ public unsafe sealed class Library
         try
         {
             FileName = Path.GetFullPath(path);
-            if (!Path.HasExtension(FileName)) FileName = null;
+            if (!Path.HasExtension(FileName)) FileName = null!;
         }
-        catch { FileName = null; }
+        catch { FileName = null!; }
     }
 }

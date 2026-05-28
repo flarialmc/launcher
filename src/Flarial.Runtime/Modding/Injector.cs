@@ -31,7 +31,7 @@ public static class Injector
 
     public unsafe static uint? Launch(Library library)
     {
-        if (!library.IsLoadable || library.FileName is null)
+        if (!library.IsLoadable)
             throw new FileLoadException(null, library.FileName);
 
         if (Minecraft.Current.Launch() is not { } processId)
