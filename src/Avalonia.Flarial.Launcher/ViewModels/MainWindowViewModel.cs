@@ -29,6 +29,8 @@ public class MainWindowViewModel : ViewModelBase
 
     public VersionRegistry VersionRegistry { get; private set; }
 
+    public
+
     readonly AppSettings _appSettings;
 
     public MainWindowViewModel(AppSettings appSettings)
@@ -43,16 +45,11 @@ public class MainWindowViewModel : ViewModelBase
 
     public async Task<string> ShowMessageBoxAsync(string title, string message, string[] buttons)
     {
-        await _semaphore.WaitAsync();
-        try
+        await _semaphore.WaitAsync(); try
         {
-            MessageBoxViewModel dialog = new(title, message, buttons);
-            CurrentDialog = dialog;
-
-            var result = await dialog.Result;
-
-            CurrentDialog = null;
-            return result;
+            CurrentDialog = new(title, message, buttons);
+            try { return await CurrentDialog.Result; }
+            finally { CurrentDialog = null; }
         }
         finally { _semaphore.Release(); }
     }
@@ -83,8 +80,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(async () =>
             {
-                var model = SettingsViewModel.SettingsVersionsViewModel;
-                model.Versions.Add(new(this, version));
+                SettingsViewModel.SettingsVersionsViewModel.Versions.Add(new(this, version));
             }, DispatcherPriority.Background);
         });
 
