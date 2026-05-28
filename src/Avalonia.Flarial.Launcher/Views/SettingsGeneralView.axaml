@@ -37,13 +37,9 @@
                     <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
                                                SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
                     <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Margin="0,10,10,5" IsReadOnly="True" Text="{Binding CustomDllPath}"/>
-                            <Button Classes="GenericButton" Grid.Column="1" Margin="0,10,0,5" Content="Open" Command="{Binding Open}"/>
+                        <Grid ColumnDefinitions="Auto,*" Margin="0,10,0,5">
+                            <Button Classes="GenericButton" Grid.Column="0" Content="Open" Command="{Binding Open}"/>
+                            <TextBox Grid.Column="1" Margin="5,0,0,0" IsReadOnly="True" Text="{Binding CustomDllPath}"/>
                         </Grid>
                     </Expander>
 
@@ -53,7 +49,7 @@
                     </Grid>
 
                     <Grid>
-                        <TextBlock Text="Automatic Updates" toolTip:CustomToolTip.Placement="Top"/>
+                        <TextBlock Text="Automatic Updates" />
                         <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
 

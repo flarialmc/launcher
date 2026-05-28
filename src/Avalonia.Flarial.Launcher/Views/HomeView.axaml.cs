@@ -14,6 +14,8 @@ namespace Flarial.Launcher.Views;
 
 public partial class HomeView : UserControl
 {
+    static readonly Cursor s_cursor = new(StandardCursorType.Hand);
+
     public HomeView()
     {
         InitializeComponent();
@@ -34,9 +36,9 @@ public partial class HomeView : UserControl
                 {
                     Width = 320 * 0.8,
                     Height = 50 * 0.8,
+                    Cursor = s_cursor,
                     Tag = promotion.Uri,
-                    Source = new Bitmap(stream),
-                    Cursor = new Cursor(StandardCursorType.Hand)
+                    Source = new Bitmap(stream)
                 };
 
                 image.PointerPressed += OnPointerPressed;
