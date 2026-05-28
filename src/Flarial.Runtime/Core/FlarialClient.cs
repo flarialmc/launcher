@@ -39,11 +39,7 @@ public abstract class FlarialClient
             }
             return false;
         }
-
-        Library library = new(FileName);
-        if (!library.IsLoadable) return false;
-
-        return Injector.Launch(library) is { };
+        return Injector.Launch(new(FileName)) is { };
     }
 
     public async Task<bool?> LaunchAsync() => await Task.Run(Launch);
