@@ -24,12 +24,21 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <SelfContained>true</SelfContained>
-        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
+        <Http3Support>false</Http3Support>
+        <MetricsSupport>false</MetricsSupport>
+        <StackTraceSupport>false</StackTraceSupport>
+        <EventSourceSupport>false</EventSourceSupport>
+        <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+        <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+        <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+        <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
 
+        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
+        <UseSystemResourceKeys>true</UseSystemResourceKeys>
         <InvariantGlobalization>true</InvariantGlobalization>
         <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
 
+        <SelfContained>true</SelfContained>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
 

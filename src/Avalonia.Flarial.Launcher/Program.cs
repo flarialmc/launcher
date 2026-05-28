@@ -26,9 +26,7 @@ static class Program
 Version: {0}
 Exception: {1}
 
-{2}
-
-{3}";
+{2}";
 
     static Program()
     {
@@ -42,7 +40,6 @@ Exception: {1}
         var version = $"{assembly.GetName().Version}";
 
         var exception = (Exception)args.ExceptionObject;
-        var trace = exception.StackTrace!.Trim();
 
         while (exception.InnerException is not null)
             exception = exception.InnerException;
@@ -51,7 +48,7 @@ Exception: {1}
         var name = exception.GetType().Name;
 
         fixed (char* caption = "Flarial Launcher: Error")
-        fixed (char* text = string.Format(Format, version, name, message, trace))
+        fixed (char* text = string.Format(Format, version, name, message, string.Empty))
         {
             var application = Application.Current;
             var lifetime = (IClassicDesktopStyleApplicationLifetime?)application?.ApplicationLifetime;
@@ -59,8 +56,8 @@ Exception: {1}
             var window = lifetime?.MainWindow;
             var handle = window?.TryGetPlatformHandle()?.Handle;
 
-            HWND hwnd = new(handle ?? new());
-            MessageBox(hwnd, text, caption, MESSAGEBOX_STYLE.MB_ICONERROR);
+            HWND hWnd = new(handle ?? new());
+            MessageBox(hWnd, text, caption, MESSAGEBOX_STYLE.MB_ICONERROR);
         }
 
         Environment.Exit(1);

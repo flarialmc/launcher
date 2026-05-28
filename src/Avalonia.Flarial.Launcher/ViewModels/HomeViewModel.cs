@@ -1,3 +1,4 @@
+using System;
 using System.Reactive;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,8 +30,8 @@ public partial class HomeViewModel : ViewModelBase
 
     UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry.PreferredVersion);
 
-    readonly MainWindowViewModel _mainWindowViewModel;
     readonly AppSettings _appSettings;
+    readonly MainWindowViewModel _mainWindowViewModel;
 
     public HomeViewModel(MainWindowViewModel mainWindowViewModel, AppSettings appSettings)
     {
@@ -41,6 +42,12 @@ public partial class HomeViewModel : ViewModelBase
         _launcherVersion = $"{assembly.GetName().Version}";
 
         Launch = ReactiveCommand.CreateFromTask(OnLaunchAsync);
+        CloseWindow = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Close));
+        MinimizeWindow = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Minimize));
+
+        Launch.ThrownExceptions.Subscribe(static _ => throw _);
+        CloseWindow.ThrownExceptions.Subscribe(static _ => throw _);
+        MinimizeWindow.ThrownExceptions.Subscribe(static _ => throw _);
     }
 
     async Task OnLaunchAsync()
@@ -139,10 +146,6 @@ public partial class HomeViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> Launch { get; }
-
-    public ReactiveCommand<Unit, Unit> MinimizeWindow { get; } =
-        ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Minimize));
-
-    public ReactiveCommand<Unit, Unit> CloseWindow { get; } =
-        ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Close));
+    public ReactiveCommand<Unit, Unit> CloseWindow { get; }
+    public ReactiveCommand<Unit, Unit> MinimizeWindow { get; }
 }

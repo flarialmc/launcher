@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.ViewModels;
 using Flarial.Launcher.Views;
