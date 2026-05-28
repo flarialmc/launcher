@@ -86,7 +86,7 @@ public partial class VersionItemViewModel : ViewModelBase
         InstallCommand.ThrownExceptions.Subscribe(static _ => throw _);
     }
 
-    async void OnInstall(int percentage, bool installing)
+    void OnInstall(int percentage, bool installing)
     {
         InstallPercentage = percentage;
         if (installing) State = VersionItemState.Installing;

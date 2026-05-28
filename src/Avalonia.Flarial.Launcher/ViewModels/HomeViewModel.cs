@@ -121,10 +121,7 @@ public partial class HomeViewModel : ViewModelBase
         }
     }
 
-    async void OnDownload(int value) => Dispatcher.UIThread.Invoke(() =>
-    {
-        LauncherStatus = $"Downloading... {value}%";
-    });
+    void OnDownload(int value) => LauncherStatus = $"Downloading... {value}%";
 
     public void OnPackageStatusChanged()
     {

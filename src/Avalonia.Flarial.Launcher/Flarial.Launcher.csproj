@@ -25,11 +25,14 @@
 
     <PropertyGroup>
         <Http3Support>false</Http3Support>
+        <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+
         <MetricsSupport>false</MetricsSupport>
         <StackTraceSupport>false</StackTraceSupport>
         <EventSourceSupport>false</EventSourceSupport>
         <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
-        <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+        
+        <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
         <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
         <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
 
