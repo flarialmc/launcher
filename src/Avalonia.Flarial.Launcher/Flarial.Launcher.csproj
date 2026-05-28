@@ -9,6 +9,7 @@
 
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -18,7 +19,6 @@
 
         <ApplicationIcon>Assets/app.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
