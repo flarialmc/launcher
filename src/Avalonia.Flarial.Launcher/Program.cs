@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -16,7 +17,7 @@ using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE;
 
 namespace Flarial.Launcher;
 
-static class Program
+sealed class Program : IObserver<Exception>
 {
     const string Format = @"Looks like the launcher crashed! 
 
@@ -35,6 +36,10 @@ Exception: {1}
         SetErrorMode(SEM_FAILCRITICALERRORS);
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
     }
+
+    public void OnCompleted() => throw new NotImplementedException();
+    public void OnNext(Exception exception) => ExceptionDispatchInfo.Capture(exception).Throw();
+    public void OnError(Exception exception) => ExceptionDispatchInfo.Capture(exception).Throw();
 
     unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
@@ -90,7 +95,7 @@ Exception: {1}
         builder.UseSkia();
         builder.UseWin32();
         builder.UseHarfBuzz();
-        builder.UseReactiveUI(static _ => { });
+        builder.UseReactiveUI(static _ => _.WithExceptionHandler(new Program()));
 
         builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
         builder.With(new SkiaOptions { MaxGpuResourceSizeBytes = long.MaxValue });
