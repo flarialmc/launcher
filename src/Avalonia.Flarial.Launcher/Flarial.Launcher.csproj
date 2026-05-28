@@ -4,12 +4,15 @@
         <PlatformTarget>x64</PlatformTarget>
         <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
 
-        <Optimize>true</Optimize>
+        <NoWarn>IL2026,IL2104</NoWarn>
         <IsTrimmable>true</IsTrimmable>
+
+        <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
@@ -17,10 +20,11 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
-        <NoWarn>IL2026,IL2104</NoWarn>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
+
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
 
     <PropertyGroup>
