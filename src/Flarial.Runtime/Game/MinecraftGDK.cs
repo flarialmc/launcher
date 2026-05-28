@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Management.Automation;
@@ -6,9 +7,6 @@ using Flarial.Runtime.Unmanaged;
 using Microsoft.PowerShell;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
-using static System.IO.Directory;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.PInvoke;
@@ -18,7 +16,7 @@ namespace Flarial.Runtime.Game;
 
 unsafe sealed class MinecraftGDK : Minecraft
 {
-    internal MinecraftGDK() : base() { }
+    internal MinecraftGDK() { }
 
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
@@ -31,7 +29,7 @@ unsafe sealed class MinecraftGDK : Minecraft
     }
 
     static readonly InitialSessionState s_state = InitialSessionState.Create();
-    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
+    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
     {
@@ -112,7 +110,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var handle = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,

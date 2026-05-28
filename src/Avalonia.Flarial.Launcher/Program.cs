@@ -7,6 +7,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
+using Flarial.Runtime.Modding;
 using ReactiveUI.Avalonia;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -73,6 +74,15 @@ Exception: {1}
 
         var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         Environment.CurrentDirectory = Directory.CreateDirectory(Path.Combine(path, @"Flarial\Launcher")).FullName;
+
+        for (var index = 0; index < args.Length; index++)
+            switch (args[index])
+            {
+                case "--inject":
+                    if (!(index + 1 < args.Length)) continue;
+                    Injector.Launch(new(args[index + 1]));
+                    return;
+            }
 
         var builder = AppBuilder.Configure<App>();
 

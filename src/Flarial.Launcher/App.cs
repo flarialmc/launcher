@@ -9,8 +9,6 @@ using Flarial.Runtime.Modding;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
 using static Windows.Win32.UI.WindowsAndMessaging.GET_ANCESTOR_FLAGS;
@@ -59,7 +57,7 @@ Exception: {1}
         var message = exception.Message;
 
         var text = string.Format(Format, AppManifest.s_version, name, message, trace);
-        System.Windows.MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
         Environment.Exit(1);
     }
@@ -82,8 +80,8 @@ Exception: {1}
         using Mutex mutex = new(false, "54874D29-646C-4536-B6D1-8E05053BE00E", out var created);
         if (!created) return;
 
-        var path = Path.Combine(GetFolderPath(LocalApplicationData), @"Flarial\Launcher");
-        CurrentDirectory = Directory.CreateDirectory(path).FullName;
+        var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        Environment.CurrentDirectory = Directory.CreateDirectory(Path.Combine(path, @"Flarial\Launcher")).FullName;
 
         for (var index = 0; index < args.Length; index++)
             switch (args[index])

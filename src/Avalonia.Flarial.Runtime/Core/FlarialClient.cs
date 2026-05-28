@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Modding;
 using Flarial.Runtime.Services;
-using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
@@ -29,7 +28,7 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    public bool? Launch()
+    bool? Launch()
     {
         if (Minecraft.GetWindow(WindowClass) is { } client)
         {
@@ -47,8 +46,7 @@ public abstract class FlarialClient
         return Injector.Launch(library) is { };
     }
 
-    static readonly object _lock = new();
-    static readonly HashAlgorithm _algorithm = SHA256.Create();
+    public async Task<bool?> LaunchAsync() => await Task.Run(Launch);
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
@@ -59,20 +57,15 @@ public abstract class FlarialClient
         return json[Build];
     }
 
-    async Task<string> GetLocalHashAsync() => await Task.Run(() =>
+    async Task<string> GetLocalHashAsync()
     {
         try
         {
-            lock (_lock)
-            {
-                using var stream = File.OpenRead(FileName);
-                var value = _algorithm.ComputeHash(stream);
-                var @string = BitConverter.ToString(value);
-                return @string.Replace("-", string.Empty);
-            }
+            using var stream = File.OpenRead(FileName);
+            return Convert.ToHexString(await SHA256.HashDataAsync(stream));
         }
         catch { return string.Empty; }
-    });
+    }
 
     public async Task<bool> DownloadAsync(Action<int> callback)
     {
@@ -80,7 +73,7 @@ public abstract class FlarialClient
         var remoteHashTask = GetRemoteHashAsync();
         await Task.WhenAll(localHashTask, remoteHashTask);
 
-        if ((await localHashTask).Equals(await remoteHashTask, OrdinalIgnoreCase))
+        if ((await localHashTask).Equals(await remoteHashTask, StringComparison.OrdinalIgnoreCase))
             return true;
 
         try { File.Delete(FileName); }

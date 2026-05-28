@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface.Dialogs;
@@ -130,20 +131,16 @@ sealed class HomePage : Grid
 
             if (custom)
             {
-                if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
-                {
-                    await InvalidCustomDllDialog.ShowAsync();
-                    return;
-                }
+                Library library = new(path);
 
-                Library library = new(path); if (!library.IsLoadable)
+                if (!library.IsLoadable)
                 {
                     await InvalidCustomDllDialog.ShowAsync();
                     return;
                 }
 
                 _button.Content = "Launching...";
-                if (await Task.Run(() => Injector.Launch(library)) is null)
+                if (await Injector.LaunchAsync(library) is null)
                 {
                     await LaunchFailureDialog.ShowAsync();
                     return;

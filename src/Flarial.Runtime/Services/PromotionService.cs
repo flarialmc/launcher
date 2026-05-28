@@ -25,8 +25,8 @@ public sealed class Promotion
     Promotion() { }
 
     [DataMember]
-    public string Uri { get; } = null!;
+    public string Uri { get; private set; } = null!;
 
     [DataMember]
-    public string Image { get; } = null!;
+    public string Image { get; private set; } = null!;
 }

@@ -1,10 +1,12 @@
+using System;
 using System.IO;
+using System.Net.Mail;
+using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
 using static System.Text.Encoding;
-using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
 using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
@@ -13,11 +15,11 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Runtime.Modding;
 
-public unsafe static class Injector
+public static class Injector
 {
     static readonly LPTHREAD_START_ROUTINE s_routine;
 
-    static Injector()
+    unsafe static Injector()
     {
         fixed (char* module = "Kernel32")
         fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
@@ -27,10 +29,10 @@ public unsafe static class Injector
         }
     }
 
-    public static uint? Launch(Library library)
+    public unsafe static uint? Launch(Library library)
     {
-        if (!library.IsLoadable)
-            throw new FileLoadException(null, library._path);
+        if (!library.IsLoadable || library.FileName is null)
+            throw new FileLoadException(null, library.FileName);
 
         if (Minecraft.Current.Launch() is not { } processId)
             return null;
@@ -40,19 +42,27 @@ public unsafe static class Injector
 
         using (process)
         {
-            HANDLE thread = Null; void* address = null; try
+            HANDLE thread = new();
+            void* address = null;
+            try
             {
-                var size = (nuint)(library._path.Length + 1) * sizeof(char);
+                var size = (nuint)(library.FileName.Length + 1) * sizeof(char);
 
                 address = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                fixed (char* buffer = library._path) WriteProcessMemory(process, address, buffer, size, null);
+                fixed (char* buffer = library.FileName) WriteProcessMemory(process, address, buffer, size, null);
 
                 thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
                 WaitForSingleObject(thread, INFINITE);
 
                 return processId;
             }
-            finally { CloseHandle(thread); VirtualFreeEx(process, address, 0, MEM_RELEASE); }
+            finally
+            {
+                CloseHandle(thread);
+                VirtualFreeEx(process, address, 0, MEM_RELEASE);
+            }
         }
     }
+
+    public static async Task<uint?> LaunchAsync(Library library) => await Task.Run(() => Launch(library));
 }

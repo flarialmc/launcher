@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Modding;
 using Flarial.Runtime.Services;
-using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
@@ -47,8 +46,10 @@ public abstract class FlarialClient
         return Injector.Launch(library) is { };
     }
 
-    static readonly object _lock = new();
-    static readonly HashAlgorithm _algorithm = SHA256.Create();
+    public async Task<bool?> LaunchAsync() => await Task.Run(Launch);
+
+    static readonly object s_lock = new();
+    static readonly HashAlgorithm s_algorithm = SHA256.Create();
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
@@ -63,12 +64,12 @@ public abstract class FlarialClient
     {
         try
         {
-            lock (_lock)
+            lock (s_lock)
             {
                 using var stream = File.OpenRead(FileName);
-                var value = _algorithm.ComputeHash(stream);
-                var @string = BitConverter.ToString(value);
-                return @string.Replace("-", string.Empty);
+                var hash = s_algorithm.ComputeHash(stream);
+                var value = BitConverter.ToString(hash);
+                return value.Replace("-", string.Empty);
             }
         }
         catch { return string.Empty; }
@@ -80,7 +81,7 @@ public abstract class FlarialClient
         var remoteHashTask = GetRemoteHashAsync();
         await Task.WhenAll(localHashTask, remoteHashTask);
 
-        if ((await localHashTask).Equals(await remoteHashTask, OrdinalIgnoreCase))
+        if ((await localHashTask).Equals(await remoteHashTask, StringComparison.OrdinalIgnoreCase))
             return true;
 
         try { File.Delete(FileName); }

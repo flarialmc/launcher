@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IO;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
@@ -11,8 +10,7 @@ namespace Flarial.Runtime.Modding;
 
 public unsafe sealed class Library
 {
-    readonly bool _invalid;
-    internal readonly string _path;
+    internal string? FileName { get; }
 
     /*
         - A caller should apply `SEM_FAILCRITICALERRORS` via `SetErrorMode()`.
@@ -23,8 +21,8 @@ public unsafe sealed class Library
     {
         get
         {
-            if (_invalid) return false;
-            var module = HMODULE.Null;
+            if (FileName is null) return false;
+            HMODULE module = new();
 
             try
             {
@@ -33,7 +31,7 @@ public unsafe sealed class Library
                     - This is done to perform load validation and to ensure no code is executed.
                 */
 
-                fixed (char* path = _path)
+                fixed (char* path = FileName)
                 {
                     module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
                     if (module.IsNull) return false;
@@ -55,7 +53,11 @@ public unsafe sealed class Library
 
     public Library(string path)
     {
-        _path = Path.GetFullPath(path);
-        _invalid = !Path.HasExtension(_path);
+        try
+        {
+            FileName = Path.GetFullPath(path);
+            if (!Path.HasExtension(FileName)) FileName = null;
+        }
+        catch { FileName = null; }
     }
 }
