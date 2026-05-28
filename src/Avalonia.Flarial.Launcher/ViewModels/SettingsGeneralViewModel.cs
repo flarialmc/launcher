@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
-using Microsoft.Win32;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 
@@ -40,25 +42,23 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         }
     }
 
-    readonly OpenFileDialog _openFileDialog = new()
+    static readonly FilePickerOpenOptions s_options = new()
     {
-        ValidateNames = true,
-        DereferenceLinks = true,
-        CheckFileExists = true,
-        CheckPathExists = true,
-        ReadOnlyChecked = true,
-        RestoreDirectory = false,
-        Filter = "Dynamic-Link Libraries (*.dll)|*.dll"
+        FileTypeFilter = [new("Dynamic Link Libraries") { Patterns = ["*.dll"] }]
     };
 
     public ReactiveCommand<Unit, Unit> Open { get; }
 
-    void OnOpen()
+    async Task OnOpen()
     {
-        if (_openFileDialog.ShowDialog() ?? false)
+        var application = Application.Current!;
+        var lifetime = (IClassicDesktopStyleApplicationLifetime)application.ApplicationLifetime!;
+        var files = await lifetime.MainWindow!.StorageProvider.OpenFilePickerAsync(s_options);
+
+        if (files.Any())
         {
-            CustomDllPath = _openFileDialog.FileName;
-            _appSettings.CustomDllPath = _openFileDialog.FileName;
+            var path = files[0].TryGetLocalPath()!;
+            CustomDllPath = _appSettings.CustomDllPath = path;
         }
     }
 
@@ -80,7 +80,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         CustomDllSelected = _appSettings.UseCustomDll;
         AutomaticUpdates = _appSettings.AutomaticUpdates;
 
-        Open = ReactiveCommand.Create(OnOpen);
+        Open = ReactiveCommand.CreateFromTask(OnOpen);
     }
 
     private void OnBuildChanged(SegmentItem? item)

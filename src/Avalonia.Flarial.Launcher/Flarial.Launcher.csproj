@@ -32,7 +32,6 @@
 
         <PublishTrimmed>true</PublishTrimmed>
         <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 
         <PublishSingleFile>true</PublishSingleFile>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
