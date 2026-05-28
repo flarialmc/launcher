@@ -60,7 +60,7 @@ del ""%~f0""";
     public static async Task<bool> CheckForUpdatesAsync()
     {
         using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
-        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
+        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
         return s_version != json["version"];
     }
 

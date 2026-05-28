@@ -23,13 +23,11 @@ public static class JsonService
         };
     }
 
-    static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static _ => new(_, s_settings));
+    static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static type => new(type, s_settings));
 
     public static T Read<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
 
     public static void Write<T>(Stream stream, T value) => Get<T>().WriteObject(stream, value);
 
     public static async Task<T> ReadAsync<T>(Stream stream) => await Task.Run(() => Read<T>(stream));
-
-    public static async Task WriteAsync<T>(Stream stream, T value) => await Task.Run(() => Write(stream, value));
 }

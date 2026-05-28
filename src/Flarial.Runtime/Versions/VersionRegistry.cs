@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +7,15 @@ using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Versions;
 
+sealed class VersionEntry
+{
+    internal VersionItem? Item;
+    internal readonly bool Supported;
+    internal VersionEntry(bool supported) => Supported = supported;
+}
+
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
-    internal sealed class VersionEntry
-    {
-        internal VersionItem? _item;
-        internal readonly bool _supported;
-        internal VersionEntry(bool supported) => _supported = supported;
-    }
-
     static readonly VersionItemComparer s_comparer = new();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
@@ -33,7 +32,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     public static string InstalledVersion => VersionItem.Stringify(Minecraft.Version);
 
-    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
+    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry.Supported;
 
     /*
         - As the version metadata grows so does the processing time.
@@ -51,7 +50,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
             registry.Add(item.Key, new(item.Value));
 
         await GDKVersionItem.QueryAsync(registry);
-        var preferredVersion = registry.First(static _ => _.Value._supported).Key;
+        var preferredVersion = registry.First(static _ => _.Value.Supported).Key;
 
         return new VersionRegistry(preferredVersion, registry);
     });
@@ -61,8 +60,8 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     {
         foreach (var value in _registry.Values)
         {
-            if (value._item is null) continue;
-            yield return value._item;
+            if (value.Item is null) continue;
+            yield return value.Item;
         }
     }
 
@@ -74,13 +73,13 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         {
             NumericVersion a = new(x), b = new(y);
 
-            if (b._major != a._major)
-                return b._major.CompareTo(a._major);
+            if (b.Major != a.Major)
+                return b.Major.CompareTo(a.Major);
 
-            if (b._minor != a._minor)
-                return b._minor.CompareTo(a._minor);
+            if (b.Minor != a.Minor)
+                return b.Minor.CompareTo(a.Minor);
 
-            return b._build.CompareTo(a._build);
+            return b.Build.CompareTo(a.Build);
         }
     }
 }

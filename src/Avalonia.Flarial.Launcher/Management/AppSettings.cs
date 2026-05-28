@@ -1,13 +1,9 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
-
-[JsonSerializable(typeof(AppSettings))]
-sealed partial class AppSettingsContext : JsonSerializerContext;
 
 public sealed class AppSettings
 {
@@ -38,7 +34,7 @@ public sealed class AppSettings
         try
         {
             using var stream = File.OpenRead("Flarial.Launcher.json");
-            return JsonSerializer.Deserialize(stream, AppSettingsContext.Default.AppSettings)!;
+            return JsonService.Default.Read<AppSettings>(stream);
         }
         catch { return new(); }
     }
@@ -46,6 +42,6 @@ public sealed class AppSettings
     internal void Set()
     {
         using var stream = File.Create("Flarial.Launcher.json");
-        JsonSerializer.Serialize(stream, this, AppSettingsContext.Default.AppSettings);
+        JsonService.Default.Write(stream, this);
     }
 }

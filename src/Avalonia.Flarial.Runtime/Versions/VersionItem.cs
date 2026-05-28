@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
@@ -24,7 +23,7 @@ public abstract class VersionItem
     internal static string Stringify(string version)
     {
         NumericVersion key = new(version);
-        return key._minor >= 26 ? $"{key._minor}.{key._build}" : version;
+        return key.Minor >= 26 ? $"{key.Minor}.{key.Build}" : version;
     }
 
     public virtual async Task InstallAsync(Action<int, bool> callback)

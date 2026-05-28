@@ -31,11 +31,11 @@ public abstract class FlarialClient
 
     public bool? Launch()
     {
-        if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
+        if (Minecraft.GetWindow(WindowClass) is { } client)
         {
-            if (Minecraft.Current.GetWindow(clientWindow._processId) is { } minecraftWindow)
+            if (Minecraft.Current.GetWindow(client.ProcessId) is { } minecraft)
             {
-                minecraftWindow.Switch();
+                minecraft.Switch();
                 return null;
             }
             return false;

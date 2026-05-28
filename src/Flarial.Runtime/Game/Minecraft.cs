@@ -119,10 +119,10 @@ public unsafe abstract class Minecraft
 
             while ((window = FindWindowEx(HWND.Null, window, wc, null)) != HWND.Null)
             {
-                if (processId is { } && processId != window._processId)
+                if (processId is { } && processId != window.ProcessId)
                     continue;
 
-                if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window._processId) is not { } process)
+                if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
                     continue;
 
                 using (process)

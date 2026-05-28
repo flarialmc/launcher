@@ -12,13 +12,16 @@ namespace Flarial.Runtime.Services;
 [JsonSerializable(typeof(Dictionary<string, bool>))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
 [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string[]>>))]
-sealed partial class JsonServiceContext : JsonSerializerContext;
+sealed partial class JsonService : JsonSerializerContext;
 
-static class JsonService
+public static class JsonServiceExtensions
 {
-    static readonly JsonServiceContext s_context = new();
+    extension(JsonSerializerContext context)
+    {
+        public T Read<T>(Stream stream) => JsonSerializer.Deserialize<T>(stream, context.Options)!;
 
-    public static T Read<T>(Stream stream) => JsonSerializer.Deserialize<T>(stream, s_context.Options)!;
+        public void Write<T>(Stream stream, T value) => JsonSerializer.Serialize(stream, value, context.Options);
 
-    public static async Task<T> ReadAsync<T>(Stream stream) => (await JsonSerializer.DeserializeAsync<T>(stream, s_context.Options))!;
+        public async Task<T> ReadAsync<T>(Stream stream) => (await JsonSerializer.DeserializeAsync<T>(stream, context.Options))!;
+    }
 }

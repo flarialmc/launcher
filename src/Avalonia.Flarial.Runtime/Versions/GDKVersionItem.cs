@@ -25,7 +25,7 @@ sealed class GDKVersionItem : VersionItem
         _gameLaunchHelper = gameLaunchHelper;
     }
 
-    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry)
+    internal static async Task QueryAsync(SortedDictionary<string, VersionEntry> registry)
     {
         var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUri);
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
@@ -34,7 +34,7 @@ sealed class GDKVersionItem : VersionItem
         var gameLaunchHelper = await gameLaunchHelperTask;
 
         using var stream = await msixvcPackagesTask;
-        var json = await JsonService.ReadAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
+        var json = await JsonService.Default.ReadAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
 
         foreach (var item in json["release"])
         {
@@ -42,7 +42,7 @@ sealed class GDKVersionItem : VersionItem
             var key = item.Key.Substring(0, index);
 
             if (!registry.TryGetValue(key, out var entry)) continue;
-            entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
+            entry.Item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
         }
     }
 

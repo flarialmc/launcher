@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
 using Windows.Win32.Foundation;
@@ -13,11 +14,11 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Runtime.Modding;
 
-public unsafe static class Injector
+public static class Injector
 {
     static readonly LPTHREAD_START_ROUTINE s_routine;
 
-    static Injector()
+    unsafe static Injector()
     {
         fixed (char* module = "Kernel32")
         fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
@@ -27,7 +28,7 @@ public unsafe static class Injector
         }
     }
 
-    public static uint? Launch(Library library)
+    public unsafe static uint? Launch(Library library)
     {
         if (!library.IsLoadable)
             throw new FileLoadException(null, library._path);
@@ -55,4 +56,6 @@ public unsafe static class Injector
             finally { CloseHandle(thread); VirtualFreeEx(process, address, 0, MEM_RELEASE); }
         }
     }
+
+    public static async Task<uint?> LaunchAsync(Library library) => await Task.Run(() => Launch(library));
 }

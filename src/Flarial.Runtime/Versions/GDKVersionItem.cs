@@ -25,7 +25,7 @@ sealed class GDKVersionItem : VersionItem
         _gameLaunchHelper = gameLaunchHelper;
     }
 
-    internal static async Task QueryAsync(SortedDictionary<string, VersionRegistry.VersionEntry> registry)
+    internal static async Task QueryAsync(SortedDictionary<string, VersionEntry> registry)
     {
         var msixvcPackagesTask = HttpService.GetStreamAsync(MSIXVCPackagesUri);
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
@@ -42,7 +42,7 @@ sealed class GDKVersionItem : VersionItem
             var key = item.Key.Substring(0, index);
 
             if (!registry.TryGetValue(key, out var entry)) continue;
-            entry._item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
+            entry.Item = new GDKVersionItem(key, item.Value, gameLaunchHelper);
         }
     }
 

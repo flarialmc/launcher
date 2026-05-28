@@ -31,11 +31,11 @@ public abstract class FlarialClient
 
     public bool? Launch()
     {
-        if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
+        if (Minecraft.GetWindow(WindowClass) is { } client)
         {
-            if (Minecraft.Current.GetWindow(clientWindow._processId) is { } minecraftWindow)
+            if (Minecraft.Current.GetWindow(client.ProcessId) is { } minecraft)
             {
-                minecraftWindow.Switch();
+                minecraft.Switch();
                 return null;
             }
             return false;
@@ -55,7 +55,7 @@ public abstract class FlarialClient
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
+        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
         return json[Build];
     }
 

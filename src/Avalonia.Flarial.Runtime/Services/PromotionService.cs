@@ -15,7 +15,7 @@ public static class PromotionService
         try
         {
             using var stream = await HttpService.GetStreamAsync(PromotionsUri);
-            return await JsonService.ReadAsync<Promotion[]>(stream);
+            return await JsonService.Default.ReadAsync<Promotion[]>(stream);
         }
         catch { return []; }
     }
