@@ -9,10 +9,11 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
 using Flarial.Runtime.Modding;
 using ReactiveUI.Avalonia;
+using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE;
 
 namespace Flarial.Launcher;
 
@@ -48,16 +49,15 @@ Exception: {1}
         var name = exception.GetType().Name;
 
         fixed (char* caption = "Flarial Launcher: Error")
-        fixed (char* text = string.Format(Format, version, name, message, string.Empty))
+        fixed (char* text = string.Format(Format, version, name, message))
         {
             var application = Application.Current;
             var lifetime = (IClassicDesktopStyleApplicationLifetime?)application?.ApplicationLifetime;
 
             var window = lifetime?.MainWindow;
-            var handle = window?.TryGetPlatformHandle()?.Handle;
+            HWND handle = new(window?.TryGetPlatformHandle()?.Handle ?? new());
 
-            HWND hWnd = new(handle ?? new());
-            MessageBox(hWnd, text, caption, MESSAGEBOX_STYLE.MB_ICONERROR);
+            ShellMessageBox(new(), handle, text, caption, MB_ICONERROR);
         }
 
         Environment.Exit(1);

@@ -1,5 +1,5 @@
 IsWindowVisible
-MessageBox
+ShellMessageBox
 SetErrorMode
 ShellExecute
 GetPackageFamilyName
