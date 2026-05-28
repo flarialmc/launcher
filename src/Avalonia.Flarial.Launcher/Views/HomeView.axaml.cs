@@ -44,13 +44,10 @@ public partial class HomeView : UserControl
                 image.PointerPressed += OnPointerPressed;
                 RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
 
-                Promotions.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-                Grid.SetColumn(image, Promotions.ColumnDefinitions.Count - 1);
-
                 Promotions.Children.Add(image);
             }
             catch { }
-        }, DispatcherPriority.Send);
+        }, DispatcherPriority.Background);
     }
 
     static unsafe async void OnPointerPressed(object? sender, RoutedEventArgs args)
