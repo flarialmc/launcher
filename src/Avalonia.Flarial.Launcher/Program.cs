@@ -9,7 +9,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
 using Flarial.Runtime.Modding;
 using ReactiveUI.Avalonia;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
@@ -51,13 +50,15 @@ Exception: {1}
         fixed (char* caption = "Flarial Launcher: Error")
         fixed (char* text = string.Format(Format, version, name, message))
         {
-            var application = Application.Current;
-            var lifetime = (IClassicDesktopStyleApplicationLifetime?)application?.ApplicationLifetime;
+            HWND handle = new();
 
-            var window = lifetime?.MainWindow;
-            HWND handle = new(window?.TryGetPlatformHandle()?.Handle ?? new());
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+            {
+                if (lifetime.MainWindow is not { } window) return;
+                handle = new(window.TryGetPlatformHandle()?.Handle ?? new());
+            }
 
-            ShellMessageBox(new(), handle, text, caption, MB_ICONERROR);
+            _ = ShellMessageBox(new(), handle, text, caption, MB_ICONERROR);
         }
 
         Environment.Exit(1);

@@ -21,14 +21,6 @@ public sealed class AppSettings
         }
     } = string.Empty;
 
-    [OnDeserializing, Obsolete]
-    void OnDeserializing(StreamingContext context)
-    {
-        UseCustomDll = false;
-        AutomaticUpdates = true;
-        CustomDllPath = string.Empty;
-    }
-
     internal static AppSettings Get()
     {
         try

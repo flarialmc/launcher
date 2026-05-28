@@ -18,10 +18,10 @@ public static class JsonServiceExtensions
 {
     extension(JsonSerializerContext context)
     {
-        public T Read<T>(Stream stream) => JsonSerializer.Deserialize<T>(stream, context.Options)!;
+        public T Read<T>(Stream stream) => (T)JsonSerializer.Deserialize(stream, typeof(T), context)!;
 
-        public void Write<T>(Stream stream, T value) => JsonSerializer.Serialize(stream, value, context.Options);
+        public void Write<T>(Stream stream, T value) => JsonSerializer.Serialize(stream, value, typeof(T), context);
 
-        public async Task<T> ReadAsync<T>(Stream stream) => (await JsonSerializer.DeserializeAsync<T>(stream, context.Options))!;
+        public async Task<T> ReadAsync<T>(Stream stream) => (T)(await JsonSerializer.DeserializeAsync(stream, typeof(T), context))!;
     }
 }
