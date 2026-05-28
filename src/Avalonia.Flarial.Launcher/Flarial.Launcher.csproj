@@ -6,20 +6,17 @@
 
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
-
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
         <ApplicationIcon>Assets/app.ico</ApplicationIcon>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
         <NoWarn>IL2026,IL2104</NoWarn>
@@ -53,13 +50,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="SkiaSharp" Version="3.119.4" />
         <PackageReference Include="Avalonia.Skia" Version="12.0.4" />
         <PackageReference Include="Avalonia.Win32" Version="12.0.4" />
         <PackageReference Include="Avalonia.HarfBuzz" Version="12.0.4" />
-
-        <PackageReference Include="SkiaSharp" Version="3.119.4" />
         <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.1" />
-
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" PrivateAssets="All" />
     </ItemGroup>
 </Project>
