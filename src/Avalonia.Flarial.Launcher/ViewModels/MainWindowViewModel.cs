@@ -71,7 +71,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_appSettings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
+        if (await BetaBuildDialog.ShowAsync() && await FlarialLauncher.CheckForUpdatesAsync() && (_appSettings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnLauncherDownload);
             return;
