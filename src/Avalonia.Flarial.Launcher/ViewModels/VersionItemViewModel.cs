@@ -81,9 +81,6 @@ public partial class VersionItemViewModel : ViewModelBase
 
         DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync, this.WhenAnyValue(static _ => _.State).Select(static _ => _ == VersionItemState.Installed));
         InstallCommand = ReactiveCommand.CreateFromTask(InstallAsync, this.WhenAnyValue(static _ => _.State).Select(static _ => _ == VersionItemState.NotInstalled));
-
-        DeleteCommand.ThrownExceptions.Subscribe(static _ => throw _);
-        InstallCommand.ThrownExceptions.Subscribe(static _ => throw _);
     }
 
     void OnInstall(int percentage, bool installing)
