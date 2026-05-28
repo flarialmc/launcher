@@ -47,8 +47,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         await _semaphore.WaitAsync(); try
         {
-            CurrentDialog = new(title, message, buttons);
-            try { return await CurrentDialog.Result; }
+            try
+            {
+                CurrentDialog = new(title, message, buttons);
+                return await CurrentDialog.Result;
+            }
             finally { CurrentDialog = null; }
         }
         finally { _semaphore.Release(); }
