@@ -10,11 +10,11 @@ namespace Flarial.Runtime.Services;
 public static class JsonService
 {
     static readonly DataContractJsonSerializerSettings s_settings;
-    static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> s_serializers;
+    static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> s_cache;
 
     static JsonService()
     {
-        s_serializers = [];
+        s_cache = [];
         s_settings = new()
         {
             UseSimpleDictionaryFormat = true,
@@ -23,7 +23,7 @@ public static class JsonService
         };
     }
 
-    static DataContractJsonSerializer Get<T>() => s_serializers.GetOrAdd(typeof(T), static type => new(type, s_settings));
+    static DataContractJsonSerializer Get<T>() => s_cache.GetOrAdd(typeof(T), static type => new(type, s_settings));
 
     public static T Read<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
 

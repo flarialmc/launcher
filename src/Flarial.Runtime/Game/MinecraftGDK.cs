@@ -70,10 +70,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsGamingServicesInstalled)
             throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
-        if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
+        if (GetWindow() is { } found && found.IsVisible)
         {
-            foundWindow.Switch();
-            return foundWindow.ProcessId;
+            found.Switch();
+            return found.ProcessId;
         }
 
         if (Activate() is not { } processId)
@@ -92,14 +92,14 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             if (!IsPackaged)
             {
-                NativeWindow? processWindow = null;
+                NativeWindow? window = null;
 
                 while (process.Wait(1))
-                    if ((processWindow = GetWindow()) is { })
+                    if ((window = GetWindow()) is { })
                         break;
 
                 while (process.Wait(1))
-                    if (processWindow?.IsVisible ?? false)
+                    if (window?.IsVisible ?? false)
                         return processId;
 
                 return null;

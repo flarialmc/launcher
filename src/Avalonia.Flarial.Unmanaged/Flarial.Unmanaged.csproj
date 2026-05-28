@@ -6,7 +6,6 @@
     <NoWarn>PInvoke009,CS2008</NoWarn>
 
     <Optimize>true</Optimize>
-    <IsTrimmable>true</IsTrimmable>
     <PublishRelease>true</PublishRelease>
 
     <Nullable>enable</Nullable>
@@ -17,6 +16,11 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsTrimmable>true</IsTrimmable>
+    <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
   </PropertyGroup>
 
   <ItemGroup>

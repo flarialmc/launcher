@@ -14,17 +14,17 @@ sealed class UnsupportedVersionDialog(string preferred) : MessageDialog
         {
             var version = VersionRegistry.InstalledVersion;
 
-            if (_messages.TryGetValue(version, out var message))
+            if (_cache.TryGetValue(version, out var message))
                 return message;
 
             message = string.Format(_format, version);
-            _messages.Add(version, message);
+            _cache.Add(version, message);
 
             return message;
         }
     }
 
-    readonly Dictionary<string, string> _messages = [];
+    readonly Dictionary<string, string> _cache = [];
 
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 
