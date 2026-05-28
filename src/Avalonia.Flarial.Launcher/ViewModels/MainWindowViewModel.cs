@@ -83,7 +83,8 @@ public class MainWindowViewModel : ViewModelBase
         {
             foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(async () =>
             {
-                SettingsViewModel.SettingsVersionsViewModel.Versions.Add(new(this, version));
+                var model = SettingsViewModel.SettingsVersionsViewModel;
+                model.Versions.Add(new(this, version));
             }, DispatcherPriority.Background);
         });
 
