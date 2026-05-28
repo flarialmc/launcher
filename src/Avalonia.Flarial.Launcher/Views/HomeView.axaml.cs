@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -25,28 +26,31 @@ public partial class HomeView : UserControl
     {
         Initialized -= OnInitialized;
 
-        foreach (var promotion in await PromotionService.GetAsync()) Dispatcher.Post(async () =>
+        _ = Task.Run(async () =>
         {
-            try
+            foreach (var promotion in await PromotionService.GetAsync()) Dispatcher.Post(async () =>
             {
-                using var stream = await promotion.GetAsync();
-
-                Image image = new()
+                try
                 {
-                    Width = 320 * 0.8,
-                    Height = 50 * 0.8,
-                    Cursor = s_cursor,
-                    Tag = promotion.Uri,
-                    Source = new Bitmap(stream)
-                };
+                    using var stream = await promotion.GetAsync();
 
-                image.PointerPressed += OnPointerPressed;
-                RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
+                    Image image = new()
+                    {
+                        Width = 320 * 0.8,
+                        Height = 50 * 0.8,
+                        Cursor = s_cursor,
+                        Tag = promotion.Uri,
+                        Source = new Bitmap(stream)
+                    };
 
-                Promotions.Children.Add(image);
-            }
-            catch { }
-        }, DispatcherPriority.Background);
+                    image.PointerPressed += OnPointerPressed;
+                    RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
+
+                    Promotions.Children.Add(image);
+                }
+                catch { }
+            }, DispatcherPriority.Background);
+        });
     }
 
     static unsafe async void OnPointerPressed(object? sender, RoutedEventArgs args)

@@ -4,12 +4,11 @@
         <PlatformTarget>x64</PlatformTarget>
         <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
 
-        <NoWarn>IL2026,IL2104</NoWarn>
-        <IsTrimmable>true</IsTrimmable>
-
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -23,21 +22,24 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
+        <NoWarn>IL2026,IL2104</NoWarn>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
 
     <PropertyGroup>
+        <IsTrimmable>true</IsTrimmable>
         <SelfContained>true</SelfContained>
         <PublishTrimmed>true</PublishTrimmed>
-        <DebuggerSupport>false</DebuggerSupport>
-
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
 
         <PublishSingleFile>true</PublishSingleFile>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+        <DebuggerSupport>false</DebuggerSupport>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <ItemGroup>

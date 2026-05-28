@@ -81,7 +81,7 @@ public class MainWindowViewModel : ViewModelBase
 
         _ = Task.Run(() =>
         {
-            foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(async () =>
+            foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
             {
                 SettingsViewModel.SettingsVersionsViewModel.Versions.Add(new(this, version));
             }, DispatcherPriority.Background);
