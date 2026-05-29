@@ -74,12 +74,6 @@ public partial class HomeViewModel : ViewModelBase
 
             if (custom)
             {
-                if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
-                {
-                    await InvalidCustomDllDialog.ShowAsync();
-                    return;
-                }
-
                 Library library = new(path); if (!library.IsLoadable)
                 {
                     await InvalidCustomDllDialog.ShowAsync();

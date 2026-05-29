@@ -6,7 +6,6 @@ using Flarial.Runtime.Unmanaged;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
 using static System.Text.Encoding;
-using static Windows.Win32.Foundation.HANDLE;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
 using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
@@ -31,8 +30,7 @@ public static class Injector
 
     public unsafe static uint? Launch(Library library)
     {
-        if (!library.IsLoadable)
-            throw new FileLoadException(null, library.FileName);
+        var path = library.EnsureLoadablePath();
 
         if (Minecraft.Current.Launch() is not { } processId)
             return null;
@@ -46,10 +44,10 @@ public static class Injector
             void* address = null;
             try
             {
-                var size = (nuint)(library.FileName.Length + 1) * sizeof(char);
+                var size = (nuint)(path.Length + 1) * sizeof(char);
 
                 address = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                fixed (char* buffer = library.FileName) WriteProcessMemory(process, address, buffer, size, null);
+                fixed (char* buffer = path) WriteProcessMemory(process, address, buffer, size, null);
 
                 thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
                 WaitForSingleObject(thread, INFINITE);

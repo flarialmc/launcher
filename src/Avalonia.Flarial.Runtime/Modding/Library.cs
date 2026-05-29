@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
@@ -10,8 +11,6 @@ namespace Flarial.Runtime.Modding;
 
 public unsafe sealed class Library
 {
-    internal string FileName { get; }
-
     /*
         - A caller should apply `SEM_FAILCRITICALERRORS` via `SetErrorMode()`.
         - This will prevent `Library.IsLoadable` from blocking the caller.
@@ -21,9 +20,7 @@ public unsafe sealed class Library
     {
         get
         {
-            if (FileName is null) return false;
             HMODULE module = new();
-
             try
             {
                 /*
@@ -31,7 +28,7 @@ public unsafe sealed class Library
                     - This is done to perform load validation and to ensure no code is executed.
                 */
 
-                fixed (char* path = FileName)
+                fixed (char* path = _path)
                 {
                     module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
                     if (module.IsNull) return false;
@@ -45,19 +42,31 @@ public unsafe sealed class Library
                 var dos = (IMAGE_DOS_HEADER*)(void*)module;
                 var nt = (IMAGE_NT_HEADERS64*)((nint)dos + dos->e_lfanew);
                 return (nt->FileHeader.Characteristics & IMAGE_FILE_DLL) != 0;
-
             }
             finally { FreeLibrary(module); }
         }
     }
 
+    internal string EnsureLoadablePath()
+    {
+        if (_path is null)
+            throw new InvalidOperationException();
+
+        if (!IsLoadable)
+            throw new FileLoadException(null, _path);
+
+        return _path;
+    }
+
+    readonly string? _path;
+
     public Library(string path)
     {
         try
         {
-            FileName = Path.GetFullPath(path);
-            if (!Path.HasExtension(FileName)) FileName = null!;
+            _path = Path.GetFullPath(path);
+            if (!Path.HasExtension(_path)) _path = null;
         }
-        catch { FileName = null!; }
+        catch { _path = null; }
     }
 }
