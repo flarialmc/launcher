@@ -3,6 +3,7 @@
     "public": true,
     "wideCharOnly": true,
     "useSafeHandles": false,
+    "allowMarshaling": false,
     "friendlyOverloads": {
         "enabled": false
     }

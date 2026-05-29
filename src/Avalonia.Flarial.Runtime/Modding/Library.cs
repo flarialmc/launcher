@@ -20,19 +20,21 @@ public unsafe sealed class Library
     {
         get
         {
-            HMODULE module = new();
-            try
+            HMODULE module = new(); try
             {
+                if (_path is null)
+                    return false;
+
                 /*
                     - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
                     - This is done to perform load validation and to ensure no code is executed.
                 */
 
                 fixed (char* path = _path)
-                {
-                    module = LoadLibraryEx(path, dwFlags: DONT_RESOLVE_DLL_REFERENCES);
-                    if (module.IsNull) return false;
-                }
+                    module = LoadLibraryEx(path, new(), DONT_RESOLVE_DLL_REFERENCES);
+
+                if (module.IsNull)
+                    return false;
 
                 /*
                     - Ensure the loaded library is actually a DLL.
@@ -47,7 +49,7 @@ public unsafe sealed class Library
         }
     }
 
-    internal string EnsureLoadablePath()
+    internal string EnsurePath()
     {
         if (_path is null)
             throw new InvalidOperationException();

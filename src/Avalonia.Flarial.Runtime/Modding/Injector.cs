@@ -1,11 +1,7 @@
-using System.IO;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
 using Windows.Win32.Foundation;
-using Windows.Win32.System.Threading;
-using static System.Text.Encoding;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Memory.PAGE_PROTECTION_FLAGS;
 using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
@@ -16,21 +12,21 @@ namespace Flarial.Runtime.Modding;
 
 public static class Injector
 {
-    static readonly LPTHREAD_START_ROUTINE s_routine;
+    static unsafe readonly delegate* unmanaged[Stdcall]<void*, uint> s_address;
 
     unsafe static Injector()
     {
         fixed (char* module = "Kernel32")
-        fixed (byte* procedure = UTF8.GetBytes("LoadLibraryW"))
+        fixed (byte* procedure = "LoadLibraryW"u8)
         {
             var address = GetProcAddress(GetModuleHandle(module), new(procedure));
-            s_routine = address.CreateDelegate<LPTHREAD_START_ROUTINE>();
+            s_address = (delegate* unmanaged[Stdcall]<void*, uint>)(nint)address;
         }
     }
 
     public unsafe static uint? Launch(Library library)
     {
-        var path = library.EnsureLoadablePath();
+        var path = library.EnsurePath();
 
         if (Minecraft.Current.Launch() is not { } processId)
             return null;
@@ -41,15 +37,15 @@ public static class Injector
         using (process)
         {
             HANDLE thread = new();
-            void* address = null;
+            void* parameter = null;
             try
             {
                 var size = (nuint)(path.Length + 1) * sizeof(char);
 
-                address = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                fixed (char* buffer = path) WriteProcessMemory(process, address, buffer, size, null);
+                parameter = VirtualAllocEx(process, null, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+                fixed (char* buffer = path) WriteProcessMemory(process, parameter, buffer, size, null);
 
-                thread = CreateRemoteThread(process, null, 0, s_routine, address, 0, null);
+                thread = CreateRemoteThread(process, null, 0, s_address, parameter, 0, null);
                 WaitForSingleObject(thread, INFINITE);
 
                 return processId;
@@ -57,7 +53,7 @@ public static class Injector
             finally
             {
                 CloseHandle(thread);
-                VirtualFreeEx(process, address, 0, MEM_RELEASE);
+                VirtualFreeEx(process, parameter, 0, MEM_RELEASE);
             }
         }
     }
