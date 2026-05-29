@@ -38,8 +38,8 @@ Exception: {1}
     }
 
     public void OnCompleted() => throw new NotImplementedException();
-    public void OnNext(Exception exception) => OnUnhandledException(this, new(exception, true));
-    public void OnError(Exception exception) => OnUnhandledException(this, new(exception, true));
+    public void OnNext(Exception exception) => ExceptionDispatchInfo.Throw(exception);
+    public void OnError(Exception exception) => ExceptionDispatchInfo.Throw(exception);
 
     unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
@@ -66,7 +66,7 @@ Exception: {1}
                 handle = new(window.TryGetPlatformHandle()?.Handle ?? new());
             }
 
-            MessageBox( handle, text, caption, MB_ICONERROR);
+            MessageBox(handle, text, caption, MB_ICONERROR);
         }
 
         Environment.Exit(1);
