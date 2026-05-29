@@ -37,9 +37,9 @@
                     <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
                                                SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
                     <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-                        <Grid ColumnDefinitions="Auto,*" Margin="0,10,0,5">
-                            <Button Classes="GenericButton" Grid.Column="0" Content="Open" Command="{Binding Open}"/>
-                            <TextBox Grid.Column="1" Margin="5,0,0,0" IsReadOnly="True" Text="{Binding CustomDllPath}"/>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,5">
+                            <TextBox Grid.Column="0" Margin="0,0,10,0" IsReadOnly="True" CaretBrush="Transparent" PlaceholderText="Custom DLL Path" Text="{Binding CustomDllPath, Mode=TwoWay}"/>
+                            <Button Classes="GenericButton" Grid.Column="1" CornerRadius="7.5" Content="Open" FontSize="16" Command="{Binding Open}"/>
                         </Grid>
                     </Expander>
 

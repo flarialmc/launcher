@@ -20,7 +20,7 @@
 
                 <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.webp"/>
 
-                <Grid Margin="0,75,0,0" VerticalAlignment="Top" Height="150">
+                <Grid Margin="0,70,0,0" VerticalAlignment="Top" Height="150">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
                             <GradientStop Color="#ff201A1B" Offset="0"/>
@@ -29,7 +29,7 @@
                     </Grid.Background>
                 </Grid>
 
-                <Grid Margin="0,0,0,75" VerticalAlignment="Bottom" Height="150">
+                <Grid Margin="0,0,0,70" VerticalAlignment="Bottom" Height="150">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
                             <GradientStop Color="#00201A1B" Offset="0"/>

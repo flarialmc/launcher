@@ -41,7 +41,7 @@
                                        DockPanel.Dock="Top"
                                        FontSize="{DynamicResource FontSizeSmall}"
                                        Foreground="{DynamicResource ThemeAccentBrush}"
-                                       Text="{TemplateBinding Watermark}">
+                                       Text="{TemplateBinding PlaceholderText}">
                                 <TextBlock.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                                         <Binding Path="UseFloatingWatermark"
@@ -70,7 +70,7 @@
                                                 <TextBlock Name="watermark"
                                                            IsHitTestVisible="False"
                                                            FontSize="{DynamicResource FontSizeSmall}"
-                                                           Text="{TemplateBinding Watermark}"
+                                                           Text="{TemplateBinding PlaceholderText}"
                                                            TextAlignment="{TemplateBinding TextAlignment}"
                                                            TextWrapping="{TemplateBinding TextWrapping}">
 
