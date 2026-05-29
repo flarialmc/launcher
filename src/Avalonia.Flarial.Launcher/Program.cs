@@ -66,7 +66,7 @@ Exception: {1}
                 handle = new(window.TryGetPlatformHandle()?.Handle ?? new());
             }
 
-            ShellMessageBox(new(), handle, text, caption, MB_ICONERROR);
+            MessageBox( handle, text, caption, MB_ICONERROR);
         }
 
         Environment.Exit(1);
