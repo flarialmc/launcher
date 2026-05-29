@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 
@@ -66,17 +65,14 @@ del ""%~f0""";
 
     public static async Task DownloadAsync(Action<int> callback)
     {
-        StringBuilder builder = new(s_arguments);
-
         await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
-        using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
-
+        await File.WriteAllTextAsync(s_script, s_content);
+        
         using (Process.Start(new ProcessStartInfo
         {
-            FileName = s_filename,
             CreateNoWindow = true,
-            UseShellExecute = false,
-            Arguments = $"{builder}"
+            FileName = s_filename,
+            Arguments = s_arguments
         })) { }
 
         Environment.Exit(0);
