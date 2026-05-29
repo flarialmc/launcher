@@ -38,8 +38,8 @@ Exception: {1}
     }
 
     public void OnCompleted() => throw new NotImplementedException();
-    public void OnNext(Exception exception) => ExceptionDispatchInfo.Capture(exception).Throw();
-    public void OnError(Exception exception) => ExceptionDispatchInfo.Capture(exception).Throw();
+    public void OnNext(Exception exception) => ExceptionDispatchInfo.Throw(exception);
+    public void OnError(Exception exception) => ExceptionDispatchInfo.Throw(exception);
 
     unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
