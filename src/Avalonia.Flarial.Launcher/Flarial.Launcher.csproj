@@ -29,13 +29,16 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <IsTrimmable>true</IsTrimmable>
         <SelfContained>true</SelfContained>
         <PublishTrimmed>true</PublishTrimmed>
 
         <PublishSingleFile>true</PublishSingleFile>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
+        <UseSystemResourceKeys>true</UseSystemResourceKeys>
+        <InvariantGlobalization>true</InvariantGlobalization>
 
         <DebuggerSupport>false</DebuggerSupport>
         <StackTraceSupport>false</StackTraceSupport>
@@ -48,12 +51,6 @@
         <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
         <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
         <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
-
-        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
-        <UseSystemResourceKeys>true</UseSystemResourceKeys>
-
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <ItemGroup>
