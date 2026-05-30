@@ -6,6 +6,7 @@
 
         <Optimize>true</Optimize>
         <PublishRelease>true</PublishRelease>
+
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 
@@ -14,13 +15,15 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <ApplicationIcon>Assets/app.ico</ApplicationIcon>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
+
+        <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
 
         <NoWarn>IL2026,IL2104</NoWarn>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
@@ -35,6 +38,20 @@
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
         <DebuggerSupport>false</DebuggerSupport>
+        <StackTraceSupport>false</StackTraceSupport>
+        <EventSourceSupport>false</EventSourceSupport>
+        <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+
+        <Http3Support>false</Http3Support>
+        <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+
+        <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+        <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+        <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+
+        <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
+        <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
         <InvariantGlobalization>true</InvariantGlobalization>
         <SatelliteResourceLanguages>*</SatelliteResourceLanguages>
     </PropertyGroup>
@@ -52,9 +69,12 @@
     <ItemGroup>
         <PackageReference Include="SkiaSharp" Version="3.119.4" />
         <PackageReference Include="Avalonia.Skia" Version="12.0.4" />
+
         <PackageReference Include="Avalonia.Win32" Version="12.0.4" />
         <PackageReference Include="Avalonia.HarfBuzz" Version="12.0.4" />
+
         <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.1" />
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" PrivateAssets="All" />
     </ItemGroup>
+
 </Project>
