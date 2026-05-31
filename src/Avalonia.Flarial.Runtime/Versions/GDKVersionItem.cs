@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
 using static Windows.Win32.Foundation.WIN32_ERROR;
@@ -73,18 +74,18 @@ sealed class GDKVersionItem : VersionItem
             }
         }
 
-        throw new InvalidOperationException();
+        throw new DownloadUriNotFoundException();
     }
 
     public override async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsGamingServicesInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
+            throw new GamingServicesMissingException();
 
         await base.InstallAsync(callback);
         var path = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
         using var stream = File.Create(path);
-        await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
+        await stream.WriteAsync(_gameLaunchHelper);
     }
 }

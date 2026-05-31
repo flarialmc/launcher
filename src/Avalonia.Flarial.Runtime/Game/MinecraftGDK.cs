@@ -1,7 +1,7 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
@@ -38,7 +38,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new FileNotFoundException();
+        if (!File.Exists(path)) throw new MinecraftNotFoundException();
 
         using var process = Process.Start(new ProcessStartInfo
         {
