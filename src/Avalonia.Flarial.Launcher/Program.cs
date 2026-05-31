@@ -43,13 +43,16 @@ Exception: {1}
     {
         var assembly = Assembly.GetExecutingAssembly();
         var version = $"{assembly.GetName().Version}";
-        var exception = (Exception)args.ExceptionObject;
 
-        while (exception.InnerException is not null)
-            exception = exception.InnerException;
+        var exception = (Exception)args.ExceptionObject;
+        while (exception.InnerException is not null) exception = exception.InnerException;
 
         var message = exception.Message;
         var name = exception.GetType().Name;
+
+#if DEBUG
+        message = $"{args.ExceptionObject}";
+#endif
 
         fixed (char* caption = "Flarial Launcher: Error")
         fixed (char* text = string.Format(Format, version, name, message))
