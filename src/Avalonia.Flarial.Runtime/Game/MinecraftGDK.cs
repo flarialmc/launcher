@@ -38,7 +38,7 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
+        if (!File.Exists(path)) throw new FileNotFoundException();
 
         using var process = Process.Start(new ProcessStartInfo
         {

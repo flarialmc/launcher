@@ -55,7 +55,7 @@ public unsafe sealed class Library
             throw new InvalidOperationException();
 
         if (!IsLoadable)
-            throw new FileLoadException(null, _path);
+            throw new FileLoadException();
 
         return _path;
     }

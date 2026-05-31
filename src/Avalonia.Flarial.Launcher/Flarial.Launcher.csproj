@@ -37,7 +37,6 @@
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
         <UseSizeOptimizedLinq>true</UseSizeOptimizedLinq>
-        <UseSystemResourceKeys>true</UseSystemResourceKeys>
         <InvariantGlobalization>true</InvariantGlobalization>
 
         <DebuggerSupport>false</DebuggerSupport>

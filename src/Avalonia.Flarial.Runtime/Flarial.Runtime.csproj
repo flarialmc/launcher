@@ -10,7 +10,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Optimize>true</Optimize>
-    <IsTrimmable>true</IsTrimmable>
     <PublishRelease>true</PublishRelease>
 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
