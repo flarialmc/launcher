@@ -1,33 +1,27 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
 
-public static class JsonService
+[JsonSerializable(typeof(Promotion[]))]
+[JsonSerializable(typeof(Dictionary<string, bool>))]
+[JsonSerializable(typeof(Dictionary<string, string>))]
+[JsonSerializable(typeof(Dictionary<string, Dictionary<string, string[]>>))]
+sealed partial class JsonService : JsonSerializerContext;
+
+public static class JsonServiceExtensions
 {
-    static readonly DataContractJsonSerializerSettings s_settings;
-    static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> s_cache;
-
-    static JsonService()
+    extension(JsonSerializerContext context)
     {
-        s_cache = [];
-        s_settings = new()
-        {
-            UseSimpleDictionaryFormat = true,
-            MaxItemsInObjectGraph = int.MaxValue,
-            EmitTypeInformation = EmitTypeInformation.Never
-        };
+        public T Read<T>(Stream stream) => (T)JsonSerializer.Deserialize(stream, typeof(T), context)!;
+
+        public void Write<T>(Stream stream, T value) => JsonSerializer.Serialize(stream, value, typeof(T), context);
+
+        public async Task<T> ReadAsync<T>(Stream stream) => (T)(await JsonSerializer.DeserializeAsync(stream, typeof(T), context))!;
     }
-
-    static DataContractJsonSerializer Get<T>() => s_cache.GetOrAdd(typeof(T), static type => new(type, s_settings));
-
-    public static T Read<T>(Stream stream) => (T)Get<T>().ReadObject(stream);
-
-    public static void Write<T>(Stream stream, T value) => Get<T>().WriteObject(stream, value);
-
-    public static async Task<T> ReadAsync<T>(Stream stream) => await Task.Run(() => Read<T>(stream));
 }

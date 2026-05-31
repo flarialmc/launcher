@@ -69,11 +69,12 @@ public unsafe abstract class Minecraft
         - The instance overloads find the game's window & process specifically.
     */
 
-    private protected uint? GetProcessId() => GetProcessId(ProcessName);
+    protected uint? GetProcessId() => GetProcessId(ProcessName);
     internal NativeWindow? GetWindow([Optional] uint? processId) => GetWindow(WindowClass, processId);
 
-    public static bool IsInstalled => Package is { };
     public static event Action? PackageStatusChanged;
+
+    public static bool IsInstalled => Package is { };
     public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
     public static bool IsGamingServicesInstalled => PackageService.Get("Microsoft.GamingServices_8wekyb3d8bbwe") is { };
 

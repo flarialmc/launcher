@@ -28,7 +28,7 @@ public abstract class FlarialClient
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    bool? Launch()
+    public bool? Launch()
     {
         if (Minecraft.GetWindow(WindowClass) is { } client)
         {
@@ -44,24 +44,32 @@ public abstract class FlarialClient
 
     public async Task<bool?> LaunchAsync() => await Task.Run(Launch);
 
+    static readonly object s_lock = new();
+    static readonly HashAlgorithm s_algorithm = SHA256.Create();
+
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
     async Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
+        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
         return json[Build];
     }
 
-    async Task<string> GetLocalHashAsync()
+    async Task<string> GetLocalHashAsync() => await Task.Run(() =>
     {
         try
         {
-            using var stream = File.OpenRead(FileName);
-            return Convert.ToHexString(await SHA256.HashDataAsync(stream));
+            lock (s_lock)
+            {
+                using var stream = File.OpenRead(FileName);
+                var hash = s_algorithm.ComputeHash(stream);
+                var value = BitConverter.ToString(hash);
+                return value.Replace("-", string.Empty);
+            }
         }
         catch { return string.Empty; }
-    }
+    });
 
     public async Task<bool> DownloadAsync(Action<int> callback)
     {

@@ -6,13 +6,13 @@ namespace Flarial.Runtime.Unmanaged;
 unsafe readonly struct NativeWindow
 {
     readonly HWND _handle;
-    
+
     internal readonly uint ProcessId { get; }
 
     internal NativeWindow(HWND handle)
     {
         uint processId = 0;
-        _ = GetWindowThreadProcessId(handle, &processId);
+        GetWindowThreadProcessId(handle, &processId);
 
         _handle = handle;
         ProcessId = processId;

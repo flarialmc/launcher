@@ -1,9 +1,11 @@
 using System;
+using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
+using static Windows.Win32.Foundation.WIN32_ERROR;
 
 namespace Flarial.Runtime.Versions;
 
@@ -28,10 +30,10 @@ public abstract class VersionItem
     public virtual async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsInstalled)
-            throw new MinecraftNotInstalledException();
+            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
 
         if (!Minecraft.IsPackaged)
-            throw new MinecraftUnpackagedException();
+            throw new Win32Exception((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT);
 
         var path = Path.Combine(s_temp, Path.GetRandomFileName());
         try

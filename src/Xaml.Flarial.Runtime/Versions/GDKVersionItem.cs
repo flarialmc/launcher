@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
 using static Windows.Win32.Foundation.WIN32_ERROR;
@@ -35,7 +34,7 @@ sealed class GDKVersionItem : VersionItem
         var gameLaunchHelper = await gameLaunchHelperTask;
 
         using var stream = await msixvcPackagesTask;
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
+        var json = await JsonService.ReadAsync<Dictionary<string, Dictionary<string, string[]>>>(stream);
 
         foreach (var item in json["release"])
         {
@@ -74,18 +73,18 @@ sealed class GDKVersionItem : VersionItem
             }
         }
 
-        throw new DownloadUriNotFoundException();
+        throw new InvalidOperationException();
     }
 
     public override async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsGamingServicesInstalled)
-            throw new GamingServicesMissingException();
+            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
 
         await base.InstallAsync(callback);
         var path = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
 
         using var stream = File.Create(path);
-        await stream.WriteAsync(_gameLaunchHelper);
+        await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
     }
 }

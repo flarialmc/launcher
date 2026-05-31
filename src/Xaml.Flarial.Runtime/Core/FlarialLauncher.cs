@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
+using static System.Environment;
 
 namespace Flarial.Runtime.Core;
 
@@ -12,19 +14,17 @@ public static class FlarialLauncher
 {
     static FlarialLauncher()
     {
-        var assembly = Assembly.GetEntryAssembly()!;
+        var assembly = Assembly.GetEntryAssembly();
 
         var temp = Path.GetTempPath();
-        var destination = Environment.ProcessPath;
-        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
-
         s_source = $"{Path.Combine(temp, Path.GetRandomFileName())}.exe";
         s_script = $"{Path.Combine(temp, Path.GetRandomFileName())}.cmd";
 
-        s_version = $"{assembly.GetName().Version}";
-        s_filename = Path.Combine(system, "cmd.exe");
+        s_version = assembly.GetName().Version.ToString();
+        var destination = assembly.ManifestModule.FullyQualifiedName;
 
         s_content = string.Format(Format, s_source, destination);
+        s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), "cmd.exe");
         s_arguments = string.Format(Arguments, s_script, s_filename, destination, "{0}");
     }
 
@@ -59,22 +59,25 @@ del ""%~f0""";
     public static async Task<bool> CheckForUpdatesAsync()
     {
         using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
+        var json = await JsonService.ReadAsync<Dictionary<string, string>>(stream);
         return s_version != json["version"];
     }
 
     public static async Task DownloadAsync(Action<int> callback)
     {
+        StringBuilder builder = new(s_arguments);
+
         await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
-        await File.WriteAllTextAsync(s_script, s_content);
-        
+        using (StreamWriter writer = new(s_script)) await writer.WriteAsync(s_content);
+
         using (Process.Start(new ProcessStartInfo
         {
-            CreateNoWindow = true,
             FileName = s_filename,
-            Arguments = s_arguments
+            CreateNoWindow = true,
+            UseShellExecute = false,
+            Arguments = $"{builder}"
         })) { }
 
-        Environment.Exit(0);
+        Exit(0);
     }
 }

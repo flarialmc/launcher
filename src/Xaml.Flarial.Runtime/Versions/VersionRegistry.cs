@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +7,10 @@ using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Versions;
 
-internal sealed class VersionEntry
+sealed class VersionEntry
 {
-    internal bool Supported { get; }
-    internal VersionItem? Item { get; set; }
+    internal VersionItem? Item;
+    internal readonly bool Supported;
     internal VersionEntry(bool supported) => Supported = supported;
 }
 
@@ -45,7 +44,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
 
         using var stream = await HttpService.GetStreamAsync(SupportedVersionsUri);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, bool>>(stream);
+        var json = await JsonService.ReadAsync<Dictionary<string, bool>>(stream);
 
         foreach (var item in json)
             registry.Add(item.Key, new(item.Value));
@@ -70,9 +69,9 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     sealed class VersionItemComparer : IComparer<string>
     {
-        public int Compare(string? x, string? y)
+        public int Compare(string x, string y)
         {
-            NumericVersion a = new(x!), b = new(y!);
+            NumericVersion a = new(x), b = new(y);
 
             if (b.Major != a.Major)
                 return b.Major.CompareTo(a.Major);

@@ -1,13 +1,12 @@
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using Flarial.Runtime.Exceptions;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using Flarial.Runtime.Unmanaged;
+using Microsoft.PowerShell;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
-using static System.IO.Directory;
 using static Windows.Win32.Foundation.WAIT_EVENT;
 using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.PInvoke;
@@ -17,15 +16,20 @@ namespace Flarial.Runtime.Game;
 
 unsafe sealed class MinecraftGDK : Minecraft
 {
-    internal MinecraftGDK() : base() { }
-
-    const string Command = $"Invoke-CommandInDesktopPackage -PackageFamilyName '{PackageFamilyName}' -AppId 'Game' -Command '{{0}}'";
+    internal MinecraftGDK() { }
 
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
 
-    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
-    static readonly string s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+    static MinecraftGDK()
+    {
+        s_state.ImportPSModule(["Appx"]);
+        s_state.ExecutionPolicy = ExecutionPolicy.Bypass;
+        s_state.ThreadOptions = PSThreadOptions.UseCurrentThread;
+    }
+
+    static readonly InitialSessionState s_state = InitialSessionState.Create();
+    static readonly string s_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Minecraft Bedrock\Users");
 
     protected override uint? Activate()
     {
@@ -38,16 +42,16 @@ unsafe sealed class MinecraftGDK : Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new MinecraftNotFoundException();
+        if (!File.Exists(path)) throw new FileNotFoundException(null, path);
 
-        using var process = Process.Start(new ProcessStartInfo
-        {
-            CreateNoWindow = true,
-            FileName = s_filename,
-            ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", string.Format(Command, path) }
-        });
+        using var powershell = PowerShell.Create(s_state);
+        powershell.AddCommand("Invoke-CommandInDesktopPackage");
 
-        process?.WaitForExit();
+        powershell.AddParameter("AppId", "Game");
+        powershell.AddParameter("Command", path);
+        powershell.AddParameter("PackageFamilyName", PackageFamilyName);
+
+        powershell.Invoke();
         return GetProcessId();
     }
 
@@ -106,7 +110,7 @@ unsafe sealed class MinecraftGDK : Minecraft
 
             var handle = CreateEvent(null, true, false, null); try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
                     InternalBufferSize = 0,
                     EnableRaisingEvents = true,

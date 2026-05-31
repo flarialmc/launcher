@@ -1,5 +1,10 @@
 IsWindowVisible
-MessageBox
+IDesktopWindowXamlSourceNative
+GetAncestor
+SendMessage
+GetStockObject
+SetClassLongPtr
+DwmSetWindowAttribute
 SetErrorMode
 ShellExecute
 GetPackageFamilyName
@@ -23,6 +28,9 @@ GetProcAddress
 WriteProcessMemory
 VirtualAllocEx
 VirtualFreeEx
+WM_SYSCOMMAND
+SC_KEYMENU
+SC_MOUSEMENU
 SHOW_WINDOW_CMD
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64
