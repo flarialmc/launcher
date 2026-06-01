@@ -55,7 +55,7 @@ public unsafe sealed class Library
     internal string EnsurePath()
     {
         if (_path is null)
-            throw new LibraryLoadFailureException();
+            throw new LibraryPathMalformedException();
 
         if (!IsLoadable)
             throw new LibraryLoadFailureException();
