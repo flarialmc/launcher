@@ -1,9 +1,8 @@
-using System.ComponentModel;
-using static Windows.Win32.Foundation.WIN32_ERROR;
+using System;
 
 namespace Flarial.Runtime.Exceptions;
 
-sealed class MinecraftNotInstalledException : Win32Exception
+sealed class MinecraftNotInstalledException : Exception
 {
-    internal MinecraftNotInstalledException() : base((int)ERROR_INSTALL_PACKAGE_NOT_FOUND) { }
+    internal MinecraftNotInstalledException() : base("Minecraft isn't installed, please install it.") { }
 }

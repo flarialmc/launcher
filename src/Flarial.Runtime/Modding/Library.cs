@@ -1,14 +1,14 @@
 using System;
+using System.ComponentModel;
 using System.IO;
+using Flarial.Runtime.Exceptions;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
 using Windows.Win32.System.SystemServices;
-using static Windows.Win32.PInvoke;
 using static Windows.Win32.Foundation.WIN32_ERROR;
+using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.IMAGE_FILE_CHARACTERISTICS;
 using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
-using System.ComponentModel;
-using Flarial.Runtime.Exceptions;
 
 namespace Flarial.Runtime.Modding;
 
@@ -55,13 +55,14 @@ public unsafe sealed class Library
     internal string EnsurePath()
     {
         if (_path is null)
-            throw new InvalidLibraryPathException();
+            throw new LibraryLoadFailureException();
 
         if (!IsLoadable)
-            throw new LibraryLoadValidationException();
+            throw new LibraryLoadFailureException();
 
         return _path;
     }
+
 
     readonly string? _path;
 

@@ -1,9 +1,8 @@
-using System.ComponentModel;
-using static Windows.Win32.Foundation.WIN32_ERROR;
+using System;
 
 namespace Flarial.Runtime.Exceptions;
 
-sealed class MinecraftUnpackagedException : Win32Exception
+sealed class MinecraftUnpackagedException : Exception
 {
-    internal MinecraftUnpackagedException() : base((int)ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT) { }
+    internal MinecraftUnpackagedException() : base("Minecraft is unpackaged, please reinstall it.") {}
 }

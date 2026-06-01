@@ -59,10 +59,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         */
 
         if (!IsInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PACKAGE_NOT_FOUND);
+            throw new MinecraftNotInstalledException();
 
         if (!IsGamingServicesInstalled)
-            throw new Win32Exception((int)ERROR_INSTALL_PREREQUISITE_FAILED);
+            throw new GamingServicesNotInstalledException();
 
         if (GetWindow() is { } found && found.IsVisible)
         {

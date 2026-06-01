@@ -80,7 +80,7 @@ sealed class GDKVersionItem : VersionItem
     public override async Task InstallAsync(Action<int, bool> callback)
     {
         if (!Minecraft.IsGamingServicesInstalled)
-            throw new GamingServicesMissingException();
+            throw new GamingServicesNotInstalledException();
 
         await base.InstallAsync(callback);
         var path = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
