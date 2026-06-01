@@ -2,37 +2,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Flarial.Launcher.App"
              xmlns:local="using:Flarial.Launcher"
+             xmlns:vm="using:Flarial.Launcher.ViewModels"
+             xmlns:views="using:Flarial.Launcher.Views"
              Name="Flarial Launcher">
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <DataTemplate DataType="{x:Type vm:MainWindowViewModel}"><views:MainWindow/></DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:HomeViewModel}"><views:HomeView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><views:SettingsView/></DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}"><views:MessageBoxView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NotificationViewModel}"><views:NotificationView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NotificationAreaViewModel}"><views:NotificationAreaView/></DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:VersionItemViewModel}"><views:VersionItemView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsConfigsViewModel}"><views:SettingsConfigsView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsGeneralViewModel}"><views:SettingsGeneralView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsVersionsViewModel}"><views:SettingsVersionsView/></DataTemplate>
     </Application.DataTemplates>
-  
-             
-             
-     <Application.Resources>
-         <ResourceDictionary>
-             <Thickness x:Key="ButtonBorderThickness">1</Thickness>
-             
-             <Color x:Key="PrimaryColor">#FF2438</Color>
-             <Color x:Key="PrimaryBorderColor">#ff4d5c</Color>
-             <Color x:Key="SecondaryColor">#3F2A2D</Color>
-             <Color x:Key="SecondaryBorderColor">#56393d</Color>
-             <Color x:Key="ForegroundColor">#FFFFFF</Color>
-             <Color x:Key="WindowColor">#120e0f</Color>
-             <Color x:Key="BackgroundColor">#201A1B</Color>
-             <Color x:Key="BackgroundBorderColor">#32292b</Color>
-             
-             <FontFamily x:Key="SpaceGrotesk">avares://Flarial.Launcher/Assets#Space Grotesk</FontFamily>
-             
-             <ResourceDictionary.MergedDictionaries>
-                 <MergeResourceInclude Source="/Animations/MainPageTransitionAnimation.axaml"/>
-                 <MergeResourceInclude Source="/Styles/TextBox.axaml"/>
-                 <MergeResourceInclude Source="/Styles/ScrollViewer.axaml"/>
-             </ResourceDictionary.MergedDictionaries>
-         </ResourceDictionary>
-     </Application.Resources>
-             
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <Thickness x:Key="ButtonBorderThickness">1</Thickness>
+
+            <Color x:Key="PrimaryColor">#FF2438</Color>
+            <Color x:Key="PrimaryBorderColor">#ff4d5c</Color>
+            <Color x:Key="SecondaryColor">#3F2A2D</Color>
+            <Color x:Key="SecondaryBorderColor">#56393d</Color>
+            <Color x:Key="ForegroundColor">#FFFFFF</Color>
+            <Color x:Key="WindowColor">#120e0f</Color>
+            <Color x:Key="BackgroundColor">#201A1B</Color>
+            <Color x:Key="BackgroundBorderColor">#32292b</Color>
+
+            <FontFamily x:Key="SpaceGrotesk">avares://Flarial.Launcher/Assets#Space Grotesk</FontFamily>
+
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="/Animations/MainPageTransitionAnimation.axaml"/>
+                <MergeResourceInclude Source="/Styles/TextBox.axaml"/>
+                <MergeResourceInclude Source="/Styles/ScrollViewer.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource SpaceGrotesk}"/>
@@ -42,7 +54,7 @@
         <StyleInclude Source="Styles/SettingsButtonStyle.axaml"/>
         <StyleInclude Source="Styles/WindowStateButtons.axaml"/>
         <StyleInclude Source="Styles/SettingsRadioButtonStyle.axaml"/>
-           <StyleInclude Source="Styles/GenericButtonStyle.axaml"/>
+        <StyleInclude Source="Styles/GenericButtonStyle.axaml"/>
         <StyleInclude Source="Styles/Expander.axaml"/>
         <StyleInclude Source="Styles/ToolTip.axaml"/>
     </Application.Styles>
