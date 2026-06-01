@@ -63,7 +63,6 @@ public unsafe sealed class Library
         return _path;
     }
 
-
     readonly string? _path;
 
     public Library(string path)
