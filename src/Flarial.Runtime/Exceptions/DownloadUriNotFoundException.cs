@@ -4,5 +4,5 @@ namespace Flarial.Runtime.Exceptions;
 
 sealed class DownloadUriNotFoundException : Exception
 {
-    internal DownloadUriNotFoundException () : base("Couldn't resolve download links, please check your internet.") { }
+    internal DownloadUriNotFoundException () : base("Couldn't resolve download links, check your internet connection.") { }
 }
