@@ -1,15 +1,11 @@
-using System.ComponentModel;
+using System;
 using System.Diagnostics;
 using System.IO;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
 using Windows.Win32.Foundation;
-using static System.Environment;
-using static System.Environment.SpecialFolder;
-using static System.IO.Directory;
 using static Windows.Win32.Foundation.WAIT_EVENT;
-using static Windows.Win32.Foundation.WIN32_ERROR;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
@@ -17,15 +13,21 @@ namespace Flarial.Runtime.Game;
 
 unsafe sealed class MinecraftGDK : Minecraft
 {
-    internal MinecraftGDK() : base() { }
-
     const string Command = $"Invoke-CommandInDesktopPackage -PackageFamilyName '{PackageFamilyName}' -AppId 'Game' -Command '{{0}}'";
 
     protected override string WindowClass => "Bedrock";
     protected override string ProcessName => "Minecraft.Windows.exe";
 
-    static readonly string s_path = Path.Combine(GetFolderPath(ApplicationData), @"Minecraft Bedrock\Users");
-    static readonly string s_filename = Path.Combine(GetFolderPath(SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+    static readonly string s_path, s_filename;
+
+    static MinecraftGDK()
+    {
+        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+        s_path = Path.Combine(appdata, @"Minecraft Bedrock\Users");
+        s_filename = Path.Combine(system, @"WindowsPowerShell\v1.0\powershell.exe");
+    }
 
     protected override uint? Activate()
     {
@@ -64,10 +66,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (!IsGamingServicesInstalled)
             throw new GamingServicesNotInstalledException();
 
-        if (GetWindow() is { } found && found.IsVisible)
+        if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
-            found.Switch();
-            return found.ProcessId;
+            foundWindow.Switch();
+            return foundWindow.ProcessId;
         }
 
         if (Activate() is not { } processId)
@@ -80,21 +82,25 @@ unsafe sealed class MinecraftGDK : Minecraft
         {
 
             /*
-                - Unsigned installs might fail the launch contract.
+                - Unpackaged installs might fail the launch contract.
                 - Instead, wait for the game's window to be visible.
             */
 
             if (!IsPackaged)
             {
-                NativeWindow? window = null;
+                NativeWindow? processWindow = null;
 
                 while (process.Wait(1))
-                    if ((window = GetWindow()) is { })
-                        break;
+                {
+                    processWindow = GetWindow(processId);
+                    if (processWindow is { }) break;
+                }
 
                 while (process.Wait(1))
-                    if (window?.IsVisible ?? false)
-                        return processId;
+                {
+                    var visible = processWindow?.IsVisible;
+                    if (visible ?? false) return processId;
+                }
 
                 return null;
             }
@@ -104,11 +110,11 @@ unsafe sealed class MinecraftGDK : Minecraft
                 - We don't need to resort to polling since symbolic links aren't used.
             */
 
-            var handle = CreateEvent(null, true, false, null); try
+            var handle = CreateEvent(null, true, false, null);
+            try
             {
-                using FileSystemWatcher watcher = new(CreateDirectory(s_path).FullName, "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
-                    InternalBufferSize = 0,
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
                     NotifyFilter = NotifyFilters.FileName
