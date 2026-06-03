@@ -79,7 +79,7 @@ sealed class GDKVersionItem : VersionItem
 
     public override async Task InstallAsync(Action<int, bool> callback)
     {
-        if (!Minecraft.IsGamingServicesInstalled)
+        if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
 
         await base.InstallAsync(callback);

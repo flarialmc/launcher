@@ -106,7 +106,7 @@ public partial class VersionItemViewModel : ViewModelBase
             return;
         }
 
-        if (!Minecraft.IsGamingServicesInstalled)
+        if (!GamingServices.IsInstalled)
         {
             await GamingServicesMissingDialog.ShowAsync();
             return;

@@ -53,7 +53,7 @@ public partial class HomeViewModel : ViewModelBase
             var path = _appSettings.CustomDllPath;
             var custom = _appSettings.UseCustomDll;
 
-            if (!Minecraft.IsGamingServicesInstalled)
+            if (!GamingServices.IsInstalled)
             {
                 await GamingServicesMissingDialog.ShowAsync();
                 return;
