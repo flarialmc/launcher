@@ -53,9 +53,9 @@ public partial class HomeView : UserControl
         });
     }
 
-    static unsafe async void OnPointerPressed(object? sender, RoutedEventArgs args)
+    static unsafe void OnPointerPressed(object? sender, RoutedEventArgs args)
     {
         fixed (char* uri = (string)((Image)sender!).Tag!)
-            ShellExecute(new(), null, uri, null, null, SW_NORMAL);
+            ShellExecute(lpFile: uri, nShowCmd: SW_NORMAL);
     }
 }

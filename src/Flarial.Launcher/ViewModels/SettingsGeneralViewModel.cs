@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -47,9 +50,13 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         FileTypeFilter = [new("Dynamic Link Libraries") { Patterns = ["*.dll"] }]
     };
 
+    public ReactiveCommand<Unit, Unit> OpenClientFolder { get; }
+
+    public ReactiveCommand<Unit, Unit> OpenLauncherFolder { get; }
+
     public ReactiveCommand<Unit, Unit> Open { get; }
 
-    async Task OnOpen()
+    async Task OnOpenAsync()
     {
         var application = Application.Current!;
         var lifetime = (IClassicDesktopStyleApplicationLifetime)application.ApplicationLifetime!;
@@ -60,6 +67,18 @@ public partial class SettingsGeneralViewModel : ViewModelBase
             var path = files[0].TryGetLocalPath()!;
             CustomDllPath = _appSettings.CustomDllPath = path;
         }
+    }
+
+    unsafe void OnOpenLauncherFolder()
+    {
+        fixed (char* lpFile = ".")
+            ShellExecute(lpFile: lpFile, nShowCmd: SW_NORMAL);
+    }
+
+    unsafe void OnOpenClientFolder()
+    {
+        var path = Directory.CreateDirectory(@"..\Client").FullName;
+        fixed (char* lpFile = path) ShellExecute(lpFile: lpFile, nShowCmd: SW_NORMAL);
     }
 
     readonly AppSettings _appSettings;
@@ -80,7 +99,9 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         CustomDllSelected = _appSettings.UseCustomDll;
         AutomaticUpdates = _appSettings.AutomaticUpdates;
 
-        Open = ReactiveCommand.CreateFromTask(OnOpen);
+        Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
+        OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);
+        OpenLauncherFolder = ReactiveCommand.Create(OnOpenLauncherFolder);
     }
 
     private void OnBuildChanged(SegmentItem? item)

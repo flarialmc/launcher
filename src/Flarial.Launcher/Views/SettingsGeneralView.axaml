@@ -53,6 +53,16 @@
                         <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
 
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Folders" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+
+                    <UniformGrid Rows="1" ColumnSpacing="10" Margin="0,5,0,0">
+                        <Button Command="{Binding OpenClientFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Client Folder" FontSize="16" />
+                        <Button Command="{Binding OpenLauncherFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Launcher Folder" FontSize="16" />
+                    </UniformGrid>
+
                 </StackPanel>
             </spotlightDecorator:SpotlightDecorator>
         </VisualLayerManager>
