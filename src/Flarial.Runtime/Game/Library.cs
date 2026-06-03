@@ -7,7 +7,7 @@ using static Windows.Win32.PInvoke;
 using static Windows.Win32.System.Diagnostics.Debug.IMAGE_FILE_CHARACTERISTICS;
 using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 
-namespace Flarial.Runtime.Modding;
+namespace Flarial.Runtime.Game;
 
 public unsafe sealed class Library
 {

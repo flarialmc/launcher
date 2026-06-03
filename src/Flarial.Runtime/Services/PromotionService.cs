@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -29,5 +27,5 @@ public sealed class Promotion
     [JsonConstructor]
     internal Promotion(string uri, string image) => (Uri, Image) = (uri, image);
 
-    public async Task<Stream> GetAsync() => new MemoryStream(await HttpService.GetBytesAsync(Image), false);
+    public async Task<Stream> GetImageAsync() => new MemoryStream(await HttpService.GetBytesAsync(Image), false);
 }

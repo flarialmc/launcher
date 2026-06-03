@@ -4,35 +4,22 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
-using Flarial.Runtime.Modding;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Core;
 
-sealed class FlarialClientRelease : FlarialClient
+public static class FlarialClient
 {
-    protected override string Build => "Release";
-    protected override string WindowClass => "Flarial Client";
-    protected override string FileName => "Flarial.Client.Release.dll";
-    protected override string DownloadUri => "https://cdn.flarial.xyz/dll/latest.dll";
-}
+    const string Build = "Release";
+    const string ClassName = "Flarial Client";
+    const string FileName = "Flarial.Client.Release.dll";
+    const string DownloadUri = "https://cdn.flarial.xyz/dll/latest.dll";
 
-public abstract class FlarialClient
-{
-    protected FlarialClient() { }
-
-    public static readonly FlarialClient Current = new FlarialClientRelease();
-
-    protected abstract string Build { get; }
-    protected abstract string FileName { get; }
-    protected abstract string DownloadUri { get; }
-    protected abstract string WindowClass { get; }
-
-    public bool? Launch()
+    public static bool? Launch()
     {
-        if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
+        if (Minecraft.GetWindow(ClassName) is { } clientWindow)
         {
-            if (Minecraft.s_current.GetWindow(clientWindow._processId) is { } minecraftWindow)
+            if (Minecraft.GetWindow(clientWindow._processId) is { } minecraftWindow)
             {
                 minecraftWindow.Switch();
                 return null;
@@ -44,14 +31,14 @@ public abstract class FlarialClient
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
-    async Task<string> GetRemoteHashAsync()
+    async static Task<string> GetRemoteHashAsync()
     {
         using var stream = await HttpService.GetStreamAsync(HashesUrl);
         var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
         return json[Build];
     }
 
-    async Task<string> GetLocalHashAsync()
+    async static Task<string> GetLocalHashAsync()
     {
         try
         {
@@ -61,7 +48,7 @@ public abstract class FlarialClient
         catch { return string.Empty; }
     }
 
-    public async Task<bool> DownloadAsync(Action<int> callback)
+    public static async Task<bool> DownloadAsync(Action<int> callback)
     {
         var localHashTask = GetLocalHashAsync();
         var remoteHashTask = GetRemoteHashAsync();

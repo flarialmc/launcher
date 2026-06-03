@@ -10,7 +10,6 @@ using Flarial.Launcher.Types;
 using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
-using Flarial.Runtime.Modding;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -91,14 +90,14 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Verifying...";
-            if (!await FlarialClient.Current.DownloadAsync(OnDownload))
+            if (!await FlarialClient.DownloadAsync(OnDownload))
             {
                 await ClientUpdateFailureDialog.ShowAsync();
                 return;
             }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? false)
+            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
             {
                 await LaunchFailureDialog.ShowAsync();
                 return;

@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
@@ -9,7 +6,7 @@ using static Windows.Win32.System.Memory.VIRTUAL_ALLOCATION_TYPE;
 using static Windows.Win32.System.Memory.VIRTUAL_FREE_TYPE;
 using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
-namespace Flarial.Runtime.Modding;
+namespace Flarial.Runtime.Game;
 
 public static class Injector
 {
@@ -29,7 +26,7 @@ public static class Injector
     {
         var path = library.EnsurePath();
 
-        if (Minecraft.s_current.Launch() is not { } processId)
+        if (Minecraft.Launch() is not { } processId)
             return null;
 
         if (NativeProcess.Open(PROCESS_ALL_ACCESS, processId) is not { } process)

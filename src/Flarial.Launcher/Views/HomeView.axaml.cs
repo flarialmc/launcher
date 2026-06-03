@@ -32,7 +32,7 @@ public partial class HomeView : UserControl
             {
                 try
                 {
-                    using var stream = await promotion.GetAsync();
+                    using var stream = await promotion.GetImageAsync();
 
                     Image image = new()
                     {

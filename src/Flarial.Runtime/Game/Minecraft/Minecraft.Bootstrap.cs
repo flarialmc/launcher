@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using Flarial.Runtime.Exceptions;
@@ -11,31 +10,12 @@ using static Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace Flarial.Runtime.Game;
 
-unsafe sealed class MinecraftGDK : Minecraft
+unsafe partial class Minecraft
 {
-    const string Command = $"Invoke-CommandInDesktopPackage -PackageFamilyName '{PackageFamilyName}' -AppId 'Game' -Command '{{0}}'";
-
-    protected override string WindowClass => "Bedrock";
-    protected override string ProcessName => "Minecraft.Windows.exe";
-
     static readonly string s_path, s_filename;
 
-    static MinecraftGDK()
+    static uint? Activate()
     {
-        var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
-        var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-        s_path = Path.Combine(appdata, @"Minecraft Bedrock\Users");
-        s_filename = Path.Combine(system, @"WindowsPowerShell\v1.0\powershell.exe");
-    }
-
-    protected override uint? Activate()
-    {
-        /*
-            - We use PowerShell to directly start the game.
-            - This simplifies the activation contract.
-        */
-
         if (GetProcessId() is { } processId)
             return processId;
 
@@ -53,18 +33,10 @@ unsafe sealed class MinecraftGDK : Minecraft
         return GetProcessId();
     }
 
-    internal override uint? Launch()
+    internal static uint? Launch()
     {
-        /*
-            - Unlike UWP builds, we are bootstrapping the game manually.
-            - Hence, verify if the game & Gaming Services are installed.
-        */
-
-        if (!IsInstalled)
-            throw new MinecraftNotInstalledException();
-
-        if (!IsGamingServicesInstalled)
-            throw new GamingServicesNotInstalledException();
+        if (!IsInstalled) throw new MinecraftNotInstalledException();
+        if (!IsGamingServicesInstalled) throw new GamingServicesNotInstalledException();
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
@@ -72,11 +44,8 @@ unsafe sealed class MinecraftGDK : Minecraft
             return foundWindow._processId;
         }
 
-        if (Activate() is not { } processId)
-            return null;
-
-        if (NativeProcess.Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
-            return null;
+        if (Activate() is not { } processId) return null;
+        if (NativeProcess.Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
 
         using (process)
         {

@@ -9,7 +9,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
-using Flarial.Runtime.Modding;
+using Flarial.Runtime.Game;
 using ReactiveUI.Avalonia;
 using Windows.Win32.Foundation;
 using static Windows.Win32.PInvoke;
