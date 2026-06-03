@@ -77,7 +77,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        VersionRegistry = await VersionRegistry.CreateAsync();
+        VersionRegistry = await VersionRegistry.GetAsync();
 
         _ = Task.Run(() =>
         {

@@ -56,18 +56,13 @@ del ""%~f0""";
         catch { return false; }
     }
 
-    public static async Task<bool> CheckForUpdatesAsync()
-    {
-        using var stream = await HttpService.GetStreamAsync(LauncherVersionUri);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
-        return s_version != json["version"];
-    }
+    public static async Task<bool> CheckForUpdatesAsync() => s_version != (await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri))["version"];
 
     public static async Task DownloadAsync(Action<int> callback)
     {
         await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
         await File.WriteAllTextAsync(s_script, s_content);
-        
+
         using (Process.Start(new ProcessStartInfo
         {
             CreateNoWindow = true,

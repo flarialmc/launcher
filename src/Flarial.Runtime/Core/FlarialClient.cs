@@ -31,12 +31,7 @@ public static class FlarialClient
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
-    async static Task<string> GetRemoteHashAsync()
-    {
-        using var stream = await HttpService.GetStreamAsync(HashesUrl);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, string>>(stream);
-        return json[Build];
-    }
+    async static Task<string> GetRemoteHashAsync() => (await HttpService.GetJsonAsync<Dictionary<string, string>>(HashesUrl))[Build];
 
     async static Task<string> GetLocalHashAsync()
     {

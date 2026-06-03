@@ -7,79 +7,57 @@ using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Versions;
 
-internal sealed class VersionEntry
-{
-    internal bool Supported { get; }
-    internal VersionItem? Item { get; set; }
-    internal VersionEntry(bool supported) => Supported = supported;
-}
-
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
     static readonly VersionItemComparer s_comparer = new();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
+    const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
+    const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
     readonly SortedDictionary<string, VersionEntry> _registry;
 
-    VersionRegistry(string preferred, SortedDictionary<string, VersionEntry> registry)
+    VersionRegistry(SortedDictionary<string, VersionEntry> registry)
     {
-        _registry = registry;
-        PreferredVersion = VersionItem.Stringify(preferred);
+        var preferred = (_registry = registry).First(static _ => _.Value._supported);
+        PreferredVersion = VersionItem.Stringify(preferred.Key);
     }
 
     public readonly string PreferredVersion;
 
     public static string InstalledVersion => VersionItem.Stringify(Minecraft.Version);
 
-    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry.Supported;
+    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
 
-    /*
-        - As the version metadata grows so does the processing time.
-        - Use dedicated thread pools to improve frontend responsiveness & performance.
-    */
-
-    public static async Task<VersionRegistry> CreateAsync() => await Task.Run(static async () =>
+    public static async Task<VersionRegistry> GetAsync() => await Task.Run(static async () =>
     {
+        var helperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
+        var supportedTask = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
+        var packagesTask = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(MSIXVCPackagesUri);
+
         SortedDictionary<string, VersionEntry> registry = new(s_comparer);
+        foreach (var item in await supportedTask) registry.Add(item.Key, new(item.Value));
 
-        using var stream = await HttpService.GetStreamAsync(SupportedVersionsUri);
-        var json = await JsonService.Default.ReadAsync<Dictionary<string, bool>>(stream);
+        foreach (var item in (await packagesTask)["release"])
+        {
+            var index = item.Key.LastIndexOf('.');
+            var key = item.Key[..index];
 
-        foreach (var item in json)
-            registry.Add(item.Key, new(item.Value));
+            if (!registry.TryGetValue(key, out var entry)) continue;
+            entry._item = new(key, item.Value, await helperTask);
+        }
 
-        await GDKVersionItem.QueryAsync(registry);
-        var preferredVersion = registry.First(static _ => _.Value.Supported).Key;
-
-        return new VersionRegistry(preferredVersion, registry);
+        return new VersionRegistry(registry);
     });
-
 
     public IEnumerator<VersionItem> GetEnumerator()
     {
         foreach (var value in _registry.Values)
         {
-            if (value.Item is null) continue;
-            yield return value.Item;
+            if (value._item is null) continue;
+            yield return value._item;
         }
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    sealed class VersionItemComparer : IComparer<string>
-    {
-        public int Compare(string? x, string? y)
-        {
-            NumericVersion a = new(x!), b = new(y!);
-
-            if (b.Major != a.Major)
-                return b.Major.CompareTo(a.Major);
-
-            if (b.Minor != a.Minor)
-                return b.Minor.CompareTo(a.Minor);
-
-            return b.Build.CompareTo(a.Build);
-        }
-    }
 }

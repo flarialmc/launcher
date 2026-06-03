@@ -19,13 +19,17 @@ static class HttpService
 
     static readonly int s_length = Environment.SystemPageSize;
 
-    internal static async Task<Stream> GetStreamAsync(string uri) => await s_client.GetStreamAsync(uri);
-
     internal static async Task<byte[]> GetBytesAsync(string uri) => await s_client.GetByteArrayAsync(uri);
 
     internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
 
     internal static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await s_client.SendAsync(request);
+
+    internal static async Task<T> GetJsonAsync<T>(string uri)
+    {
+        using var stream = await s_client.GetStreamAsync(uri);
+        return await JsonService.Default.ReadAsync<T>(stream);
+    }
 
     internal static async Task DownloadAsync(string uri, string path, Action<int> callback)
     {

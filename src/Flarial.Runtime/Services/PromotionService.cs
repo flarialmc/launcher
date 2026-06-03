@@ -10,11 +10,7 @@ public static class PromotionService
 
     public static async Task<Promotion[]> GetAsync()
     {
-        try
-        {
-            using var stream = await HttpService.GetStreamAsync(PromotionsUri);
-            return await JsonService.Default.ReadAsync<Promotion[]>(stream);
-        }
+        try { return await HttpService.GetJsonAsync<Promotion[]>(PromotionsUri); }
         catch { return []; }
     }
 }
