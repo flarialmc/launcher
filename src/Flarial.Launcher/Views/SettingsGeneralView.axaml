@@ -28,20 +28,7 @@
     <StackPanel Margin="20">
         <VisualLayerManager>
             <spotlightDecorator:SpotlightDecorator Height="500" SpotlightColor="#9f9f9f" SpotlightRadius="120">
-                <StackPanel Background="Transparent">
-                    <Grid HorizontalAlignment="Left">
-                        <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
-                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-                    </Grid>
-
-                    <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
-                                               SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
-                    <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
-                        <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,5">
-                            <TextBox Grid.Column="0" Margin="0,0,10,0" IsReadOnly="True" CaretBrush="Transparent" PlaceholderText="Custom DLL Path" Text="{Binding CustomDllPath, Mode=TwoWay}"/>
-                            <Button Classes="GenericButton" Grid.Column="1" CornerRadius="7.5" Content="Open" FontSize="16" Command="{Binding Open}"/>
-                        </Grid>
-                    </Expander>
+                <StackPanel Background="Transparent" Spacing="5">
 
                     <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
@@ -58,10 +45,26 @@
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
 
-                    <UniformGrid Rows="1" ColumnSpacing="10" Margin="0,5,0,0">
+                    <UniformGrid Rows="1" ColumnSpacing="10">
                         <Button Command="{Binding OpenClientFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Client Folder" FontSize="16" />
                         <Button Command="{Binding OpenLauncherFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Launcher Folder" FontSize="16" />
                     </UniformGrid>
+
+                    <Grid HorizontalAlignment="Left"  >
+                        <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+
+                    <StackPanel>
+                        <segmentedBar:SegmentedBar Items="{Binding BuildTypes}"
+                                                   SelectedItem="{Binding SelectedBuild, Mode=TwoWay}"/>
+                        <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,5">
+                                <TextBox Grid.Column="0" Margin="0,0,10,0" IsReadOnly="True" CaretBrush="Transparent" PlaceholderText="Custom DLL Path" Text="{Binding CustomDllPath, Mode=TwoWay}"/>
+                                <Button Classes="GenericButton" Grid.Column="1" CornerRadius="7.5" Content="Open" FontSize="16" Command="{Binding Open}"/>
+                            </Grid>
+                        </Expander>
+                    </StackPanel>
 
                 </StackPanel>
             </spotlightDecorator:SpotlightDecorator>
