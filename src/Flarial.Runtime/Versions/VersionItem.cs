@@ -2,26 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
+using Windows.Media.PlayTo;
 
 namespace Flarial.Runtime.Versions;
 
 public sealed class VersionItem
 {
-    readonly string _string;
+
     public override string ToString() => _string;
 
     static readonly string s_temp = Path.GetTempPath();
 
-    internal VersionItem(string version, string[] downloadUris, byte[] gamelaunchHelper)
+    internal VersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper)
     {
         _string = Stringify(version);
         _downloadUris = downloadUris;
-        _gamelaunchHelper = gamelaunchHelper;
+        _gameLaunchHelper = gameLaunchHelper;
     }
 
     internal static string Stringify(string version)
@@ -30,8 +32,9 @@ public sealed class VersionItem
         return key._minor >= 26 ? $"{key._minor}.{key._build}" : version;
     }
 
+    readonly string _string;
     readonly string[] _downloadUris;
-    readonly byte[] _gamelaunchHelper;
+    readonly byte[] _gameLaunchHelper;
 
     static async Task<string?> PingAsync(string uri, CancellationToken token)
     {
@@ -45,22 +48,16 @@ public sealed class VersionItem
 
     async Task<string> GetAsync()
     {
-        using CancellationTokenSource source = new();
-        HashSet<Task<string?>> tasks = [.. _downloadUris.Select(_ => PingAsync(_, source.Token))];
+        using CancellationTokenSource cts = new();
+        var tasks = _downloadUris.Select(_ => PingAsync(_, cts.Token));
 
-        while (tasks.Count > 0)
+        await foreach (var task in Task.WhenEach(tasks)) if (await task is { } uri)
         {
-            var task = await Task.WhenAny(tasks);
-            tasks.Remove(task);
-
-            if (await task is { } uri)
-            {
-                source.Cancel();
-                return uri;
-            }
+            cts.Cancel();
+            return uri;
         }
 
-        throw new DownloadUriNotFoundException();
+        throw new DownloadLinksNotFoundException();
     }
 
     public async Task InstallAsync(Action<int, bool> callback)
@@ -81,7 +78,7 @@ public sealed class VersionItem
         {
             await HttpService.DownloadAsync(await GetAsync(), package, _ => callback(_, false));
             await PackageService.AddAsync(new(package), _ => callback(_, true));
-            await File.WriteAllBytesAsync(helper, _gamelaunchHelper);
+            await File.WriteAllBytesAsync(helper, _gameLaunchHelper);
         }
         finally
         {
