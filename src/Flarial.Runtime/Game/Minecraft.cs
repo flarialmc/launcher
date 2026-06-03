@@ -26,24 +26,22 @@ public unsafe abstract class Minecraft
         s_catalog.PackageUninstalling += OnPackageUninstalling;
     }
 
-    static readonly PackageCatalog s_catalog = PackageCatalog.OpenForCurrentUser();
-
     static void OnPackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
     {
-        if (args.IsComplete)
-            OnPackageStatusChanged(args.TargetPackage);
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.TargetPackage);
     }
 
     static void OnPackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
     {
-        if (args.IsComplete)
-            OnPackageStatusChanged(args.Package);
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.Package);
     }
 
     static void OnPackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
-        if (args.IsComplete)
-            OnPackageStatusChanged(args.Package);
+        if (!args.IsComplete) return;
+        OnPackageStatusChanged(args.Package);
     }
 
     static void OnPackageStatusChanged(Package package)
@@ -57,12 +55,14 @@ public unsafe abstract class Minecraft
     protected abstract string WindowClass { get; }
     protected abstract string ProcessName { get; }
 
-    internal static Minecraft Current { get; } = new MinecraftGDK();
+    internal static readonly MinecraftGDK s_current = new();
+    static readonly PackageCatalog s_catalog = PackageCatalog.OpenForCurrentUser();
+
     internal static Package Package => PackageService.Get(PackageFamilyName)!;
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
-    protected abstract uint? Activate();
     internal abstract uint? Launch();
+    protected abstract uint? Activate();
 
     /*
         - The static overloads find windows & processes belonging to the game.
@@ -82,7 +82,10 @@ public unsafe abstract class Minecraft
         fixed (char* pn = processName)
         fixed (char* pfn = PackageFamilyName)
         {
-            uint level = 0, count = 0, length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
+            uint level = 0;
+            uint count = 0;
+            uint length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
+
             WTS_PROCESS_INFOW* information = null;
             var buffer = stackalloc char[(int)length];
 
@@ -119,10 +122,10 @@ public unsafe abstract class Minecraft
 
             while ((window = FindWindowEx(HWND.Null, window, wc, null)) != HWND.Null)
             {
-                if (processId is { } && processId != window.ProcessId)
+                if (processId is { } && processId != window._processId)
                     continue;
 
-                if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window.ProcessId) is not { } process)
+                if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window._processId) is not { } process)
                     continue;
 
                 using (process)

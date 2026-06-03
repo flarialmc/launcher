@@ -69,7 +69,7 @@ unsafe sealed class MinecraftGDK : Minecraft
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
             foundWindow.Switch();
-            return foundWindow.ProcessId;
+            return foundWindow._processId;
         }
 
         if (Activate() is not { } processId)

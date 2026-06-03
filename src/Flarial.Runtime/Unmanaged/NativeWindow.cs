@@ -7,7 +7,7 @@ unsafe readonly struct NativeWindow
 {
     readonly HWND _handle;
     
-    internal readonly uint ProcessId { get; }
+    internal readonly uint _processId; 
 
     internal NativeWindow(HWND handle)
     {
@@ -15,7 +15,7 @@ unsafe readonly struct NativeWindow
         _ = GetWindowThreadProcessId(handle, &processId);
 
         _handle = handle;
-        ProcessId = processId;
+        _processId = processId;
     }
 
     internal bool IsVisible => IsWindowVisible(_handle);

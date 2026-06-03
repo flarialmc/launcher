@@ -81,7 +81,7 @@ public partial class HomeViewModel : ViewModelBase
                 }
 
                 LauncherStatus = "Launching...";
-                if (await Injector.LaunchAsync(library) is null)
+                if (await Task.Run(() => Injector.Launch(library)) is null)
                 {
                     await LaunchFailureDialog.ShowAsync();
                     return;

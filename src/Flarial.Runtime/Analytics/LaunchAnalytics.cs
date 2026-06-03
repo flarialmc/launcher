@@ -21,7 +21,7 @@ public static class LaunchAnalytics
     {
         public async Task<bool?> TrackedLaunchAsync()
         {
-            var launched = await client.LaunchAsync();
+            var launched = await Task.Run(client.Launch);
             if (launched ?? false) _ = SendAsync();
             return launched;
         }

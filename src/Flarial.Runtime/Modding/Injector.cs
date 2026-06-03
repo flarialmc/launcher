@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Unmanaged;
@@ -28,7 +29,7 @@ public static class Injector
     {
         var path = library.EnsurePath();
 
-        if (Minecraft.Current.Launch() is not { } processId)
+        if (Minecraft.s_current.Launch() is not { } processId)
             return null;
 
         if (NativeProcess.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
@@ -57,6 +58,4 @@ public static class Injector
             }
         }
     }
-
-    public static async Task<uint?> LaunchAsync(Library library) => await Task.Run(() => Launch(library));
 }

@@ -21,18 +21,18 @@ public abstract class FlarialClient
 {
     protected FlarialClient() { }
 
-    public static FlarialClient Current { get; } = new FlarialClientRelease();
+    public static readonly FlarialClient Current = new FlarialClientRelease();
 
     protected abstract string Build { get; }
     protected abstract string FileName { get; }
     protected abstract string DownloadUri { get; }
     protected abstract string WindowClass { get; }
 
-    bool? Launch()
+    public bool? Launch()
     {
         if (Minecraft.GetWindow(WindowClass) is { } clientWindow)
         {
-            if (Minecraft.Current.GetWindow(clientWindow.ProcessId) is { } minecraftWindow)
+            if (Minecraft.s_current.GetWindow(clientWindow._processId) is { } minecraftWindow)
             {
                 minecraftWindow.Switch();
                 return null;
@@ -41,8 +41,6 @@ public abstract class FlarialClient
         }
         return Injector.Launch(new(FileName)) is { };
     }
-
-    public async Task<bool?> LaunchAsync() => await Task.Run(Launch);
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
