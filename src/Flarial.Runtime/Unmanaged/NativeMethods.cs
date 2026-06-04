@@ -1,4 +1,3 @@
-using System;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE;
@@ -8,13 +7,13 @@ namespace Flarial.Runtime.Unmanaged;
 
 public unsafe static class NativeMethods
 {
-    public static void ShellExecute(in ReadOnlySpan<char> file)
+    public static void ShellExecute(in string file)
     {
         fixed (char* lpFile = file)
             PInvoke.ShellExecute(lpFile: lpFile, nShowCmd: SW_NORMAL);
     }
 
-    public static void MessageBox(in nint handle, in ReadOnlySpan<char> text, in ReadOnlySpan<char> caption)
+    public static void MessageBox(nint handle, string text, string caption)
     {
         fixed (char* lpText = text)
         fixed (char* lpCaption = caption)
