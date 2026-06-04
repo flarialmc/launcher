@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -11,11 +9,9 @@ namespace Flarial.Launcher.Dialogs;
 
 public abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new()
 {
-    static readonly ConcurrentDictionary<Type, MessageDialog<T>> s_dialogs = [];
+    static readonly MessageDialog s_instance = new T();
 
-    static MessageDialog<T> Get() => s_dialogs.GetOrAdd(typeof(T), static type => new T());
-
-    internal static async Task<bool> ShowAsync() => await Get().OnShowAsync();
+    internal static async Task<bool> ShowAsync() => await s_instance.OnShowAsync();
 }
 
 public abstract class MessageDialog

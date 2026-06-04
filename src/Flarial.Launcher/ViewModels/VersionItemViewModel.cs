@@ -40,9 +40,9 @@ public partial class VersionItemViewModel : ViewModelBase
     readonly VersionItem _versionItem;
     readonly SettingsVersionsViewModel _settingsVersionsViewModel;
 
-    InstallVersionDialog InstallVersionDialog => field ??= new(_versionItem);
-    InstalledVersionDialog InstalledVersionDialog => field ??= new(_versionItem);
-    InstallingVersionDialog InstallingVersionDialog => field ??= new(_versionItem);
+    readonly InstallVersionDialog _installVersionDialog;
+    readonly InstalledVersionDialog _installedVersionDialog;
+    readonly InstallingVersionDialog _installingVersionDialog;
 
     Task? InstallingVersionDialogTask
     {
@@ -61,13 +61,13 @@ public partial class VersionItemViewModel : ViewModelBase
         var application = Application.Current!;
         var applicationLifetime = (IClassicDesktopStyleApplicationLifetime)application.ApplicationLifetime!;
 
-        Version = $"{versionItem}";
-
         _versionItem = versionItem;
+        _mainWindow = (MainWindow)applicationLifetime.MainWindow!;
         _settingsVersionsViewModel = mainWindowViewModel.SettingsViewModel.SettingsVersionsViewModel;
 
-        _mainWindow = (MainWindow)applicationLifetime.MainWindow!;
-
+        _installVersionDialog = new(versionItem);
+        _installedVersionDialog = new(versionItem);
+        _installingVersionDialog = new(versionItem);
 
         this.WhenAnyValue(static _ => _.State).Subscribe(_ =>
         {
@@ -77,6 +77,7 @@ public partial class VersionItemViewModel : ViewModelBase
             this.RaisePropertyChanged(nameof(IsInstalling));
         });
 
+        Version = $"{versionItem}";
         DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync, this.WhenAnyValue(static _ => _.State).Select(static _ => _ == VersionItemState.Installed));
         InstallCommand = ReactiveCommand.CreateFromTask(InstallAsync, this.WhenAnyValue(static _ => _.State).Select(static _ => _ == VersionItemState.NotInstalled));
     }
@@ -92,7 +93,7 @@ public partial class VersionItemViewModel : ViewModelBase
         if (!(args.Cancel = IsProgressing)) return;
         if (InstallingVersionDialogTask is { }) return;
 
-        try { await (InstallingVersionDialogTask = InstallingVersionDialog.OnShowAsync()); }
+        try { await (InstallingVersionDialogTask = _installingVersionDialog.OnShowAsync()); }
         finally { InstallingVersionDialogTask = null; }
     }
 
@@ -116,7 +117,7 @@ public partial class VersionItemViewModel : ViewModelBase
             return;
         }
 
-        if (!await InstallVersionDialog.OnShowAsync())
+        if (!await _installVersionDialog.OnShowAsync())
             return;
 
         try
@@ -140,7 +141,7 @@ public partial class VersionItemViewModel : ViewModelBase
             _settingsVersionsViewModel.IsInstalling = false;
         }
 
-        await InstalledVersionDialog.OnShowAsync();
+        await _installedVersionDialog.OnShowAsync();
     }
 
     async Task DeleteAsync() { }
