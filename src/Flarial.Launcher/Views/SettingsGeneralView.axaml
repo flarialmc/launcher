@@ -31,16 +31,6 @@
                 <StackPanel Background="Transparent" Spacing="5">
 
                     <Grid HorizontalAlignment="Left">
-                        <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
-                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-                    </Grid>
-
-                    <Grid>
-                        <TextBlock Text="Automatic Updates" />
-                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
-                    </Grid>
-
-                    <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Folders" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
@@ -49,6 +39,16 @@
                         <Button Command="{Binding OpenClientFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Client Folder" FontSize="16" />
                         <Button Command="{Binding OpenLauncherFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Launcher Folder" FontSize="16" />
                     </UniformGrid>
+
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+
+                    <Grid>
+                        <TextBlock Text="Automatic Updates" />
+                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
+                    </Grid>
 
                     <Grid HorizontalAlignment="Left"  >
                         <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
