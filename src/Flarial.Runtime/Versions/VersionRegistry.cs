@@ -7,8 +7,33 @@ using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Versions;
 
+sealed class VersionEntry
+{
+    internal VersionItem? _item;
+
+    internal readonly bool _supported;
+
+    internal VersionEntry(bool supported) => _supported = supported;
+}
+
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
+    sealed class VersionItemComparer : IComparer<string>
+    {
+        public int Compare(string? x, string? y)
+        {
+            VersionKey a = new(x!), b = new(y!);
+
+            if (b._major != a._major)
+                return b._major.CompareTo(a._major);
+
+            if (b._minor != a._minor)
+                return b._minor.CompareTo(a._minor);
+
+            return b._build.CompareTo(a._build);
+        }
+    }
+
     static readonly VersionItemComparer s_comparer = new();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
