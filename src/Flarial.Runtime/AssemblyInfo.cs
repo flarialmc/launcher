@@ -10,7 +10,7 @@ using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
 [assembly: SupportedOSPlatform("windows10.0.19041.0")]
 [assembly: AssemblyCopyright("Copyright © Flarial 2025 - 2026")]
 
-static class AssemblyInfo
+file static class AssemblyInfo
 {
     [ModuleInitializer]
     internal static void ModuleInitializer() => SetErrorMode(SEM_FAILCRITICALERRORS);
