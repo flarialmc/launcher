@@ -8,10 +8,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
+using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -69,17 +68,9 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         }
     }
 
-    unsafe void OnOpenLauncherFolder()
-    {
-        fixed (char* lpFile = ".")
-            ShellExecute(lpFile: lpFile, nShowCmd: SW_NORMAL);
-    }
+    void OnOpenLauncherFolder() => NativeMethods.ShellExecute(".");
 
-    unsafe void OnOpenClientFolder()
-    {
-        var path = Directory.CreateDirectory(@"..\Client").FullName;
-        fixed (char* lpFile = path) ShellExecute(lpFile: lpFile, nShowCmd: SW_NORMAL);
-    }
+    void OnOpenClientFolder() => NativeMethods.ShellExecute(Directory.CreateDirectory(@"..\Client").FullName);
 
     readonly AppSettings _appSettings;
 

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Interactivity;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Models;
 using Flarial.Launcher.Views;
@@ -13,7 +12,6 @@ using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flarial.Launcher.ViewModels;
 

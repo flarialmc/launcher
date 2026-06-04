@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
+using Flarial.Runtime.Unmanaged;
 
 namespace Flarial.Launcher.Management;
 
@@ -24,7 +23,7 @@ abstract class StorePage<T> : StorePage where T : StorePage<T>, new()
     public static void Open() => Get().OnOpen();
 }
 
-unsafe abstract class StorePage
+abstract class StorePage
 {
     readonly string _uri;
 
@@ -32,9 +31,5 @@ unsafe abstract class StorePage
 
     internal StorePage() => _uri = $"ms-windows-store://pdp/?ProductId={ProductId}";
 
-    internal void OnOpen()
-    {
-        fixed (char* uri = _uri)
-            ShellExecute(new(), null, uri, null, null, SW_NORMAL);
-    }
+    internal void OnOpen() => NativeMethods.ShellExecute(_uri);
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -8,8 +7,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Flarial.Runtime.Services;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD;
+using Flarial.Runtime.Unmanaged;
 
 namespace Flarial.Launcher.Views;
 
@@ -53,9 +51,5 @@ public partial class HomeView : UserControl
         });
     }
 
-    static unsafe void OnPointerPressed(object? sender, RoutedEventArgs args)
-    {
-        fixed (char* uri = (string)((Image)sender!).Tag!)
-            ShellExecute(lpFile: uri, nShowCmd: SW_NORMAL);
-    }
+    static void OnPointerPressed(object? sender, RoutedEventArgs args) => NativeMethods.ShellExecute((string)((Image)sender!).Tag!);
 }

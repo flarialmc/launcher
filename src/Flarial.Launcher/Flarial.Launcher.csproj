@@ -12,7 +12,8 @@
 
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <NoWarn>IL2026,IL2104</NoWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -21,9 +22,7 @@
         <ApplicationIcon>Assets/app.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
 
-        <NoWarn>IL2026,IL2104</NoWarn>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
@@ -58,8 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" PrivateAssets="All" />
-        <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
+        <ProjectReference Include="..\Flarial.Runtime\Flarial.Runtime.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -69,8 +67,8 @@
         <PackageReference Include="Avalonia.Win32" Version="12.0.4" />
         <PackageReference Include="Avalonia.HarfBuzz" Version="12.0.4" />
 
-        <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.1" />
-        <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30" PrivateAssets="All" />
+        <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.2" />
+        <PackageReference Include="ReactiveUI.SourceGenerators" Version="3.0.0" />
     </ItemGroup>
 
 </Project>

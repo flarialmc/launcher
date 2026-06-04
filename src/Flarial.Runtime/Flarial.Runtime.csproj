@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <NoWarn>CA2255</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Optimize>true</Optimize>
@@ -22,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flarial.Unmanaged\Flarial.Unmanaged.csproj" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.275" />
   </ItemGroup>
 
 </Project>

@@ -10,11 +10,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering.Composition;
 using Flarial.Runtime.Game;
+using Flarial.Runtime.Unmanaged;
 using ReactiveUI.Avalonia;
-using Windows.Win32.Foundation;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.Diagnostics.Debug.THREAD_ERROR_MODE;
-using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE;
 
 namespace Flarial.Launcher;
 
@@ -31,13 +28,9 @@ Exception: {1}
 {2}";
 
     [ModuleInitializer]
-    internal static void ModuleInitializer()
-    {
-        SetErrorMode(SEM_FAILCRITICALERRORS);
-        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-    }
+    internal static void ModuleInitializer() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-    unsafe static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+    static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var version = $"{assembly.GetName().Version}";
@@ -52,19 +45,16 @@ Exception: {1}
         message = $"{args.ExceptionObject}";
 #endif
 
-        fixed (char* caption = "Flarial Launcher: Error")
-        fixed (char* text = string.Format(Format, version, name, message))
+        nint handle = 0;
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
         {
-            HWND handle = new();
-
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
-            {
-                if (lifetime.MainWindow is not { } window) return;
-                handle = new(window.TryGetPlatformHandle()?.Handle ?? new());
-            }
-
-            _ = MessageBox(handle, text, caption, MB_ICONERROR);
+            if (lifetime.MainWindow is not { } window) return;
+            handle = new(window.TryGetPlatformHandle()?.Handle ?? 0);
         }
+
+        var text = string.Format(Format, version, name, message);
+        NativeMethods.MessageBox(handle, text, "Flarial Launcher: Error");
 
         Environment.Exit(1);
     }
