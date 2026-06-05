@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
@@ -67,7 +68,7 @@ public partial class HomeViewModel : ViewModelBase
 
             if (!custom && !_mainWindowViewModel.VersionRegistry.IsSupported)
             {
-                await UnsupportedVersionDialog.OnShowAsync();
+                await UnsupportedVersionDialog.ShowAsync();
                 return;
             }
 

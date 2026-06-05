@@ -4,14 +4,21 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Flarial.Launcher.ViewModels;
 using Flarial.Launcher.Views;
+using Windows.Security.Cryptography.Core;
 
 namespace Flarial.Launcher.Dialogs;
 
 public abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new()
 {
-    static readonly MessageDialog s_instance = new T();
+    internal static readonly T s_this = new();
+}
 
-    internal static async Task<bool> ShowAsync() => await s_instance.OnShowAsync();
+public static class MessageDialogMembers
+{
+    extension<T>(MessageDialog<T>) where T : MessageDialog<T>, new()
+    {
+        internal static async Task<bool> ShowAsync() => await MessageDialog<T>.s_this.ShowAsync();
+    }
 }
 
 public abstract class MessageDialog
@@ -28,14 +35,20 @@ public abstract class MessageDialog
             _buttons.Add(Buttons[index], index);
     }
 
-    internal virtual async Task<bool> OnShowAsync()
+    protected virtual async Task OnShowAsync(bool value) { }
+
+    internal async Task<bool> ShowAsync()
     {
         var application = Application.Current!;
         var lifetime = (IClassicDesktopStyleApplicationLifetime)application.ApplicationLifetime!;
 
         var view = (MainWindow)lifetime.MainWindow!;
         var model = (MainWindowViewModel)view.DataContext!;
-
-        return _buttons[await model.ShowMessageBoxAsync(Title, Message, Buttons)] <= 0;
+        var key = await model.ShowMessageBoxAsync(Title, Message, Buttons);
+        
+        var value = _buttons[key] <= 0;
+        await OnShowAsync(value);
+        
+        return value;
     }
 }

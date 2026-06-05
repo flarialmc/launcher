@@ -15,10 +15,9 @@ If you need help, join our Discord.";
 
     protected override string[] Buttons { get; } = ["Install", "Cancel"];
 
-    internal override async Task<bool> OnShowAsync()
+    protected override async Task OnShowAsync(bool value)
     {
-        var _ = await base.OnShowAsync();
-        if (_) MinecraftPage.Open();
-        return _;
+        if (value)
+            MinecraftPage.Open();
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Runtime.Core;

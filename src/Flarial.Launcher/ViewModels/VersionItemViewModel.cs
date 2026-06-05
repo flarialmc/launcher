@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Models;
 using Flarial.Launcher.Views;
@@ -93,7 +94,7 @@ public partial class VersionItemViewModel : ViewModelBase
         if (!(args.Cancel = IsProgressing)) return;
         if (InstallingVersionDialogTask is { }) return;
 
-        try { await (InstallingVersionDialogTask = _installingVersionDialog.OnShowAsync()); }
+        try { await (InstallingVersionDialogTask = _installingVersionDialog.ShowAsync()); }
         finally { InstallingVersionDialogTask = null; }
     }
 
@@ -117,7 +118,7 @@ public partial class VersionItemViewModel : ViewModelBase
             return;
         }
 
-        if (!await _installVersionDialog.OnShowAsync())
+        if (!await _installVersionDialog.ShowAsync())
             return;
 
         try
@@ -141,7 +142,7 @@ public partial class VersionItemViewModel : ViewModelBase
             _settingsVersionsViewModel.IsInstalling = false;
         }
 
-        await _installedVersionDialog.OnShowAsync();
+        await _installedVersionDialog.ShowAsync();
     }
 
     async Task DeleteAsync() { }
