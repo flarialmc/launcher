@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -44,7 +45,7 @@ public class MainWindowViewModel : ViewModelBase
         VersionRegistry = null!;
     }
 
-    public async Task<string> ShowMessageBoxAsync(string title, string message, string[] buttons)
+    public async Task<string> ShowMessageBoxAsync(string title, string message, IEnumerable<string> buttons)
     {
         await _semaphore.WaitAsync(); try
         {
