@@ -13,7 +13,7 @@ public abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T
     internal static readonly T s_this = new();
 }
 
-public static class MessageDialogMembers
+public static class IMessageDialog
 {
     extension<T>(MessageDialog<T>) where T : MessageDialog<T>, new()
     {
