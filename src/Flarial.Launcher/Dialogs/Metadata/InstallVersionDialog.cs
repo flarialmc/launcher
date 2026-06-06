@@ -7,8 +7,8 @@ sealed class InstallVersionDialog(VersionItem version) : MessageDialog
     protected override string Title => "💡 Install Version";
 
     protected override string Message => @$"Minecraft {version} will be now installed.
-Once the installation starts, you won't able to cancel it.
 
+• Once the installation starts, you won't able to cancel it.
 • Free up disk space before proceeding with the installation.
 • A high speed internet connection is recommended for this.
 

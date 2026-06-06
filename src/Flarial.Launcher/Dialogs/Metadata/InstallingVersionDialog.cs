@@ -8,6 +8,7 @@ sealed class InstallingVersionDialog(VersionItem version) : MessageDialog
     protected override string Message => $@"Minecraft {version} is being installed by the launcher.
 
 • Wait for the installation to finish.
+• Ensure your internet connection is fast.
 
 If you need help, join our Discord.";
 
