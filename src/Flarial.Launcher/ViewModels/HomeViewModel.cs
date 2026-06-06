@@ -27,7 +27,7 @@ public partial class HomeViewModel : ViewModelBase
     [Reactive] string _gameVersion = "0.0.0";
     [Reactive] IImmutableSolidColorBrush _gameVersionColor = Brushes.Gray;
 
-    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry.PreferredVersion);
+    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry);
 
     readonly AppSettings _appSettings;
     readonly MainWindowViewModel _mainWindowViewModel;
