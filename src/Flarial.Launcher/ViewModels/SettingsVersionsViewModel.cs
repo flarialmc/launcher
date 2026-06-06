@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using Flarial.Launcher.Models;
 using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;

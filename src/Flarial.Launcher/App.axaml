@@ -1,7 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Flarial.Launcher.App"
-             xmlns:local="using:Flarial.Launcher"
              xmlns:vm="using:Flarial.Launcher.ViewModels"
              xmlns:views="using:Flarial.Launcher.Views"
              Name="Flarial Launcher">

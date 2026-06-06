@@ -1,21 +1,11 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Animation;
-using Avalonia.Animation.Easings;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Media.Transformation;
-using Avalonia.Styling;
-using Flarial.Launcher.Models;
 
 namespace Flarial.Launcher.Controls.SegmentedBar;
 

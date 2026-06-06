@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
-using Flarial.Launcher.Models;
 using Flarial.Launcher.Views;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -16,12 +14,14 @@ using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
+public enum VersionItemState { Downloading, Installing, Installed, NotInstalled }
+
 public partial class VersionItemViewModel : ViewModelBase
 {
     public string Version { get; }
 
     [Reactive]
-    VersionItemState _state;
+    VersionItemState _state = VersionItemState.NotInstalled;
 
     [Reactive]
     double _installPercentage;
@@ -29,13 +29,14 @@ public partial class VersionItemViewModel : ViewModelBase
     [Reactive]
     bool _isProgressing;
 
-    public ReactiveCommand<Unit, Unit> InstallCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+    public ReactiveCommand<Unit, Unit> InstallCommand { get; }
 
-    public bool IsNotInstalled => State is VersionItemState.NotInstalled;
-    public bool IsDownloading => State is VersionItemState.Downloading;
-    public bool IsInstalled => State is VersionItemState.Installed;
     public bool IsInstalling => State is VersionItemState.Installing;
+    public bool IsDownloading => State is VersionItemState.Downloading;
+
+    public bool IsInstalled => State is VersionItemState.Installed;
+    public bool IsNotInstalled => State is VersionItemState.NotInstalled;
 
     readonly MainWindow _mainWindow;
     readonly VersionItem _versionItem;
