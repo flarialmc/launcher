@@ -112,9 +112,9 @@ public partial class VersionItemViewModel : ViewModelBase
             return;
         }
 
-        if (!Minecraft.IsSideloaded)
+        if (!Minecraft.IsPackaged)
         {
-            await SideloadedInstallDialog._.ShowAsync();
+            await UnpackagedInstallDialog._.ShowAsync();
             return;
         }
 

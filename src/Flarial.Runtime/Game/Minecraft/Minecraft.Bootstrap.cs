@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
@@ -33,7 +35,7 @@ unsafe partial class Minecraft
         return GetProcessId();
     }
 
-    internal static uint? Launch()
+    internal static uint? Launch([Optional] bool compatible)
     {
         if (!IsInstalled)
             throw new MinecraftNotInstalledException();
@@ -61,7 +63,7 @@ unsafe partial class Minecraft
                 - Instead, wait for the game's window to be visible.
             */
 
-            if (!IsSideloaded)
+            if (!IsPackaged)
             {
                 NativeWindow? processWindow = null;
 
@@ -88,7 +90,7 @@ unsafe partial class Minecraft
             var handle = CreateEvent(null, true, false, null);
             try
             {
-                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, compatible ? "*resource_init_lock" : "*menu_load_lock")
                 {
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
