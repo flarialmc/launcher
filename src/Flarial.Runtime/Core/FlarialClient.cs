@@ -24,7 +24,7 @@ public static class FlarialClient
         }
     }
 
-    public static bool? Launch()
+    public static bool? Launch(bool compatible)
     {
         if (Minecraft.GetWindow(ClassName) is { } clientWindow)
         {
@@ -35,7 +35,7 @@ public static class FlarialClient
             }
             return false;
         }
-        return Injector.Launch(new(FileName)) is { };
+        return Injector.Launch(compatible, new(FileName)) is { };
     }
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";

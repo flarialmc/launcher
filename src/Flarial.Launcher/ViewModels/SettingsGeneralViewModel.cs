@@ -49,6 +49,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         get;
         set
         {
+            _appSettings.CompatibilityMode = value;
             this.RaiseAndSetIfChanged(ref field, value);
         }
     }
@@ -98,6 +99,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         CustomDllPath = _appSettings.CustomDllPath;
         CustomDllSelected = _appSettings.UseCustomDll;
         AutomaticUpdates = _appSettings.AutomaticUpdates;
+        CompatibilityMode = _appSettings.CompatibilityMode;
 
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);

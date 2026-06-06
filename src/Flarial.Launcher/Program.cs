@@ -26,7 +26,7 @@ static class Program
             {
                 case "--inject":
                     if (!(index + 1 < args.Length)) continue;
-                    Injector.Launch(new(args[index + 1]));
+                    Injector.Launch(false, new(args[index + 1]));
                     return;
             }
 

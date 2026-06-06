@@ -53,6 +53,7 @@ public partial class HomeViewModel : ViewModelBase
         {
             var path = _appSettings.CustomDllPath;
             var custom = _appSettings.UseCustomDll;
+            var compatible = _appSettings.CompatibilityMode;
 
             if (!GamingServices.IsInstalled)
             {
@@ -63,6 +64,12 @@ public partial class HomeViewModel : ViewModelBase
             if (!Minecraft.IsInstalled)
             {
                 await NotInstalledDialog._.ShowAsync();
+                return;
+            }
+
+            if (compatible && !Minecraft.IsPackaged && !Minecraft.IsRunning)
+            {
+                await CompatibilityModeDialog._.ShowAsync();
                 return;
             }
 
@@ -81,7 +88,7 @@ public partial class HomeViewModel : ViewModelBase
                 }
 
                 LauncherStatus = "Launching...";
-                if (await Task.Run(() => Injector.Launch(library)) is null)
+                if (await Task.Run(() => Injector.Launch(compatible, library)) is null)
                 {
                     await LaunchFailureDialog._.ShowAsync();
                     return;
@@ -98,7 +105,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
+            if (!await FlarialClient.TrackedLaunchAsync(compatible) ?? false)
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;

@@ -9,6 +9,8 @@ public sealed class AppSettings
 {
     public bool AutomaticUpdates { get; set; } = true;
 
+    public bool CompatibilityMode { get; set; } = true;
+
     public bool UseCustomDll { get; set; } = false;
 
     public string CustomDllPath

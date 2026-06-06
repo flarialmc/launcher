@@ -35,13 +35,16 @@ unsafe partial class Minecraft
         return GetProcessId();
     }
 
-    internal static uint? Launch([Optional] bool compatible)
+    internal static uint? Launch(bool compatible)
     {
         if (!IsInstalled)
             throw new MinecraftNotInstalledException();
 
         if (!GamingServices.IsInstalled)
             throw new GamingServicesMissingException();
+
+        if (compatible && !IsPackaged && !IsRunning)
+            return null;
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {

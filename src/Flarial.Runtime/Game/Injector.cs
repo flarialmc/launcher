@@ -22,11 +22,11 @@ public static class Injector
         }
     }
 
-    public unsafe static uint? Launch(Library library)
+    public unsafe static uint? Launch(bool compatible, Library library)
     {
         var path = library.EnsurePath();
 
-        if (Minecraft.Launch() is not { } processId)
+        if (Minecraft.Launch(compatible) is not { } processId)
             return null;
 
         if (NativeProcess.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
