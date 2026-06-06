@@ -15,7 +15,7 @@ public static class FlarialClient
     const string FileName = "Flarial.Client.Release.dll";
     const string DownloadUri = "https://cdn.flarial.xyz/dll/latest.dll";
 
-    public static bool? Launch(bool compatible)
+    public static bool? Launch()
     {
         if (Minecraft.GetWindow(ClassName) is { } clientWindow)
         {
@@ -26,7 +26,7 @@ public static class FlarialClient
             }
             return false;
         }
-        return Injector.Launch(compatible, new(FileName)) is { };
+        return Injector.Launch(new(FileName)) is { };
     }
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";

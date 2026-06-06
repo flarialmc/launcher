@@ -6,8 +6,8 @@ sealed class CompatibilityModeDialog : MessageDialog<CompatibilityModeDialog>
 
     protected override string Message => @"The launcher is currently in compatibility mode.
 
-• The game is currently sideloaded, cannot launch safely.
-• Instead, launch the game manually & then press [Launch].
+• Consider launching the game manually & then pressing [Launch].
+• The game is currently sideloaded hence cannot be launched safely.
 
 If you need help, join our Discord.";
 

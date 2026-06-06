@@ -19,9 +19,9 @@ public static class LaunchAnalytics
 
     extension(FlarialClient)
     {
-        public static async Task<bool?> TrackedLaunchAsync(bool compatible)
+        public static async Task<bool?> TrackedLaunchAsync()
         {
-            var launched = await Task.Run(() => FlarialClient.Launch(compatible));
+            var launched = await Task.Run(FlarialClient.Launch);
             if (launched ?? false) _ = SendAsync();
             return launched;
         }

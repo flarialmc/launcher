@@ -87,7 +87,7 @@ public partial class HomeViewModel : ViewModelBase
                 }
 
                 LauncherStatus = "Launching...";
-                if (await Task.Run(() => Injector.Launch(compatible, library)) is null)
+                if (await Task.Run(() => Injector.Launch(library)) is null)
                 {
                     await LaunchFailureDialog._.ShowAsync();
                     return;
@@ -104,7 +104,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.TrackedLaunchAsync(compatible) ?? false)
+            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;

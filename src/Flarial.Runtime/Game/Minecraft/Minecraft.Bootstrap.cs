@@ -35,16 +35,13 @@ unsafe partial class Minecraft
         return GetProcessId();
     }
 
-    internal static uint? Launch(bool compatible)
+    internal static uint? Launch()
     {
         if (!IsInstalled)
             throw new GameNotFoundException();
 
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
-
-        if (compatible && IsSideloaded && !IsRunning)
-            return null;
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
@@ -93,7 +90,7 @@ unsafe partial class Minecraft
             var handle = CreateEvent(null, true, false, null);
             try
             {
-                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, compatible ? "*resource_init_lock" : "*menu_load_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
