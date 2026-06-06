@@ -44,6 +44,15 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         }
     }
 
+    public bool CompatibilityMode
+    {
+        get;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref field, value);
+        }
+    }
+
     static readonly FilePickerOpenOptions s_options = new()
     {
         FileTypeFilter = [new("Dynamic Link Libraries") { Patterns = ["*.dll"] }]

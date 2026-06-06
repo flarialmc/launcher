@@ -55,9 +55,9 @@
                         </Expander>
                     </StackPanel>
 
-                    <Grid IsVisible="False">
+                    <Grid>
                         <TextBlock Text="Compatibility Mode"/>
-                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
+                        <ToggleButton IsChecked="{Binding CompatibilityMode}"/>
                     </Grid>
 
 
@@ -68,7 +68,7 @@
 
                     <Grid>
                         <TextBlock Text="Automatic Updates" />
-                        <ToggleButton />
+                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
 
                 </StackPanel>
