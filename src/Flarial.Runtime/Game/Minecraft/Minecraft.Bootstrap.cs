@@ -35,8 +35,11 @@ unsafe partial class Minecraft
 
     internal static uint? Launch()
     {
-        if (!IsInstalled) throw new MinecraftNotInstalledException();
-        if (!GamingServices.IsInstalled) throw new GamingServicesNotInstalledException();
+        if (!IsInstalled)
+            throw new MinecraftNotInstalledException();
+
+        if (!GamingServices.IsInstalled)
+            throw new GamingServicesMissingException();
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {
@@ -44,18 +47,21 @@ unsafe partial class Minecraft
             return foundWindow._processId;
         }
 
-        if (Activate() is not { } processId) return null;
-        if (NativeProcess.Open(PROCESS_SYNCHRONIZE, processId) is not { } process) return null;
+        if (Activate() is not { } processId)
+            return null;
+
+        if (NativeProcess.Open(PROCESS_SYNCHRONIZE, processId) is not { } process)
+            return null;
 
         using (process)
         {
 
             /*
-                - Unpackaged installs might fail the launch contract.
+                - Sideloaded installs might fail the launch contract.
                 - Instead, wait for the game's window to be visible.
             */
 
-            if (!IsPackaged)
+            if (!IsSideloaded)
             {
                 NativeWindow? processWindow = null;
 

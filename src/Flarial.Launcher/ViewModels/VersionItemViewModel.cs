@@ -102,19 +102,19 @@ public partial class VersionItemViewModel : ViewModelBase
     {
         if (!Minecraft.IsInstalled)
         {
-            await NotInstalledDialog.ShowAsync();
+            await NotInstalledDialog._.ShowAsync();
             return;
         }
 
         if (!GamingServices.IsInstalled)
         {
-            await GamingServicesMissingDialog.ShowAsync();
+            await GamingServicesMissingDialog._.ShowAsync();
             return;
         }
 
-        if (!Minecraft.IsPackaged)
+        if (!Minecraft.IsSideloaded)
         {
-            await UnpackagedInstallDialog.ShowAsync();
+            await SideloadedInstallDialog._.ShowAsync();
             return;
         }
 

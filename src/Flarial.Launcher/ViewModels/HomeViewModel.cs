@@ -56,13 +56,13 @@ public partial class HomeViewModel : ViewModelBase
 
             if (!GamingServices.IsInstalled)
             {
-                await GamingServicesMissingDialog.ShowAsync();
+                await GamingServicesMissingDialog._.ShowAsync();
                 return;
             }
 
             if (!Minecraft.IsInstalled)
             {
-                await NotInstalledDialog.ShowAsync();
+                await NotInstalledDialog._.ShowAsync();
                 return;
             }
 
@@ -76,14 +76,14 @@ public partial class HomeViewModel : ViewModelBase
             {
                 Library library = new(path); if (!library.IsLoadable)
                 {
-                    await InvalidCustomDllDialog.ShowAsync();
+                    await InvalidCustomDllDialog._.ShowAsync();
                     return;
                 }
 
                 LauncherStatus = "Launching...";
                 if (await Task.Run(() => Injector.Launch(library)) is null)
                 {
-                    await LaunchFailureDialog.ShowAsync();
+                    await LaunchFailureDialog._.ShowAsync();
                     return;
                 }
 
@@ -93,14 +93,14 @@ public partial class HomeViewModel : ViewModelBase
             LauncherStatus = "Verifying...";
             if (!await FlarialClient.DownloadAsync(OnDownload))
             {
-                await ClientUpdateFailureDialog.ShowAsync();
+                await ClientUpdateFailureDialog._.ShowAsync();
                 return;
             }
 
             LauncherStatus = "Launching...";
             if (!await FlarialClient.TrackedLaunchAsync() ?? false)
             {
-                await LaunchFailureDialog.ShowAsync();
+                await LaunchFailureDialog._.ShowAsync();
                 return;
             }
         }

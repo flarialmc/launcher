@@ -60,13 +60,13 @@ public sealed class VersionItem
     public async Task InstallAsync(Action<int, bool> callback)
     {
         if (!GamingServices.IsInstalled)
-            throw new GamingServicesNotInstalledException();
+            throw new GamingServicesMissingException();
 
         if (!Minecraft.IsInstalled)
             throw new MinecraftNotInstalledException();
 
-        if (!Minecraft.IsPackaged)
-            throw new MinecraftUnpackagedException();
+        if (!Minecraft.IsSideloaded)
+            throw new MinecraftSideloadedException();
 
         var package = Path.Combine(s_temp, Path.GetRandomFileName());
         var helper = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");

@@ -78,7 +78,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         _appSettings = appSettings;
 
-        BuildTypes = [new() { Title = "Release", Tag = false }, new() { Title = "Custom", Tag = true }];
+        BuildTypes = [new() { Title = "Flarial Client", Tag = false }, new() { Title = "Custom DLL", Tag = true }];
 
         SelectedBuild = _appSettings.UseCustomDll switch
         {

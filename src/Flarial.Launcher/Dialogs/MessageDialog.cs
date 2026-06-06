@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -10,15 +9,7 @@ namespace Flarial.Launcher.Dialogs;
 
 public abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new()
 {
-    internal static readonly T s_this = new();
-}
-
-public static class MessageDialogExtensions
-{
-    extension<T>(MessageDialog<T>) where T : MessageDialog<T>, new()
-    {
-        internal static async Task<bool> ShowAsync() => await MessageDialog<T>.s_this.ShowAsync();
-    }
+    internal static readonly T _ = new();
 }
 
 public abstract class MessageDialog
