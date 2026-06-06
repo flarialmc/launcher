@@ -16,11 +16,7 @@ sealed class GamingServicesPage : StorePage<GamingServicesPage>
 
 abstract class StorePage<T> : StorePage where T : StorePage<T>, new()
 {
-    static readonly ConcurrentDictionary<Type, StorePage<T>> s_pages = [];
-
-    static StorePage<T> Get() => s_pages.GetOrAdd(typeof(T), static type => new T());
-
-    public static void Open() => Get().OnOpen();
+    internal static readonly T _ = new();
 }
 
 abstract class StorePage
@@ -31,5 +27,5 @@ abstract class StorePage
 
     internal StorePage() => _uri = $"ms-windows-store://pdp/?ProductId={ProductId}";
 
-    internal void OnOpen() => NativeMethods.ShellExecute(_uri);
+    internal void Open() => NativeMethods.ShellExecute(_uri);
 }
