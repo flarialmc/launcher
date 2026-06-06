@@ -60,7 +60,7 @@ public sealed class VersionItem
     public async Task InstallAsync(Action<int, bool> callback)
     {
         if (!GamingServices.IsInstalled)
-            throw new GamingServicesMissingException();
+            throw new GamingServicesNotInstalledException();
 
         if (!Minecraft.IsInstalled)
             throw new MinecraftNotInstalledException();

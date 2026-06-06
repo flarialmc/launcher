@@ -67,7 +67,7 @@
             </Grid>
 
             <!--Center Content and Buttons-->
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="{Binding IsInitialized}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Name="GreetingLabel" Margin="0,0,0,0" Text="Welcome!" HorizontalAlignment="Center" FontSize="28" Foreground="White"/>
                 <TextBlock Margin="0,0,0,0" Text="{Binding LauncherStatus}" HorizontalAlignment="Center" FontSize="18" Foreground="DarkGray" />
                 <VisualLayerManager>

@@ -1,13 +1,13 @@
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class UnpackagedInstallDialog : MessageDialog<UnpackagedInstallDialog>
+sealed class SideloadedInstallDialog : MessageDialog<SideloadedInstallDialog>
 {
-    protected override string Title => "⚠️ Unpackaged Install";
+    protected override string Title => "⚠️ Sideloaded Install";
 
     protected override string Message => @"The game installation is currently sideloaded.
 
 • Please reinstall the game via the Microsoft or Xbox App.
-• The launcher can only switch versions if the install isn't sideloaded.
+• The launcher can only switch versions if game isn't sideloaded.
 
 If you need help, join our Discord.";
 

@@ -41,7 +41,7 @@ unsafe partial class Minecraft
             throw new MinecraftNotInstalledException();
 
         if (!GamingServices.IsInstalled)
-            throw new GamingServicesMissingException();
+            throw new GamingServicesNotInstalledException();
 
         if (compatible && !IsPackaged && !IsRunning)
             return null;

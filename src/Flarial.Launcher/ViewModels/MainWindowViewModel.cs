@@ -93,6 +93,6 @@ public class MainWindowViewModel : ViewModelBase
         Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;
 
         HomeViewModel.LauncherStatus = "Ready!";
-        HomeViewModel.IsInitialized = true;
+        HomeViewModel.IsLaunching = false;
     }
 }

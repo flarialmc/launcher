@@ -19,8 +19,7 @@ namespace Flarial.Launcher.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase
 {
-    [Reactive] bool _isLaunching;
-    [Reactive] bool _isInitialized;
+    [Reactive] bool _isLaunching = true;
 
     [Reactive] string _launcherVersion;
     [Reactive] string _launcherStatus = "Preparing...";
