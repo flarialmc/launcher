@@ -66,7 +66,7 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (compatible && !Minecraft.IsPackaged && !Minecraft.IsRunning)
+            if (compatible && Minecraft.IsSideloaded && !Minecraft.IsRunning)
             {
                 await CompatibilityModeDialog._.ShowAsync();
                 return;

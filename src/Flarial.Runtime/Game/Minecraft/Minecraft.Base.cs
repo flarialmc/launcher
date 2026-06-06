@@ -30,5 +30,5 @@ public static partial class Minecraft
 
     public static bool IsInstalled => Package is { };
     public static bool IsRunning => GetWindow()?.IsVisible ?? false;
-    public static bool IsPackaged => Package.SignatureKind is PackageSignatureKind.Store;
+    public static bool IsSideloaded => Package.SignatureKind != PackageSignatureKind.Store;
 }

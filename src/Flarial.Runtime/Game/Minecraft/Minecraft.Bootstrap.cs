@@ -22,7 +22,7 @@ unsafe partial class Minecraft
             return processId;
 
         var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new MinecraftNotFoundException();
+        if (!File.Exists(path)) throw new GameNotFoundException();
 
         using var process = Process.Start(new ProcessStartInfo
         {
@@ -38,12 +38,12 @@ unsafe partial class Minecraft
     internal static uint? Launch(bool compatible)
     {
         if (!IsInstalled)
-            throw new MinecraftNotInstalledException();
+            throw new GameNotFoundException();
 
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
 
-        if (compatible && !IsPackaged && !IsRunning)
+        if (compatible && IsSideloaded && !IsRunning)
             return null;
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
@@ -66,7 +66,7 @@ unsafe partial class Minecraft
                 - Instead, wait for the game's window to be visible.
             */
 
-            if (!IsPackaged)
+            if (IsSideloaded)
             {
                 NativeWindow? processWindow = null;
 

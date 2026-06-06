@@ -63,10 +63,10 @@ public sealed class VersionItem
             throw new GamingServicesNotInstalledException();
 
         if (!Minecraft.IsInstalled)
-            throw new MinecraftNotInstalledException();
+            throw new GameNotInstalledException();
 
-        if (!Minecraft.IsPackaged)
-            throw new MinecraftUnpackagedException();
+        if (Minecraft.IsSideloaded)
+            throw new GameSideloadedException();
 
         var package = Path.Combine(s_temp, Path.GetRandomFileName());
         var helper = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
