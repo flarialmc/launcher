@@ -41,8 +41,8 @@ public partial class HomeViewModel : ViewModelBase
         _launcherVersion = $"{assembly.GetName().Version}";
 
         Launch = ReactiveCommand.CreateFromTask(OnLaunchAsync);
-        CloseWindow = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Close));
-        MinimizeWindow = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(WindowStateArgs.Minimize));
+        CloseWindow = ReactiveCommand.Create(static () => MessageBus.Current.SendMessage(WindowStateArgs.Close));
+        MinimizeWindow = ReactiveCommand.Create(static () => MessageBus.Current.SendMessage(WindowStateArgs.Minimize));
     }
 
     async Task OnLaunchAsync()

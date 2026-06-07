@@ -59,10 +59,7 @@ public class MainWindowViewModel : ViewModelBase
         finally { _semaphore.Release(); }
     }
 
-    void OnLauncherDownload(int value) => Dispatcher.UIThread.Invoke(() =>
-    {
-        HomeViewModel.LauncherStatus = $"Updating... {value}%";
-    });
+    void OnDownload(int value) => HomeViewModel.LauncherStatus = $"Updating... {value}%";
 
     public async void OnLoaded()
     {
@@ -75,7 +72,7 @@ public class MainWindowViewModel : ViewModelBase
 
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_appSettings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
-            await FlarialLauncher.DownloadAsync(OnLauncherDownload);
+            await FlarialLauncher.DownloadAsync(OnDownload);
             return;
         }
 
