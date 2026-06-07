@@ -1,5 +1,5 @@
 IsWindowVisible
-MessageBox
+TaskDialogIndirect
 SetErrorMode
 ShellExecute
 GetPackageFamilyName
@@ -23,6 +23,7 @@ GetProcAddress
 WriteProcessMemory
 VirtualAllocEx
 VirtualFreeEx
+TD_ERROR_ICON
 SHOW_WINDOW_CMD
 IMAGE_DOS_HEADER
 IMAGE_NT_HEADERS64

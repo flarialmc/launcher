@@ -14,17 +14,13 @@ using Flarial.Runtime.Unmanaged;
 
 file static class AssemblyInfo
 {
-    const string Format = @"Looks like the launcher crashed! 
-
-• Please take a screenshot of this.
+    const string Format = @"• Please take a screenshot of this.
 • Create a new support post & send the screenshot.
 
 Version: {0}
 Exception: {1}
 
-{2}
-
-{3}";
+{2}";
 
     [ModuleInitializer]
     internal static void ModuleInitializer() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -35,23 +31,23 @@ Exception: {1}
         var version = $"{assembly.GetName().Version}";
 
         var exception = (Exception)args.ExceptionObject;
-        var trace = (exception.StackTrace ?? string.Empty).Trim();
+        var information = exception.StackTrace?.Trim();
+        while (exception.InnerException is { }) exception = exception.InnerException;
 
-        while (exception.InnerException is not null)
-            exception = exception.InnerException;
-
-        nint handle = 0;
         var message = exception.Message;
-        var name = exception.GetType().Name;
+        var type = exception.GetType().Name;
 
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+        var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        nint handle = new(lifetime?.MainWindow?.TryGetPlatformHandle()?.Handle ?? 0);
+
+        new NativeTaskDialog
         {
-            if (lifetime.MainWindow is not { } window) return;
-            handle = new(window.TryGetPlatformHandle()?.Handle ?? 0);
-        }
-
-        var text = string.Format(Format, version, name, message, trace);
-        NativeMethods.MessageBox(handle, text, "Flarial Launcher: Error");
+            Handle = handle,
+            Information = information,
+            Title = "Flarial Launcher: Error",
+            Instruction = "Looks like the launcher crashed!",
+            Content = string.Format(Format, version, type, message)
+        }.Show();
 
         Environment.Exit(1);
     }
