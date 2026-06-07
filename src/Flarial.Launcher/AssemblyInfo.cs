@@ -43,10 +43,12 @@ Exception: {1}
         new NativeDialog
         {
             Handle = handle,
-            Information = information,
+
             Title = "Flarial Launcher: Error",
+            Content = string.Format(Format, version, type, message),
+
+            Information = information,
             Instruction = "Looks like the launcher crashed!",
-            Content = string.Format(Format, version, type, message)
         }.Show();
 
         Environment.Exit(1);
