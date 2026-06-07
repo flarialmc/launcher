@@ -22,7 +22,9 @@ file static class AssemblyInfo
 Version: {0}
 Exception: {1}
 
-{2}";
+{2}
+
+{3}";
 
     [ModuleInitializer]
     internal static void ModuleInitializer() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -33,16 +35,14 @@ Exception: {1}
         var version = $"{assembly.GetName().Version}";
 
         var exception = (Exception)args.ExceptionObject;
-        while (exception.InnerException is not null) exception = exception.InnerException;
+        var trace = (exception.StackTrace ?? string.Empty).Trim();
 
-        var message = exception.Message;
-        var name = exception.GetType().Name;
-
-#if DEBUG
-        message = $"{args.ExceptionObject}";
-#endif
+        while (exception.InnerException is not null)
+            exception = exception.InnerException;
 
         nint handle = 0;
+        var message = exception.Message;
+        var name = exception.GetType().Name;
 
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
         {
@@ -50,10 +50,9 @@ Exception: {1}
             handle = new(window.TryGetPlatformHandle()?.Handle ?? 0);
         }
 
-        var text = string.Format(Format, version, name, message);
+        var text = string.Format(Format, version, name, message, trace);
         NativeMethods.MessageBox(handle, text, "Flarial Launcher: Error");
 
         Environment.Exit(1);
     }
-
 }
