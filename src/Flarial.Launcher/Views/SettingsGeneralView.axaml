@@ -40,6 +40,16 @@
                         <Button Command="{Binding OpenLauncherFolder}" Classes="GenericButton" CornerRadius="7.5" Content="Open Launcher Folder" FontSize="16" />
                     </UniformGrid>
 
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
+
+                    <Grid>
+                        <TextBlock Text="Automatic Updates" />
+                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
+                    </Grid>
+
                     <Grid HorizontalAlignment="Left"  >
                         <TextBlock Margin="0,0,0,5" Text="Game" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
@@ -54,22 +64,6 @@
                             </Grid>
                         </Expander>
                     </StackPanel>
-
-                    <Grid>
-                        <TextBlock Text="Compatibility Mode"/>
-                        <ToggleButton IsChecked="{Binding CompatibilityMode}"/>
-                    </Grid>
-
-
-                    <Grid HorizontalAlignment="Left">
-                        <TextBlock Margin="0,0,0,5" Text="Launcher" FontSize="22" FontWeight="SemiBold"/>
-                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-                    </Grid>
-
-                    <Grid>
-                        <TextBlock Text="Automatic Updates" />
-                        <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
-                    </Grid>
 
                 </StackPanel>
             </spotlightDecorator:SpotlightDecorator>

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
@@ -8,8 +7,6 @@ namespace Flarial.Launcher.Management;
 public sealed class AppSettings
 {
     public bool AutomaticUpdates { get; set; } = true;
-
-    public bool CompatibilityMode { get; set; } = true;
 
     public bool UseCustomDll { get; set; } = false;
 

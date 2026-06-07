@@ -52,7 +52,6 @@ public partial class HomeViewModel : ViewModelBase
         {
             var path = _appSettings.CustomDllPath;
             var custom = _appSettings.UseCustomDll;
-            var compatible = _appSettings.CompatibilityMode;
 
             if (!GamingServices.IsInstalled)
             {
@@ -63,12 +62,6 @@ public partial class HomeViewModel : ViewModelBase
             if (!Minecraft.IsInstalled)
             {
                 await NotInstalledDialog._.ShowAsync();
-                return;
-            }
-
-            if (compatible && Minecraft.IsSideloaded && !Minecraft.IsRunning)
-            {
-                await CompatibilityModeDialog._.ShowAsync();
                 return;
             }
 
