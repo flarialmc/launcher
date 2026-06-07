@@ -51,5 +51,5 @@ public partial class HomeView : UserControl
         });
     }
 
-    static void OnPointerPressed(object? sender, RoutedEventArgs args) => NativeMethods.ShellExecute((string)((Image)sender!).Tag!);
+    static void OnPointerPressed(object? sender, RoutedEventArgs args) => NativePlatform.Open((string)((Image)sender!).Tag!);
 }

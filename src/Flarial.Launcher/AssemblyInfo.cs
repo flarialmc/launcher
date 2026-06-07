@@ -40,7 +40,7 @@ Exception: {1}
         var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
         nint handle = new(lifetime?.MainWindow?.TryGetPlatformHandle()?.Handle ?? 0);
 
-        new NativeTaskDialog
+        new NativeDialog
         {
             Handle = handle,
             Information = information,

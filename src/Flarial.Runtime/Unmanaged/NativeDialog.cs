@@ -6,13 +6,13 @@ using static Windows.Win32.UI.Controls.TASKDIALOG_FLAGS;
 
 namespace Flarial.Runtime.Unmanaged;
 
-public unsafe readonly ref struct NativeTaskDialog
+public unsafe readonly ref struct NativeDialog
 {
     public required readonly nint Handle { get; init; }
-    public required readonly ReadOnlySpan<char> Title { get; init; }
-    public required readonly ReadOnlySpan<char> Content { get; init; }
-    public required readonly ReadOnlySpan<char> Instruction { get; init; }
-    public required readonly ReadOnlySpan<char> Information { get; init; }
+    public required readonly string Title { get; init; }
+    public required readonly string Content { get; init; }
+    public required readonly string Instruction { get; init; }
+    public required readonly string Information { get; init; }
 
     public void Show()
     {
