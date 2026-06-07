@@ -38,6 +38,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="/Animations/MainPageTransitionAnimation.axaml"/>
+                <MergeResourceInclude Source="/Animations/MainPagePerformanceModeTransitions.axaml"/>
                 <MergeResourceInclude Source="/Styles/TextBox.axaml"/>
                 <MergeResourceInclude Source="/Styles/ScrollViewer.axaml"/>
             </ResourceDictionary.MergedDictionaries>

@@ -57,15 +57,29 @@ public partial class MainWindow : Window
         switch (page)
         {
             case PageTransitions.SettingsPage:
-                homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageLeaveTransition"];
-                settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageEnterTransition"];
+                if (vm._appSettings.PerformanceMode)
+                {
+                    homeViewAnimation = (Animation?)Application.Current?.Resources["PerformanceHomePageLeaveTransition"];
+                    settingsViewAnimation = (Animation?)Application.Current?.Resources["PerformanceSettingsPageEnterTransition"];
+                }
+                else
+                {
+                    homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageLeaveTransition"];
+                    settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageEnterTransition"];
+                }
                 break;
-
             case PageTransitions.HomePage:
-                homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageEnterTransition"];
-                settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageLeaveTransition"];
+                if (vm._appSettings.PerformanceMode)
+                {
+                    homeViewAnimation = (Animation?)Application.Current?.Resources["PerformanceHomePageEnterTransition"];
+                    settingsViewAnimation = (Animation?)Application.Current?.Resources["PerformanceSettingsPageLeaveTransition"];
+                }
+                else
+                {
+                    homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageEnterTransition"];
+                    settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageLeaveTransition"];
+                }
                 break;
-
             case PageTransitions.SettingsGeneralPage:
             case PageTransitions.SettingsVersionsPage:
             case PageTransitions.SettingsConfigsPage:
@@ -73,7 +87,7 @@ public partial class MainWindow : Window
                 vm.IsAnimating = false;
                 return;
         }
-
+        
         if (homeViewAnimation is not null)
             tasks.Add(homeViewAnimation.RunAsync(HomeViewControl));
 

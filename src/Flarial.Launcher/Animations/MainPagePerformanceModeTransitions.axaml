@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Animation x:Key="PerformanceHomePageEnterTransition" Duration="0:0:0.0" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+            <Setter Property="UserControl.IsVisible" Value="True"/>
+            <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+            <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="PerformanceHomePageLeaveTransition" Duration="0:0:0.0" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+            <Setter Property="UserControl.IsVisible" Value="False"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="PerformanceSettingsPageEnterTransition" Duration="0:0:0.0" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="0%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+            <Setter Property="UserControl.IsHitTestVisible" Value="True"/>
+            <Setter Property="UserControl.Opacity" Value="1"/>
+        </KeyFrame>
+    </Animation>
+    
+    <Animation x:Key="PerformanceSettingsPageLeaveTransition" Duration="0:0:0.0" x:SetterTargetType="UserControl" FillMode="Forward" Easing="QuadraticEaseInOut">
+        <KeyFrame Cue="100%">
+            <Setter Property="TranslateTransform.Y" Value="0"/>
+            <Setter Property="UserControl.IsHitTestVisible" Value="False"/>
+            <Setter Property="UserControl.Opacity" Value="0"/>
+        </KeyFrame>
+    </Animation>
+</ResourceDictionary>

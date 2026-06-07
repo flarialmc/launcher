@@ -23,7 +23,7 @@
                 <Grid Margin="0,70,0,0" VerticalAlignment="Top" Height="150">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
-                            <GradientStop Color="#ff201A1B" Offset="0"/>
+                            <GradientStop Color="#ff201A1B" Offset="0.04"/>
                             <GradientStop Color="#00201A1B" Offset="1"/>
                         </LinearGradientBrush>
                     </Grid.Background>
@@ -33,7 +33,7 @@
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="50%, 0%" EndPoint="50%, 100%">
                             <GradientStop Color="#00201A1B" Offset="0"/>
-                            <GradientStop Color="#ff201A1B" Offset="1"/>
+                            <GradientStop Color="#ff201A1B" Offset="0.96"/>
                         </LinearGradientBrush>
                     </Grid.Background>
                 </Grid>

@@ -9,6 +9,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Flarial.Launcher.Management;
 using SkiaSharp;
 
 namespace Flarial.Launcher.Controls.SpotlightDecorator;
@@ -196,7 +197,7 @@ public class SpotlightDecorator : Decorator
         private void OnAnimationFrame(TimeSpan time)
         {
             // Keep requesting frames while active or animating
-            if (_isActive || _host.SpotlightOpacity > 0.01)
+            if (!AppSettings.PerformanceModeStatic && (_isActive || _host.SpotlightOpacity > 0.01))
             {
                 InvalidateVisual();
             }
@@ -207,6 +208,7 @@ public class SpotlightDecorator : Decorator
 
         public override void Render(DrawingContext context)
         {
+            if (AppSettings.PerformanceModeStatic) return;
             if (_host.Child == null || _host.Bounds.Width <= 0 || _host.Bounds.Height <= 0) return;
 
             // Optimization: If invisible, don't render anything

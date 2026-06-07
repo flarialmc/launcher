@@ -8,6 +8,12 @@ public sealed class AppSettings
 {
     public bool AutomaticUpdates { get; set; } = true;
 
+    // idk how else i would do this lol
+    // todo: fix this
+    public static bool PerformanceModeStatic { get; set; } = false;
+    
+    public bool PerformanceMode { get; set; } = false;
+    
     public bool UseCustomDll { get; set; } = false;
 
     public string CustomDllPath
@@ -19,7 +25,7 @@ public sealed class AppSettings
             catch { field = string.Empty; }
         }
     } = string.Empty;
-
+    
     internal static AppSettings Get()
     {
         try

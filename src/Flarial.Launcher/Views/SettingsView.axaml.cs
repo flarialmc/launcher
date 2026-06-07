@@ -41,56 +41,65 @@ public partial class SettingsView : UserControl
 
         if (UserControlGrid.RenderTransform is not ScaleTransform) return;
 
-        var zoomOut = new Animation
-        {
-            Duration = TimeSpan.FromSeconds(0.2),
-            Easing = new QuadraticEaseOut(),
-            FillMode = FillMode.Forward,
-            Children =
-            {
-                new KeyFrame
-                {
-                    Cue = new Cue(1),
-                    Setters =
-                    {
-                        new Setter(ScaleTransform.ScaleXProperty, 0.9),
-                        new Setter(ScaleTransform.ScaleYProperty, 0.9),
-                    }
-                }
-            }
-        };
-
         var generalMove = CreateMove(0 - selectedPageY);
         var versionsMove = CreateMove(500 - selectedPageY);
         var configsMove = CreateMove(1000 - selectedPageY);
-
-        var zoomIn = new Animation
+        
+        if (settingsViewModel._appSettings.PerformanceMode)
         {
-            Delay = TimeSpan.FromMilliseconds(500),
-            Duration = TimeSpan.FromSeconds(0.2),
-            Easing = new QuadraticEaseIn(),
-            FillMode = FillMode.Forward,
-            Children =
+            _ = generalMove.RunAsync(SettingsGeneralViewControl);
+            _ = versionsMove.RunAsync(SettingsVersionsViewControl);
+            _ = configsMove.RunAsync(SettingsConfigsViewControl);
+        }
+        else
+        {
+            var zoomOut = new Animation
             {
-                new KeyFrame
+                Duration = TimeSpan.FromSeconds(0.2),
+                Easing = new QuadraticEaseOut(),
+                FillMode = FillMode.Forward,
+                Children =
                 {
-                    Cue = new Cue(1),
-                    Setters =
+                    new KeyFrame
                     {
-                        new Setter(ScaleTransform.ScaleXProperty, 1.0),
-                        new Setter(ScaleTransform.ScaleYProperty, 1.0),
+                        Cue = new Cue(1),
+                        Setters =
+                        {
+                            new Setter(ScaleTransform.ScaleXProperty, 0.9),
+                            new Setter(ScaleTransform.ScaleYProperty, 0.9),
+                        }
                     }
                 }
-            }
-        };
-
-        _ = zoomOut.RunAsync(UserControlGrid);
-        _ = generalMove.RunAsync(SettingsGeneralViewControl);
-        _ = versionsMove.RunAsync(SettingsVersionsViewControl);
-        _ = configsMove.RunAsync(SettingsConfigsViewControl);
-        _ = zoomIn.RunAsync(UserControlGrid);
-
-        await Task.Delay(700);
+            };
+        
+            var zoomIn = new Animation
+            {
+                Delay = TimeSpan.FromMilliseconds(500),
+                Duration = TimeSpan.FromSeconds(0.2),
+                Easing = new QuadraticEaseIn(),
+                FillMode = FillMode.Forward,
+                Children =
+                {
+                    new KeyFrame
+                    {
+                        Cue = new Cue(1),
+                        Setters =
+                        {
+                            new Setter(ScaleTransform.ScaleXProperty, 1.0),
+                            new Setter(ScaleTransform.ScaleYProperty, 1.0),
+                        }
+                    }
+                }
+            };
+            
+            _ = zoomOut.RunAsync(UserControlGrid);
+            _ = generalMove.RunAsync(SettingsGeneralViewControl);
+            _ = versionsMove.RunAsync(SettingsVersionsViewControl);
+            _ = configsMove.RunAsync(SettingsConfigsViewControl);
+            _ = zoomIn.RunAsync(UserControlGrid);
+            
+            await Task.Delay(700);
+        }
 
         UserControlGrid.IsEnabled = true;
         _currentPageY = selectedPageY;
@@ -99,8 +108,8 @@ public partial class SettingsView : UserControl
 
         Animation CreateMove(double toY) => new()
         {
-            Delay = TimeSpan.FromMilliseconds(250),
-            Duration = TimeSpan.FromSeconds(0.2),
+            Delay = TimeSpan.FromMilliseconds(settingsViewModel._appSettings.PerformanceMode ? 0 : 250),
+            Duration = TimeSpan.FromSeconds(settingsViewModel._appSettings.PerformanceMode ? 0 : 0.2),
             Easing = new QuadraticEaseInOut(),
             FillMode = FillMode.Forward,
             Children =

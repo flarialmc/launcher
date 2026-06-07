@@ -49,6 +49,11 @@
                         <TextBlock Text="Automatic Updates" />
                         <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
+                    
+                    <Grid>
+                        <TextBlock Text="Performance Mode" />
+                        <ToggleButton IsChecked="{Binding PerformanceMode}"/>
+                    </Grid>
 
                     <Grid HorizontalAlignment="Left"  >
                         <TextBlock Margin="0,0,0,5" Text="Game" FontSize="22" FontWeight="SemiBold"/>
