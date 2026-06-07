@@ -37,11 +37,11 @@ unsafe partial class Minecraft
 
     internal static uint? Launch()
     {
-        if (!IsInstalled)
-            throw new GameNotFoundException();
-
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
+
+        if (!IsInstalled)
+            throw new GameNotFoundException();
 
         if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
         {

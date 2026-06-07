@@ -101,15 +101,15 @@ public partial class VersionItemViewModel : ViewModelBase
 
     private async Task InstallAsync()
     {
-        if (!Minecraft.IsInstalled)
-        {
-            await NotInstalledDialog._.ShowAsync();
-            return;
-        }
-
         if (!GamingServices.IsInstalled)
         {
             await GamingServicesMissingDialog._.ShowAsync();
+            return;
+        }
+
+        if (!Minecraft.IsInstalled)
+        {
+            await NotInstalledDialog._.ShowAsync();
             return;
         }
 

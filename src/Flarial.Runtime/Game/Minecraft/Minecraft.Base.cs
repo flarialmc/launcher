@@ -29,6 +29,5 @@ public static partial class Minecraft
     internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
 
     public static bool IsInstalled => Package is { };
-    [Obsolete("No longer used.", true)] public static bool IsRunning => GetWindow()?.IsVisible ?? false;
     public static bool IsSideloaded => Package.SignatureKind != PackageSignatureKind.Store;
 }
