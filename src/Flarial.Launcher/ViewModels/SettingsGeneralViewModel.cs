@@ -16,10 +16,10 @@ namespace Flarial.Launcher.ViewModels;
 
 public partial class SettingsGeneralViewModel : ViewModelBase
 {
-    [Reactive] 
+    [Reactive]
     private string? _customDllPath;
 
-    [Reactive] 
+    [Reactive]
     private bool _customDllSelected;
 
     public ObservableCollection<SegmentItem> BuildTypes { get; }
@@ -40,11 +40,10 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         set
         {
             _appSettings.PerformanceMode = value;
-            AppSettings.PerformanceModeStatic = value;
             this.RaiseAndSetIfChanged(ref field, value);
         }
     }
-    
+
     public bool AutomaticUpdates
     {
         get;
@@ -99,8 +98,8 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
         CustomDllPath = _appSettings.CustomDllPath;
         CustomDllSelected = _appSettings.UseCustomDll;
-        AutomaticUpdates = _appSettings.AutomaticUpdates;
         PerformanceMode = _appSettings.PerformanceMode;
+        AutomaticUpdates = _appSettings.AutomaticUpdates;
 
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);

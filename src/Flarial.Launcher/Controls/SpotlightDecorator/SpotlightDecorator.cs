@@ -23,6 +23,8 @@ public class SpotlightDecorator : Decorator
     public static readonly StyledProperty<double> SpotlightOpacityProperty =
         AvaloniaProperty.Register<SpotlightDecorator, double>(nameof(SpotlightOpacity), 0.0);
 
+    static bool PerformanceMode => (Application.Current as App)?.AppSettings?.PerformanceMode ?? false;
+
     public double SpotlightOpacity
     {
         get => GetValue(SpotlightOpacityProperty);
@@ -51,15 +53,15 @@ public class SpotlightDecorator : Decorator
     {
         // 2. Configure Smooth Transitions
         // This tells Avalonia: "Whenever SpotlightOpacity is changed, take 200ms to transition to the new value."
-        Transitions = new Avalonia.Animation.Transitions
-        {
+        Transitions =
+        [
             new Avalonia.Animation.DoubleTransition
             {
                 Property = SpotlightOpacityProperty,
                 Duration = TimeSpan.FromMilliseconds(200),
                 Easing = new Avalonia.Animation.Easings.SineEaseOut()
             }
-        };
+        ];
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -84,8 +86,8 @@ public class SpotlightDecorator : Decorator
     {
         base.OnPropertyChanged(change);
         // Important: Re-render when Opacity changes during the animation
-        if (change.Property == SpotlightColorProperty || 
-            change.Property == SpotlightRadiusProperty || 
+        if (change.Property == SpotlightColorProperty ||
+            change.Property == SpotlightRadiusProperty ||
             change.Property == SpotlightOpacityProperty)
         {
             _adorner?.InvalidateVisual();
@@ -160,21 +162,24 @@ public class SpotlightDecorator : Decorator
             if (_effect == null) throw new Exception(error);
 
             // 3. Logic: Trigger Fades on Input
-            _host.PointerMoved += (s, e) => {
+            _host.PointerMoved += (s, e) =>
+            {
                 _mousePosition = e.GetPosition(_host);
                 // Trigger Fade In
                 _host.SpotlightOpacity = 1.0;
                 _isActive = true;
                 InvalidateVisual();
             };
-            
-            _host.PointerEntered += (s, e) => {
-                 // Trigger Fade In
+
+            _host.PointerEntered += (s, e) =>
+            {
+                // Trigger Fade In
                 _host.SpotlightOpacity = 1.0;
                 _isActive = true;
             };
 
-            _host.PointerExited += (s, e) => {
+            _host.PointerExited += (s, e) =>
+            {
                 // Trigger Fade Out
                 // Note: We DO NOT reset _mousePosition here. 
                 // This lets the light fade out right where the mouse left.
@@ -182,7 +187,7 @@ public class SpotlightDecorator : Decorator
                 _isActive = false;
             };
         }
-        
+
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
@@ -197,18 +202,18 @@ public class SpotlightDecorator : Decorator
         private void OnAnimationFrame(TimeSpan time)
         {
             // Keep requesting frames while active or animating
-            if (!AppSettings.PerformanceModeStatic && (_isActive || _host.SpotlightOpacity > 0.01))
+            if (!PerformanceMode && (_isActive || _host.SpotlightOpacity > 0.01))
             {
                 InvalidateVisual();
             }
-            
+
             var topLevel = TopLevel.GetTopLevel(this);
             topLevel?.RequestAnimationFrame(OnAnimationFrame);
         }
 
         public override void Render(DrawingContext context)
         {
-            if (AppSettings.PerformanceModeStatic) return;
+            if (PerformanceMode) return;
             if (_host.Child == null || _host.Bounds.Width <= 0 || _host.Bounds.Height <= 0) return;
 
             // Optimization: If invisible, don't render anything
@@ -235,8 +240,8 @@ public class SpotlightDecorator : Decorator
 
             context.Custom(new ShaderDrawOperation(
                 new Rect(offset.X, offset.Y, _host.Bounds.Width, _host.Bounds.Height),
-                _effect!, 
-                _mousePosition, 
+                _effect!,
+                _mousePosition,
                 (float)dpi,
                 _host.SpotlightColor,
                 (float)_host.SpotlightRadius,
@@ -285,13 +290,13 @@ public class SpotlightDecorator : Decorator
 
             // Using Rgba8888 based on your feedback that colors were inverted
             var info = new SKImageInfo(_bmp.PixelSize.Width, _bmp.PixelSize.Height, SKColorType.Rgba8888);
-            
+
             using var pixelMap = new SKPixmap(info, Marshal.AllocHGlobal(info.BytesSize));
-            
+
             try
             {
                 _bmp.CopyPixels(new PixelRect(_bmp.PixelSize), pixelMap.GetPixels(), info.BytesSize, info.RowBytes);
-                
+
                 using var contentImage = SKImage.FromPixels(pixelMap);
                 using var contentShader = contentImage.ToShader(SKShaderTileMode.Decal, SKShaderTileMode.Decal);
 
