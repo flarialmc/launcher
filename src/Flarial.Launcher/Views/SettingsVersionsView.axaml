@@ -30,12 +30,12 @@
                     </ItemsControl.Template>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
+                            <StackPanel Spacing="10"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <views:VersionItemView Margin="0,0,0,10"/>
+                            <views:VersionItemView />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
