@@ -75,21 +75,15 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new GameSideloadedException();
 
-        var package = Path.Combine(s_temp, Path.GetRandomFileName());
-        var helper = Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll");
-
+        var path = Path.Combine(s_temp, Path.GetRandomFileName());
         try
         {
-            await HttpService.DownloadAsync(await GetAsync(), package, _ => callback(_, false));
-            await PackageService.AddAsync(new(package), _ => callback(_, true));
+            await HttpService.DownloadAsync(await GetAsync(), path, _ => callback(_, false));
+            await PackageService.AddAsync(new(path), _ => callback(_, true));
 
-            using var stream = File.Create(helper);
+            using var stream = File.Create(Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll"));
             await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
         }
-        finally
-        {
-            try { File.Delete(package); }
-            catch { }
-        }
+        finally { try { File.Delete(path); } catch { } }
     }
 }
