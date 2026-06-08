@@ -7,7 +7,9 @@
              xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Flarial.Launcher.Views.MessageBoxView"
-             x:DataType="vm:MessageBoxViewModel">
+             x:DataType="vm:MessageBoxViewModel"
+             VerticalAlignment="Stretch"
+             HorizontalAlignment="Stretch">
     <UserControl.Styles>
         <StyleInclude Source="/Styles/MessageBoxStyles.axaml"/>
     </UserControl.Styles>
@@ -20,10 +22,9 @@
         <acrylicBlur:AcrylicBlur Blur="25"
                                  CornerRadius="15"
                                  Name="DialogPanel"
+                                 ClipToBounds="False"
                                  VerticalAlignment="Center"
-                                 HorizontalAlignment="Center"
-                                 MinWidth="400" MinHeight="200"
-                                 MaxWidth="650" MaxHeight="350">
+                                 HorizontalAlignment="Center">
             <acrylicBlur:AcrylicBlur.RenderTransform>
                 <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
             </acrylicBlur:AcrylicBlur.RenderTransform>
@@ -42,6 +43,8 @@
 
             <Border CornerRadius="15"
                     Padding="10"
+                    MinWidth="400" MinHeight="200"
+                    MaxWidth="650" MaxHeight="350"
                     BorderBrush="{StaticResource BackgroundBorderColor}"
                     BorderThickness="{StaticResource ButtonBorderThickness}">
                 <Border.Background>

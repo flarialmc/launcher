@@ -51,6 +51,8 @@
             <views:NotificationAreaView DataContext="{Binding NotificationArea}"/>
 
             <ContentControl Content="{Binding CurrentDialog}"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
                             IsHitTestVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
                             IsVisible="{Binding CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <ContentControl.DataTemplates>
