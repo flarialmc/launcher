@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
@@ -18,6 +19,8 @@ public partial class SettingsView : UserControl
         InitializeComponent();
         MessageBus.Current.Listen<PageTransitions>().Subscribe(PageTransition);
     }
+
+    static bool PerformanceMode => (Application.Current as App)?.AppSettings?.PerformanceMode ?? false;
 
     private double _currentPageY;
 
@@ -44,8 +47,8 @@ public partial class SettingsView : UserControl
         var generalMove = CreateMove(0 - selectedPageY);
         var versionsMove = CreateMove(500 - selectedPageY);
         var configsMove = CreateMove(1000 - selectedPageY);
-        
-        if (settingsViewModel._appSettings.PerformanceMode)
+
+        if (PerformanceMode)
         {
             _ = generalMove.RunAsync(SettingsGeneralViewControl);
             _ = versionsMove.RunAsync(SettingsVersionsViewControl);
@@ -71,7 +74,7 @@ public partial class SettingsView : UserControl
                     }
                 }
             };
-        
+
             var zoomIn = new Animation
             {
                 Delay = TimeSpan.FromMilliseconds(500),
@@ -91,13 +94,13 @@ public partial class SettingsView : UserControl
                     }
                 }
             };
-            
+
             _ = zoomOut.RunAsync(UserControlGrid);
             _ = generalMove.RunAsync(SettingsGeneralViewControl);
             _ = versionsMove.RunAsync(SettingsVersionsViewControl);
             _ = configsMove.RunAsync(SettingsConfigsViewControl);
             _ = zoomIn.RunAsync(UserControlGrid);
-            
+
             await Task.Delay(700);
         }
 
@@ -108,8 +111,8 @@ public partial class SettingsView : UserControl
 
         Animation CreateMove(double toY) => new()
         {
-            Delay = TimeSpan.FromMilliseconds(settingsViewModel._appSettings.PerformanceMode ? 0 : 250),
-            Duration = TimeSpan.FromSeconds(settingsViewModel._appSettings.PerformanceMode ? 0 : 0.2),
+            Delay = TimeSpan.FromMilliseconds(PerformanceMode ? 0 : 250),
+            Duration = TimeSpan.FromSeconds(PerformanceMode ? 0 : 0.2),
             Easing = new QuadraticEaseInOut(),
             FillMode = FillMode.Forward,
             Children =

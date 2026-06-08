@@ -1,6 +1,3 @@
 namespace Flarial.Launcher.ViewModels;
 
-public class SettingsConfigsViewModel : ViewModelBase
-{
-    
-}
+public class SettingsConfigsViewModel : ViewModelBase;

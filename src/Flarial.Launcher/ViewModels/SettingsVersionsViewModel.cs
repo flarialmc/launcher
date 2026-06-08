@@ -1,5 +1,4 @@
-using System;
-using System.Collections.ObjectModel;
+using Avalonia.Collections;
 using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
@@ -10,5 +9,5 @@ public partial class SettingsVersionsViewModel : ViewModelBase
     bool _isInstalling;
 
     [Reactive]
-    ObservableCollection<VersionItemViewModel> _versions = [];
+    AvaloniaList<VersionItemViewModel> _versions = [];
 }

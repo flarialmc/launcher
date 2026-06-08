@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
@@ -22,7 +23,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     [Reactive]
     private bool _customDllSelected;
 
-    public ObservableCollection<SegmentItem> BuildTypes { get; }
+    public AvaloniaList<SegmentItem> BuildTypes { get; }
 
     public SegmentItem? SelectedBuild
     {
