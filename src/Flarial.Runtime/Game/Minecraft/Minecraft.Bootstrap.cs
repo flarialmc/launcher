@@ -27,6 +27,7 @@ unsafe partial class Minecraft
         using var process = Process.Start(new ProcessStartInfo
         {
             CreateNoWindow = true,
+            UseShellExecute = false,
             FileName = s_filename,
             ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", string.Format(Command, path) }
         });

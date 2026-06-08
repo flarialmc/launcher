@@ -66,6 +66,7 @@ del ""%~f0""";
         using (Process.Start(new ProcessStartInfo
         {
             CreateNoWindow = true,
+            UseShellExecute = false,
             FileName = s_filename,
             Arguments = s_arguments
         })) { }
