@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Interop;
 using Flarial.Launcher.Interface.Presentation;
 using Flarial.Launcher.Management;
-using Flarial.Runtime.Modding;
+using Flarial.Runtime.Game;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;

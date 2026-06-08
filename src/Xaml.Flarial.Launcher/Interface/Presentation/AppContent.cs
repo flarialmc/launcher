@@ -99,19 +99,19 @@ sealed class AppContent : XamlElement<NavigationView>
 
         if (!await FlarialLauncher.VerifyConnectionAsync())
         {
-            await ConnectionFailureDialog.ShowAsync();
+            await ConnectionFailureDialog._.ShowAsync();
             Environment.Exit(0);
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog.ShowAsync()))
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
             _homePage._button.Content = "Updating...";
             await FlarialLauncher.DownloadAsync(OnDownload);
             return;
         }
 
-        var registry = await VersionRegistry.CreateAsync();
+        var registry = await VersionRegistry.GetAsync();
         (~this).Tag = _homePage.Tag = registry;
 
         var task = Task.Run(() =>

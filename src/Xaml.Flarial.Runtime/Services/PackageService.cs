@@ -15,7 +15,7 @@ static class PackageService
 
     internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal unsafe static void Add(Uri uri, Action<int> callback)
+    unsafe static void Add(Uri uri, Action<int> callback)
     {
         var handle = CreateEvent(null, true, false, null);
         var info = s_manager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);

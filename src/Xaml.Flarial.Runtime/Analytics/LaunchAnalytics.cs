@@ -17,11 +17,11 @@ public static class LaunchAnalytics
     static readonly Uri s_uri = new(AnalyticsUri);
     static readonly string s_identifier = CryptographicBuffer.EncodeToHexString(SystemIdentification.GetSystemIdForPublisher().Id);
 
-    extension(FlarialClient client)
+    extension(FlarialClient)
     {
-        public async Task<bool?> TrackedLaunchAsync()
+        public static async Task<bool?> TrackedLaunchAsync()
         {
-            var launched = await client.LaunchAsync();
+            var launched = await Task.Run(FlarialClient.Launch);
             if (launched ?? false) _ = SendAsync();
             return launched;
         }

@@ -1,5 +1,4 @@
 using System.IO;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Flarial.Launcher.Controls;
 using Flarial.Launcher.Interface.Dialogs;
@@ -9,7 +8,6 @@ using Flarial.Launcher.Xaml;
 using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
-using Flarial.Runtime.Modding;
 using Flarial.Runtime.Versions;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -58,18 +56,7 @@ sealed class HomePage : Grid
     readonly AppContent _content;
     readonly AppSettings _settings;
 
-    UnsupportedVersionDialog UnsupportedVersion
-    {
-        get
-        {
-            if (field is null)
-            {
-                var registry = (VersionRegistry)Tag;
-                field = new(registry.PreferredVersion);
-            }
-            return field;
-        }
-    }
+    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new((VersionRegistry)Tag);
 
     internal HomePage(AppContent content, AppSettings settings)
     {
@@ -97,7 +84,7 @@ sealed class HomePage : Grid
         _button.Click += OnButtonClick;
     }
 
-    void OnFlarialClientDownloadAsync(int value) => Dispatcher.Invoke(() => _button.Content = $"Downloading... {value}%");
+    void OnDownload(int value) => Dispatcher.Invoke(() => _button.Content = $"Downloading... {value}%");
 
     async void OnButtonClick(object sender, RoutedEventArgs args)
     {
@@ -110,19 +97,19 @@ sealed class HomePage : Grid
             var registry = (VersionRegistry)Tag;
             var custom = _settings.UseCustomDll;
 
+            if (!GamingServices.IsInstalled)
+            {
+                await GamingServicesMissingDialog._.ShowAsync();
+                return;
+            }
+
             if (!Minecraft.IsInstalled)
             {
-                await NotInstalledDialog.ShowAsync();
+                await NotInstalledDialog._.ShowAsync();
                 return;
             }
 
-            if (!Minecraft.IsGamingServicesInstalled)
-            {
-                await GamingServicesMissingDialog.ShowAsync();
-                return;
-            }
-
-            if (!custom && !registry.IsSupported && await UnsupportedVersion.OnShowAsync())
+            if (!custom && !registry.IsSupported && await UnsupportedVersionDialog.ShowAsync())
             {
                 (~_content).SelectedItem = _content._versionsItem;
                 (~_content).Content = _content._versionsItem.Tag;
@@ -135,14 +122,14 @@ sealed class HomePage : Grid
 
                 if (!library.IsLoadable)
                 {
-                    await InvalidCustomDllDialog.ShowAsync();
+                    await InvalidCustomDllDialog._.ShowAsync();
                     return;
                 }
 
                 _button.Content = "Launching...";
-                if (await Injector.LaunchAsync(library) is null)
+                if (await Task.Run(() => Injector.Launch(library)) is null)
                 {
-                    await LaunchFailureDialog.ShowAsync();
+                    await LaunchFailureDialog._.ShowAsync();
                     return;
                 }
 
@@ -150,16 +137,16 @@ sealed class HomePage : Grid
             }
 
             _button.Content = "Verifying...";
-            if (!await FlarialClient.Current.DownloadAsync(OnFlarialClientDownloadAsync))
+            if (!await FlarialClient.DownloadAsync(OnDownload))
             {
-                await ClientUpdateFailureDialog.ShowAsync();
+                await ClientUpdateFailureDialog._.ShowAsync();
                 return;
             }
 
             _button.Content = "Launching...";
-            if (!await FlarialClient.Current.TrackedLaunchAsync() ?? false)
+            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
             {
-                await LaunchFailureDialog.ShowAsync();
+                await LaunchFailureDialog._.ShowAsync();
                 return;
             }
         }

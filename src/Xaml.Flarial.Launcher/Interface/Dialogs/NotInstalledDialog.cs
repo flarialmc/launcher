@@ -6,12 +6,7 @@ namespace Flarial.Launcher.Interface.Dialogs;
 
 sealed class NotInstalledDialog : AppDialog<NotInstalledDialog>
 {
-    internal override async Task<bool> OnShowAsync()
-    {
-        var _= await base.OnShowAsync();
-        if (_) MinecraftPage.Open();
-        return _;
-    }
+    protected override async Task OnShowAsync(bool value) { if (value) MinecraftPage._.Open(); }
 
     protected override string CloseButtonText => "Cancel";
     protected override string PrimaryButtonText => "Install";

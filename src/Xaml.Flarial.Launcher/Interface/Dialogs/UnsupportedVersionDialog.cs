@@ -4,7 +4,7 @@ using Flarial.Runtime.Versions;
 
 namespace Flarial.Launcher.Interface.Dialogs;
 
-sealed class UnsupportedVersionDialog(string preferred) : AppDialog
+sealed class UnsupportedVersionDialog(VersionRegistry registry) : AppDialog
 {
     protected override string CloseButtonText => "Back";
     protected override string PrimaryButtonText => "Versions";
@@ -30,7 +30,7 @@ sealed class UnsupportedVersionDialog(string preferred) : AppDialog
 
     readonly string _format = $@"Minecraft {{0}} isn't supported by Flarial Client.
 
-• Switch to {preferred} on the [Versions] page.
+• Switch to {registry.PreferredVersion} on the [Versions] page.
 
 If you need help, join our Discord.";
 }

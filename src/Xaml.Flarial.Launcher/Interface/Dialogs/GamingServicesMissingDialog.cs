@@ -6,12 +6,7 @@ namespace Flarial.Launcher.Interface.Dialogs;
 
 sealed class GamingServicesMissingDialog : AppDialog<GamingServicesMissingDialog>
 {
-    internal override async Task<bool> OnShowAsync()
-    {
-        var _= await base.OnShowAsync();
-        if (_) GamingServicesPage.Open();
-        return _;
-    }
+    protected override async Task OnShowAsync(bool value) { if (value) GamingServicesPage._.Open(); }
 
     protected override string CloseButtonText => "Cancel";
     protected override string PrimaryButtonText => "Install";

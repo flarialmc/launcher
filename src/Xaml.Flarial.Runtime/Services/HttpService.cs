@@ -5,8 +5,6 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Environment;
-using static System.Net.Http.HttpCompletionOption;
 
 namespace Flarial.Runtime.Services;
 
@@ -16,30 +14,35 @@ static class HttpService
     {
         AllowAutoRedirect = true,
         MaxAutomaticRedirections = int.MaxValue,
-        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+        AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
     }, true);
 
-    static readonly int s_length = SystemPageSize;
-
-    internal static async Task<Stream> GetStreamAsync(string uri) => await s_client.GetStreamAsync(uri);
+    static readonly int s_length = Environment.SystemPageSize;
 
     internal static async Task<byte[]> GetBytesAsync(string uri) => await s_client.GetByteArrayAsync(uri);
 
-    internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, ResponseHeadersRead, token);
+    internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token) => await s_client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
 
     internal static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await s_client.SendAsync(request);
 
+    internal static async Task<T> GetJsonAsync<T>(string uri)
+    {
+        using var stream = await s_client.GetStreamAsync(uri);
+        return await JsonService.ReadAsync<T>(stream);
+    }
+
     internal static async Task DownloadAsync(string uri, string path, Action<int> callback)
     {
-        using var message = await GetAsync(uri);
-        message.EnsureSuccessStatusCode();
+        using var response = await GetAsync(uri);
+        response.EnsureSuccessStatusCode();
 
         using var destination = File.Create(path);
-        using var source = await message.Content.ReadAsStreamAsync();
+        using var source = await response.Content.ReadAsStreamAsync();
 
-        int count = 0; double value = 0;
+        int count = 0;
+        double value = 0;
         var buffer = new byte[s_length];
-        var length = message.Content.Headers.ContentLength ?? 0;
+        var length = response.Content.Headers.ContentLength ?? 0;
 
         while ((count = await source.ReadAsync(buffer, 0, s_length)) != 0)
         {

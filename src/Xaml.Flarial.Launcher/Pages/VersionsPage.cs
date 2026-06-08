@@ -51,31 +51,31 @@ sealed class VersionsPage : Grid
             _progressBar._progressBar.Value = 0;
             _progressBar._progressBar.Visibility = Visibility.Visible;
 
+            if (!GamingServices.IsInstalled)
+            {
+                await GamingServicesMissingDialog._.ShowAsync();
+                return;
+            }
+
             if (!Minecraft.IsInstalled)
             {
-                await NotInstalledDialog.ShowAsync();
+                await NotInstalledDialog._.ShowAsync();
                 return;
             }
 
-            if (!Minecraft.IsPackaged)
+            if (Minecraft.IsSideloaded)
             {
-                await UnpackagedInstallDialog.ShowAsync();
-                return;
-            }
-
-            if (!Minecraft.IsGamingServicesInstalled)
-            {
-                await GamingServicesMissingDialog.ShowAsync();
+                await SideloadedInstallDialog._.ShowAsync();
                 return;
             }
 
             if (_listBox.SelectedItem is null)
             {
-                await SelectVersionDialog.ShowAsync();
+                await SelectVersionDialog._.ShowAsync();
                 return;
             }
 
-            if (!await InstallVersionDialog.ShowAsync())
+            if (!await InstallVersionDialog._.ShowAsync())
                 return;
 
             _item = (VersionItem)_listBox.SelectedItem;
