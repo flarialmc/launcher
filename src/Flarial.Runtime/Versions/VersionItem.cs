@@ -11,7 +11,6 @@ namespace Flarial.Runtime.Versions;
 
 public sealed class VersionItem
 {
-
     public override string ToString() => _string;
 
     static readonly string s_temp = Path.GetTempPath();

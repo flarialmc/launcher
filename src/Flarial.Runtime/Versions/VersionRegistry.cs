@@ -7,17 +7,17 @@ using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Versions;
 
-sealed class VersionEntry
-{
-    internal VersionItem? _item;
-
-    internal readonly bool _supported;
-
-    internal VersionEntry(bool supported) => _supported = supported;
-}
-
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
+    sealed class VersionEntry
+    {
+        internal VersionItem? _item;
+
+        internal readonly bool _supported;
+
+        internal VersionEntry(bool supported) => _supported = supported;
+    }
+
     sealed class VersionItemComparer : IComparer<string>
     {
         public int Compare(string? x, string? y)
