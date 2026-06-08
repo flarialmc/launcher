@@ -81,7 +81,10 @@ public sealed class VersionItem
             await HttpService.DownloadAsync(await GetAsync(), path, _ => callback(_, false));
             await PackageService.AddAsync(new(path), _ => callback(_, true));
 
-            using var stream = File.Create(Path.Combine(Minecraft.Package.InstalledPath, "gamelaunchhelper.dll"));
+            var installedPath = Minecraft.Package.InstalledPath;
+            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
+
+            using var stream = File.Create(gameLaunchHelperPath);
             await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
         }
         finally { try { File.Delete(path); } catch { } }
