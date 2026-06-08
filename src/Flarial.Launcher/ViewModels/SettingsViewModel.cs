@@ -2,9 +2,9 @@ using Flarial.Launcher.Management;
 
 namespace Flarial.Launcher.ViewModels;
 
-public class SettingsViewModel(AppSettings appSettings) : ViewModelBase
+public class SettingsViewModel : ViewModelBase
 {
-    public SettingsGeneralViewModel SettingsGeneralViewModel { get; } = new(appSettings);
+    public SettingsGeneralViewModel SettingsGeneralViewModel { get; } = new();
     public SettingsVersionsViewModel SettingsVersionsViewModel { get; } = new();
     public SettingsConfigsViewModel SettingsConfigsViewModel { get; } = new();
 }

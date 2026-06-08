@@ -7,18 +7,18 @@ using Flarial.Launcher.Views;
 
 namespace Flarial.Launcher;
 
-public partial class App : Application
+public sealed partial class App : Application
 {
-    public AppSettings AppSettings { get; } = AppSettings.Get();
+    public AppSettings Settings { get; } = AppSettings.Get();
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime lifetime) return;
+        var lifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
 
-        lifetime.Exit += (_, _) => AppSettings.Set();
-        lifetime.MainWindow = new MainWindow { DataContext = new MainWindowViewModel(AppSettings) };
+        lifetime.Exit += (_, _) => Settings.Set();
+        lifetime.MainWindow = new MainWindow { DataContext = new MainWindowViewModel() };
 
         base.OnFrameworkInitializationCompleted();
     }

@@ -20,10 +20,10 @@ public class SpotlightDecorator : Decorator
 
     // 1. New Property for Animation
     // We will animate this value from 0.0 to 1.0
-    public static readonly StyledProperty<double> SpotlightOpacityProperty =
-        AvaloniaProperty.Register<SpotlightDecorator, double>(nameof(SpotlightOpacity), 0.0);
 
-    static bool PerformanceMode => (Application.Current as App)?.AppSettings?.PerformanceMode ?? false;
+    public static readonly StyledProperty<double> SpotlightOpacityProperty = AvaloniaProperty.Register<SpotlightDecorator, double>(nameof(SpotlightOpacity), 0.0);
+
+     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
     public double SpotlightOpacity
     {
@@ -202,7 +202,7 @@ public class SpotlightDecorator : Decorator
         private void OnAnimationFrame(TimeSpan time)
         {
             // Keep requesting frames while active or animating
-            if (!PerformanceMode && (_isActive || _host.SpotlightOpacity > 0.01))
+            if (!_host._settings.PerformanceMode && (_isActive || _host.SpotlightOpacity > 0.01))
             {
                 InvalidateVisual();
             }
@@ -213,7 +213,7 @@ public class SpotlightDecorator : Decorator
 
         public override void Render(DrawingContext context)
         {
-            if (PerformanceMode) return;
+            if (_host._settings.PerformanceMode) return;
             if (_host.Child == null || _host.Bounds.Width <= 0 || _host.Bounds.Height <= 0) return;
 
             // Optimization: If invisible, don't render anything

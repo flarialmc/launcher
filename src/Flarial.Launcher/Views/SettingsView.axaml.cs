@@ -6,6 +6,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
 using ReactiveUI;
@@ -20,7 +21,10 @@ public partial class SettingsView : UserControl
         MessageBus.Current.Listen<PageTransitions>().Subscribe(PageTransition);
     }
 
-    static bool PerformanceMode => (Application.Current as App)?.AppSettings?.PerformanceMode ?? false;
+    [Obsolete("", true)]
+    static bool PerformanceMode => (Application.Current as App)?.Settings?.PerformanceMode ?? false;
+
+    readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
     private double _currentPageY;
 
@@ -48,7 +52,7 @@ public partial class SettingsView : UserControl
         var versionsMove = CreateMove(500 - selectedPageY);
         var configsMove = CreateMove(1000 - selectedPageY);
 
-        if (PerformanceMode)
+        if (_settings.PerformanceMode)
         {
             _ = generalMove.RunAsync(SettingsGeneralViewControl);
             _ = versionsMove.RunAsync(SettingsVersionsViewControl);
@@ -111,8 +115,8 @@ public partial class SettingsView : UserControl
 
         Animation CreateMove(double toY) => new()
         {
-            Delay = TimeSpan.FromMilliseconds(PerformanceMode ? 0 : 250),
-            Duration = TimeSpan.FromSeconds(PerformanceMode ? 0 : 0.2),
+            Delay = TimeSpan.FromMilliseconds(_settings.PerformanceMode ? 0 : 250),
+            Duration = TimeSpan.FromSeconds(_settings.PerformanceMode ? 0 : 0.2),
             Easing = new QuadraticEaseInOut(),
             FillMode = FillMode.Forward,
             Children =

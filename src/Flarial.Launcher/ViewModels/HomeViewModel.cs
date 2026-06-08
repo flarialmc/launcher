@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reflection;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Flarial.Launcher.Dialogs;
@@ -27,15 +28,14 @@ public partial class HomeViewModel : ViewModelBase
     [Reactive] string _gameVersion = "0.0.0";
     [Reactive] IImmutableSolidColorBrush _gameVersionColor = Brushes.Gray;
 
-    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_mainWindowViewModel.VersionRegistry);
+    UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_model.VersionRegistry);
 
-    readonly AppSettings _appSettings;
-    readonly MainWindowViewModel _mainWindowViewModel;
+    readonly MainWindowViewModel _model;
+    readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
-    public HomeViewModel(MainWindowViewModel mainWindowViewModel, AppSettings appSettings)
+    public HomeViewModel(MainWindowViewModel model)
     {
-        _mainWindowViewModel = mainWindowViewModel;
-        _appSettings = appSettings;
+        _model = model;
 
         var assembly = Assembly.GetExecutingAssembly();
         _launcherVersion = $"{assembly.GetName().Version}";
@@ -50,8 +50,8 @@ public partial class HomeViewModel : ViewModelBase
         IsLaunching = true;
         try
         {
-            var path = _appSettings.CustomDllPath;
-            var custom = _appSettings.UseCustomDll;
+            var path = _settings.CustomDllPath;
+            var custom = _settings.UseCustomDll;
 
             if (!GamingServices.IsInstalled)
             {
@@ -65,7 +65,7 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (!custom && !_mainWindowViewModel.VersionRegistry.IsSupported)
+            if (!custom && !_model.VersionRegistry.IsSupported)
             {
                 await UnsupportedVersionDialog.ShowAsync();
                 return;
@@ -128,7 +128,7 @@ public partial class HomeViewModel : ViewModelBase
         }
 
         GameVersion = VersionRegistry.InstalledVersion;
-        GameVersionColor = _mainWindowViewModel.VersionRegistry.IsSupported ? Brushes.DarkGreen : Brushes.DarkRed;
+        GameVersionColor = _model.VersionRegistry.IsSupported ? Brushes.DarkGreen : Brushes.DarkRed;
     }
 
     public ReactiveCommand<Unit, Unit> Launch { get; }

@@ -40,7 +40,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         get;
         set
         {
-            _appSettings.PerformanceMode = value;
+            _settings.PerformanceMode = value;
             this.RaiseAndSetIfChanged(ref field, value);
         }
     }
@@ -50,7 +50,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         get;
         set
         {
-            _appSettings.AutomaticUpdates = value;
+            _settings.AutomaticUpdates = value;
             this.RaiseAndSetIfChanged(ref field, value);
         }
     }
@@ -75,7 +75,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         if (files.Any())
         {
             var path = files[0].TryGetLocalPath()!;
-            CustomDllPath = _appSettings.CustomDllPath = path;
+            CustomDllPath = _settings.CustomDllPath = path;
         }
     }
 
@@ -83,24 +83,22 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     void OnOpenClientFolder() => NativePlatform.Open(Directory.CreateDirectory(@"..\Client").FullName);
 
-    readonly AppSettings _appSettings;
+    readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
-    public SettingsGeneralViewModel(AppSettings appSettings)
+    public SettingsGeneralViewModel()
     {
-        _appSettings = appSettings;
-
         BuildTypes = [new() { Title = "Flarial Client", Tag = false }, new() { Title = "Custom DLL", Tag = true }];
 
-        SelectedBuild = _appSettings.UseCustomDll switch
+        SelectedBuild = _settings.UseCustomDll switch
         {
             false => BuildTypes[0],
             true => BuildTypes[1]
         };
 
-        CustomDllPath = _appSettings.CustomDllPath;
-        CustomDllSelected = _appSettings.UseCustomDll;
-        PerformanceMode = _appSettings.PerformanceMode;
-        AutomaticUpdates = _appSettings.AutomaticUpdates;
+        CustomDllPath = _settings.CustomDllPath;
+        CustomDllSelected = _settings.UseCustomDll;
+        PerformanceMode = _settings.PerformanceMode;
+        AutomaticUpdates = _settings.AutomaticUpdates;
 
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);
@@ -113,6 +111,6 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         var value = (bool)item.Tag!;
 
         CustomDllSelected = value;
-        _appSettings.UseCustomDll = value;
+        _settings.UseCustomDll = value;
     }
 }

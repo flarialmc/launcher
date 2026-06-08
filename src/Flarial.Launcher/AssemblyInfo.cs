@@ -48,7 +48,7 @@ Exception: {1}
             Content = string.Format(Format, version, type, message),
 
             Information = information,
-            Instruction = "Looks like the launcher crashed!",
+            Instruction = "Looks like the launcher crashed!"
         }.Show();
 
         Environment.Exit(1);

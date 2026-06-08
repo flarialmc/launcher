@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
+using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
 using Flarial.Launcher.ViewModels;
 using ReactiveUI;
@@ -21,9 +22,15 @@ public partial class MainWindow : Window
 {
     public static Canvas? ToolTipLayerInstance { get; private set; }
 
+    readonly App _application;
+    readonly AppSettings _settings;
+
     public MainWindow()
     {
         InitializeComponent();
+
+        _application = (App)Application.Current!;
+        _settings = _application.Settings;
 
         ToolTipLayerInstance = ToolTipLayer;
         WindowDecorations = WindowDecorations.None;
@@ -57,27 +64,27 @@ public partial class MainWindow : Window
         switch (page)
         {
             case PageTransitions.SettingsPage:
-                if (vm._appSettings.PerformanceMode)
+                if (_settings.PerformanceMode)
                 {
-                    homeViewAnimation = (Animation?)Application.Current?.Resources["PerformanceHomePageLeaveTransition"];
-                    settingsViewAnimation = (Animation?)Application.Current?.Resources["PerformanceSettingsPageEnterTransition"];
+                    homeViewAnimation = (Animation?)_application.Resources["PerformanceHomePageLeaveTransition"];
+                    settingsViewAnimation = (Animation?)_application.Resources["PerformanceSettingsPageEnterTransition"];
                 }
                 else
                 {
-                    homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageLeaveTransition"];
-                    settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageEnterTransition"];
+                    homeViewAnimation = (Animation?)_application.Resources["HomePageLeaveTransition"];
+                    settingsViewAnimation = (Animation?)_application.Resources["SettingsPageEnterTransition"];
                 }
                 break;
             case PageTransitions.HomePage:
-                if (vm._appSettings.PerformanceMode)
+                if (_settings.PerformanceMode)
                 {
-                    homeViewAnimation = (Animation?)Application.Current?.Resources["PerformanceHomePageEnterTransition"];
-                    settingsViewAnimation = (Animation?)Application.Current?.Resources["PerformanceSettingsPageLeaveTransition"];
+                    homeViewAnimation = (Animation?)_application.Resources["PerformanceHomePageEnterTransition"];
+                    settingsViewAnimation = (Animation?)_application.Resources["PerformanceSettingsPageLeaveTransition"];
                 }
                 else
                 {
-                    homeViewAnimation = (Animation?)Application.Current?.Resources["HomePageEnterTransition"];
-                    settingsViewAnimation = (Animation?)Application.Current?.Resources["SettingsPageLeaveTransition"];
+                    homeViewAnimation = (Animation?)_application.Resources["HomePageEnterTransition"];
+                    settingsViewAnimation = (Animation?)_application.Resources["SettingsPageLeaveTransition"];
                 }
                 break;
             case PageTransitions.SettingsGeneralPage:
@@ -87,7 +94,7 @@ public partial class MainWindow : Window
                 vm.IsAnimating = false;
                 return;
         }
-        
+
         if (homeViewAnimation is not null)
             tasks.Add(homeViewAnimation.RunAsync(HomeViewControl));
 

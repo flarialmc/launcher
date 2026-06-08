@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Threading;
 using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
@@ -31,16 +32,12 @@ public class MainWindowViewModel : ViewModelBase
 
     public VersionRegistry VersionRegistry { get; private set; }
 
-    public
+    readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
-    readonly AppSettings _appSettings;
-
-    public MainWindowViewModel(AppSettings appSettings)
+    public MainWindowViewModel()
     {
-        _appSettings = appSettings;
-
-        HomeViewModel = new(this, appSettings);
-        SettingsViewModel = new(appSettings);
+        HomeViewModel = new(this);
+        SettingsViewModel = new();
         NotificationArea = new();
         VersionRegistry = null!;
     }
@@ -70,7 +67,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_appSettings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
+        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnDownload);
             return;
