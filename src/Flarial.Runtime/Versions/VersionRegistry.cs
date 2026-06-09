@@ -38,46 +38,51 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
-    const string MSIXVCPackagesUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
+    const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    readonly SortedDictionary<string, VersionEntry> _registry;
+    readonly SortedDictionary<string, VersionEntry> _items;
 
-    VersionRegistry(SortedDictionary<string, VersionEntry> registry)
+    VersionRegistry(SortedDictionary<string, VersionEntry> items)
     {
-        var preferred = (_registry = registry).First(static _ => _.Value._supported);
-        PreferredVersion = VersionItem.Stringify(preferred.Key);
+        _items = items;
+        PreferredVersion = VersionItem.Stringify(items.First(static _ => _.Value._supported).Key);
     }
 
     public readonly string PreferredVersion;
 
     public static string InstalledVersion => VersionItem.Stringify(Minecraft.Version);
 
-    public bool IsSupported => _registry.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
+    public bool IsSupported => _items.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
 
     public static async Task<VersionRegistry> GetAsync() => await Task.Run(static async () =>
     {
-        var helperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
-        var supportedTask = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
-        var packagesTask = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(MSIXVCPackagesUri);
+        var gameLaunchHelper = HttpService.GetBytesAsync(GameLaunchHelperUri);
+        var supportedVersions = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
+        var downloadLinks = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
+        await Task.WhenAll(gameLaunchHelper, supportedVersions, downloadLinks);
 
-        SortedDictionary<string, VersionEntry> registry = new(s_comparer);
-        foreach (var item in await supportedTask) registry.Add(item.Key, new(item.Value));
+        SortedDictionary<string, VersionEntry> items = new(s_comparer);
 
-        foreach (var item in (await packagesTask)["release"])
+        foreach (var item in await supportedVersions)
+            items[item.Key] = new(item.Value);
+
+        foreach (var item in (await downloadLinks)["release"])
         {
             var index = item.Key.LastIndexOf('.');
-            var key = item.Key[..index];
+            var version = item.Key[..index];
 
-            if (!registry.TryGetValue(key, out var entry)) continue;
-            entry._item = new(key, item.Value, await helperTask);
+            if (!items.TryGetValue(version, out var entry))
+                continue;
+
+            entry._item = new(version, item.Value, await gameLaunchHelper);
         }
 
-        return new VersionRegistry(registry);
+        return new VersionRegistry(items);
     });
 
     public IEnumerator<VersionItem> GetEnumerator()
     {
-        foreach (var value in _registry.Values)
+        foreach (var value in _items.Values)
         {
             if (value._item is null) continue;
             yield return value._item;

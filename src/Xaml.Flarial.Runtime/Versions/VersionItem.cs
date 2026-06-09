@@ -87,6 +87,10 @@ public sealed class VersionItem
             using var stream = File.Create(gameLaunchHelperPath);
             await stream.WriteAsync(_gameLaunchHelper, 0, _gameLaunchHelper.Length);
         }
-        finally { try { File.Delete(path); } catch { } }
+        finally
+        {
+            try { File.Delete(path); }
+            catch { }
+        }
     }
 }
