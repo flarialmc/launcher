@@ -9,9 +9,11 @@ namespace Flarial.Runtime.Unmanaged;
 public unsafe readonly ref struct NativeDialog
 {
     public required readonly nint Handle { get; init; }
+    
     public required readonly string Title { get; init; }
-    public required readonly string Content { get; init; }
     public readonly string? Instruction { get; init; }
+
+    public required readonly string Content { get; init; }
     public readonly string? Information { get; init; }
 
     public void Show()
