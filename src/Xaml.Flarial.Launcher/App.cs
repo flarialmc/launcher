@@ -53,11 +53,14 @@ Exception: {1}
         while (exception.InnerException is not null)
             exception = exception.InnerException;
 
-        var name = exception.GetType().Name;
         var message = exception.Message;
-
+        var name = exception.GetType().Name;
         var text = string.Format(Format, AppManifest.s_version, name, message, trace);
-        MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+        if (Current?.MainWindow is { } window)
+            MessageBox.Show(window, text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        else
+            MessageBox.Show(text, "Flarial Launcher: Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
         Environment.Exit(1);
     }
