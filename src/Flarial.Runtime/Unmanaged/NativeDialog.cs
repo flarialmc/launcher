@@ -1,4 +1,3 @@
-using System;
 using Windows.Win32.UI.Controls;
 using static Windows.Win32.PInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;

@@ -62,10 +62,10 @@ public sealed class VersionItem
             throw new GamingServicesNotInstalledException();
 
         if (!Minecraft.IsInstalled)
-            throw new GameNotInstalledException();
+            throw new MinecraftNotInstalledException();
 
         if (Minecraft.IsSideloaded)
-            throw new GameSideloadedException();
+            throw new MinecraftSideloadedException();
 
         var path = Path.Combine(s_temp, Path.GetRandomFileName());
         try
