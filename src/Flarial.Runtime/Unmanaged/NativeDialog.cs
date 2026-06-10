@@ -17,8 +17,8 @@ public unsafe readonly ref struct NativeDialog
     public void Show()
     {
         fixed (char* title = Title)
-        fixed (char* content = Content)
         fixed (char* instruction = Instruction)
+        fixed (char* content = Content)
         fixed (char* information = Information)
         {
             TASKDIALOGCONFIG config = new()
