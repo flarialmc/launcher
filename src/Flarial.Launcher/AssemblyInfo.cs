@@ -32,7 +32,9 @@ Exception: {1}
 
         var exception = (Exception)args.ExceptionObject;
         var information = exception.StackTrace?.Trim();
-        while (exception.InnerException is { }) exception = exception.InnerException;
+
+        while (exception.InnerException is { })
+            exception = exception.InnerException;
 
         var message = exception.Message;
         var type = exception.GetType().Name;
