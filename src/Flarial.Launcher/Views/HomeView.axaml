@@ -12,10 +12,10 @@
              Initialized="OnInitialized"
              BorderThickness="{StaticResource ButtonBorderThickness}"
              BorderBrush="{StaticResource BackgroundBorderColor}"
-             CornerRadius="25"
+             CornerRadius="0,25,25,0"
              Width="800" Height="500">
     <Grid>
-        <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="25">
+        <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="0,25,25,0">
             <Grid>
 
                 <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.webp"/>
