@@ -56,17 +56,19 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     public static async Task<VersionRegistry> GetAsync() => await Task.Run(static async () =>
     {
-        var gameLaunchHelper = HttpService.GetBytesAsync(GameLaunchHelperUri);
-        var supportedVersions = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
-        var downloadLinks = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
-        await Task.WhenAll(gameLaunchHelper, supportedVersions, downloadLinks);
+        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
+        var supportedVersionsTask = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
+        var downloadLinksTask = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
+        await Task.WhenAll(gameLaunchHelperTask, supportedVersionsTask, downloadLinksTask);
+
+        var downloadLinks = await downloadLinksTask;
+        var gameLaunchHelper = await gameLaunchHelperTask;
+        var supportedVersions = await supportedVersionsTask;
 
         SortedDictionary<string, VersionEntry> items = new(s_comparer);
+        foreach (var item in supportedVersions) items[item.Key] = new(item.Value);
 
-        foreach (var item in await supportedVersions)
-            items[item.Key] = new(item.Value);
-
-        foreach (var item in (await downloadLinks)["release"])
+        foreach (var item in downloadLinks["release"])
         {
             var index = item.Key.LastIndexOf('.');
             var version = item.Key[..index];
@@ -74,7 +76,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
             if (!items.TryGetValue(version, out var entry))
                 continue;
 
-            entry._item = new(version, item.Value, await gameLaunchHelper);
+            entry._item = new(version, item.Value, gameLaunchHelper);
         }
 
         return new VersionRegistry(items);
