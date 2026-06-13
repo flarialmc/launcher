@@ -39,7 +39,6 @@
         <InvariantGlobalization>true</InvariantGlobalization>
 
         <DebuggerSupport>false</DebuggerSupport>
-        <StackTraceSupport>false</StackTraceSupport>
         <EventSourceSupport>false</EventSourceSupport>
         <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
 
