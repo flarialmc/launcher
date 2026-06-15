@@ -19,8 +19,8 @@ unsafe partial class Minecraft
 
     static uint? GetProcessId(string processName)
     {
-        fixed (char* pn = processName)
-        fixed (char* pfn = PackageFamilyName)
+        fixed (char* processNamePtr = processName)
+        fixed (char* packageFamilyNamePtr = PackageFamilyName)
         {
             uint level = 0;
             uint count = 0;
@@ -35,13 +35,13 @@ unsafe partial class Minecraft
                     for (var index = 0; index < count; index++)
                     {
                         var entry = information[index];
-                        if (CompareStringOrdinal(pn, -1, entry.pProcessName, -1, true) != CSTR_EQUAL) continue;
+                        if (CompareStringOrdinal(processNamePtr, -1, entry.pProcessName, -1, true) != CSTR_EQUAL) continue;
                         if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, entry.ProcessId) is not { } process) continue;
 
                         using (process)
                         {
                             if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
-                            if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
+                            if (CompareStringOrdinal(packageFamilyNamePtr, -1, buffer, -1, true) != CSTR_EQUAL) continue;
                             return entry.ProcessId;
                         }
                     }
@@ -53,14 +53,14 @@ unsafe partial class Minecraft
 
     internal static NativeWindow? GetWindow(string className, [Optional] uint? processId)
     {
-        fixed (char* cn = className)
-        fixed (char* pfn = PackageFamilyName)
+        fixed (char* classNamePtr = className)
+        fixed (char* packageFamilyNamePtr = PackageFamilyName)
         {
             NativeWindow window = HWND.Null;
             var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
             var buffer = stackalloc char[(int)length];
 
-            while ((window = FindWindowEx(HWND.Null, window, cn, null)) != HWND.Null)
+            while ((window = FindWindowEx(HWND.Null, window, classNamePtr, null)) != HWND.Null)
             {
                 if (processId is { } && processId != window._processId)
                     continue;
@@ -71,7 +71,7 @@ unsafe partial class Minecraft
                 using (process)
                 {
                     if (GetPackageFamilyName(process, &length, buffer) != ERROR_SUCCESS) continue;
-                    if (CompareStringOrdinal(pfn, -1, buffer, -1, true) != CSTR_EQUAL) continue;
+                    if (CompareStringOrdinal(packageFamilyNamePtr, -1, buffer, -1, true) != CSTR_EQUAL) continue;
                     return window;
                 }
             }

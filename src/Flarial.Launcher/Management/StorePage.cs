@@ -25,5 +25,5 @@ abstract class StorePage
 
     internal StorePage() => _uri = $"ms-windows-store://pdp/?ProductId={ProductId}";
 
-    internal void Open() => NativePlatform.Open(_uri);
+    internal void Open() => NativeMethods.ShellExecute(_uri);
 }

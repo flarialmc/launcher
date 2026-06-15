@@ -14,10 +14,11 @@ public static class Injector
 
     unsafe static Injector()
     {
-        fixed (char* module = "Kernel32")
-        fixed (byte* procedure = "LoadLibraryW"u8)
+        fixed (char* moduleNamePtr = "Kernel32")
+        fixed (byte* procedureNamePtr = "LoadLibraryW"u8)
         {
-            var address = GetProcAddress(GetModuleHandle(module), new(procedure));
+            var module = GetModuleHandle(moduleNamePtr);
+            var address = GetProcAddress(module, new(procedureNamePtr));
             s_address = (delegate* unmanaged[Stdcall]<void*, uint>)(nint)address;
         }
     }

@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
