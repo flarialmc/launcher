@@ -50,7 +50,11 @@ public partial class MainWindow : Window
             .Subscribe(PageTransition);
     }
 
-    private void DragWindow(object? sender, PointerPressedEventArgs e) => BeginMoveDrag(e);
+    void OnPointerPressed(object? sender, PointerPressedEventArgs args)
+    {
+        try { BeginMoveDrag(args); }
+        catch { }
+    }
 
     private async void PageTransition(PageTransitions page)
     {

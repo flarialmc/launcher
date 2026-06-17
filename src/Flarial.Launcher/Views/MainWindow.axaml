@@ -13,7 +13,7 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         Loaded="OnLoaded"
-        PointerPressed="DragWindow">
+        PointerPressed="OnPointerPressed">
     <Window.Clip>
         <RectangleGeometry Rect="0,0,800,500" RadiusX="0" RadiusY="0"/>
     </Window.Clip>
