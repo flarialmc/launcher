@@ -59,7 +59,7 @@ public partial class MainWindow : Window
 
             var point = args.GetCurrentPoint(control);
 
-            if (point.Properties.IsMiddleButtonPressed)
+            if (point.Properties.IsLeftButtonPressed)
                 BeginMoveDrag(args);
         }
         catch { }
