@@ -51,5 +51,15 @@ public partial class HomeView : UserControl
         });
     }
 
-    static void OnPointerPressed(object? sender, RoutedEventArgs args) => NativeMethods.ShellExecute((string)((Image)sender!).Tag!);
+    static void OnPointerPressed(object? sender, PointerPressedEventArgs args)
+    {
+        if (sender is not Control control)
+            return;
+
+        var file = control.Tag as string;
+        var point = args.GetCurrentPoint(control);
+
+        if (!point.Properties.IsLeftButtonPressed) return;
+        if (file is { }) NativeMethods.ShellExecute(file);
+    }
 }
