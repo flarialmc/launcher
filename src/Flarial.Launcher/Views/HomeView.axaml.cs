@@ -53,13 +53,7 @@ public partial class HomeView : UserControl
 
     static void OnPointerPressed(object? sender, PointerPressedEventArgs args)
     {
-        if (sender is not Control control)
-            return;
-
-        var file = control.Tag as string;
-        var point = args.GetCurrentPoint(control);
-
-        if (!point.Properties.IsLeftButtonPressed) return;
+        var file = (sender as Control)?.Tag as string;
         if (file is { }) NativeMethods.ShellExecute(file);
     }
 }

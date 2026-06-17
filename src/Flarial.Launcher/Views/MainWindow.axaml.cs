@@ -52,16 +52,7 @@ public partial class MainWindow : Window
 
     void OnPointerPressed(object? sender, PointerPressedEventArgs args)
     {
-        try
-        {
-            if (sender is not Control control)
-                return;
-
-            var point = args.GetCurrentPoint(control);
-
-            if (point.Properties.IsLeftButtonPressed)
-                BeginMoveDrag(args);
-        }
+        try { BeginMoveDrag(args); }
         catch { }
     }
 
