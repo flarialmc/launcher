@@ -48,6 +48,17 @@ public partial class MainWindow : Window
 
         MessageBus.Current.Listen<PageTransitions>()
             .Subscribe(PageTransition);
+
+        /*
+            - Prevents external apps from messing up the launcher's size and position.
+            - For devices with handheld frontends, this prevents the launcher from misbehaving.
+        */
+
+        this.GetObservable(WindowStateProperty).Subscribe(_ =>
+        {
+            if (_ is WindowState.Minimized) return;
+            else WindowState = WindowState.Normal;
+        });
     }
 
     void OnPointerPressed(object? sender, PointerPressedEventArgs args)
