@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +12,6 @@ public sealed class VersionItem
 {
     public override string ToString() => _string;
 
-    static readonly string s_temp = Path.GetTempPath();
-
     internal VersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper)
     {
         _string = Stringify(version);
@@ -24,8 +21,12 @@ public sealed class VersionItem
 
     internal static string Stringify(string version)
     {
-        VersionKey key = new(version);
-        return key._minor >= 26 ? $"{key._minor}.{key._build}" : version;
+        GameVersion value = new(version);
+
+        if (value._minor >= 26)
+            return $"{value._minor}.{value._build}";
+
+        return version;
     }
 
     readonly string _string;
@@ -59,9 +60,7 @@ public sealed class VersionItem
         return null;
     }
 
-    public async Task<bool> IsDownloadableAsync() => await GetAsync() is { };
-
-    public async Task InstallAsync(Action<int, bool> callback)
+    public async Task<InstallRequest?> InstallAsync()
     {
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
@@ -72,20 +71,9 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        if (await GetAsync() is not { } uri)
-            throw new DownloadLinksNotFoundException();
+        if (await GetAsync() is not { } downloadUri)
+            return null;
 
-        var path = Path.Combine(s_temp, Path.GetRandomFileName());
-        try
-        {
-            await HttpService.DownloadAsync(uri, path, _ => callback(_, false));
-            await PackageService.AddAsync(new(path), _ => callback(_, true));
-
-            var installedPath = Minecraft.Package.InstalledPath;
-            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
-
-            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
-        }
-        finally { try { File.Delete(path); } catch { } }
+        return new(downloadUri, _gameLaunchHelper);
     }
 }

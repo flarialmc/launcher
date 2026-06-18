@@ -1,8 +1,8 @@
 namespace Flarial.Runtime.Versions;
 
-unsafe readonly ref struct VersionKey
+unsafe readonly ref struct GameVersion
 {
-    internal VersionKey(string version)
+    internal GameVersion(string version)
     {
         var index = 0;
         var segments = stackalloc int[3];

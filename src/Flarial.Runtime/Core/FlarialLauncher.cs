@@ -48,7 +48,7 @@ del ""%~f0""";
     static readonly string s_filename;
     static readonly string s_arguments;
 
-    static async Task<bool> IsConnectableAsync(string uri)
+    static async Task<bool> IsAvailableAsync(string uri)
     {
         try
         {
@@ -58,9 +58,9 @@ del ""%~f0""";
         catch { return false; }
     }
 
-    public static async Task<bool> IsFlarialConnectableAsync() => await IsConnectableAsync(FlarialAcceptedUri);
+    public static async Task<bool> IsFirstPartyAvailableAsync() => await IsAvailableAsync(FlarialAcceptedUri);
 
-    public static async Task<bool> IsExternalConnectableAsync() => await IsConnectableAsync(ExternalAcceptedUri);
+    public static async Task<bool> IsThirdPartyAvailableAsync() => await IsAvailableAsync(ExternalAcceptedUri);
 
     public static async Task<bool> CheckForUpdatesAsync() => s_version != (await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri))["version"];
 

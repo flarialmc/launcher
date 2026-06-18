@@ -132,14 +132,16 @@ public partial class VersionItemViewModel : ViewModelBase
             InstallPercentage = 0;
             State = VersionItemState.Downloading;
 
-            if (!await _versionItem.IsDownloadableAsync())
+            var request = await _versionItem.InstallAsync();
+
+            if (request is null)
             {
                 await _downloadLinksMissingDialog.ShowAsync();
                 return;
             }
 
             _mainWindow.Closing += OnClosing;
-            await _versionItem.InstallAsync(OnInstall);
+            await request.InvokeAsync(OnInstall);
         }
         finally
         {

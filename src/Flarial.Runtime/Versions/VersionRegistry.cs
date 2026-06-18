@@ -18,11 +18,11 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         internal VersionEntry(bool supported) => _supported = supported;
     }
 
-    sealed class VersionItemComparer : IComparer<string>
+    sealed class GameVersionComparer : IComparer<string>
     {
         public int Compare(string? x, string? y)
         {
-            VersionKey a = new(x!), b = new(y!);
+            GameVersion a = new(x!), b = new(y!);
 
             if (b._major != a._major)
                 return b._major.CompareTo(a._major);
@@ -34,7 +34,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         }
     }
 
-    static readonly VersionItemComparer s_comparer = new();
+    static readonly GameVersionComparer s_comparer = new();
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
