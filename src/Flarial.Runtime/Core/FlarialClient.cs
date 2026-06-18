@@ -15,7 +15,7 @@ public static class FlarialClient
     const string FileName = "Flarial.Client.Release.dll";
     const string DownloadUri = "https://cdn.flarial.xyz/dll/latest.dll";
 
-    public static bool? Launch()
+    internal static bool? Launch()
     {
         if (Minecraft.GetWindow(ClassName) is { } clientWindow)
         {

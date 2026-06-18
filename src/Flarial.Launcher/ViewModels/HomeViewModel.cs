@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
-using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -97,7 +95,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
+            if (!await Task.Run(FlarialClient.LaunchWithTracking) ?? false)
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;

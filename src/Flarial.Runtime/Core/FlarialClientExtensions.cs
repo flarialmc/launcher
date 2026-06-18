@@ -7,23 +7,32 @@ using Flarial.Runtime.Services;
 using Windows.Security.Cryptography;
 using Windows.System.Profile;
 
-namespace Flarial.Runtime.Analytics;
+namespace Flarial.Runtime.Core;
 
-public static class LaunchAnalytics
+public static class FlarialClientExtensions
 {
     const string UserAgent = "Samsung Smart Fridge";
     const string AnalyticsUri = "https://api.flarial.xyz/launcher/events/launch";
 
-    static readonly Uri s_uri = new(AnalyticsUri);
-    static readonly string s_identifier = CryptographicBuffer.EncodeToHexString(SystemIdentification.GetSystemIdForPublisher().Id);
+    static readonly Uri s_uri;
+    static readonly string s_identifier;
+
+    static FlarialClientExtensions()
+    {
+        var info = SystemIdentification.GetSystemIdForPublisher();
+        var identifier = CryptographicBuffer.EncodeToHexString(info.Id);
+
+        s_uri = new(AnalyticsUri);
+        s_identifier = identifier;
+    }
 
     extension(FlarialClient)
     {
-        public static async Task<bool?> TrackedLaunchAsync()
+        public static bool? LaunchWithTracking()
         {
-            var launched = await Task.Run(FlarialClient.Launch);
-            if (launched ?? false) _ = SendAsync();
-            return launched;
+            var value = FlarialClient.Launch();
+            if (value ?? false) _ = SendAsync();
+            return value;
         }
     }
 

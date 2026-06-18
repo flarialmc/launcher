@@ -1,10 +1,10 @@
 namespace Flarial.Launcher.Dialogs.Metadata;
 
-sealed class ConnectionFailureDialog : MessageDialog<ConnectionFailureDialog>
+sealed class ExternalServicesUnreachableDialog : MessageDialog<ExternalServicesUnreachableDialog>
 {
-    protected override string Title { get; } = "🚨 Connection Failure";
+    protected override string Title { get; } = "🚨 External Services Unreachable";
 
-    protected override string Message { get; } = @"Failed to connect to Flarial Client Services.
+    protected override string Message { get; } = @"Failed to connect to External Services.
         
 • Try restarting the launcher.
 • Check your internet connection.

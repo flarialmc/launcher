@@ -26,7 +26,7 @@ public sealed class InstallRequest
         try
         {
             await HttpService.DownloadAsync(_downloadUri, packagePath, OnDownload);
-            await PackageService.AddAsync(packagePath, OnInstall);
+            await Task.Run(() => PackageService.Add(packagePath, OnInstall));
 
             var installedPath = Minecraft.Package.InstalledPath;
             var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");

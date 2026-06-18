@@ -17,7 +17,7 @@ static class PackageService
 
     internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    unsafe static void Add(string path, Action<int> callback)
+    internal unsafe static void Add(string path, Action<int> callback)
     {
         if (!File.Exists(path))
             throw new FileNotFoundException();
@@ -43,5 +43,6 @@ static class PackageService
         void OnProgress(object sender, DeploymentProgress args) => callback((int)args.percentage);
     }
 
+    [Obsolete("Use `Task.Run()` explicitly.", true)]
     internal static async Task AddAsync(string path, Action<int> callback) => await Task.Run(() => Add(path, callback));
 }

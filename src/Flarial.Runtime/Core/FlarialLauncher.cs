@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 
@@ -48,7 +49,7 @@ del ""%~f0""";
     static readonly string s_filename;
     static readonly string s_arguments;
 
-    static async Task<bool> IsAvailableAsync(string uri)
+    static async Task<bool> PingAsync(string uri)
     {
         try
         {
@@ -58,9 +59,9 @@ del ""%~f0""";
         catch { return false; }
     }
 
-    public static async Task<bool> IsFirstPartyAvailableAsync() => await IsAvailableAsync(FlarialAcceptedUri);
+    public static async Task<bool> IsFlarialReachableAsync() => await PingAsync(FlarialAcceptedUri);
 
-    public static async Task<bool> IsThirdPartyAvailableAsync() => await IsAvailableAsync(ExternalAcceptedUri);
+    public static async Task<bool> IsExternalReachableAsync() => await PingAsync(ExternalAcceptedUri);
 
     public static async Task<bool> CheckForUpdatesAsync() => s_version != (await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri))["version"];
 

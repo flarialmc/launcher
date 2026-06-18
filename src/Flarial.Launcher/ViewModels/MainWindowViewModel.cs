@@ -60,10 +60,10 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        if (!await  FlarialLauncher.IsFirstPartyAvailableAsync())
+        if (!await FlarialLauncher.IsFlarialReachableAsync())
         {
-            await ConnectionFailureDialog._.ShowAsync();
-            Environment.Exit(0);
+            await FlarialServicesUnreachableDialog._.ShowAsync();
+            Environment.Exit(1);
             return;
         }
 
@@ -73,10 +73,10 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (!await FlarialLauncher.IsThirdPartyAvailableAsync())
+        if (!await FlarialLauncher.IsExternalReachableAsync())
         {
-            await ConnectionFailureDialog._.ShowAsync();
-            Environment.Exit(0);
+            await ExternalServicesUnreachableDialog._.ShowAsync();
+            Environment.Exit(1);
             return;
         }
 

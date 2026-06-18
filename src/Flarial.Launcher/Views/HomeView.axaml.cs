@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -28,25 +29,24 @@ public partial class HomeView : UserControl
         {
             foreach (var promotion in await PromotionService.GetAsync()) Dispatcher.Post(async () =>
             {
-                try
+                if (await promotion.GetImageAsync() is not { } bytes)
+                    return;
+
+                using MemoryStream stream = new(bytes, false);
+
+                Image image = new()
                 {
-                    using var stream = await promotion.GetImageAsync();
+                    Width = 320 * 0.8,
+                    Height = 50 * 0.8,
+                    Cursor = s_cursor,
+                    Tag = promotion.Uri,
+                    Source = new Bitmap(stream)
+                };
 
-                    Image image = new()
-                    {
-                        Width = 320 * 0.8,
-                        Height = 50 * 0.8,
-                        Cursor = s_cursor,
-                        Tag = promotion.Uri,
-                        Source = new Bitmap(stream)
-                    };
+                image.PointerPressed += OnPointerPressed;
+                RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
 
-                    image.PointerPressed += OnPointerPressed;
-                    RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
-
-                    Promotions.Children.Add(image);
-                }
-                catch { }
+                Promotions.Children.Add(image);
             }, DispatcherPriority.Background);
         });
     }

@@ -46,8 +46,16 @@ static class HttpService
 
         while ((count = await source.ReadAsync(buffer)) != 0)
         {
-            await destination.WriteAsync(buffer.AsMemory(0, count));
-            if (length > 0) callback((int)((value += count) / length * 100));
+            var memory = buffer.AsMemory(0, count);
+            await destination.WriteAsync(memory);
+
+            if (length <= 0)
+                continue;
+
+            var arg = value += count;
+            arg = arg / length * 100;
+
+            callback((int)arg);
         }
     }
 }
