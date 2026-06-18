@@ -42,19 +42,24 @@ public sealed class VersionItem
         catch { return null; }
     }
 
-    async Task<string> GetAsync()
+    async Task<string?> GetAsync()
     {
         using CancellationTokenSource cts = new();
         var tasks = _downloadUris.Select(_ => PingAsync(_, cts.Token));
 
-        await foreach (var task in Task.WhenEach(tasks)) if (await task is { } uri)
+        await foreach (var task in Task.WhenEach(tasks))
         {
+            var uri = await task;
+            if (uri is null) continue;
+
             cts.Cancel();
             return uri;
         }
 
-        throw new DownloadLinksNotFoundException();
+        return null;
     }
+
+    public async Task<bool> IsDownloadableAsync() => GetAsync() is { };
 
     public async Task InstallAsync(Action<int, bool> callback)
     {
@@ -67,10 +72,13 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
+        if (await GetAsync() is not { } uri)
+            throw new DownloadLinksNotFoundException();
+
         var path = Path.Combine(s_temp, Path.GetRandomFileName());
         try
         {
-            await HttpService.DownloadAsync(await GetAsync(), path, _ => callback(_, false));
+            await HttpService.DownloadAsync(uri, path, _ => callback(_, false));
             await PackageService.AddAsync(new(path), _ => callback(_, true));
 
             var installedPath = Minecraft.Package.InstalledPath;
