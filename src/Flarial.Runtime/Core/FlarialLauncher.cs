@@ -34,7 +34,9 @@ move /y ""{0}"" ""{1}""
 if not %errorlevel%==0 goto _
 del ""%~f0""";
 
-    const string AcceptedUri = "https://cdn.flarial.xyz/202.txt";
+    const string FlarialAcceptedUri = "https://cdn.flarial.xyz/202.txt";
+    const string ExternalAcceptedUri = "https://cdn.jsdelivr.net/gh/flarialmc/newcdn@refs/heads/main/202.txt";
+
     const string LauncherVersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
     const string LauncherDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
@@ -46,15 +48,19 @@ del ""%~f0""";
     static readonly string s_filename;
     static readonly string s_arguments;
 
-    public static async Task<bool> VerifyConnectionAsync()
+    static async Task<bool> IsConnectableAsync(string uri)
     {
         try
         {
-            using var response = await HttpService.GetAsync(AcceptedUri);
+            using var response = await HttpService.GetAsync(uri);
             return response.IsSuccessStatusCode;
         }
         catch { return false; }
     }
+
+    public static async Task<bool> IsFlarialConnectableAsync() => await IsConnectableAsync(FlarialAcceptedUri);
+
+    public static async Task<bool> IsExternalConnectableAsync() => await IsConnectableAsync(ExternalAcceptedUri);
 
     public static async Task<bool> CheckForUpdatesAsync() => s_version != (await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri))["version"];
 

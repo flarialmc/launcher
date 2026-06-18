@@ -139,7 +139,7 @@ public partial class VersionItemViewModel : ViewModelBase
             State = VersionItemState.NotInstalled;
 
             IsProgressing = false;
-            _mainWindow.Closing += OnClosing;
+            _mainWindow.Closing -= OnClosing;
             _settingsVersionsViewModel.IsInstalling = false;
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -28,7 +29,12 @@ Exception: {1}
 
 
     [ModuleInitializer]
-    internal static void ModuleInitializer() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    internal static void ModuleInitializer()
+    {
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+    }
 
     static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
