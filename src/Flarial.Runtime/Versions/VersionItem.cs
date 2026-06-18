@@ -84,7 +84,7 @@ public sealed class VersionItem
             var installedPath = Minecraft.Package.InstalledPath;
             var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
 
-            await File.WriteAllBytesAsync(path, _gameLaunchHelper);
+            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
         }
         finally { try { File.Delete(path); } catch { } }
     }
