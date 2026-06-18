@@ -59,7 +59,7 @@ public sealed class VersionItem
         return null;
     }
 
-    public async Task<bool> IsDownloadableAsync() => GetAsync() is { };
+    public async Task<bool> IsDownloadableAsync() => await GetAsync() is { };
 
     public async Task InstallAsync(Action<int, bool> callback)
     {
