@@ -4,9 +4,9 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class LaunchFailureDialog : MessageDialog<LaunchFailureDialog>
 {
-    protected override string Title => "⚠️ Launch Failure";
+    protected override string Title { get; } = "⚠️ Launch Failure";
     
-    protected override string Message => @"The launcher couldn't inject or initialize Minecraft correctly.
+    protected override string Message { get; } = @"The launcher couldn't inject or initialize Minecraft correctly.
 
 • Remove & disable any 3rd party mods or tools.
 • Ensure no security software is blocking the launcher.
@@ -14,5 +14,5 @@ sealed class LaunchFailureDialog : MessageDialog<LaunchFailureDialog>
 
 If you need help, join our Discord.";
 
-    protected override string Primary => "Back";
+    protected override string Primary { get; } = "Back";
 }

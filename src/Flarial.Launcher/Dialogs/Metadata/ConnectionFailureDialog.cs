@@ -2,9 +2,9 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class ConnectionFailureDialog : MessageDialog<ConnectionFailureDialog>
 {
-    protected override string Title => "🚨 Connection Failure";
+    protected override string Title { get; } = "🚨 Connection Failure";
 
-    protected override string Message => @"Failed to connect to Flarial Client Services.
+    protected override string Message { get; } = @"Failed to connect to Flarial Client Services.
         
 • Try restarting the launcher.
 • Check your internet connection.
@@ -12,5 +12,5 @@ sealed class ConnectionFailureDialog : MessageDialog<ConnectionFailureDialog>
 
 If you need help, join our Discord.";
 
-    protected override string Primary => "Exit";
+    protected override string Primary { get; } = "Exit";
 }

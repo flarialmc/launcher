@@ -4,13 +4,13 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class InstallingVersionDialog(VersionItem version) : MessageDialog
 {
-    protected override string Title => "💡 Installing Version";
-    protected override string Message => $@"Minecraft {version} is being installed by the launcher.
+    protected override string Title { get; } = "💡 Installing Version";
+    protected override string Message { get; } = $@"Minecraft {version} is being installed by the launcher.
 
 • Wait for the installation to finish.
 • Ensure your internet connection is fast.
 
 If you need help, join our Discord.";
 
-    protected override string Primary => "Back";
+    protected override string Primary { get; } = "Back";
 }
