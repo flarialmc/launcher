@@ -2,7 +2,7 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class FlarialServicesUnreachableDialog : MessageDialog<FlarialServicesUnreachableDialog>
 {
-    protected override string Title { get; } = "🚨 Flarial Services Unavaiable";
+    protected override string Title { get; } = "🚨 Flarial Services Unreachable";
 
     protected override string Message { get; } = @"Failed to connect to Flarial Services.
         
