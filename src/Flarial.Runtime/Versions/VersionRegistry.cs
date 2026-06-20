@@ -44,13 +44,16 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     VersionRegistry(SortedDictionary<string, VersionEntry> items)
     {
+        var item = items.First(static _ => _.Value._supported);
+        var version = new GameVersion(item.Key).ToString();
+
         _items = items;
-        PreferredVersion = VersionItem.Stringify(items.First(static _ => _.Value._supported).Key);
+        PreferredVersion = version;
     }
 
-    public readonly string PreferredVersion;
+    public string PreferredVersion { get; }
 
-    public static string InstalledVersion => VersionItem.Stringify(Minecraft.Version);
+    public static string InstalledVersion => new GameVersion(Minecraft.Version).ToString();
 
     public bool IsSupported => _items.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
 

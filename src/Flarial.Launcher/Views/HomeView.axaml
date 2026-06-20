@@ -40,7 +40,7 @@
 
                 <!--Flarial Logo-->
                 <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
-                    <Image Source="/Assets/app.ico" Height="40" Width="40" Margin="0" />
+                    <Image Source="/Assets/app.ico" Height="40" Width="40" Margin="0" RenderOptions.BitmapInterpolationMode="HighQuality"/>
                     <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" FontWeight="Medium" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
                 </Grid>
             </Grid>

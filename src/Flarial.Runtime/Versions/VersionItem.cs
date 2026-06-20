@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,23 +11,15 @@ namespace Flarial.Runtime.Versions;
 
 public sealed class VersionItem
 {
+    static readonly string s_path = Path.GetTempPath();
+
     public override string ToString() => _string;
 
     internal VersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper)
     {
-        _string = Stringify(version);
         _downloadUris = downloadUris;
         _gameLaunchHelper = gameLaunchHelper;
-    }
-
-    internal static string Stringify(string version)
-    {
-        GameVersion value = new(version);
-
-        if (value._minor >= 26)
-            return $"{value._minor}.{value._build}";
-
-        return version;
+        _string = new GameVersion(version).ToString();
     }
 
     readonly string _string;
@@ -43,7 +36,7 @@ public sealed class VersionItem
         catch { return null; }
     }
 
-    async Task<string?> GetAsync()
+    async Task<string?> GetUriAsync()
     {
         using CancellationTokenSource cts = new();
         var tasks = _downloadUris.Select(_ => PingAsync(_, cts.Token));
@@ -60,7 +53,31 @@ public sealed class VersionItem
         return null;
     }
 
-    public async Task<InstallRequest?> InstallAsync()
+    async Task InstallAsync(string uri, Action<int, bool> callback)
+    {
+        var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
+
+        try
+        {
+            await HttpService.DownloadAsync(uri, packagePath, OnDownload);
+            await Task.Run(() => PackageService.Add(packagePath, OnInstall));
+
+            var installedPath = Minecraft.Package.InstalledPath;
+            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
+
+            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
+        }
+        finally
+        {
+            try { File.Delete(packagePath); }
+            catch { }
+        }
+
+        void OnInstall(int value) => callback(value, true);
+        void OnDownload(int value) => callback(value, false);
+    }
+
+    public async Task<Task?> InstallAsync(Action<int, bool> callback)
     {
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
@@ -71,9 +88,9 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        if (await GetAsync() is not { } downloadUri)
+        if (await GetUriAsync() is not { } uri)
             return null;
 
-        return new(downloadUri, _gameLaunchHelper);
+        return InstallAsync(uri, callback);
     }
 }

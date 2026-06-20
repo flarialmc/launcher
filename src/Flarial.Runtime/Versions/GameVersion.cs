@@ -16,4 +16,10 @@ unsafe readonly ref struct GameVersion
     }
 
     internal readonly int _major, _minor, _build;
+
+    public override string ToString()
+    {
+        if (_minor >= 26) return $"{_minor}.{_build}";
+        return $"{_major}.{_minor}.{_build}";
+    }
 }
