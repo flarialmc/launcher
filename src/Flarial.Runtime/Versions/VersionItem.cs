@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -25,33 +26,6 @@ public sealed class VersionItem
     readonly string _string;
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
-
-    static async Task<string?> PingAsync(string uri, CancellationToken token)
-    {
-        try
-        {
-            using var response = await HttpService.GetAsync(uri, token);
-            return response.IsSuccessStatusCode ? uri : null;
-        }
-        catch { return null; }
-    }
-
-    async Task<string?> GetUriAsync()
-    {
-        using CancellationTokenSource cts = new();
-        var tasks = _downloadUris.Select(_ => PingAsync(_, cts.Token));
-
-        await foreach (var task in Task.WhenEach(tasks))
-        {
-            var uri = await task;
-            if (uri is null) continue;
-
-            cts.Cancel();
-            return uri;
-        }
-
-        return null;
-    }
 
     async Task InstallAsync(string uri, Action<int, bool> callback)
     {
@@ -88,8 +62,8 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        if (await GetUriAsync() is not { } uri)
-            return null;
+        var uri = await HttpService.PingAsync(_downloadUris);
+        if (uri is null) return null;
 
         return InstallAsync(uri, callback);
     }
