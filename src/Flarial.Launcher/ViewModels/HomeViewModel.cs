@@ -114,12 +114,6 @@ public partial class HomeViewModel : ViewModelBase
 
     public void OnPackageStatusChanged()
     {
-        if (!Dispatcher.UIThread.CheckAccess())
-        {
-            Dispatcher.UIThread.Invoke(OnPackageStatusChanged);
-            return;
-        }
-
         if (!Minecraft.IsInstalled)
         {
             GameVersion = "0.0.0";
