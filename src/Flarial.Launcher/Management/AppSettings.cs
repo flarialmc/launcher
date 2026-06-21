@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
@@ -17,8 +18,8 @@ public sealed class AppSettings
         get;
         set
         {
-            if (value is null) return;
-            field = Path.GetFullPath(value);
+            if (value is null) field = value;
+            else field = Path.GetFullPath(value);
         }
     }
 
