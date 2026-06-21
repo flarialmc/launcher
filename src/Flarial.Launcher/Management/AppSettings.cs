@@ -7,21 +7,21 @@ namespace Flarial.Launcher.Management;
 public sealed class AppSettings
 {
     public bool AutomaticUpdates { get; set; } = true;
-    
+
     public bool PerformanceMode { get; set; } = false;
-       
+
     public bool UseCustomDll { get; set; } = false;
 
-    public string CustomDllPath
+    public string? CustomDllPath
     {
         get;
         set
         {
-            try { field = Path.GetFullPath(value.Trim()); }
-            catch { field = string.Empty; }
+            if (value is null) return;
+            field = Path.GetFullPath(value);
         }
-    } = string.Empty;
-    
+    }
+
     internal static AppSettings Get()
     {
         try

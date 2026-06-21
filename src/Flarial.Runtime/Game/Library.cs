@@ -20,11 +20,12 @@ public unsafe sealed class Library
     {
         get
         {
-            HMODULE module = new(); try
-            {
-                if (_path is null)
-                    return false;
+            if (_path is null)
+                return false;
 
+            HMODULE module = new();
+            try
+            {
                 /*
                     - Use `DONT_RESOLVE_DLL_REFERENCES` to load the library as stub.
                     - This is done to perform load validation and to ensure no code is executed.
@@ -64,11 +65,7 @@ public unsafe sealed class Library
 
     public Library(string path)
     {
-        try
-        {
-            _path = Path.GetFullPath(path);
-            if (!Path.HasExtension(_path)) _path = null;
-        }
-        catch { _path = null; }
+        if (!Path.HasExtension(path)) return;
+        _path = Path.GetFullPath(path);
     }
 }
