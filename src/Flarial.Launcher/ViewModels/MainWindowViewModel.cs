@@ -60,7 +60,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        if (!await FlarialLauncher.PingFlarialServicesAsync())
+        if (!await FlarialLauncher.CheckConnectionAsync())
         {
             await FlarialServicesUnreachableDialog._.ShowAsync();
             Environment.Exit(1);
@@ -70,13 +70,6 @@ public class MainWindowViewModel : ViewModelBase
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnDownload);
-            return;
-        }
-
-        if (!await FlarialLauncher.PingExternalServicesAsync())
-        {
-            await ExternalServicesUnreachableDialog._.ShowAsync();
-            Environment.Exit(1);
             return;
         }
 

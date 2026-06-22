@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 using ReactiveUI;
 

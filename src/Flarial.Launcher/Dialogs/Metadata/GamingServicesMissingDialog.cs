@@ -17,5 +17,9 @@ If you need help, join our Discord.";
 
     protected override string? Secondary { get; } = "Cancel";
 
-    protected override async Task OnShowAsync(bool value) { if (value) GamingServicesPage._.Open(); }
+    protected override async Task OnShowAsync(bool value)
+    {
+        if (value)
+            GamingServicesPage._.Open();
+    }
 }
