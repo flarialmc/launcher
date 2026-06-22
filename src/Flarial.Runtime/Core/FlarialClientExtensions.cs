@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Flarial.Runtime.Core;
 using Flarial.Runtime.Services;
 using Windows.Security.Cryptography;
 using Windows.System.Profile;

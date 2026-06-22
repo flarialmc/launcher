@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
+using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
@@ -38,7 +39,8 @@ public static class FlarialClient
         try
         {
             using var stream = File.OpenRead(FileName);
-            return Convert.ToHexString(await SHA256.HashDataAsync(stream));
+            var array = await SHA256.HashDataAsync(stream);
+            return Convert.ToHexString(array);
         }
         catch { return string.Empty; }
     }
@@ -49,7 +51,10 @@ public static class FlarialClient
         var remoteHashTask = GetRemoteHashAsync();
         await Task.WhenAll(localHashTask, remoteHashTask);
 
-        if ((await localHashTask).Equals(await remoteHashTask, StringComparison.OrdinalIgnoreCase))
+        var localHash = await localHashTask;
+        var remoteHash = await remoteHashTask;
+
+        if (localHash.Equals(remoteHash, OrdinalIgnoreCase))
             return true;
 
         try { File.Delete(FileName); }

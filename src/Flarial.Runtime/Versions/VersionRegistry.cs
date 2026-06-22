@@ -57,7 +57,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     public bool IsSupported => _items.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
 
-    public static async Task<VersionRegistry> GetAsync() => await Task.Run(static async () =>
+    public static Task<VersionRegistry> GetAsync() => Task.Run(static async () =>
     {
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
         var supportedVersionsTask = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);

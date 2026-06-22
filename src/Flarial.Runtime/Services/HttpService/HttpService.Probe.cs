@@ -8,10 +8,10 @@ namespace Flarial.Runtime.Services;
 
 static partial class HttpService
 {
-    internal static async Task<string?> PingAsync(IEnumerable<string> uris)
+    internal static async Task<string?> ProbeAsync(IEnumerable<string> uris)
     {
         using CancellationTokenSource cts = new();
-        var tasks = uris.Select(uri => PingAsync(uri, cts.Token));
+        var tasks = uris.Select(uri => ProbeAsync(uri, cts.Token));
 
         await foreach (var task in Task.WhenEach(tasks))
         {
@@ -25,7 +25,7 @@ static partial class HttpService
         return null;
     }
 
-    internal static async Task<string?> PingAsync(string uri, [Optional] CancellationToken token)
+    static async Task<string?> ProbeAsync(string uri, [Optional] CancellationToken token)
     {
         try
         {

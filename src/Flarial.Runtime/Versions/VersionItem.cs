@@ -62,7 +62,7 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        var uri = await HttpService.PingAsync(_downloadUris);
+        var uri = await HttpService.ProbeAsync(_downloadUris);
         if (uri is null) return null;
 
         return InstallAsync(uri, callback);

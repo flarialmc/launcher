@@ -8,13 +8,13 @@ namespace Flarial.Runtime.Services;
 
 static partial class HttpService
 {
-    internal static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+    internal static Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
     {
-        return await s_client.SendAsync(request);
+        return s_client.SendAsync(request);
     }
 
-    internal static async Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token)
+    static Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token)
     {
-        return await s_client.GetAsync(uri, ResponseHeadersRead, token);
+        return s_client.GetAsync(uri, ResponseHeadersRead, token);
     }
 }

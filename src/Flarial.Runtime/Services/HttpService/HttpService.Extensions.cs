@@ -10,8 +10,13 @@ static partial class HttpService
         return await JsonService.Default.ReadAsync<T>(stream);
     }
 
-    internal static async Task<byte[]> GetBytesAsync(string uri)
+    internal static Task<byte[]> GetBytesAsync(string uri)
     {
-        return await s_client.GetByteArrayAsync(uri);
+        return s_client.GetByteArrayAsync(uri);
+    }
+
+    internal static Task<string> GetStringAsync(string uri)
+    {
+        return s_client.GetStringAsync(uri);
     }
 }

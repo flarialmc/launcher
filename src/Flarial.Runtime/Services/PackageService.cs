@@ -42,7 +42,4 @@ static class PackageService
         void OnCompleted(object sender, AsyncStatus args) => SetEvent(handle);
         void OnProgress(object sender, DeploymentProgress args) => callback((int)args.percentage);
     }
-
-    [Obsolete("Use `Task.Run()` explicitly.", true)]
-    internal static async Task AddAsync(string path, Action<int> callback) => await Task.Run(() => Add(path, callback));
 }
