@@ -13,7 +13,9 @@ static partial class HttpService
     internal static async Task<HttpResponseMessage?> ProbeAsync(IReadOnlyList<string> uris)
     {
         using CancellationTokenSource cts = new();
-        var tasks = Probe(uris, cts.Token);
+
+        List<Task<HttpResponseMessage?>> tasks = new(uris.Count);
+        foreach (var uri in uris) tasks.Add(ProbeAsync(uri, cts.Token));
 
         try
         {
@@ -39,16 +41,6 @@ static partial class HttpService
                 (await task)?.Dispose();
             }
         }
-    }
-
-    static List<Task<HttpResponseMessage?>> Probe(IReadOnlyList<string> uris, CancellationToken token)
-    {
-        List<Task<HttpResponseMessage?>> tasks = new(uris.Count);
-
-        foreach (var uri in uris)
-            tasks.Add(ProbeAsync(uri, token));
-
-        return tasks;
     }
 
     static async Task<HttpResponseMessage?> ProbeAsync(string uri, CancellationToken token)
