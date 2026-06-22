@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Runtime.Exceptions;
@@ -27,24 +28,26 @@ public sealed class VersionItem
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
 
-    async Task InstallAsync(string uri, Action<int, bool> callback)
+    async Task InstallAsync(HttpResponseMessage response, Action<int, bool> callback)
     {
-        var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
-
-        try
+        using (response)
         {
-            await HttpService.DownloadAsync(uri, packagePath, OnDownload);
-            await Task.Run(() => PackageService.Add(packagePath, OnInstall));
+            var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
+            try
+            {
+                await HttpService.DownloadAsync(response, packagePath, OnDownload);
+                await Task.Run(() => PackageService.Add(packagePath, OnInstall));
 
-            var installedPath = Minecraft.Package.InstalledPath;
-            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
+                var installedPath = Minecraft.Package.InstalledPath;
+                var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
 
-            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
-        }
-        finally
-        {
-            try { File.Delete(packagePath); }
-            catch { }
+                await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
+            }
+            finally
+            {
+                try { File.Delete(packagePath); }
+                catch { }
+            }
         }
 
         void OnInstall(int value) => callback(value, true);
@@ -62,9 +65,9 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        var uri = await HttpService.ProbeAsync(_downloadUris);
-        if (uri is null) return null;
+        var response = await HttpService.ProbeAsync(_downloadUris);
+        if (response is null) return null;
 
-        return InstallAsync(uri, callback);
+        return InstallAsync(response, callback);
     }
 }
