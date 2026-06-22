@@ -6,11 +6,9 @@ namespace Flarial.Runtime.Services;
 
 static partial class HttpService
 {
-    static readonly HttpClient s_client = new(new SocketsHttpHandler
+    static readonly HttpClient s_client = new(new HttpClientHandler
     {
         AllowAutoRedirect = true,
-        EnableMultipleHttp2Connections = true,
-        EnableMultipleHttp3Connections = true,
         AutomaticDecompression = DecompressionMethods.All
     }, true);
 
