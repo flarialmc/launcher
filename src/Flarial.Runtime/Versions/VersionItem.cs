@@ -28,27 +28,26 @@ public sealed class VersionItem
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
 
-    async Task InstallAsync(HttpResponseMessage response, Action<int, bool> callback)
+    async Task InstallAsync(string uri, Action<int, bool> callback)
     {
-        using (response)
+        var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
+
+        try
         {
-            var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
-            try
-            {
-                await HttpService.DownloadAsync(response, packagePath, OnDownload);
-                await Task.Run(() => PackageService.Add(packagePath, OnInstall));
+            await HttpService.DownloadAsync(uri, packagePath, OnDownload);
+            await Task.Run(() => PackageService.Add(packagePath, OnInstall));
 
-                var installedPath = Minecraft.Package.InstalledPath;
-                var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
+            var installedPath = Minecraft.Package.InstalledPath;
+            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
 
-                await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
-            }
-            finally
-            {
-                try { File.Delete(packagePath); }
-                catch { }
-            }
+            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
         }
+        finally
+        {
+            try { File.Delete(packagePath); }
+            catch { }
+        }
+
 
         void OnInstall(int value) => callback(value, true);
         void OnDownload(int value) => callback(value, false);
@@ -65,9 +64,9 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        var response = await HttpService.ProbeAsync(_downloadUris);
-        if (response is null) return null;
+        if (await HttpService.ProbeAsync(_downloadUris) is not { } uri)
+            return null;
 
-        return InstallAsync(response, callback);
+        return InstallAsync(uri, callback);
     }
 }

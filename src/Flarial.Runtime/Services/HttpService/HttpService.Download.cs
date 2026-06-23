@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Flarial.Runtime.Services;
@@ -9,12 +8,7 @@ static partial class HttpService
 {
     internal static async Task DownloadAsync(string uri, string path, Action<int> callback)
     {
-        using var response = await GetAsync(uri);
-        await DownloadAsync(response, path, callback);
-    }
-
-    internal static async Task DownloadAsync(HttpResponseMessage response, string path, Action<int> callback)
-    {
+        using var response = await GetAsync(uri, default);
         response.EnsureSuccessStatusCode();
 
         using var destination = File.Create(path);

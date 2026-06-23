@@ -1,5 +1,4 @@
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Net.Http.HttpCompletionOption;
@@ -13,7 +12,7 @@ static partial class HttpService
         return s_client.SendAsync(request);
     }
 
-    static Task<HttpResponseMessage> GetAsync(string uri, [Optional] CancellationToken token)
+    static Task<HttpResponseMessage> GetAsync(string uri, CancellationToken token)
     {
         return s_client.GetAsync(uri, ResponseHeadersRead, token);
     }

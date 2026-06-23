@@ -1,51 +1,39 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Threading.Tasks.TaskContinuationOptions;
 
 namespace Flarial.Runtime.Services;
 
 static partial class HttpService
 {
-
-    internal static async Task<HttpResponseMessage?> ProbeAsync(IReadOnlyList<string> uris)
+    internal static async Task<string?> ProbeAsync(IEnumerable<string> uris)
     {
         using CancellationTokenSource cts = new();
 
-        List<Task<HttpResponseMessage?>> tasks = new(uris.Count);
-        foreach (var uri in uris) tasks.Add(ProbeAsync(uri, cts.Token));
-
-        try
+        await foreach (var task in Task.WhenEach(Probe(uris, cts.Token)))
         {
-            await foreach (var task in Task.WhenEach(tasks))
-            {
-                var response = await task;
-                if (response is null) continue;
+            var uri = await task;
+            if (uri is null) continue;
 
-                cts.Cancel();
-                tasks.Remove(task);
-
-                return response;
-            }
-            return null;
+            cts.Cancel();
+            return uri;
         }
-        finally
-        {
-            foreach (var task in tasks)
-                _ = task.ContinueWith(OnContinuation, RunContinuationsAsynchronously);
+        return null;
 
-            static async Task OnContinuation(Task<HttpResponseMessage?> task)
-            {
-                (await task)?.Dispose();
-            }
+        static IEnumerable<Task<string?>> Probe(IEnumerable<string> uris, CancellationToken token)
+        {
+            foreach (var uri in uris)
+                yield return ProbeAsync(uri, token);
         }
     }
 
-    static async Task<HttpResponseMessage?> ProbeAsync(string uri, CancellationToken token)
+    static async Task<string?> ProbeAsync(string uri, CancellationToken token)
     {
-        try { return await GetAsync(uri, token); }
+        try
+        {
+            using var response = await GetAsync(uri, token);
+            return response.IsSuccessStatusCode ? uri : null;
+        }
         catch { return null; }
     }
 }

@@ -14,9 +14,4 @@ static partial class HttpService
     {
         return s_client.GetByteArrayAsync(uri);
     }
-
-    internal static Task<string> GetStringAsync(string uri)
-    {
-        return s_client.GetStringAsync(uri);
-    }
 }
