@@ -1,10 +1,8 @@
-using System;
 using System.Reactive;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.Threading;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
@@ -61,6 +59,12 @@ public partial class HomeViewModel : ViewModelBase
             {
                 await NotInstalledDialog._.ShowAsync();
                 return;
+            }
+
+            if (!Minecraft.IsSideloaded && !Minecraft.IsRunning)
+            {
+                if (!await SideloadedBootstrapDialog._.ShowAsync())
+                    return;
             }
 
             if (!custom && !_model.VersionRegistry.IsSupported)
