@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
+using Windows.ApplicationModel;
+using Windows.Devices.Midi;
 
 namespace Flarial.Runtime.Versions;
 
@@ -27,14 +29,20 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         }
     }
 
-    static string TruncateVersion(string version)
+    static string RoundVersionBuild(in GameVersion version)
     {
-        GameVersion value = new(version);
-        var build = value._build / 10 * 10;
-        return $"{value._major}.{value._minor}.{build}";
+        var build = version._build / 10 * 10;
+        return $"{version._major}.{version._minor}.{build}";
     }
 
-    public static string InstalledVersion => new GameVersion(Minecraft.Version).ToString();
+    public static string InstalledVersion
+    {
+        get
+        {
+            var version = Minecraft.Package.Id.Version;
+            return new GameVersion(version).ToString();
+        }
+    }
 
     static readonly VersionItemComparer s_comparer = new();
 
@@ -58,8 +66,11 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
     {
         get
         {
-            var version = TruncateVersion(Minecraft.Version);
-            return _supportedVersions.Contains(version);
+            var packageVersion = Minecraft.Package.Id.Version;
+            GameVersion gameVersion = new(packageVersion);
+
+            var roundedVersion = RoundVersionBuild(gameVersion);
+            return _supportedVersions.Contains(roundedVersion);
         }
     }
 
@@ -71,7 +82,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
         await Task.WhenAll(gameLaunchHelperTask, supportedVersionsTask, downloadLinksTask);
 
-        var downloadLinks =  await downloadLinksTask;
+        var downloadLinks = await downloadLinksTask;
         var gameLaunchHelper = await gameLaunchHelperTask;
         var supportedVersions = await supportedVersionsTask;
 
@@ -80,12 +91,15 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         foreach (var item in downloadLinks["release"])
         {
             var index = item.Key.LastIndexOf('.');
-            var gameVersion = item.Key[..index];
+            var downloadVersion = item.Key[..index];
 
-            var truncatedVersion = TruncateVersion(gameVersion);
-            if (!supportedVersions.Contains(truncatedVersion)) continue;
+            GameVersion gameVersion = new(downloadVersion);
+            var roundedVersion = RoundVersionBuild(gameVersion);
 
-            versionItems.Add(new(gameVersion, item.Value, gameLaunchHelper));
+            if (!supportedVersions.Contains(roundedVersion))
+                continue;
+
+            versionItems.Add(new(downloadVersion, item.Value, gameLaunchHelper));
         }
 
         versionItems.Sort(s_comparer);

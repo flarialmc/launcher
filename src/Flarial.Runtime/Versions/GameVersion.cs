@@ -1,3 +1,5 @@
+using Windows.ApplicationModel;
+
 namespace Flarial.Runtime.Versions;
 
 unsafe readonly ref struct GameVersion
@@ -13,6 +15,13 @@ unsafe readonly ref struct GameVersion
         _major = segments[0];
         _minor = segments[1];
         _build = segments[2];
+    }
+
+    internal GameVersion(PackageVersion version)
+    {
+        _major = version.Major;
+        _minor = version.Minor;
+        _build = version.Build / 100;
     }
 
     internal readonly int _major, _minor, _build;
