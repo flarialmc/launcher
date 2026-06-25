@@ -26,7 +26,15 @@ public static partial class Minecraft
     }
 
     internal static Package Package => PackageService.Get(PackageFamilyName)!;
-    internal static string Version { get { var _ = Package.Id.Version; return $"{_.Major}.{_.Minor}.{_.Build / 100}"; } }
+
+    internal static string Version
+    {
+        get
+        {
+            var version = Package.Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build / 100}";
+        }
+    }
 
     public static bool IsInstalled => Package is { };
     public static bool IsRunning => GetWindow()?.IsVisible ?? false;

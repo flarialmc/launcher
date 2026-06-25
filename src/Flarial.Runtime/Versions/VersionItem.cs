@@ -1,9 +1,5 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
@@ -19,6 +15,7 @@ public sealed class VersionItem
 
     internal VersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper)
     {
+        _version = version;
         _downloadUris = downloadUris;
         _gameLaunchHelper = gameLaunchHelper;
         _string = new GameVersion(version).ToString();
@@ -27,6 +24,7 @@ public sealed class VersionItem
     readonly string _string;
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
+    internal readonly string _version;
 
     async Task InstallAsync(string uri, Action<int, bool> callback)
     {

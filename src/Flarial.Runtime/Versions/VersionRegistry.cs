@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +10,12 @@ namespace Flarial.Runtime.Versions;
 
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
-    sealed class VersionEntry
+    sealed class VersionItemComparer : IComparer<VersionItem>
     {
-        internal VersionItem? _item;
-
-        internal readonly bool _supported;
-
-        internal VersionEntry(bool supported) => _supported = supported;
-    }
-
-    sealed class GameVersionComparer : IComparer<string>
-    {
-        public int Compare(string? x, string? y)
+        public int Compare(VersionItem? x, VersionItem? y)
         {
-            GameVersion a = new(x!), b = new(y!);
+            GameVersion a = new(x!._version!);
+            GameVersion b = new(y!._version);
 
             if (b._major != a._major)
                 return b._major.CompareTo(a._major);
@@ -34,65 +27,73 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         }
     }
 
-    static readonly GameVersionComparer s_comparer = new();
+    static string TruncateVersion(string version)
+    {
+        GameVersion value = new(version);
+        var build = value._build / 10 * 10;
+        return $"{value._major}.{value._minor}.{build}";
+    }
 
-    const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
+    public static string InstalledVersion => new GameVersion(Minecraft.Version).ToString();
+
+    static readonly VersionItemComparer s_comparer = new();
+
+    const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Versions.json";
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
     const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
 
-    readonly SortedDictionary<string, VersionEntry> _items;
+    readonly List<VersionItem> _versionItems;
+    readonly HashSet<string> _supportedVersions;
 
-    VersionRegistry(SortedDictionary<string, VersionEntry> items)
+    VersionRegistry(HashSet<string> supportedVersions, List<VersionItem> versionItems)
     {
-        var item = items.First(static _ => _.Value._supported);
-        var version = new GameVersion(item.Key).ToString();
-
-        _items = items;
-        PreferredVersion = version;
+        _versionItems = versionItems;
+        _supportedVersions = supportedVersions;
+        PreferredVersion = $"{_versionItems[0]}";
     }
 
     public string PreferredVersion { get; }
 
-    public static string InstalledVersion => new GameVersion(Minecraft.Version).ToString();
-
-    public bool IsSupported => _items.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
+    public bool IsSupported
+    {
+        get
+        {
+            var version = TruncateVersion(Minecraft.Version);
+            return _supportedVersions.Contains(version);
+        }
+    }
 
     public static Task<VersionRegistry> GetAsync() => Task.Run(static async () =>
     {
         var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
-        var supportedVersionsTask = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
+        var supportedVersionsTask = HttpService.GetJsonAsync<HashSet<string>>(SupportedVersionsUri);
         var downloadLinksTask = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
+
         await Task.WhenAll(gameLaunchHelperTask, supportedVersionsTask, downloadLinksTask);
 
-        var downloadLinks = await downloadLinksTask;
+        var downloadLinks =  await downloadLinksTask;
         var gameLaunchHelper = await gameLaunchHelperTask;
         var supportedVersions = await supportedVersionsTask;
 
-        SortedDictionary<string, VersionEntry> items = new(s_comparer);
-        foreach (var item in supportedVersions) items[item.Key] = new(item.Value);
+        List<VersionItem> versionItems = [];
 
         foreach (var item in downloadLinks["release"])
         {
             var index = item.Key.LastIndexOf('.');
-            var version = item.Key[..index];
+            var gameVersion = item.Key[..index];
 
-            if (!items.TryGetValue(version, out var entry))
-                continue;
+            var truncatedVersion = TruncateVersion(gameVersion);
+            if (!supportedVersions.Contains(truncatedVersion)) continue;
 
-            entry._item = new(version, item.Value, gameLaunchHelper);
+            versionItems.Add(new(gameVersion, item.Value, gameLaunchHelper));
         }
 
-        return new VersionRegistry(items);
+        versionItems.Sort(s_comparer);
+
+        return new VersionRegistry(supportedVersions, versionItems);
     });
 
-    public IEnumerator<VersionItem> GetEnumerator()
-    {
-        foreach (var value in _items.Values)
-        {
-            if (value._item is null) continue;
-            yield return value._item;
-        }
-    }
-
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public IEnumerator<VersionItem> GetEnumerator() => _versionItems.GetEnumerator();
 }
