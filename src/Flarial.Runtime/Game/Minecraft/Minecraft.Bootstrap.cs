@@ -64,18 +64,12 @@ unsafe partial class Minecraft
 
             if (IsSideloaded)
             {
-                NativeWindow? processWindow = null;
+                NativeWindow? window = null;
 
                 while (process.Wait(1))
                 {
-                    processWindow = GetWindow(processId);
-                    if (processWindow is { }) break;
-                }
-
-                while (process.Wait(1))
-                {
-                    var visible = processWindow?.IsVisible;
-                    if (visible ?? false) return processId;
+                    window ??= GetWindow(processId: processId);
+                    if (window?.IsVisible is true) return processId;
                 }
 
                 return null;

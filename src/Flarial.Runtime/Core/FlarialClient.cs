@@ -18,7 +18,7 @@ public static class FlarialClient
 
     internal static bool? Launch()
     {
-        if (Minecraft.GetWindow(ClassName) is { } clientWindow)
+        if (Minecraft.GetWindow(className: ClassName) is { } clientWindow)
         {
             if (Minecraft.GetWindow(clientWindow._processId) is { } minecraftWindow)
             {
@@ -32,7 +32,11 @@ public static class FlarialClient
 
     const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
 
-    async static Task<string> GetRemoteHashAsync() => (await HttpService.GetJsonAsync<Dictionary<string, string>>(HashesUrl))[Build];
+    async static Task<string> GetRemoteHashAsync()
+    {
+        var json = await HttpService.GetJsonAsync<Dictionary<string, string>>(HashesUrl);
+        return json[Build];
+    }
 
     async static Task<string> GetLocalHashAsync()
     {
