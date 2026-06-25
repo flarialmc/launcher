@@ -25,7 +25,7 @@ public static class Injector
 
     public unsafe static uint? Launch( Library library)
     {
-        var path = library.EnsurePath();
+        var path = library.EnsureLoadable();
 
         if (Minecraft.Launch() is not { } processId)
             return null;

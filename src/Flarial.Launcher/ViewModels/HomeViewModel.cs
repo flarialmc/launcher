@@ -61,7 +61,7 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (!Minecraft.IsSideloaded && !Minecraft.IsRunning)
+            if (Minecraft.IsSideloaded && !Minecraft.IsRunning)
             {
                 if (!await SideloadedBootstrapDialog._.ShowAsync())
                     return;
@@ -75,7 +75,7 @@ public partial class HomeViewModel : ViewModelBase
 
             if (custom)
             {
-                Library library = new(path ?? string.Empty);
+                Library library = new(path);
 
                 if (!library.IsLoadable)
                 {
