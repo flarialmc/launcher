@@ -9,7 +9,7 @@ using static Windows.Win32.System.LibraryLoader.LOAD_LIBRARY_FLAGS;
 
 namespace Flarial.Runtime.Game;
 
-public unsafe sealed class Library
+public unsafe sealed class Library(string path)
 {
     /*
         - A caller should apply `SEM_FAILCRITICALERRORS` via `SetErrorMode()`.
@@ -61,11 +61,5 @@ public unsafe sealed class Library
         return _path;
     }
 
-    readonly string? _path;
-
-    public Library(string path)
-    {
-        if (!Path.HasExtension(path)) return;
-        _path = Path.GetFullPath(path);
-    }
+    readonly string? _path = Path.HasExtension(path) ? Path.GetFullPath(path) : null;
 }
