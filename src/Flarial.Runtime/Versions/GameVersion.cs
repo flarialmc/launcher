@@ -7,6 +7,9 @@ unsafe readonly ref struct GameVersion
 {
     internal GameVersion(string version)
     {
+        if (version[^1] is '.')
+            throw new FormatException();
+
         var index = 0;
         var segments = stackalloc int[3];
 

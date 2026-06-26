@@ -44,7 +44,7 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
 
     const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Versions.json";
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
-    const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
+    const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.min.json";
 
     readonly List<VersionItem> _versionItems;
     readonly HashSet<string> _supportedVersions;
