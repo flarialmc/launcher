@@ -9,14 +9,14 @@ using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
-public static class FlarialClient
+public static partial class FlarialClient
 {
     const string Build = "Release";
     const string ClassName = "Flarial Client";
     const string FileName = "Flarial.Client.Release.dll";
     const string DownloadUri = "https://cdn.flarial.xyz/dll/latest.dll";
 
-    internal static bool? Launch()
+    static bool? Activate()
     {
         if (Minecraft.GetWindow(className: ClassName) is { } clientWindow)
         {

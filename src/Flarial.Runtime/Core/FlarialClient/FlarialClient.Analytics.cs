@@ -8,7 +8,7 @@ using Windows.System.Profile;
 
 namespace Flarial.Runtime.Core;
 
-public static class FlarialClientExtensions
+partial class FlarialClient
 {
     const string UserAgent = "Samsung Smart Fridge";
     const string AnalyticsUri = "https://api.flarial.xyz/launcher/events/launch";
@@ -16,7 +16,7 @@ public static class FlarialClientExtensions
     static readonly Uri s_uri;
     static readonly string s_identifier;
 
-    static FlarialClientExtensions()
+    static FlarialClient()
     {
         var info = SystemIdentification.GetSystemIdForPublisher();
         var identifier = CryptographicBuffer.EncodeToHexString(info.Id);
@@ -25,17 +25,14 @@ public static class FlarialClientExtensions
         s_identifier = identifier;
     }
 
-    extension(FlarialClient)
+    public static bool? Launch()
     {
-        public static bool? LaunchWithTracking()
-        {
-            var value = FlarialClient.Launch();
-            if (value ?? false) _ = SendAsync();
-            return value;
-        }
+        var value = Activate();
+        if (value ?? false) _ = PostAnalyticsAsync();
+        return value;
     }
 
-    static async Task SendAsync()
+    static async Task PostAnalyticsAsync()
     {
         var timestamp = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
         var json = $"{{\"timestamp\":\"{timestamp}\",\"installId\":\"{s_identifier}\"}}";

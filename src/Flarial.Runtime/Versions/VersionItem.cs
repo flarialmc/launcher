@@ -33,7 +33,7 @@ public sealed class VersionItem
         try
         {
             await HttpService.DownloadAsync(uri, packagePath, OnDownload);
-            await Task.Run(() => PackageService.Add(packagePath, OnInstall));
+            await Task.Run(() => PackageService.Add(new(packagePath), OnInstall));
 
             var installedPath = Minecraft.Package.InstalledPath;
             var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");

@@ -17,13 +17,10 @@ static class PackageService
 
     internal static Package? Get(string packageFamilyName) => s_manager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
 
-    internal unsafe static void Add(string path, Action<int> callback)
+    internal unsafe static void Add(Uri uri, Action<int> callback)
     {
-        if (!File.Exists(path))
-            throw new FileNotFoundException();
-
         var handle = CreateEvent(null, true, false, null);
-        var info = s_manager.AddPackageAsync(new(path), null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
+        var info = s_manager.AddPackageAsync(uri, null, ForceApplicationShutdown | ForceUpdateFromAnyVersion);
 
         try
         {

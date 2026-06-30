@@ -101,7 +101,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await Task.Run(FlarialClient.LaunchWithTracking) ?? false)
+            if (!await Task.Run(FlarialClient.Launch) ?? false)
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;
