@@ -1,5 +1,3 @@
-using Flarial.Launcher.Management;
-
 namespace Flarial.Launcher.ViewModels;
 
 public class SettingsViewModel : ViewModelBase

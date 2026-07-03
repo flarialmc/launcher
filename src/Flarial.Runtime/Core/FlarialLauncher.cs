@@ -34,7 +34,6 @@ move /y ""{0}"" ""{1}""
 if not %errorlevel%==0 goto _
 del ""%~f0""";
 
-    const string AcceptedUri = "https://cdn.flarial.xyz/202.txt";
     const string LauncherVersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
     const string LauncherDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
@@ -46,17 +45,11 @@ del ""%~f0""";
     static readonly string s_filename;
     static readonly string s_arguments;
 
-    public static async Task<bool> VerifyConnectionAsync()
+    public static async Task<bool> CheckForUpdatesAsync()
     {
-        try
-        {
-            using var response = await HttpService.GetAsync(AcceptedUri);
-            return response.IsSuccessStatusCode;
-        }
-        catch { return false; }
+        var json = await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri);
+        return json["version"] != s_version;
     }
-
-    public static async Task<bool> CheckForUpdatesAsync() => s_version != (await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri))["version"];
 
     public static async Task DownloadAsync(Action<int> callback)
     {

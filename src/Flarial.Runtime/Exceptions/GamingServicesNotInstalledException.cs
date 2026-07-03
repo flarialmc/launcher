@@ -1,4 +1,5 @@
 using System;
+
 namespace Flarial.Runtime.Exceptions;
 
 sealed class GamingServicesNotInstalledException : Exception

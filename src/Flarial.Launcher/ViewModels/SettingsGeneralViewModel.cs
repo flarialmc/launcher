@@ -79,9 +79,9 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         }
     }
 
-    void OnOpenLauncherFolder() => NativePlatform.Open(".");
+    void OnOpenLauncherFolder() => NativeMethods.ShellExecute(".");
 
-    void OnOpenClientFolder() => NativePlatform.Open(Directory.CreateDirectory(@"..\Client").FullName);
+    void OnOpenClientFolder() => NativeMethods.ShellExecute(Directory.CreateDirectory(@"..\Client").FullName);
 
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 

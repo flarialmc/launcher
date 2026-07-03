@@ -60,13 +60,6 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        if (!await FlarialLauncher.VerifyConnectionAsync())
-        {
-            await ConnectionFailureDialog._.ShowAsync();
-            Environment.Exit(0);
-            return;
-        }
-
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnDownload);

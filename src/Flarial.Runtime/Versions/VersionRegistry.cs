@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Services;
@@ -9,20 +8,12 @@ namespace Flarial.Runtime.Versions;
 
 public sealed class VersionRegistry : IEnumerable<VersionItem>
 {
-    sealed class VersionEntry
+    sealed class VersionItemComparer : IComparer<VersionItem>
     {
-        internal VersionItem? _item;
-
-        internal readonly bool _supported;
-
-        internal VersionEntry(bool supported) => _supported = supported;
-    }
-
-    sealed class VersionItemComparer : IComparer<string>
-    {
-        public int Compare(string? x, string? y)
+        public int Compare(VersionItem? x, VersionItem? y)
         {
-            VersionKey a = new(x!), b = new(y!);
+            GameVersion a = new(x!._version!);
+            GameVersion b = new(y!._version);
 
             if (b._major != a._major)
                 return b._major.CompareTo(a._major);
@@ -34,60 +25,85 @@ public sealed class VersionRegistry : IEnumerable<VersionItem>
         }
     }
 
+    static string RoundVersionBuild(in GameVersion version)
+    {
+        var build = version._build / 10 * 10;
+        return $"{version._major}.{version._minor}.{build}";
+    }
+
+    public static string InstalledVersion
+    {
+        get
+        {
+            var version = Minecraft.Package.Id.Version;
+            return new GameVersion(version).ToString();
+        }
+    }
+
     static readonly VersionItemComparer s_comparer = new();
 
-    const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Supported.json";
+    const string SupportedVersionsUri = "https://cdn.flarial.xyz/launcher/Versions.json";
     const string GameLaunchHelperUri = "https://cdn.flarial.xyz/launcher/gamelaunchhelper.dll";
-    const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.json";
+    const string DownloadLinksUri = "https://cdn.jsdelivr.net/gh/MinecraftBedrockArchiver/GdkLinks@latest/urls.min.json";
 
-    readonly SortedDictionary<string, VersionEntry> _items;
+    readonly List<VersionItem> _versionItems;
+    readonly HashSet<string> _supportedVersions;
 
-    VersionRegistry(SortedDictionary<string, VersionEntry> items)
+    VersionRegistry(HashSet<string> supportedVersions, List<VersionItem> versionItems)
     {
-        _items = items;
-        PreferredVersion = VersionItem.Stringify(items.First(static _ => _.Value._supported).Key);
+        _versionItems = versionItems;
+        _supportedVersions = supportedVersions;
+        PreferredVersion = $"{_versionItems[0]}";
     }
 
-    public readonly string PreferredVersion;
+    public string PreferredVersion { get; }
 
-    public static string InstalledVersion => VersionItem.Stringify(Minecraft.Version);
-
-    public bool IsSupported => _items.TryGetValue(Minecraft.Version, out var entry) && entry._supported;
-
-    public static async Task<VersionRegistry> GetAsync() => await Task.Run(static async () =>
+    public bool IsSupported
     {
-        var gameLaunchHelper = HttpService.GetBytesAsync(GameLaunchHelperUri);
-        var supportedVersions = HttpService.GetJsonAsync<Dictionary<string, bool>>(SupportedVersionsUri);
-        var downloadLinks = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
-        await Task.WhenAll(gameLaunchHelper, supportedVersions, downloadLinks);
+        get
+        {
+            var packageVersion = Minecraft.Package.Id.Version;
+            GameVersion gameVersion = new(packageVersion);
 
-        SortedDictionary<string, VersionEntry> items = new(s_comparer);
+            var roundedVersion = RoundVersionBuild(gameVersion);
+            return _supportedVersions.Contains(roundedVersion);
+        }
+    }
 
-        foreach (var item in await supportedVersions)
-            items[item.Key] = new(item.Value);
+    public static Task<VersionRegistry> GetAsync() => Task.Run(static async () =>
+    {
+        var gameLaunchHelperTask = HttpService.GetBytesAsync(GameLaunchHelperUri);
+        var supportedVersionsTask = HttpService.GetJsonAsync<HashSet<string>>(SupportedVersionsUri);
+        var downloadLinksTask = HttpService.GetJsonAsync<Dictionary<string, Dictionary<string, string[]>>>(DownloadLinksUri);
 
-        foreach (var item in (await downloadLinks)["release"])
+        await Task.WhenAll(gameLaunchHelperTask, supportedVersionsTask, downloadLinksTask);
+
+        var downloadLinks = await downloadLinksTask;
+        var gameLaunchHelper = await gameLaunchHelperTask;
+        var supportedVersions = await supportedVersionsTask;
+
+        List<VersionItem> versionItems = [];
+
+        foreach (var item in downloadLinks["release"])
         {
             var index = item.Key.LastIndexOf('.');
-            var version = item.Key[..index];
+            var downloadVersion = item.Key[..index];
 
-            if (!items.TryGetValue(version, out var entry))
+            GameVersion gameVersion = new(downloadVersion);
+            var roundedVersion = RoundVersionBuild(gameVersion);
+
+            if (!supportedVersions.Contains(roundedVersion))
                 continue;
 
-            entry._item = new(version, item.Value, await gameLaunchHelper);
+            versionItems.Add(new(downloadVersion, item.Value, gameLaunchHelper));
         }
 
-        return new VersionRegistry(items);
+        versionItems.Sort(s_comparer);
+
+        return new VersionRegistry(supportedVersions, versionItems);
     });
 
-    public IEnumerator<VersionItem> GetEnumerator()
-    {
-        foreach (var value in _items.Values)
-        {
-            if (value._item is null) continue;
-            yield return value._item;
-        }
-    }
-
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public IEnumerator<VersionItem> GetEnumerator() => _versionItems.GetEnumerator();
 }

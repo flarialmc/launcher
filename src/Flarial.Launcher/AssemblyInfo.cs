@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -14,7 +15,11 @@ using Flarial.Runtime.Unmanaged;
 
 file static class AssemblyInfo
 {
-    const string Format = @"• Please take a screenshot of this.
+    const string Title = "Flarial Launcher: Error";
+
+    const string Instruction = "Looks like the launcher crashed!";
+
+    const string Content = @"• Please take a screenshot of this.
 • Create a new support post & send the screenshot.
 
 Version: {0}
@@ -22,8 +27,14 @@ Exception: {1}
 
 {2}";
 
+
     [ModuleInitializer]
-    internal static void ModuleInitializer() => AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    internal static void ModuleInitializer()
+    {
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+    }
 
     static void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
@@ -42,16 +53,8 @@ Exception: {1}
         var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
         nint handle = new(lifetime?.MainWindow?.TryGetPlatformHandle()?.Handle ?? 0);
 
-        new NativeDialog
-        {
-            Handle = handle,
-
-            Title = "Flarial Launcher: Error",
-            Content = string.Format(Format, version, type, message),
-
-            Information = information,
-            Instruction = "Looks like the launcher crashed!"
-        }.Show();
+        var content = string.Format(Content, version, type, message);
+        NativeMethods.TaskDialog(handle, Title, Instruction, content, information);
 
         Environment.Exit(1);
     }

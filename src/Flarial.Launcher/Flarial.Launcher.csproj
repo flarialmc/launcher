@@ -28,10 +28,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <SelfContained>true</SelfContained>
         <PublishTrimmed>true</PublishTrimmed>
-
         <PublishSingleFile>true</PublishSingleFile>
+
+        <SelfContained>true</SelfContained>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
@@ -39,7 +39,6 @@
         <InvariantGlobalization>true</InvariantGlobalization>
 
         <DebuggerSupport>false</DebuggerSupport>
-        <StackTraceSupport>false</StackTraceSupport>
         <EventSourceSupport>false</EventSourceSupport>
         <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
 
@@ -61,18 +60,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Controls.WebView" Version="12.0.1" />
-        <PackageReference Include="SkiaSharp" Version="3.119.4" />
-        <PackageReference Include="Avalonia.Skia" Version="12.0.4" />
+        <PackageReference Include="SkiaSharp" Version="4.148.0" />
+        <PackageReference Include="Avalonia.Skia" Version="12.0.5" />
 
-        <PackageReference Include="Avalonia.Win32" Version="12.0.4" />
-        <PackageReference Include="Avalonia.HarfBuzz" Version="12.0.4" />
+        <PackageReference Include="Avalonia.Win32" Version="12.0.5" />
+        <PackageReference Include="Avalonia.HarfBuzz" Version="12.0.5" />
 
         <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.3" />
-        <PackageReference Include="ReactiveUI.SourceGenerators" Version="3.1.0">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="ReactiveUI.SourceGenerators" Version="3.1.0" />
     </ItemGroup>
 
 </Project>

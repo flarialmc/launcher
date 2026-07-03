@@ -45,6 +45,7 @@ public partial class VersionItemViewModel : ViewModelBase
     readonly InstallVersionDialog _installVersionDialog;
     readonly InstalledVersionDialog _installedVersionDialog;
     readonly InstallingVersionDialog _installingVersionDialog;
+    readonly DownloadLinksMissingDialog _downloadLinksMissingDialog;
 
     Task? InstallingVersionDialogTask
     {
@@ -70,6 +71,7 @@ public partial class VersionItemViewModel : ViewModelBase
         _installVersionDialog = new(versionItem);
         _installedVersionDialog = new(versionItem);
         _installingVersionDialog = new(versionItem);
+        _downloadLinksMissingDialog = new(versionItem);
 
         this.WhenAnyValue(static _ => _.State).Subscribe(_ =>
         {
@@ -125,13 +127,21 @@ public partial class VersionItemViewModel : ViewModelBase
         try
         {
             IsProgressing = true;
-            _mainWindow.Closing += OnClosing;
             _settingsVersionsViewModel.IsInstalling = true;
 
             InstallPercentage = 0;
             State = VersionItemState.Downloading;
 
-            await _versionItem.InstallAsync(OnInstall);
+            var task = await _versionItem.InstallAsync(OnInstall);
+
+            if (task is null)
+            {
+                await _downloadLinksMissingDialog.ShowAsync();
+                return;
+            }
+
+            _mainWindow.Closing += OnClosing;
+            await task;
         }
         finally
         {
@@ -139,8 +149,9 @@ public partial class VersionItemViewModel : ViewModelBase
             State = VersionItemState.NotInstalled;
 
             IsProgressing = false;
-            _mainWindow.Closing += OnClosing;
             _settingsVersionsViewModel.IsInstalling = false;
+
+            _mainWindow.Closing -= OnClosing;
         }
 
         await _installedVersionDialog.ShowAsync();

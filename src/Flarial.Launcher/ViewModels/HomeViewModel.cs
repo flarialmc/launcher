@@ -1,15 +1,11 @@
-using System;
 using System.Reactive;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.Threading;
-using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
-using Flarial.Runtime.Analytics;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -65,6 +61,12 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
+            if (Minecraft.IsSideloaded && !Minecraft.IsRunning)
+            {
+                if (!await SideloadedBootstrapDialog._.ShowAsync())
+                    return;
+            }
+
             if (!custom && !_model.VersionRegistry.IsSupported)
             {
                 await UnsupportedVersionDialog.ShowAsync();
@@ -73,7 +75,9 @@ public partial class HomeViewModel : ViewModelBase
 
             if (custom)
             {
-                Library library = new(path); if (!library.IsLoadable)
+                Library library = new(path);
+
+                if (!library.IsLoadable)
                 {
                     await InvalidCustomDllDialog._.ShowAsync();
                     return;
@@ -97,7 +101,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await FlarialClient.TrackedLaunchAsync() ?? false)
+            if (!await Task.Run(FlarialClient.Launch) ?? false)
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;
@@ -114,12 +118,6 @@ public partial class HomeViewModel : ViewModelBase
 
     public void OnPackageStatusChanged()
     {
-        if (!Dispatcher.UIThread.CheckAccess())
-        {
-            Dispatcher.UIThread.Invoke(OnPackageStatusChanged);
-            return;
-        }
-
         if (!Minecraft.IsInstalled)
         {
             GameVersion = "0.0.0";

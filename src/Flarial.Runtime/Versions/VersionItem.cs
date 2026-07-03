@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Game;
@@ -11,52 +9,49 @@ namespace Flarial.Runtime.Versions;
 
 public sealed class VersionItem
 {
-    public override string ToString() => _string;
+    static readonly string s_path = Path.GetTempPath();
 
-    static readonly string s_temp = Path.GetTempPath();
+    public override string ToString() => _string;
 
     internal VersionItem(string version, string[] downloadUris, byte[] gameLaunchHelper)
     {
-        _string = Stringify(version);
+        _version = version;
         _downloadUris = downloadUris;
         _gameLaunchHelper = gameLaunchHelper;
-    }
-
-    internal static string Stringify(string version)
-    {
-        VersionKey key = new(version);
-        return key._minor >= 26 ? $"{key._minor}.{key._build}" : version;
+        _string = new GameVersion(version).ToString();
     }
 
     readonly string _string;
     readonly string[] _downloadUris;
     readonly byte[] _gameLaunchHelper;
+    internal readonly string _version;
 
-    static async Task<string?> PingAsync(string uri, CancellationToken token)
+    async Task InstallAsync(string uri, Action<int, bool> callback)
     {
+        var packagePath = Path.Combine(s_path, Path.GetRandomFileName());
+
         try
         {
-            using var response = await HttpService.GetAsync(uri, token);
-            return response.IsSuccessStatusCode ? uri : null;
+            await HttpService.DownloadAsync(uri, packagePath, OnDownload);
+            await Task.Run(() => PackageService.Add(new(packagePath), OnInstall));
+
+            var installedPath = Minecraft.Package.InstalledPath;
+            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
+
+            await File.WriteAllBytesAsync(gameLaunchHelperPath, _gameLaunchHelper);
         }
-        catch { return null; }
-    }
-
-    async Task<string> GetAsync()
-    {
-        using CancellationTokenSource cts = new();
-        var tasks = _downloadUris.Select(_ => PingAsync(_, cts.Token));
-
-        await foreach (var task in Task.WhenEach(tasks)) if (await task is { } uri)
+        finally
         {
-            cts.Cancel();
-            return uri;
+            try { File.Delete(packagePath); }
+            catch { }
         }
 
-        throw new DownloadLinksNotFoundException();
+
+        void OnInstall(int value) => callback(value, true);
+        void OnDownload(int value) => callback(value, false);
     }
 
-    public async Task InstallAsync(Action<int, bool> callback)
+    public async Task<Task?> InstallAsync(Action<int, bool> callback)
     {
         if (!GamingServices.IsInstalled)
             throw new GamingServicesNotInstalledException();
@@ -67,17 +62,9 @@ public sealed class VersionItem
         if (Minecraft.IsSideloaded)
             throw new MinecraftSideloadedException();
 
-        var path = Path.Combine(s_temp, Path.GetRandomFileName());
-        try
-        {
-            await HttpService.DownloadAsync(await GetAsync(), path, _ => callback(_, false));
-            await PackageService.AddAsync(new(path), _ => callback(_, true));
+        if (await HttpService.ProbeAsync(_downloadUris) is not { } uri)
+            return null;
 
-            var installedPath = Minecraft.Package.InstalledPath;
-            var gameLaunchHelperPath = Path.Combine(installedPath, "gamelaunchhelper.dll");
-
-            await File.WriteAllBytesAsync(path, _gameLaunchHelper);
-        }
-        finally { try { File.Delete(path); } catch { } }
+        return InstallAsync(uri, callback);
     }
 }

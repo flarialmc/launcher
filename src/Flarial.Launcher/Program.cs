@@ -40,7 +40,7 @@ static class Program
         builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
         builder.With(new SkiaOptions { MaxGpuResourceSizeBytes = long.MaxValue });
         builder.With(new RenderOptions { BitmapInterpolationMode = BitmapInterpolationMode.None });
-        builder.With(new Win32PlatformOptions { CompositionMode = [Win32CompositionMode.WinUIComposition] });
+        builder.With(new Win32PlatformOptions { CompositionMode = [Win32CompositionMode.RedirectionSurface] });
 
         builder.StartWithClassicDesktopLifetime(args);
     }

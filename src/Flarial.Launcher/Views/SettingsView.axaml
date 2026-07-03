@@ -17,7 +17,7 @@
         <Border Grid.Column="0" IsHitTestVisible="False" Background="#201A1B" BorderThickness="{StaticResource ButtonBorderThickness}" BorderBrush="{StaticResource BackgroundBorderColor}" CornerRadius="20"/>
         <Grid Grid.Column="0" RowDefinitions="Auto,*">
             <Grid Grid.Row="0" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
-                <Image Grid.Column="0" Source="/Assets/app.ico" Height="40" Width="40" Margin="0" Stretch="UniformToFill"/>
+                <Image Grid.Column="0" Source="/Assets/app.ico" Height="40" Width="40" Margin="0" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality"/>
                 <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Settings" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
             </Grid>
             <VisualLayerManager Grid.Row="1">

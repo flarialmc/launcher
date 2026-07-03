@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Flarial.Runtime.Exceptions;
 using Flarial.Runtime.Unmanaged;
 using Windows.ApplicationModel;
@@ -66,18 +64,12 @@ unsafe partial class Minecraft
 
             if (IsSideloaded)
             {
-                NativeWindow? processWindow = null;
+                NativeWindow? window = null;
 
                 while (process.Wait(1))
                 {
-                    processWindow = GetWindow(processId);
-                    if (processWindow is { }) break;
-                }
-
-                while (process.Wait(1))
-                {
-                    var visible = processWindow?.IsVisible;
-                    if (visible ?? false) return processId;
+                    window ??= GetWindow(processId: processId);
+                    if (window?.IsVisible is true) return processId;
                 }
 
                 return null;
