@@ -27,6 +27,9 @@ unsafe readonly ref struct GameVersion
             segments[index] = segments[index] * 10 + digit;
         }
 
+        if (index < 2)
+            throw new FormatException();
+
         _major = segments[0];
         _minor = segments[1];
         _build = segments[2];
