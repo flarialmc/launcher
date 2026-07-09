@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -7,12 +8,18 @@ using Flarial.Launcher.Views;
 
 namespace Flarial.Launcher.Dialogs;
 
-public abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new()
+abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new()
 {
+    private protected MessageDialog()
+    {
+        if (_ is null) return;
+        throw new InvalidOperationException();
+    }
+
     internal static readonly T _ = new();
 }
 
-public abstract class MessageDialog
+abstract class MessageDialog
 {
     protected abstract string Title { get; }
     protected abstract string Message { get; }
