@@ -19,6 +19,7 @@
         <DataTemplate DataType="{x:Type vm:SettingsConfigsViewModel}"><views:SettingsConfigsView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsGeneralViewModel}"><views:SettingsGeneralView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsVersionsViewModel}"><views:SettingsVersionsView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsAccountViewModel}"><views:SettingsAccountView/></DataTemplate>
     </Application.DataTemplates>
 
     <Application.Resources>
@@ -55,6 +56,7 @@
         <StyleInclude Source="Styles/WindowStateButtons.axaml"/>
         <StyleInclude Source="Styles/SettingsRadioButtonStyle.axaml"/>
         <StyleInclude Source="Styles/GenericButtonStyle.axaml"/>
+        <StyleInclude Source="Styles/DiscordLoginButton.axaml"/>
         <StyleInclude Source="Styles/Expander.axaml"/>
         <StyleInclude Source="Styles/ToolTip.axaml"/>
     </Application.Styles>

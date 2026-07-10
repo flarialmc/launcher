@@ -34,7 +34,8 @@ public partial class SettingsView : UserControl
         {
             PageTransitions.SettingsGeneralPage => 0,
             PageTransitions.SettingsVersionsPage => 500,
-            PageTransitions.SettingsConfigsPage => 1000,
+            PageTransitions.SettingsAccountPage => 1000,
+            PageTransitions.SettingsConfigsPage => 1500,
             _ => _currentPageY
         };
 
@@ -50,12 +51,14 @@ public partial class SettingsView : UserControl
 
         var generalMove = CreateMove(0 - selectedPageY);
         var versionsMove = CreateMove(500 - selectedPageY);
-        var configsMove = CreateMove(1000 - selectedPageY);
+        var accountsMove = CreateMove(1000 - selectedPageY);
+        var configsMove = CreateMove(1500 - selectedPageY);
 
         if (_settings.PerformanceMode)
         {
             _ = generalMove.RunAsync(SettingsGeneralViewControl);
             _ = versionsMove.RunAsync(SettingsVersionsViewControl);
+            _ = accountsMove.RunAsync(SettingsAccountsViewControl);
             _ = configsMove.RunAsync(SettingsConfigsViewControl);
         }
         else
@@ -102,6 +105,7 @@ public partial class SettingsView : UserControl
             _ = zoomOut.RunAsync(UserControlGrid);
             _ = generalMove.RunAsync(SettingsGeneralViewControl);
             _ = versionsMove.RunAsync(SettingsVersionsViewControl);
+            _ = accountsMove.RunAsync(SettingsAccountsViewControl);
             _ = configsMove.RunAsync(SettingsConfigsViewControl);
             _ = zoomIn.RunAsync(UserControlGrid);
 

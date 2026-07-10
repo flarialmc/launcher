@@ -6,5 +6,6 @@ public enum PageTransitions
     SettingsPage,
     SettingsGeneralPage,
     SettingsVersionsPage,
+    SettingsAccountPage,
     SettingsConfigsPage,
 }
