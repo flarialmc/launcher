@@ -9,36 +9,48 @@ using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
-public static partial class FlarialClient
+public abstract partial class FlarialClient
 {
-    const string Build = "Release";
-    const string ClassName = "Flarial Client";
-    const string FileName = "Flarial.Client.Release.dll";
-    const string DownloadUri = "https://cdn.flarial.xyz/dll/latest.dll";
+    private protected abstract string Build { get; }
+    private protected abstract string FileName { get; }
+    private protected abstract string DownloadUri { get; }
 
-    static bool? Activate()
+    private protected FlarialClient() { }
+
+    public static bool IsRunning
     {
-        if (Minecraft.GetWindow(className: ClassName) is { } clientWindow)
+        get
         {
-            if (Minecraft.GetWindow(clientWindow._processId) is { } minecraftWindow)
-            {
-                minecraftWindow.Switch();
-                return null;
-            }
-            return false;
+            if (Minecraft.GetWindow(className: ClassName) is not { } clientWindow)
+                return false;
+
+            if (Minecraft.GetWindow(clientWindow._processId) is not { } minecraftWindow)
+                return false;
+
+            return minecraftWindow.IsVisible;
         }
-        return Injector.Launch(new(FileName)) is { };
     }
 
-    const string HashesUrl = "https://cdn.flarial.xyz/dll_hashes.json";
-
-    async static Task<string> GetRemoteHashAsync()
+    public bool Launch()
     {
-        var json = await HttpService.GetJsonAsync<Dictionary<string, string>>(HashesUrl);
+        if (!IsRunning && Injector.Launch(new(FileName)))
+        {
+            _ = PostAnalyticsAsync();
+            return true;
+        }
+        return false;
+    }
+
+    const string ClassName = "Flarial Client";
+    const string HashesUri = "https://cdn.flarial.xyz/dll_hashes.json";
+
+    async Task<string> GetRemoteHashAsync()
+    {
+        var json = await HttpService.GetJsonAsync<Dictionary<string, string>>(HashesUri);
         return json[Build];
     }
 
-    async static Task<string> GetLocalHashAsync()
+    async Task<string> GetLocalHashAsync()
     {
         try
         {
@@ -49,7 +61,7 @@ public static partial class FlarialClient
         catch { return string.Empty; }
     }
 
-    public static async Task<bool> DownloadAsync(Action<int> callback)
+    public async Task<bool> DownloadAsync(Action<int> callback)
     {
         var localHashTask = GetLocalHashAsync();
         var remoteHashTask = GetRemoteHashAsync();

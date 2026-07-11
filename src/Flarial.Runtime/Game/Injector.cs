@@ -23,15 +23,15 @@ public static class Injector
         }
     }
 
-    public unsafe static uint? Launch( Library library)
+    public unsafe static bool Launch( Library library)
     {
         var path = library.EnsureLoadable();
 
         if (Minecraft.Launch() is not { } processId)
-            return null;
+            return false;
 
         if (NativeProcess.Open(PROCESS_ALL_ACCESS, processId) is not { } process)
-            return null;
+            return false;
 
         using (process)
         {
@@ -47,7 +47,7 @@ public static class Injector
                 thread = CreateRemoteThread(process, null, 0, s_address, parameter, 0, null);
                 WaitForSingleObject(thread, INFINITE);
 
-                return processId;
+                return true;
             }
             finally
             {

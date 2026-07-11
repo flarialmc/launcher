@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
+using Flarial.Runtime.Client;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -84,7 +85,7 @@ public partial class HomeViewModel : ViewModelBase
                 }
 
                 LauncherStatus = "Launching...";
-                if (await Task.Run(() => Injector.Launch(library)) is null)
+                if (!await Task.Run(() => Injector.Launch(library)))
                 {
                     await LaunchFailureDialog._.ShowAsync();
                     return;
@@ -94,14 +95,20 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Verifying...";
-            if (!await FlarialClient.DownloadAsync(OnDownload))
+            if (!await FlarialClientRelease._.DownloadAsync(OnDownload))
             {
                 await ClientUpdateFailureDialog._.ShowAsync();
                 return;
             }
 
+            if (FlarialClient.IsRunning)
+            {
+                await ClientAlreadyInjectedDialog._.ShowAsync();
+                return;
+            }
+
             LauncherStatus = "Launching...";
-            if (!await Task.Run(FlarialClient.Launch) ?? false)
+            if (!await Task.Run(FlarialClientRelease._.Launch))
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;

@@ -5,7 +5,7 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class UnsupportedVersionDialog(VersionRegistry registry) : MessageDialog
 {
-    protected override string Title { get; } = "⚠️ Unsupported Version";
+    protected override string Title => "⚠️ Unsupported Version";
 
     protected override string Message
     {
@@ -23,7 +23,7 @@ sealed class UnsupportedVersionDialog(VersionRegistry registry) : MessageDialog
         }
     }
 
-    protected override string Primary { get; } = "Back";
+    protected override string Primary => "Back";
 
     readonly Dictionary<string, string> _messages = [];
 

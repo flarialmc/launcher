@@ -4,9 +4,9 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class DownloadLinksMissingDialog(VersionItem version) : MessageDialog
 {
-    protected override string Title { get; } = "⚠️ Download Links Missing";
+    protected override string Title => "⚠️ Download Links Missing";
 
-    protected override string Message { get; } = @$"Cannot find download links for Minecraft {version}.
+    protected override string Message => @$"Cannot find download links for Minecraft {version}.
         
 • Try restarting the launcher.
 • Check your internet connection.
@@ -14,5 +14,5 @@ sealed class DownloadLinksMissingDialog(VersionItem version) : MessageDialog
 
 If you need help, join our Discord.";
 
-    protected override string Primary { get; } = "Back";
+    protected override string Primary => "Back";
 }

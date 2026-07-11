@@ -2,9 +2,9 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class InvalidCustomDllDialog : MessageDialog<InvalidCustomDllDialog>
 {
-    protected override string Title { get; } = "⚠️ Invalid Custom DLL";
+    protected override string Title => "⚠️ Invalid Custom DLL";
 
-    protected override string Message { get; } = @"The specified custom DLL is invalid.
+    protected override string Message => @"The specified custom DLL is invalid.
 
 • Specify a DLL that is valid and exists.
 • If you didn't intend to use this feature, disable it.
@@ -12,5 +12,5 @@ sealed class InvalidCustomDllDialog : MessageDialog<InvalidCustomDllDialog>
 
 If you need help, join our Discord.";
 
-    protected override string Primary { get; } = "Back";
+    protected override string Primary => "Back";
 }

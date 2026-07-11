@@ -25,13 +25,6 @@ partial class FlarialClient
         s_identifier = identifier;
     }
 
-    public static bool? Launch()
-    {
-        var value = Activate();
-        if (value ?? false) _ = PostAnalyticsAsync();
-        return value;
-    }
-
     static async Task PostAnalyticsAsync()
     {
         var timestamp = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";

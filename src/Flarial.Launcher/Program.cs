@@ -37,10 +37,9 @@ static class Program
         builder.UseHarfBuzz();
         builder.UseReactiveUI(static _ => _.WithExceptionHandler(new ExceptionHandler()));
 
-        builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
         builder.With(new SkiaOptions { MaxGpuResourceSizeBytes = long.MaxValue });
+        builder.With(new CompositionOptions { UseRegionDirtyRectClipping = true });
         builder.With(new RenderOptions { BitmapInterpolationMode = BitmapInterpolationMode.None });
-        builder.With(new Win32PlatformOptions { CompositionMode = [Win32CompositionMode.RedirectionSurface] });
 
         builder.StartWithClassicDesktopLifetime(args);
     }

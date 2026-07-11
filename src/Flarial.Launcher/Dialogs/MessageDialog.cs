@@ -34,7 +34,7 @@ abstract class MessageDialog
         if (Secondary is { }) _buttons[Secondary] = 1;
     }
 
-    protected virtual async Task OnShowAsync(bool value) { }
+    protected virtual void OnShow(bool value) { }
 
     internal async Task<bool> ShowAsync()
     {
@@ -46,8 +46,6 @@ abstract class MessageDialog
         var key = await model.ShowMessageBoxAsync(Title, Message, _buttons.Keys);
 
         var value = _buttons[key] <= 0;
-        await OnShowAsync(value);
-
-        return value;
+        OnShow(value); return value;
     }
 }
