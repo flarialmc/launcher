@@ -12,6 +12,11 @@ static partial class HttpService
         return s_client.SendAsync(request);
     }
 
+    internal static Task<HttpResponseMessage> PostAsync(string uri, HttpContent content)
+    {
+        return s_client.PostAsync(uri, content);
+    }
+
     static Task<HttpResponseMessage> GetAsync(string uri, CancellationToken token)
     {
         return s_client.GetAsync(uri, ResponseHeadersRead, token);

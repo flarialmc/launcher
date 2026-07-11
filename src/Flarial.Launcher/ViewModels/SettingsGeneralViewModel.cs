@@ -116,8 +116,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         DiscordLoginActive = true; try
         {
-            var code = await DiscordAccountManager.GetAuthorizationCodeAsync();
-            throw new(code);
+            await OAuthManager.GetTokenAsync();
         }
         finally { DiscordLoginActive = false; }
     }
