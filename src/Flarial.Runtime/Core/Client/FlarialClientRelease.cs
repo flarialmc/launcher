@@ -1,4 +1,4 @@
-namespace Flarial.Runtime.Client;
+namespace Flarial.Runtime.Core.Client;
 
 public sealed class FlarialClientRelease : FlarialClient<FlarialClientRelease>
 {

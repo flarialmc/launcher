@@ -6,7 +6,7 @@ using Avalonia.Media;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Types;
-using Flarial.Runtime.Client;
+using Flarial.Runtime.Core.Client;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;

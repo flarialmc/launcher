@@ -1,7 +1,6 @@
 using System;
-using Flarial.Runtime.Core;
 
-namespace Flarial.Runtime.Client;
+namespace Flarial.Runtime.Core.Client;
 
 public abstract class FlarialClient<T> : FlarialClient where T : FlarialClient<T>, new()
 {
