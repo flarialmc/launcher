@@ -35,36 +35,36 @@
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
 
-                    
+
                     <Grid ColumnDefinitions="45,*,Auto" VerticalAlignment="Top">
-                        <Border Grid.Column="0" 
+                        <Border Grid.Column="0"
                                 CornerRadius="30"
                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
                             <Border.Background>
-                                <ImageBrush asyncImageLoader:ImageBrushLoader.Source="{Binding UserState.PfpSource}" Stretch="UniformToFill" />
+                                <ImageBrush Source="{Binding Account.ProfileImage}" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
-        
+
                         <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding UserState.Username}"
+                            <TextBlock Text="{Binding Account.UserName}"
                                        FontSize="22" TextWrapping="Wrap"
                                        Foreground="{StaticResource ForegroundColor}"/>
                             <Border BorderThickness="1"
                                     CornerRadius="10"
                                     VerticalAlignment="Center"
-                                    Background="{Binding UserState.Role.BackgroundBrush}"
-                                    BorderBrush="{Binding UserState.Role.BorderBrush}"
+                                    Background="{Binding Account.DiscordRole.BackgroundBrush}"
+                                    BorderBrush="{Binding Account.DiscordRole.BorderBrush}"
                                     Padding="7.5,2.5,7.5,2.5"
                                     Margin="5,0,0,0">
-                                <TextBlock Text="{Binding UserState.Role.Name}" 
+                                <TextBlock Text="{Binding Account.DiscordRole.RoleName}"
                                            FontSize="12"
                                            Foreground="{StaticResource ForegroundColor}"/>
                             </Border>
                         </WrapPanel>
 
-                        <ToggleButton Grid.Column="2" VerticalAlignment="Top" Classes="DiscordLoginButton" Command="{Binding LoginCommand}"/>
+                        <Button IsEnabled="{Binding !DiscordLoginActive}" Grid.Column="2" VerticalAlignment="Top" Classes="DiscordLoginButton" Command="{Binding Login}"/>
                     </Grid>
-                    
+
                     <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Folders" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
@@ -84,7 +84,7 @@
                         <TextBlock Text="Automatic Updates" />
                         <ToggleButton IsChecked="{Binding AutomaticUpdates}"/>
                     </Grid>
-                    
+
                     <Grid>
                         <TextBlock Text="Performance Mode" />
                         <ToggleButton IsChecked="{Binding PerformanceMode}"/>

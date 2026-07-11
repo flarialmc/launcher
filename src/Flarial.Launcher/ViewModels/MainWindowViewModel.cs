@@ -26,23 +26,19 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     public HomeViewModel HomeViewModel { get; }
-
     public SettingsViewModel SettingsViewModel { get; }
-
     public NotificationAreaViewModel NotificationArea { get; }
-
     public VersionRegistry VersionRegistry { get; private set; }
 
+    internal readonly DiscordAccount _account = new();
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
-    public readonly UserState UserState = new();
-    
     public MainWindowViewModel()
     {
-        HomeViewModel = new HomeViewModel(this);
-        SettingsViewModel = new SettingsViewModel(UserState);
-        NotificationArea = new NotificationAreaViewModel();
         VersionRegistry = null!;
+        HomeViewModel = new HomeViewModel(this);
+        SettingsViewModel = new SettingsViewModel(this);
+        NotificationArea = new NotificationAreaViewModel();
     }
 
     public async Task<string> ShowMessageBoxAsync(string title, string message, IEnumerable<string> buttons)

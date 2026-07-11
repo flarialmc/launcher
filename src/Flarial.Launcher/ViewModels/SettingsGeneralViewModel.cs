@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
+using Flarial.Runtime.Discord;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -20,12 +21,11 @@ namespace Flarial.Launcher.ViewModels;
 
 public partial class SettingsGeneralViewModel : ViewModelBase
 {
-    [Reactive]
-    private string? _customDllPath;
+    [Reactive] string? _customDllPath = null;
+    [Reactive] bool _customDllSelected = false;
+    [Reactive] bool _discordLoginActive = false;
 
-    [Reactive]
-    private bool _customDllSelected;
-
+    public DiscordAccount Account => _model._account;
     public AvaloniaList<SegmentItem> BuildTypes { get; }
 
     public SegmentItem? SelectedBuild
@@ -63,15 +63,11 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         FileTypeFilter = [new("Dynamic Link Libraries") { Patterns = ["*.dll"] }]
     };
 
+    public ReactiveCommand<Unit, Unit> Open { get; }
+    public ReactiveCommand<Unit, Unit> Login { get; }
     public ReactiveCommand<Unit, Unit> OpenClientFolder { get; }
-
     public ReactiveCommand<Unit, Unit> OpenLauncherFolder { get; }
 
-    public ReactiveCommand<Unit, Unit> Open { get; }
-
-    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
-
-    
     async Task OnOpenAsync()
     {
         var application = Application.Current!;
@@ -89,14 +85,14 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     void OnOpenClientFolder() => NativeMethods.ShellExecute(Directory.CreateDirectory(@"..\Client").FullName);
 
-    readonly AppSettings _settings = ((App)Application.Current!).Settings;
+    readonly AppSettings _settings;
+    readonly MainWindowViewModel _model;
 
-    public UserState UserState { get; }
-
-    public SettingsGeneralViewModel(UserState userState)
+    public SettingsGeneralViewModel(MainWindowViewModel mainWindowViewModel)
     {
-        UserState = userState;
-        
+        _model = mainWindowViewModel;
+        _settings = ((App)Application.Current!).Settings;
+
         BuildTypes = [new() { Title = "Flarial Client", Tag = false }, new() { Title = "Custom DLL", Tag = true }];
 
         SelectedBuild = _settings.UseCustomDll switch
@@ -111,29 +107,21 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         AutomaticUpdates = _settings.AutomaticUpdates;
 
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
+        Login = ReactiveCommand.CreateFromTask(OnLoginAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);
         OpenLauncherFolder = ReactiveCommand.Create(OnOpenLauncherFolder);
-        LoginCommand = ReactiveCommand.CreateFromTask(Login);
     }
 
-    private Task Login()
+    async Task OnLoginAsync()
     {
-        if (UserState.Username == "Guest")
+        DiscordLoginActive = true; try
         {
-            UserState.Username = "bari2d";
-            UserState.PfpSource = new Uri("https://images-ext-1.discordapp.net/external/4pF2LzTIVXyoEkFxIUqjfp1Z9msFn0nIBONUMCIpF6I/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/546211976674803712/cfedecac78770d26c1fff64bb2df31e9.png", UriKind.Absolute);
-            UserState.Role = new Role { Name = "Flarial+", BackgroundBrush = SolidColorBrush.Parse("#40FF2438"), BorderBrush = SolidColorBrush.Parse("#FFFF2438")};
+            var code = await DiscordAccountManager.GetAuthorizationCodeAsync();
+            throw new(code);
         }
-        else
-        {
-            UserState.Username = "Guest";
-            UserState.PfpSource = new Uri("avares://Flarial.Launcher/Assets/person_96dp_FF2438.png", UriKind.Absolute);
-            UserState.Role = new Role();
-        }
-        
-        return Task.CompletedTask;
+        finally { DiscordLoginActive = false; }
     }
-    
+
     private void OnBuildChanged(SegmentItem? item)
     {
         if (item == null) return;
