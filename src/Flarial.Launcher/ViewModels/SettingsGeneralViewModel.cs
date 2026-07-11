@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -6,9 +7,11 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Models;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -66,6 +69,9 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> Open { get; }
 
+    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
+
+    
     async Task OnOpenAsync()
     {
         var application = Application.Current!;
@@ -85,8 +91,12 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
-    public SettingsGeneralViewModel()
+    public UserState UserState { get; }
+
+    public SettingsGeneralViewModel(UserState userState)
     {
+        UserState = userState;
+        
         BuildTypes = [new() { Title = "Flarial Client", Tag = false }, new() { Title = "Custom DLL", Tag = true }];
 
         SelectedBuild = _settings.UseCustomDll switch
@@ -103,8 +113,27 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);
         OpenLauncherFolder = ReactiveCommand.Create(OnOpenLauncherFolder);
+        LoginCommand = ReactiveCommand.CreateFromTask(Login);
     }
 
+    private Task Login()
+    {
+        if (UserState.Username == "Guest")
+        {
+            UserState.Username = "bari2d";
+            UserState.PfpSource = new Uri("https://images-ext-1.discordapp.net/external/4pF2LzTIVXyoEkFxIUqjfp1Z9msFn0nIBONUMCIpF6I/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/546211976674803712/cfedecac78770d26c1fff64bb2df31e9.png", UriKind.Absolute);
+            UserState.Role = new Role { Name = "Flarial+", BackgroundBrush = SolidColorBrush.Parse("#40FF2438"), BorderBrush = SolidColorBrush.Parse("#FFFF2438")};
+        }
+        else
+        {
+            UserState.Username = "Guest";
+            UserState.PfpSource = new Uri("avares://Flarial.Launcher/Assets/person_96dp_FF2438.png", UriKind.Absolute);
+            UserState.Role = new Role();
+        }
+        
+        return Task.CompletedTask;
+    }
+    
     private void OnBuildChanged(SegmentItem? item)
     {
         if (item == null) return;

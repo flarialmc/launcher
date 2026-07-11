@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using Flarial.Launcher.Dialogs;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Models;
 using Flarial.Runtime.Core;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
@@ -34,11 +35,13 @@ public class MainWindowViewModel : ViewModelBase
 
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
+    public readonly UserState UserState = new();
+    
     public MainWindowViewModel()
     {
-        HomeViewModel = new(this);
-        SettingsViewModel = new();
-        NotificationArea = new();
+        HomeViewModel = new HomeViewModel(this);
+        SettingsViewModel = new SettingsViewModel(UserState);
+        NotificationArea = new NotificationAreaViewModel();
         VersionRegistry = null!;
     }
 

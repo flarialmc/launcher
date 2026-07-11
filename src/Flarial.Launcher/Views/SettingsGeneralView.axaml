@@ -6,6 +6,7 @@
              xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
              xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
              xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              mc:Ignorable="d"
              Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsGeneralView"
@@ -29,7 +30,41 @@
         <VisualLayerManager>
             <spotlightDecorator:SpotlightDecorator Height="500" SpotlightColor="#9f9f9f" SpotlightRadius="120">
                 <StackPanel Background="Transparent" Spacing="5">
+                    <Grid HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,0,5" Text="Account" FontSize="22" FontWeight="SemiBold"/>
+                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+                    </Grid>
 
+                    
+                    <Grid ColumnDefinitions="45,*,Auto" VerticalAlignment="Top">
+                        <Border Grid.Column="0" 
+                                CornerRadius="30"
+                                Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
+                            <Border.Background>
+                                <ImageBrush asyncImageLoader:ImageBrushLoader.Source="{Binding UserState.PfpSource}" Stretch="UniformToFill" />
+                            </Border.Background>
+                        </Border>
+        
+                        <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                            <TextBlock Text="{Binding UserState.Username}"
+                                       FontSize="22" TextWrapping="Wrap"
+                                       Foreground="{StaticResource ForegroundColor}"/>
+                            <Border BorderThickness="1"
+                                    CornerRadius="10"
+                                    VerticalAlignment="Center"
+                                    Background="{Binding UserState.Role.BackgroundBrush}"
+                                    BorderBrush="{Binding UserState.Role.BorderBrush}"
+                                    Padding="7.5,2.5,7.5,2.5"
+                                    Margin="5,0,0,0">
+                                <TextBlock Text="{Binding UserState.Role.Name}" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource ForegroundColor}"/>
+                            </Border>
+                        </WrapPanel>
+
+                        <ToggleButton Grid.Column="2" VerticalAlignment="Top" Classes="DiscordLoginButton" Command="{Binding LoginCommand}"/>
+                    </Grid>
+                    
                     <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Folders" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />

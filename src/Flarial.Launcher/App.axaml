@@ -49,6 +49,7 @@
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource SpaceGrotesk}"/>
         </Style>
+        <StyleInclude Source="Styles/DiscordLoginButtonStyle.axaml"/>
         <StyleInclude Source="Styles/ToggleButtonStyle.axaml"/>
         <StyleInclude Source="Styles/LaunchButtonStyle.axaml"/>
         <StyleInclude Source="Styles/SettingsButtonStyle.axaml"/>

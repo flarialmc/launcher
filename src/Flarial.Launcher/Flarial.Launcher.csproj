@@ -60,6 +60,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.8.0" />
         <PackageReference Include="SkiaSharp" Version="4.150.0" />
         <PackageReference Include="Avalonia.Skia" Version="12.1.0" />
 

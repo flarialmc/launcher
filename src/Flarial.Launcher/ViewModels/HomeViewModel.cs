@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Media;
 using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
+using Flarial.Launcher.Models;
 using Flarial.Launcher.Types;
 using Flarial.Runtime.Core.Client;
 using Flarial.Runtime.Core;
@@ -27,13 +28,16 @@ public partial class HomeViewModel : ViewModelBase
 
     UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_model.VersionRegistry);
 
+    public UserState UserState { get; }
+    
     readonly MainWindowViewModel _model;
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
     public HomeViewModel(MainWindowViewModel model)
     {
         _model = model;
-
+        UserState = model.UserState;
+        
         var assembly = Assembly.GetExecutingAssembly();
         _launcherVersion = $"{assembly.GetName().Version}";
 
