@@ -20,7 +20,7 @@ using Windows.UI.WebUI;
 
 namespace Flarial.Runtime.Discord;
 
-static class OAuthManager
+public static class OAuthManager
 {
     static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
 
@@ -60,7 +60,7 @@ static class OAuthManager
         finally { listener.Stop(); }
     }
 
-    static async Task<(string Access, string Refresh)?> ParseTokenAsync(HttpResponseMessage response)
+    static async Task<(string AccessToken, string RefreshToken)?> ParseTokenAsync(HttpResponseMessage response)
     {
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
@@ -71,7 +71,7 @@ static class OAuthManager
         return (access.GetString()!, refresh.GetString()!);
     }
 
-    static async Task<(string Access, string Refresh)?> GetTokenAsync()
+    static async Task<(string AccessToken, string RefreshToken)?> GetTokenAsync()
     {
         if (await GetAuthorizationCodeAsync() is not { } tuple)
             return null;
@@ -91,17 +91,17 @@ static class OAuthManager
         return await ParseTokenAsync(response);
     }
 
-    internal static async Task<string?> AuthenticateAsync()
+    public static async Task<bool> AuthenticateAsync()
     {
-        if (await GetTokenAsync() is { } tuple)
+        if (await GetTokenAsync() is { } token)
         {
-            CredentialManager.Set(tuple.Refresh);
-            return await AuthenticateSilentlyAsync();
+            CredentialManager.Set(token.RefreshToken);
+            return true;
         }
-        return null;
+        return false;
     }
 
-    static async Task<string?> AuthenticateSilentlyAsync()
+    internal static async Task<string?> AuthenticateSilentlyAsync()
     {
         if (CredentialManager.Get() is not { } credential)
             return null;
@@ -116,10 +116,10 @@ static class OAuthManager
         using var response = await HttpService.PostAsync(TokenUri, content);
         if (!response.IsSuccessStatusCode) { CredentialManager.Remove(); return null; }
 
-        if (await ParseTokenAsync(response) is not { } tuple)
+        if (await ParseTokenAsync(response) is not { } token)
             return null;
 
-        CredentialManager.Set(tuple.Refresh);
-        return tuple.Access;
+        CredentialManager.Set(token.RefreshToken);
+        return token.AccessToken;
     }
 }

@@ -31,7 +31,7 @@
             <spotlightDecorator:SpotlightDecorator Height="500" SpotlightColor="#9f9f9f" SpotlightRadius="120">
                 <StackPanel Background="Transparent" Spacing="5">
                     <Grid HorizontalAlignment="Left">
-                        <TextBlock Margin="0,0,0,5" Text="Account" FontSize="22" FontWeight="SemiBold"/>
+                        <TextBlock Margin="0,0,0,5" Text="Discord" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
 
@@ -41,28 +41,31 @@
                                 CornerRadius="30"
                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
                             <Border.Background>
-                                <ImageBrush Source="{Binding Account.ProfileImage}" Stretch="UniformToFill"/>
+                                <ImageBrush Source="{Binding DiscordAccount.ProfileImage}" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
 
                         <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding Account.UserName}"
+                            <TextBlock Text="{Binding DiscordAccount.Username}"
                                        FontSize="22" TextWrapping="Wrap"
                                        Foreground="{StaticResource ForegroundColor}"/>
                             <Border BorderThickness="1"
                                     CornerRadius="10"
                                     VerticalAlignment="Center"
-                                    Background="{Binding Account.DiscordRole.BackgroundBrush}"
-                                    BorderBrush="{Binding Account.DiscordRole.BorderBrush}"
+                                    Background="{Binding DiscordAccount.DiscordRole.BackgroundBrush}"
+                                    BorderBrush="{Binding DiscordAccount.DiscordRole.BorderBrush}"
                                     Padding="7.5,2.5,7.5,2.5"
                                     Margin="5,0,0,0">
-                                <TextBlock Text="{Binding Account.DiscordRole.RoleName}"
+                                <TextBlock Text="{Binding DiscordAccount.DiscordRole.RoleName}"
                                            FontSize="12"
                                            Foreground="{StaticResource ForegroundColor}"/>
                             </Border>
                         </WrapPanel>
 
-                        <Button IsEnabled="{Binding !DiscordLoginActive}" Grid.Column="2" VerticalAlignment="Top" Classes="DiscordLoginButton" Command="{Binding Login}"/>
+                        <UniformGrid Rows="1" Grid.Column="2" VerticalAlignment="Top">
+                            <Button Content="Logout" FontSize="16" Classes="GenericButton" IsVisible="{Binding DiscordAccountAvailable}" Command="{Binding Logout}"/>
+                            <Button Content="Login" FontSize="16" IsEnabled="{Binding !DiscordLoginActive}" Classes="GenericButton" Command="{Binding Login}" IsVisible="{Binding !DiscordAccountAvailable}"/>
+                        </UniformGrid>
                     </Grid>
 
                     <Grid HorizontalAlignment="Left">

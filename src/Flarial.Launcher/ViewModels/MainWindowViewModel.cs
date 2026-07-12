@@ -9,6 +9,7 @@ using Flarial.Launcher.Dialogs.Metadata;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
 using Flarial.Runtime.Core;
+using Flarial.Runtime.Discord;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
@@ -30,7 +31,7 @@ public class MainWindowViewModel : ViewModelBase
     public NotificationAreaViewModel NotificationArea { get; }
     public VersionRegistry VersionRegistry { get; private set; }
 
-    internal readonly DiscordAccount _account = new();
+    internal readonly DiscordAccountModel _discordAccount = new();
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
     public MainWindowViewModel()
@@ -65,9 +66,19 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        VersionRegistry = await VersionRegistry.GetAsync();
+        var versionRegistryTask = VersionRegistry.GetAsync();
+        var discordAccountTask = DiscordAccountManager.LoginAsync();
+        await Task.WhenAll(versionRegistryTask, discordAccountTask);
 
-        _ = Task.Run(() =>
+        var model = SettingsViewModel.SettingsGeneralViewModel;
+        if (await discordAccountTask is { } discordAccount)
+        {
+            model.DiscordAccount.Username = discordAccount.Username;
+            model.DiscordAccountAvailable = true;
+        }
+        else model.DiscordLoginActive = false;
+
+        VersionRegistry = await versionRegistryTask; _ = Task.Run(() =>
         {
             foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
             {

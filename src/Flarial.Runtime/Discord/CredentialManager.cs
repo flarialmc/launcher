@@ -4,7 +4,7 @@ namespace Flarial.Runtime.Discord;
 
 static class CredentialManager
 {
-    const string UserName = "Discord";
+    const string Username = "Discord";
     const string Resource = "Flarial Launcher";
 
     static readonly PasswordVault s_vault = new();
@@ -19,7 +19,7 @@ static class CredentialManager
     {
         try
         {
-            var credential = s_vault.Retrieve(Resource, UserName);
+            var credential = s_vault.Retrieve(Resource, Username);
             credential.RetrievePassword(); return credential;
         }
         catch { return null; }
@@ -30,7 +30,7 @@ static class CredentialManager
         s_vault.Add(new()
         {
             Resource = Resource,
-            UserName = UserName,
+            UserName = Username,
             Password = password,
         });
     }

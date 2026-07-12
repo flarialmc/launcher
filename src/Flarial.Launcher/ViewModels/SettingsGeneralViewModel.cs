@@ -12,9 +12,11 @@ using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
+using Flarial.Runtime.Discord;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -22,10 +24,11 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 {
     [Reactive] string? _customDllPath = null;
     [Reactive] bool _customDllSelected = false;
-    [Reactive] bool _discordLoginActive = false;
+    [Reactive] bool _discordLoginActive = true;
+    [Reactive] bool _discordAccountAvailable = false;
 
-    public DiscordAccount Account => _model._account;
     public AvaloniaList<SegmentItem> BuildTypes { get; }
+    public DiscordAccountModel DiscordAccount => _model._discordAccount;
 
     public SegmentItem? SelectedBuild
     {
@@ -64,6 +67,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> Open { get; }
     public ReactiveCommand<Unit, Unit> Login { get; }
+    public ReactiveCommand<Unit, Unit> Logout { get; }
     public ReactiveCommand<Unit, Unit> OpenClientFolder { get; }
     public ReactiveCommand<Unit, Unit> OpenLauncherFolder { get; }
 
@@ -105,6 +109,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         PerformanceMode = _settings.PerformanceMode;
         AutomaticUpdates = _settings.AutomaticUpdates;
 
+        Logout = ReactiveCommand.Create(OnLogout);
         Open = ReactiveCommand.CreateFromTask(OnOpenAsync);
         Login = ReactiveCommand.CreateFromTask(OnLoginAsync);
         OpenClientFolder = ReactiveCommand.Create(OnOpenClientFolder);
@@ -113,10 +118,31 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     async Task OnLoginAsync()
     {
-        DiscordLoginActive = true; try
+        DiscordLoginActive = true;
+
+        if (!await OAuthManager.AuthenticateAsync())
         {
+            DiscordLoginActive = false;
+            return;
         }
-        finally { DiscordLoginActive = false; }
+
+        if (await DiscordAccountManager.LoginAsync() is not { } account)
+        {
+            DiscordLoginActive = false;
+            return;
+        }
+
+        DiscordAccount.Username = account.Username;
+        DiscordAccountAvailable = true;
+    }
+
+    void OnLogout()
+    {
+        DiscordAccount.Logout();
+        DiscordAccountManager.Logout();
+
+        DiscordLoginActive = false;
+        DiscordAccountAvailable = false;
     }
 
     private void OnBuildChanged(SegmentItem? item)
