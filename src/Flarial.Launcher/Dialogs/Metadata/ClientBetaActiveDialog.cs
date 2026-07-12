@@ -6,8 +6,8 @@ sealed class ClientBetaActiveDialog : MessageDialog<ClientBetaActiveDialog>
 
     protected override string Message => @"The client's beta has been selected.
 
-• The client's beta builds might be unstable and buggy.
-• The client's beta builds are meant for testing purposes only.
+• These beta builds might be unstable and buggy.
+• The builds are only for feedback & testing purposes only.
 
 If you need help, join our Discord.";
 
