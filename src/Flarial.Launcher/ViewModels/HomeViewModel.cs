@@ -82,7 +82,7 @@ public partial class HomeViewModel : ViewModelBase
             }
             else if (!Minecraft.IsRunning)
             {
-                await NotInstalledDialog._.ShowAsync();
+                await GameNotFoundDialog._.ShowAsync();
                 return;
             }
 
