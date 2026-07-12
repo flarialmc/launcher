@@ -80,7 +80,7 @@
                 </VisualLayerManager>
             </StackPanel>
 
-            <UniformGrid Rows="1" Margin="0,0,0,20" Name="Promotions" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnSpacing="5"/>
+            <UniformGrid IsVisible="{Binding ShowPromotions}" Rows="1" Margin="0,0,0,20" Name="Promotions" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnSpacing="5"/>
         </Grid>
     </Grid>
 </UserControl>

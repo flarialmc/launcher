@@ -18,6 +18,8 @@ namespace Flarial.Launcher.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase
 {
+    [Reactive] bool _showPromotions = true;
+
     [Reactive] bool _isLaunching = true;
 
     [Reactive] string _launcherVersion;

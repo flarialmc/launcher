@@ -41,7 +41,7 @@
                                 CornerRadius="30"
                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
                             <Border.Background>
-                                <ImageBrush Source="{Binding DiscordAccount.ProfileImage}" Stretch="UniformToFill"/>
+                                <ImageBrush Source="{Binding DiscordAccount.Avatar}" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
 
@@ -52,12 +52,12 @@
                             <Border BorderThickness="1"
                                     CornerRadius="10"
                                     VerticalAlignment="Center"
-                                    Background="{Binding DiscordAccount.DiscordRole.BackgroundBrush}"
-                                    BorderBrush="{Binding DiscordAccount.DiscordRole.BorderBrush}"
+                                    Background="{Binding DiscordAccount.Role.Background}"
+                                    BorderBrush="{Binding DiscordAccount.Role.Border}"
                                     Padding="7.5,2.5,7.5,2.5"
                                     Margin="5,0,0,0">
-                                <TextBlock Text="{Binding DiscordAccount.DiscordRole.RoleName}"
-                                           FontSize="12"
+                                <TextBlock Text="{Binding DiscordAccount.Role.Name}"
+                                           FontSize="14"
                                            Foreground="{StaticResource ForegroundColor}"/>
                             </Border>
                         </WrapPanel>

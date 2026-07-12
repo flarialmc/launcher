@@ -13,11 +13,11 @@ using Flarial.Runtime.Discord;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
-using Splat;
+using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public sealed partial class MainWindowViewModel : ViewModelBase
 {
     readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -32,15 +32,17 @@ public class MainWindowViewModel : ViewModelBase
     public NotificationAreaViewModel NotificationArea { get; }
     public VersionRegistry VersionRegistry { get; private set; }
 
-    internal readonly DiscordAccountModel _discordAccount = new();
+    internal readonly DiscordAccountModel _discordAccount;
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
     public MainWindowViewModel()
     {
-        VersionRegistry = null!;
         HomeViewModel = new HomeViewModel(this);
         SettingsViewModel = new SettingsViewModel(this);
         NotificationArea = new NotificationAreaViewModel();
+
+        VersionRegistry = null!;
+        _discordAccount = new(HomeViewModel);
     }
 
     public async Task<string> ShowMessageBoxAsync(string title, string message, IEnumerable<string> buttons)

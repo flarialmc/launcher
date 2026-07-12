@@ -1,40 +1,45 @@
 using System;
 using System.Threading.Tasks;
+using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Discord;
 
 public sealed class DiscordAccount
 {
     public string Username { get; }
-    public bool HasBetaAccess { get; }
+    public Task<byte[]> Avatar { get; }
 
-    internal DiscordAccount(string username, bool hasBetaAccess)
+    public bool HasBetaAccess { get; }
+    public bool HasFlarialPlus { get; }
+
+    internal DiscordAccount(string username, Task<byte[]> avatar, (bool IsFlarialPlus, bool IsTester) roles)
     {
+        Avatar = avatar;
         Username = username;
-        HasBetaAccess = hasBetaAccess;
+        HasFlarialPlus = roles.IsFlarialPlus;
+        HasBetaAccess = roles.IsFlarialPlus || roles.IsTester;
     }
 }
 
 public static class DiscordAccountManager
 {
+    const string AvatarUri = "https://cdn.discordapp.com/avatars/{0}/{1}";
+
     public static async Task<DiscordAccount?> LoginAsync()
     {
         if (await OAuthManager.AuthenticateSilentlyAsync() is not { } token)
             return null;
 
         DiscordSession session = new(token);
-        var hasBetaAccessTask = session.HasBetaAccessAsync();
-        var accountProfileTask = session.GetAccountProfileAsync();
 
-        await Task.WhenAll(accountProfileTask, hasBetaAccessTask);
+        var rolesTask = session.GetRolesAsync();
+        var profileTask = session.GetProfileAsync();
+        await Task.WhenAll(rolesTask, profileTask);
 
-        if (await accountProfileTask is not { } accountProfile)
-            return null;
+        var (id, avatar, username) = await profileTask;
+        var uri = string.Format(AvatarUri, id, avatar);
 
-        if (await hasBetaAccessTask is not { } hasBetaAccess)
-            return null;
-
-        return new(accountProfile.Username, hasBetaAccess);
+        return new(username, HttpService.GetBytesAsync(uri), await rolesTask);
     }
 
     public static void Logout() => CredentialManager.Remove();

@@ -164,8 +164,8 @@ public partial class SettingsGeneralViewModel : ViewModelBase
             return;
         }
 
-        DiscordAccount.Login(account);
         HasBetaAccess = account.HasBetaAccess;
+        _ = DiscordAccount.LoginAsync(account);
 
         DiscordAccountAvailable = true;
     }

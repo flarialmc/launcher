@@ -1,11 +1,9 @@
 
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
-using Windows.UI.Notifications;
 
 namespace Flarial.Runtime.Discord;
 
@@ -15,7 +13,7 @@ readonly struct DiscordSession(string token)
     const string TesterRoleId = "1469952430149210175";
     const string FlarialPlusRoleId = "1268949825865650268";
 
-    const string ProfileUri = $"https://discord.com/api/users/@me";
+    const string ProfileUri = "https://discord.com/api/users/@me";
     const string GuildMemberUri = $"https://discord.com/api/users/@me/guilds/{GuildId}/member";
 
     async Task<HttpResponseMessage> GetAsync(string uri)
@@ -25,7 +23,7 @@ readonly struct DiscordSession(string token)
         return await HttpService.SendAsync(request);
     }
 
-    internal async Task<(string Id, string Avatar, string Username)?> GetAccountProfileAsync()
+    internal async Task<(string Id, string Avatar, string Username)> GetProfileAsync()
     {
         using var response = await GetAsync(ProfileUri);
         response.EnsureSuccessStatusCode();
@@ -40,8 +38,11 @@ readonly struct DiscordSession(string token)
         return (id.GetString()!, avatar.GetString()!, username.GetString()!);
     }
 
-    internal async Task<bool?> HasBetaAccessAsync()
+    internal async Task<(bool IsFlarialPlus, bool IsTester)> GetRolesAsync()
     {
+        var isTester = false;
+        var isFlarialPlus = false;
+
         using var response = await GetAsync(GuildMemberUri);
         response.EnsureSuccessStatusCode();
 
@@ -54,10 +55,15 @@ readonly struct DiscordSession(string token)
             switch (role.GetString())
             {
                 case TesterRoleId:
+                    isTester = true;
+                    break;
+
                 case FlarialPlusRoleId:
-                    return true;
+                    isFlarialPlus = true;
+                    break;
             }
         }
-        return false;
+
+        return (isFlarialPlus, isTester);
     }
 }
