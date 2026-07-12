@@ -52,8 +52,8 @@ public sealed partial class DiscordAccountModel(HomeViewModel model) : ReactiveO
 
         Dispatcher.UIThread.Post(async () =>
         {
-            var avatar = await account.Avatar;
-            Avatar = new(new MemoryStream(avatar, false));
+            if (await account.Avatar is { } avatar)
+                Avatar = new(new MemoryStream(avatar, false));
         }, DispatcherPriority.Background);
 
         model.ShowPromotions = !account.HasFlarialPlus;

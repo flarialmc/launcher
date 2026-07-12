@@ -7,12 +7,12 @@ namespace Flarial.Runtime.Discord;
 public sealed class DiscordAccount
 {
     public string Username { get; }
-    public Task<byte[]> Avatar { get; }
+    public Task<byte[]?> Avatar { get; }
 
     public bool HasBetaAccess { get; }
     public bool HasFlarialPlus { get; }
 
-    internal DiscordAccount(string username, Task<byte[]> avatar, (bool IsFlarialPlus, bool IsTester) roles)
+    internal DiscordAccount(string username, (bool IsFlarialPlus, bool IsTester) roles, Task<byte[]?> avatar)
     {
         Avatar = avatar;
         Username = username;
@@ -39,7 +39,17 @@ public static class DiscordAccountManager
         if (await profileTask is not { } profile) return null;
 
         var uri = string.Format(AvatarUri, profile.Id, profile.Avatar);
-        return new(profile.Username, HttpService.GetBytesAsync(uri), await rolesTask);
+        return new(profile.Username, await rolesTask, GetBytesAsync(uri));
+    }
+
+    static async Task<byte[]?> GetBytesAsync(string uri)
+    {
+        using var response = await HttpService.GetAsync(uri, default);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadAsByteArrayAsync();
     }
 
     public static void Logout() => CredentialManager.Remove();

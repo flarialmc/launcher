@@ -46,7 +46,10 @@ public static class OAuthManager
             if (context.Request.QueryString["state"] != state)
                 return null;
 
-            return (verifier, context.Request.QueryString["code"]!);
+            if (context.Request.QueryString["code"] is not { } code)
+                return null;
+
+            return (verifier, code);
         }
         finally { listener.Stop(); }
     }

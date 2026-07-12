@@ -23,7 +23,7 @@ readonly struct DiscordSession(string token)
         return await HttpService.SendAsync(request);
     }
 
-    internal async Task<(string Id, string Avatar, string Username)?> GetProfileAsync()
+    internal async Task<(string Id, string Username, string? Avatar)?> GetProfileAsync()
     {
         using var response = await GetAsync(ProfileUri);
         if (!response.IsSuccessStatusCode) return null;
@@ -35,7 +35,7 @@ readonly struct DiscordSession(string token)
         var avatar = document.RootElement.GetProperty("avatar");
         var username = document.RootElement.GetProperty("username");
 
-        return (id.GetString()!, avatar.GetString()!, username.GetString()!);
+        return (id.GetString()!, username.GetString()!, avatar.GetString());
     }
 
     internal async Task<(bool IsFlarialPlus, bool IsTester)> GetRolesAsync()
