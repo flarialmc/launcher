@@ -3,10 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Flarial.Launcher.ViewModels"
-             xmlns:toolTip="clr-namespace:Flarial.Launcher.Controls.ToolTip"
              xmlns:segmentedBar="clr-namespace:Flarial.Launcher.Controls.SegmentedBar"
              xmlns:spotlightDecorator="clr-namespace:Flarial.Launcher.Controls.SpotlightDecorator"
-             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              mc:Ignorable="d"
              Width="555" Height="470"
              x:Class="Flarial.Launcher.Views.SettingsGeneralView"
@@ -26,48 +24,50 @@
     <UserControl.Clip>
         <RectangleGeometry Rect="0,0,555,470"/>
     </UserControl.Clip>
-    <StackPanel Margin="20">
+    <StackPanel Margin="20" Spacing="5">
+        <Grid HorizontalAlignment="Left">
+            <TextBlock Margin="0,0,0,5" Text="Discord" FontSize="22" FontWeight="SemiBold"/>
+            <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
+        </Grid>
+        
+        <Grid ColumnDefinitions="45,*,Auto" VerticalAlignment="Top">
+            <Border Grid.Column="0"
+                    CornerRadius="30"
+                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
+                <Border.Background>
+                    <ImageBrush Source="{Binding DiscordAccount.Avatar}" Stretch="UniformToFill"/>
+                </Border.Background>
+            </Border>
+
+            <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                <TextBlock Text="{Binding DiscordAccount.Username}"
+                           FontSize="22" TextWrapping="Wrap"
+                           Foreground="{StaticResource ForegroundColor}"/>
+                <Border BorderThickness="1"
+                        CornerRadius="20"
+                        VerticalAlignment="Center"
+                        Background="{Binding DiscordAccount.Role.Background}"
+                        BorderBrush="{Binding DiscordAccount.Role.Border}"
+                        Padding="7.5,2.5,7.5,2.5"
+                        Margin="5,0,0,0">
+                    <TextBlock Text="{Binding DiscordAccount.Role.Name}"
+                               FontSize="14"
+                               Foreground="{StaticResource ForegroundColor}"/>
+                </Border>
+            </WrapPanel>
+
+            <VisualLayerManager Grid.Column="2" VerticalAlignment="Top">
+                <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+                    <UniformGrid Rows="1">
+                        <Button Content="Logout" FontSize="16" Classes="GenericButton" IsVisible="{Binding DiscordAccountAvailable}" Command="{Binding Logout}"/>
+                        <Button Content="Login" FontSize="16" IsEnabled="{Binding DiscordLoginAvailable}" Classes="GenericButton" Command="{Binding Login}" IsVisible="{Binding !DiscordAccountAvailable}"/>
+                    </UniformGrid>
+                </spotlightDecorator:SpotlightDecorator>
+            </VisualLayerManager>
+        </Grid>
         <VisualLayerManager>
             <spotlightDecorator:SpotlightDecorator Height="500" SpotlightColor="#9f9f9f" SpotlightRadius="120">
                 <StackPanel Background="Transparent" Spacing="5">
-                    <Grid HorizontalAlignment="Left">
-                        <TextBlock Margin="0,0,0,5" Text="Discord" FontSize="22" FontWeight="SemiBold"/>
-                        <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
-                    </Grid>
-
-
-                    <Grid ColumnDefinitions="45,*,Auto" VerticalAlignment="Top">
-                        <Border Grid.Column="0"
-                                CornerRadius="30"
-                                Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
-                            <Border.Background>
-                                <ImageBrush Source="{Binding DiscordAccount.Avatar}" Stretch="UniformToFill"/>
-                            </Border.Background>
-                        </Border>
-
-                        <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding DiscordAccount.Username}"
-                                       FontSize="22" TextWrapping="Wrap"
-                                       Foreground="{StaticResource ForegroundColor}"/>
-                            <Border BorderThickness="1"
-                                    CornerRadius="10"
-                                    VerticalAlignment="Center"
-                                    Background="{Binding DiscordAccount.Role.Background}"
-                                    BorderBrush="{Binding DiscordAccount.Role.Border}"
-                                    Padding="7.5,2.5,7.5,2.5"
-                                    Margin="5,0,0,0">
-                                <TextBlock Text="{Binding DiscordAccount.Role.Name}"
-                                           FontSize="14"
-                                           Foreground="{StaticResource ForegroundColor}"/>
-                            </Border>
-                        </WrapPanel>
-
-                        <UniformGrid Rows="1" Grid.Column="2" VerticalAlignment="Top">
-                            <Button Content="Logout" FontSize="16" Classes="GenericButton" IsVisible="{Binding DiscordAccountAvailable}" Command="{Binding Logout}"/>
-                            <Button Content="Login" FontSize="16" IsEnabled="{Binding DiscordLoginAvailable}" Classes="GenericButton" Command="{Binding Login}" IsVisible="{Binding !DiscordAccountAvailable}"/>
-                        </UniformGrid>
-                    </Grid>
-
                     <Grid HorizontalAlignment="Left">
                         <TextBlock Margin="0,0,0,5" Text="Folders" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />

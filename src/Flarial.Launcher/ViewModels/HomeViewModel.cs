@@ -30,6 +30,8 @@ public partial class HomeViewModel : ViewModelBase
 
     UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_model.VersionRegistry);
 
+    public DiscordAccountModel DiscordAccount => _model._discordAccount;
+    
     readonly MainWindowViewModel _model;
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 

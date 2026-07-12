@@ -13,33 +13,34 @@
              BorderThickness="{StaticResource ButtonBorderThickness}"
              BorderBrush="{StaticResource BackgroundBorderColor}"
              CornerRadius="20">
-    <ScrollViewer VerticalScrollBarVisibility="Visible" IsDeferredScrollingEnabled="True">
-        <VisualLayerManager>
-            <spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
-                <ItemsControl ItemsSource="{Binding Versions}"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              IsEnabled="{Binding !IsInstalling}">
+	<VisualLayerManager>
+		<spotlightDecorator:SpotlightDecorator SpotlightColor="#9f9f9f" SpotlightRadius="120">
+			<ScrollViewer VerticalScrollBarVisibility="Visible" IsDeferredScrollingEnabled="True" Background="Transparent">
+				<ItemsControl ItemsSource="{Binding Versions}"
+				              HorizontalAlignment="Stretch"
+				              VerticalAlignment="Stretch"
+				              IsEnabled="{Binding !IsInstalling}">
 
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter Name="PART_ItemsPresenter"
-                                            Margin="15"
-                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="10"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <views:VersionItemView />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </spotlightDecorator:SpotlightDecorator>
-        </VisualLayerManager>
-    </ScrollViewer>
+					<ItemsControl.Template>
+						<ControlTemplate>
+							<ItemsPresenter Name="PART_ItemsPresenter"
+							                Margin="15"
+							                ItemsPanel="{TemplateBinding ItemsPanel}" />
+						</ControlTemplate>
+					</ItemsControl.Template>
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="10"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<views:VersionItemView />
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+		</spotlightDecorator:SpotlightDecorator>
+	</VisualLayerManager>
+	
 </UserControl>

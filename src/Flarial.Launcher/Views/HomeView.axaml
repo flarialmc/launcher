@@ -49,6 +49,33 @@
         <Grid>
             <!--Window State Buttons-->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,20,0">
+                <Grid ColumnDefinitions="35,*,Auto" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <Border Grid.Column="0"
+                            CornerRadius="30"
+                            Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
+                        <Border.Background>
+                            <ImageBrush Source="{Binding DiscordAccount.Avatar}" Stretch="UniformToFill"/>
+                        </Border.Background>
+                    </Border>
+
+                    <WrapPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,15,0">
+                        <TextBlock Text="{Binding DiscordAccount.Username}"
+                                   FontSize="18" TextWrapping="Wrap"
+                                   Foreground="{StaticResource ForegroundColor}"/>
+                        <Border BorderThickness="1"
+                                CornerRadius="20"
+                                VerticalAlignment="Center"
+                                Background="{Binding DiscordAccount.Role.Background}"
+                                BorderBrush="{Binding DiscordAccount.Role.Border}"
+                                Padding="7.5,2.5,7.5,2.5"
+                                Margin="5,0,0,0">
+                            <TextBlock Text="{Binding DiscordAccount.Role.Name}"
+                                       FontSize="12"
+                                       Foreground="{StaticResource ForegroundColor}"/>
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+                
                 <Button x:Name="MinimizeButton" Classes="MinimizeButton" Command="{Binding MinimizeWindow}"/>
                 <Button x:Name="CloseButton" Classes="CloseButton" Command="{Binding CloseWindow}"/>
             </StackPanel>
@@ -79,7 +106,7 @@
                     </spotlightDecorator:SpotlightDecorator>
                 </VisualLayerManager>
             </StackPanel>
-
+            
             <UniformGrid IsVisible="{Binding ShowPromotions}" Rows="1" Margin="0,0,0,20" Name="Promotions" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnSpacing="5"/>
         </Grid>
     </Grid>
