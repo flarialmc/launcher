@@ -1,9 +1,13 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Launcher.Management;
+
+[JsonConverter(typeof(JsonStringEnumConverter<BuildType>))]
+public enum BuildType { Beta, Custom, Release }
 
 public sealed class AppSettings
 {
@@ -11,7 +15,11 @@ public sealed class AppSettings
 
     public bool PerformanceMode { get; set; } = false;
 
-    public bool UseCustomDll { get; set; } = false;
+    [JsonIgnore]
+    [Obsolete(" ", true)]
+    bool UseCustomDll { get; set; } = false;
+
+    public BuildType BuildType { get; set; } = BuildType.Release;
 
     public string? CustomDllPath
     {

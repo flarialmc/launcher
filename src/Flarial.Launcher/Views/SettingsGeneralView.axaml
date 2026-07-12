@@ -64,7 +64,7 @@
 
                         <UniformGrid Rows="1" Grid.Column="2" VerticalAlignment="Top">
                             <Button Content="Logout" FontSize="16" Classes="GenericButton" IsVisible="{Binding DiscordAccountAvailable}" Command="{Binding Logout}"/>
-                            <Button Content="Login" FontSize="16" IsEnabled="{Binding !DiscordLoginActive}" Classes="GenericButton" Command="{Binding Login}" IsVisible="{Binding !DiscordAccountAvailable}"/>
+                            <Button Content="Login" FontSize="16" IsEnabled="{Binding DiscordLoginAvailable}" Classes="GenericButton" Command="{Binding Login}" IsVisible="{Binding !DiscordAccountAvailable}"/>
                         </UniformGrid>
                     </Grid>
 
@@ -94,11 +94,11 @@
                     </Grid>
 
                     <Grid HorizontalAlignment="Left"  >
-                        <TextBlock Margin="0,0,0,5" Text="Game" FontSize="22" FontWeight="SemiBold"/>
+                        <TextBlock Margin="0,0,0,5" Text="Client" FontSize="22" FontWeight="SemiBold"/>
                         <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
                     </Grid>
 
-                    <StackPanel>
+                    <StackPanel IsEnabled="{Binding !DiscordLoginActive}">
                         <segmentedBar:SegmentedBar Items="{Binding BuildTypes}" SelectedItem="{Binding SelectedBuild, Mode=TwoWay}" />
                         <Expander Name="Expander1" FontSize="16" IsExpanded="{Binding CustomDllSelected}">
                             <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,5">

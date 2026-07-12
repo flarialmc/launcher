@@ -49,7 +49,12 @@ public partial class HomeViewModel : ViewModelBase
         try
         {
             var path = _settings.CustomDllPath;
-            var custom = _settings.UseCustomDll;
+            var beta = _settings.BuildType is BuildType.Beta;
+            var release = _settings.BuildType is BuildType.Release;
+
+            FlarialClient? client = null;
+            if (beta) client = FlarialClientBeta._;
+            if (release) client = FlarialClientRelease._;
 
             if (!GamingServices.IsInstalled)
             {
@@ -69,13 +74,13 @@ public partial class HomeViewModel : ViewModelBase
                     return;
             }
 
-            if (!custom && !_model.VersionRegistry.IsSupported)
+            if (release && !_model.VersionRegistry.IsSupported)
             {
                 await UnsupportedVersionDialog.ShowAsync();
                 return;
             }
 
-            if (custom)
+            if (client is null)
             {
                 Library library = new(path);
 
@@ -95,8 +100,11 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
+            if (beta && !await ClientBetaActiveDialog._.ShowAsync())
+                return;
+
             LauncherStatus = "Verifying...";
-            if (!await FlarialClientRelease._.DownloadAsync(OnDownload))
+            if (!await client.DownloadAsync(OnDownload))
             {
                 await ClientUpdateFailureDialog._.ShowAsync();
                 return;
@@ -109,7 +117,7 @@ public partial class HomeViewModel : ViewModelBase
             }
 
             LauncherStatus = "Launching...";
-            if (!await Task.Run(FlarialClientRelease._.Launch))
+            if (!await Task.Run(client.Launch))
             {
                 await LaunchFailureDialog._.ShowAsync();
                 return;

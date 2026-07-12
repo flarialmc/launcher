@@ -1,9 +1,12 @@
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+
 namespace Flarial.Launcher.Controls.SegmentedBar;
 
-public class SegmentItem
+public sealed partial class SegmentItem : ReactiveObject
 {
-    public string Title { get; set; } = "";
-    public bool IsEnabled { get; set; } = true;
-    public object? Tag { get; set; }
-    public string? Tooltip { get; set; } = "";
+    [Reactive] object? _tag = null;
+    [Reactive] string? _tooltip = null;
+    [Reactive] bool _isEnabled = true;
+    [Reactive] string _title = string.Empty;
 }

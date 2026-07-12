@@ -13,6 +13,7 @@ using Flarial.Runtime.Discord;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
+using Splat;
 
 namespace Flarial.Launcher.ViewModels;
 
@@ -60,6 +61,8 @@ public class MainWindowViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
+        var settingsGeneralViewModel = SettingsViewModel.SettingsGeneralViewModel;
+
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
             await FlarialLauncher.DownloadAsync(OnDownload);
@@ -67,16 +70,10 @@ public class MainWindowViewModel : ViewModelBase
         }
 
         var versionRegistryTask = VersionRegistry.GetAsync();
-        var discordAccountTask = DiscordAccountManager.LoginAsync();
-        await Task.WhenAll(versionRegistryTask, discordAccountTask);
+        var loginTask = settingsGeneralViewModel.LoginAsync();
 
-        var model = SettingsViewModel.SettingsGeneralViewModel;
-        if (await discordAccountTask is { } discordAccount)
-        {
-            model.DiscordAccount.Username = discordAccount.Username;
-            model.DiscordAccountAvailable = true;
-        }
-        else model.DiscordLoginActive = false;
+        await Task.WhenAll(versionRegistryTask, loginTask);
+        settingsGeneralViewModel.DiscordLoginActive = false;
 
         VersionRegistry = await versionRegistryTask; _ = Task.Run(() =>
         {

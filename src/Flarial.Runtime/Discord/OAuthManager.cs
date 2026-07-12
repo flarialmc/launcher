@@ -1,22 +1,13 @@
-using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Unmanaged;
-using Windows.Networking.NetworkOperators;
-using Windows.Security.Credentials;
-using Windows.UI.WebUI;
 
 namespace Flarial.Runtime.Discord;
 
@@ -86,7 +77,7 @@ public static class OAuthManager
         });
 
         using var response = await HttpService.PostAsync(TokenUri, content);
-        if (!response.IsSuccessStatusCode) return null;
+        response.EnsureSuccessStatusCode();
 
         return await ParseTokenAsync(response);
     }
@@ -113,13 +104,17 @@ public static class OAuthManager
             ["refresh_token"] = credential.Password
         });
 
-        using var response = await HttpService.PostAsync(TokenUri, content);
-        if (!response.IsSuccessStatusCode) { CredentialManager.Remove(); return null; }
+        try
+        {
+            using var response = await HttpService.PostAsync(TokenUri, content);
+            response.EnsureSuccessStatusCode();
 
-        if (await ParseTokenAsync(response) is not { } token)
-            return null;
+            if (await ParseTokenAsync(response) is not { } token)
+                return null;
 
-        CredentialManager.Set(token.RefreshToken);
-        return token.AccessToken;
+            CredentialManager.Set(token.RefreshToken);
+            return token.AccessToken;
+        }
+        catch { CredentialManager.Remove(); throw; }
     }
 }

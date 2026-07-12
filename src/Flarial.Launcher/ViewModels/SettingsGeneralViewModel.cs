@@ -25,10 +25,26 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     [Reactive] string? _customDllPath = null;
     [Reactive] bool _customDllSelected = false;
     [Reactive] bool _discordLoginActive = true;
+    [Reactive] bool _discordLoginAvailable = false;
     [Reactive] bool _discordAccountAvailable = false;
 
     public AvaloniaList<SegmentItem> BuildTypes { get; }
     public DiscordAccountModel DiscordAccount => _model._discordAccount;
+
+    readonly SegmentItem _customItem = new() { Title = "Custom", Tag = BuildType.Custom };
+    readonly SegmentItem _releaseItem = new() { Title = "Release", Tag = BuildType.Release };
+    readonly SegmentItem _betaItem = new() { Title = "Beta", Tag = BuildType.Beta, IsEnabled = false };
+
+    internal bool HasBetaAccess
+    {
+        get;
+        set
+        {
+            if (SelectedBuild == _betaItem && !value)
+                SelectedBuild = _releaseItem;
+            _betaItem.IsEnabled = field = value;
+        }
+    }
 
     public SegmentItem? SelectedBuild
     {
@@ -96,16 +112,25 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         _model = mainWindowViewModel;
         _settings = ((App)Application.Current!).Settings;
 
-        BuildTypes = [new() { Title = "Flarial Client", Tag = false }, new() { Title = "Custom DLL", Tag = true }];
+        BuildTypes = [_releaseItem, _betaItem, _customItem];
 
-        SelectedBuild = _settings.UseCustomDll switch
+        switch (_settings.BuildType)
         {
-            false => BuildTypes[0],
-            true => BuildTypes[1]
-        };
+            case BuildType.Beta:
+                SelectedBuild = _betaItem;
+                break;
+
+            case BuildType.Release:
+                SelectedBuild = _releaseItem;
+                break;
+
+            case BuildType.Custom:
+                SelectedBuild = _customItem;
+                CustomDllSelected = true;
+                break;
+        }
 
         CustomDllPath = _settings.CustomDllPath;
-        CustomDllSelected = _settings.UseCustomDll;
         PerformanceMode = _settings.PerformanceMode;
         AutomaticUpdates = _settings.AutomaticUpdates;
 
@@ -118,21 +143,30 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     async Task OnLoginAsync()
     {
-        DiscordLoginActive = true;
+        DiscordLoginAvailable = false;
 
         if (!await OAuthManager.AuthenticateAsync())
         {
-            DiscordLoginActive = false;
+            OnLogout();
             return;
         }
+
+        await LoginAsync();
+    }
+
+    internal async Task LoginAsync()
+    {
+        DiscordLoginAvailable = false;
 
         if (await DiscordAccountManager.LoginAsync() is not { } account)
         {
-            DiscordLoginActive = false;
+            OnLogout();
             return;
         }
 
-        DiscordAccount.Username = account.Username;
+        DiscordAccount.Login(account);
+        HasBetaAccess = account.HasBetaAccess;
+
         DiscordAccountAvailable = true;
     }
 
@@ -141,16 +175,19 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         DiscordAccount.Logout();
         DiscordAccountManager.Logout();
 
-        DiscordLoginActive = false;
+        DiscordAccount.Logout();
+        HasBetaAccess = false;
+
+        DiscordLoginAvailable = true;
         DiscordAccountAvailable = false;
     }
 
     private void OnBuildChanged(SegmentItem? item)
     {
         if (item == null) return;
-        var value = (bool)item.Tag!;
+        var buildType = (BuildType)item.Tag!;
 
-        CustomDllSelected = value;
-        _settings.UseCustomDll = value;
+        _settings.BuildType = buildType;
+        CustomDllSelected = buildType is BuildType.Custom;
     }
 }

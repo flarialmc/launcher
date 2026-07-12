@@ -28,7 +28,7 @@ readonly struct DiscordSession(string token)
     internal async Task<(string Id, string Avatar, string Username)?> GetAccountProfileAsync()
     {
         using var response = await GetAsync(ProfileUri);
-        if (!response.IsSuccessStatusCode) return null;
+        response.EnsureSuccessStatusCode();
 
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
@@ -43,7 +43,7 @@ readonly struct DiscordSession(string token)
     internal async Task<bool?> HasBetaAccessAsync()
     {
         using var response = await GetAsync(GuildMemberUri);
-        if (!response.IsSuccessStatusCode) return null;
+        response.EnsureSuccessStatusCode();
 
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
