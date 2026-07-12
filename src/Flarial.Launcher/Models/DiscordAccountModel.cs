@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Flarial.Launcher.ViewModels;
 using Flarial.Runtime.Discord;
 using ReactiveUI;
@@ -35,22 +36,27 @@ public sealed partial class DiscordAccountModel(HomeViewModel model) : ReactiveO
     {
         Username = account.Username;
 
-        if (account.HasBetaAccess && !account.HasFlarialPlus)
+        if (account.HasBetaAccess && !account.HasFlarialPlus) Dispatcher.UIThread.Post(() =>
         {
             _role.Name = "Tester";
             _role.Border = Brushes.DarkGray;
             _role.Background = Brushes.DimGray;
-        }
+        }, DispatcherPriority.Background);
 
-        if (account.HasFlarialPlus)
+        if (account.HasFlarialPlus) Dispatcher.UIThread.Post(() =>
         {
             _role.Name = "Flarial+";
             _role.Border = Brushes.IndianRed;
             _role.Background = Brushes.DarkRed;
-        }
+        }, DispatcherPriority.Background);
+
+        Dispatcher.UIThread.Post(async () =>
+        {
+            var avatar = await account.Avatar;
+            Avatar = new(new MemoryStream(avatar, false));
+        }, DispatcherPriority.Background);
 
         model.ShowPromotions = !account.HasFlarialPlus;
-        Avatar = new(new MemoryStream(await account.Avatar, false));
     }
 
     public void Logout()
