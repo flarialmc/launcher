@@ -66,9 +66,12 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (Minecraft.IsInstalled)
+            var isRunning = Minecraft.IsRunning;
+            var isInstalled = Minecraft.IsInstalled;
+
+            if (isInstalled && !isRunning)
             {
-                if (Minecraft.IsSideloaded && !Minecraft.IsRunning)
+                if (Minecraft.IsSideloaded)
                 {
                     if (!await SideloadedBootstrapDialog._.ShowAsync())
                         return;
@@ -80,7 +83,7 @@ public partial class HomeViewModel : ViewModelBase
                     return;
                 }
             }
-            else if (!Minecraft.IsRunning)
+            else if (!isRunning)
             {
                 await GameNotFoundDialog._.ShowAsync();
                 return;
