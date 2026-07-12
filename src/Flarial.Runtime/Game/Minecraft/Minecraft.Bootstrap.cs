@@ -16,38 +16,40 @@ unsafe partial class Minecraft
 
     static uint? Activate()
     {
-        if (GetProcessId() is { } processId)
-            return processId;
+        if (!GamingServices.IsInstalled)
+            throw new GamingServicesNotInstalledException();
 
-        var path = Path.Combine(Package.InstalledPath, ProcessName);
-        if (!File.Exists(path)) throw new MinecraftNotFoundException();
-
-        using var process = Process.Start(new ProcessStartInfo
+        if (GetWindow() is { } window && window.IsVisible)
         {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            FileName = s_filename,
-            ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", string.Format(Command, path) }
-        });
+            window.Switch();
+            return window._processId;
+        }
 
-        process?.WaitForExit();
-        return GetProcessId();
+        if (IsInstalled)
+        {
+            if (GetProcessId() is { } processId)
+                return processId;
+
+            var path = Path.Combine(Package.InstalledPath, ProcessName);
+            if (!File.Exists(path)) throw new MinecraftNotFoundException();
+
+            using var process = Process.Start(new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                FileName = s_filename,
+                ArgumentList = { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", string.Format(Command, path) }
+            });
+
+            process?.WaitForExit();
+            return GetProcessId();
+        }
+
+        return null;
     }
 
     internal static uint? Launch()
     {
-        if (!GamingServices.IsInstalled)
-            throw new GamingServicesNotInstalledException();
-
-        if (!IsInstalled)
-            throw new MinecraftNotFoundException();
-
-        if (GetWindow() is { } foundWindow && foundWindow.IsVisible)
-        {
-            foundWindow.Switch();
-            return foundWindow._processId;
-        }
-
         if (Activate() is not { } processId)
             return null;
 

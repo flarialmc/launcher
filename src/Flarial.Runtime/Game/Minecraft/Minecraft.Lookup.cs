@@ -60,8 +60,6 @@ unsafe partial class Minecraft
         fixed (char* packageFamilyNamePtr = PackageFamilyName)
         {
             NativeWindow window = HWND.Null;
-            var length = PACKAGE_FAMILY_NAME_MAX_LENGTH + 1;
-            var stringPtr = stackalloc char[(int)length];
 
             while ((window = FindWindowEx(HWND.Null, window, classNamePtr, null)) != HWND.Null)
             {
@@ -71,16 +69,7 @@ unsafe partial class Minecraft
                 if (NativeProcess.Open(PROCESS_QUERY_LIMITED_INFORMATION, window._processId) is not { } process)
                     continue;
 
-                using (process)
-                {
-                    if (GetPackageFamilyName(process, &length, stringPtr) != ERROR_SUCCESS)
-                        continue;
-
-                    if (CompareStringOrdinal(packageFamilyNamePtr, -1, stringPtr, -1, true) != CSTR_EQUAL)
-                        continue;
-
-                    return window;
-                }
+                return window;
             }
 
             return null;

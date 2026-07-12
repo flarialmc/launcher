@@ -31,7 +31,7 @@ public partial class HomeViewModel : ViewModelBase
     UnsupportedVersionDialog UnsupportedVersionDialog => field ??= new(_model.VersionRegistry);
 
     public DiscordAccountModel DiscordAccount => _model._discordAccount;
-    
+
     readonly MainWindowViewModel _model;
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
@@ -66,21 +66,23 @@ public partial class HomeViewModel : ViewModelBase
                 return;
             }
 
-            if (!Minecraft.IsInstalled)
+            if (Minecraft.IsInstalled)
+            {
+                if (Minecraft.IsSideloaded && !Minecraft.IsRunning)
+                {
+                    if (!await SideloadedBootstrapDialog._.ShowAsync())
+                        return;
+                }
+
+                if (release && !_model.VersionRegistry.IsSupported)
+                {
+                    await UnsupportedVersionDialog.ShowAsync();
+                    return;
+                }
+            }
+            else if (!Minecraft.IsRunning)
             {
                 await NotInstalledDialog._.ShowAsync();
-                return;
-            }
-
-            if (Minecraft.IsSideloaded && !Minecraft.IsRunning)
-            {
-                if (!await SideloadedBootstrapDialog._.ShowAsync())
-                    return;
-            }
-
-            if (release && !_model.VersionRegistry.IsSupported)
-            {
-                await UnsupportedVersionDialog.ShowAsync();
                 return;
             }
 
