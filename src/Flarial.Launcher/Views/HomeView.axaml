@@ -70,7 +70,7 @@
                                 Padding="7.5,2.5,7.5,2.5"
                                 Margin="5,0,0,0">
                             <TextBlock Text="{Binding DiscordAccount.Role.Name}"
-                                       FontSize="12"
+                                       FontSize="14"
                                        Foreground="{StaticResource ForegroundColor}"/>
                         </Border>
                     </WrapPanel>
