@@ -104,17 +104,18 @@ public static class OAuthManager
             ["refresh_token"] = credential.Password
         });
 
-        try
+        using var response = await HttpService.PostAsync(TokenUri, content);
+
+        if (!response.IsSuccessStatusCode)
         {
-            using var response = await HttpService.PostAsync(TokenUri, content);
-            response.EnsureSuccessStatusCode();
-
-            if (await ParseTokenAsync(response) is not { } token)
-                return null;
-
-            CredentialManager.Set(token.RefreshToken);
-            return token.AccessToken;
+            CredentialManager.Remove();
+            return null;
         }
-        catch { CredentialManager.Remove(); throw; }
+
+        if (await ParseTokenAsync(response) is not { } token)
+            return null;
+
+        CredentialManager.Set(token.RefreshToken);
+        return token.AccessToken;
     }
 }

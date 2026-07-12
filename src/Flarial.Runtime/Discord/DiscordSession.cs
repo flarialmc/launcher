@@ -23,10 +23,10 @@ readonly struct DiscordSession(string token)
         return await HttpService.SendAsync(request);
     }
 
-    internal async Task<(string Id, string Avatar, string Username)> GetProfileAsync()
+    internal async Task<(string Id, string Avatar, string Username)?> GetProfileAsync()
     {
         using var response = await GetAsync(ProfileUri);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode) return null;
 
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);

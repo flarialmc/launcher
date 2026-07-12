@@ -172,7 +172,6 @@ public partial class SettingsGeneralViewModel : ViewModelBase
 
     void OnLogout()
     {
-        DiscordAccount.Logout();
         DiscordAccountManager.Logout();
 
         DiscordAccount.Logout();

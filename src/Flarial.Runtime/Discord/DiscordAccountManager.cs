@@ -34,12 +34,12 @@ public static class DiscordAccountManager
 
         var rolesTask = session.GetRolesAsync();
         var profileTask = session.GetProfileAsync();
+
         await Task.WhenAll(rolesTask, profileTask);
+        if (await profileTask is not { } profile) return null;
 
-        var (id, avatar, username) = await profileTask;
-        var uri = string.Format(AvatarUri, id, avatar);
-
-        return new(username, HttpService.GetBytesAsync(uri), await rolesTask);
+        var uri = string.Format(AvatarUri, profile.Id, profile.Avatar);
+        return new(profile.Username, HttpService.GetBytesAsync(uri), await rolesTask);
     }
 
     public static void Logout() => CredentialManager.Remove();
