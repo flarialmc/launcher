@@ -44,7 +44,7 @@ readonly struct DiscordSession(string token)
         var isFlarialPlus = false;
 
         using var response = await GetAsync(GuildMemberUri);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode) return (false, false);
 
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
