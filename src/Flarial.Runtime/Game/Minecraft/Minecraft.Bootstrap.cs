@@ -16,15 +16,6 @@ unsafe partial class Minecraft
 
     static uint? Activate()
     {
-        if (!GamingServices.IsInstalled)
-            throw new GamingServicesNotInstalledException();
-
-        if (GetWindow() is { } window && window.IsVisible)
-        {
-            window.Switch();
-            return window._processId;
-        }
-
         if (IsInstalled)
         {
             if (GetProcessId() is { } processId)
@@ -44,12 +35,20 @@ unsafe partial class Minecraft
             process?.WaitForExit();
             return GetProcessId();
         }
-
         return null;
     }
 
     internal static uint? Launch()
     {
+        if (!GamingServices.IsInstalled)
+            throw new GamingServicesNotInstalledException();
+
+        if (GetWindow() is { } minecraftWindow && minecraftWindow.IsVisible)
+        {
+            minecraftWindow.Switch();
+            return minecraftWindow._processId;
+        }
+
         if (Activate() is not { } processId)
             return null;
 
