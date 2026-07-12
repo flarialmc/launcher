@@ -12,7 +12,6 @@ using Avalonia.Platform.Storage;
 using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
-using Flarial.Runtime.Discord;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -116,7 +115,6 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         DiscordLoginActive = true; try
         {
-            await OAuthManager.GetTokenAsync();
         }
         finally { DiscordLoginActive = false; }
     }

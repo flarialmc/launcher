@@ -1,41 +1,43 @@
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Unmanaged;
+using Windows.Networking.NetworkOperators;
+using Windows.Security.Credentials;
+using Windows.UI.WebUI;
 
 namespace Flarial.Runtime.Discord;
 
-public static class OAuthManager
+static class OAuthManager
 {
     static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
 
     const string ClientId = "1058426966602174474";
+    const string Scope = "identify guilds.members.read";
     const string RedirectUri = "http://localhost:65535/";
 
-    const string TokenUri = "https://discord.com/api/oauth2/token";
-    const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&scope=identify&client_id={ClientId}&redirect_uri={RedirectUri}";
+    const string TokenUri = "https://discord.com/api/v10/oauth2/token";
+    const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&scope={Scope}&client_id={ClientId}&redirect_uri={RedirectUri}";
 
-    static string CreateCodeVerifier()
+    static async Task<(string Verifier, string Code)?> GetAuthorizationCodeAsync()
     {
-        var bytes = RandomNumberGenerator.GetBytes(32);
+        var verifier = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
+        var challenge = Base64Url.EncodeToString(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
 
-        var sha256 = SHA256.HashData(bytes);
-        var base64 = Convert.ToBase64String(sha256);
-
-        return base64.Replace('+', '-').Replace('/', '_').TrimEnd('=');
-    }
-
-    static async Task<string?> GetAuthorizationCodeAsync()
-    {
-        string state = CreateCodeVerifier(), challenge = CreateCodeVerifier();
-        var uri = $"{AuthorizeUri}&state={state}&code_challenge={challenge}&code_challenge_method=S256";
+        var state = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
+        var uri = $"{AuthorizeUri}&code_challenge={challenge}&code_challenge_method=S256&state={state}";
 
         NativeMethods.ShellExecute(uri);
 
@@ -53,14 +55,71 @@ public static class OAuthManager
             if (context.Request.QueryString["state"] != state)
                 return null;
 
-            return context.Request.QueryString["code"];
+            return (verifier, context.Request.QueryString["code"]!);
         }
         finally { listener.Stop(); }
     }
 
-    public static async Task GetTokenAsync()
+    static async Task<(string Access, string Refresh)?> ParseTokenAsync(HttpResponseMessage response)
     {
-        if (await GetAuthorizationCodeAsync() is not { } authorizationCode)
-            return;
+        using var stream = await response.Content.ReadAsStreamAsync();
+        using var document = await JsonDocument.ParseAsync(stream);
+
+        var access = document.RootElement.GetProperty("access_token");
+        var refresh = document.RootElement.GetProperty("refresh_token");
+
+        return (access.GetString()!, refresh.GetString()!);
+    }
+
+    static async Task<(string Access, string Refresh)?> GetTokenAsync()
+    {
+        if (await GetAuthorizationCodeAsync() is not { } tuple)
+            return null;
+
+        using FormUrlEncodedContent content = new(new Dictionary<string, string>
+        {
+            ["code"] = tuple.Code,
+            ["client_id"] = ClientId,
+            ["redirect_uri"] = RedirectUri,
+            ["code_verifier"] = tuple.Verifier,
+            ["grant_type"] = "authorization_code"
+        });
+
+        using var response = await HttpService.PostAsync(TokenUri, content);
+        if (!response.IsSuccessStatusCode) return null;
+
+        return await ParseTokenAsync(response);
+    }
+
+    internal static async Task<string?> AuthenticateAsync()
+    {
+        if (await GetTokenAsync() is { } tuple)
+        {
+            CredentialManager.Set(tuple.Refresh);
+            return await AuthenticateSilentlyAsync();
+        }
+        return null;
+    }
+
+    static async Task<string?> AuthenticateSilentlyAsync()
+    {
+        if (CredentialManager.Get() is not { } credential)
+            return null;
+
+        using FormUrlEncodedContent content = new(new Dictionary<string, string>
+        {
+            ["client_id"] = ClientId,
+            ["grant_type"] = "refresh_token",
+            ["refresh_token"] = credential.Password
+        });
+
+        using var response = await HttpService.PostAsync(TokenUri, content);
+        if (!response.IsSuccessStatusCode) { CredentialManager.Remove(); return null; }
+
+        if (await ParseTokenAsync(response) is not { } tuple)
+            return null;
+
+        CredentialManager.Set(tuple.Refresh);
+        return tuple.Access;
     }
 }
