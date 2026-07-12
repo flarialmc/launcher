@@ -61,9 +61,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     void OnDownload(int value) => HomeViewModel.LauncherStatus = $"Updating... {value}%";
 
+    async Task LoginWithDiscordAsync()
+    {
+        await SettingsViewModel.SettingsGeneralViewModel.LoginAsync();
+        SettingsViewModel.SettingsGeneralViewModel.DiscordLoginActive = false;
+    }
+
     public async void OnLoaded()
     {
-        var settingsGeneralViewModel = SettingsViewModel.SettingsGeneralViewModel;
 
         if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
         {
@@ -71,13 +76,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var versionRegistryTask = VersionRegistry.GetAsync();
-        var loginTask = settingsGeneralViewModel.LoginAsync();
+        var loginWithDiscordTask = LoginWithDiscordAsync();
+        VersionRegistry = await VersionRegistry.GetAsync();
 
-        await Task.WhenAll(versionRegistryTask, loginTask);
-        settingsGeneralViewModel.DiscordLoginActive = false;
-
-        VersionRegistry = await versionRegistryTask; _ = Task.Run(() =>
+        _ = Task.Run(() =>
         {
             foreach (var version in VersionRegistry) Dispatcher.UIThread.Post(() =>
             {
@@ -87,6 +89,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         HomeViewModel.OnPackageStatusChanged();
         Minecraft.PackageStatusChanged += HomeViewModel.OnPackageStatusChanged;
+
+        await loginWithDiscordTask;
 
         HomeViewModel.LauncherStatus = "Ready!";
         HomeViewModel.IsLaunching = false;
