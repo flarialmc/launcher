@@ -6,19 +6,21 @@ namespace Flarial.Runtime.Discord;
 
 public sealed class DiscordAccount
 {
-    public string Username { get; }
-    public Task<byte[]?> Avatar { get; }
+    readonly Task<byte[]?> _task;
 
+    public string Username { get; }
     public bool HasBetaAccess { get; }
     public bool HasFlarialPlus { get; }
 
-    internal DiscordAccount(string username, (bool IsFlarialPlus, bool IsTester) roles, Task<byte[]?> avatar)
+    internal DiscordAccount(string username, (bool IsFlarialPlus, bool IsTester) roles, Task<byte[]?> task)
     {
-        Avatar = avatar;
+        _task = task;
         Username = username;
         HasFlarialPlus = roles.IsFlarialPlus;
         HasBetaAccess = roles.IsFlarialPlus || roles.IsTester;
     }
+
+    public Task<byte[]?> GetAvatarAsync() => _task;
 }
 
 public static class DiscordAccountManager

@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Threading;
 using Flarial.Launcher.ViewModels;
 using Flarial.Runtime.Discord;
 using ReactiveUI;
@@ -35,33 +33,31 @@ public sealed partial class DiscordAccountModel(HomeViewModel model) : ReactiveO
     public async Task LoginAsync(DiscordAccount account)
     {
         Username = account.Username;
-
-        if (account.HasBetaAccess && !account.HasFlarialPlus) Dispatcher.UIThread.Post(() =>
-        {
-            _role.Name = "Tester";
-            _role.Border = Brushes.DarkGray;
-            _role.Background = Brushes.DimGray;
-        }, DispatcherPriority.Background);
-
-        if (account.HasFlarialPlus) Dispatcher.UIThread.Post(() =>
-        {
-            _role.Name = "Flarial+";
-            _role.Border = Brushes.IndianRed;
-            _role.Background = Brushes.DarkRed;
-        }, DispatcherPriority.Background);
-
-        Dispatcher.UIThread.Post(async () =>
-        {
-            if (await account.Avatar is { } avatar)
-                Avatar = new(new MemoryStream(avatar, false));
-        }, DispatcherPriority.Background);
-
         model.ShowPromotions = !account.HasFlarialPlus;
+
+        var hasBetaAccess = account.HasBetaAccess;
+        var hasFlarialPlus = account.HasFlarialPlus;
+
+        if (hasBetaAccess && !hasFlarialPlus)
+        {
+            Role.Name = "Tester";
+            Role.Border = Brushes.DarkGray;
+            Role.Background = Brushes.DimGray;
+        }
+        else if (hasBetaAccess)
+        {
+            Role.Name = "Flarial+";
+            Role.Border = Brushes.IndianRed;
+            Role.Background = Brushes.DarkRed;
+        }
+
+        if (await account.GetAvatarAsync() is { } avatar)
+            Avatar = new(new MemoryStream(avatar, false));
     }
 
     public void Logout()
     {
-        Role = new();
+        Role.Logout();
         Username = "Guest";
         model.ShowPromotions = true;
         Avatar = new(new MemoryStream(s_avatar, false));
