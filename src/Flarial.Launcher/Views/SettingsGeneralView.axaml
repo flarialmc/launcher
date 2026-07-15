@@ -29,11 +29,12 @@
             <TextBlock Margin="0,0,0,5" Text="Discord" FontSize="22" FontWeight="SemiBold"/>
             <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
         </Grid>
-        
+
         <Grid ColumnDefinitions="45,*,Auto" VerticalAlignment="Top">
             <Border Grid.Column="0"
                     CornerRadius="30"
-                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}">
+                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Bounds.Width}"
+                    RenderOptions.BitmapInterpolationMode="HighQuality">
                 <Border.Background>
                     <ImageBrush Source="{Binding DiscordAccount.Avatar}" Stretch="UniformToFill"/>
                 </Border.Background>
