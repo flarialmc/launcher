@@ -18,7 +18,7 @@
         <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="25">
             <Grid>
 
-                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/v2bg.webp"/>
+                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/background.webp"/>
 
                 <Grid Margin="0,70,0,0" VerticalAlignment="Top" Height="150">
                     <Grid.Background>

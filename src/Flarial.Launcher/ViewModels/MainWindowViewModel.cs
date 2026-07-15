@@ -42,7 +42,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         NotificationArea = new NotificationAreaViewModel();
 
         VersionRegistry = null!;
-        _discordAccount = new(HomeViewModel);
+        _discordAccount = new();
     }
 
     public async Task<string> ShowMessageBoxAsync(string title, string message, IEnumerable<string> buttons)

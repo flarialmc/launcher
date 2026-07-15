@@ -165,17 +165,19 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         }
 
         HasBetaAccess = account.HasBetaAccess;
-        _ = DiscordAccount.LoginAsync(account);
+        _model.HomeViewModel.ShowPromotions = !account.HasFlarialPlus;
 
         DiscordAccountAvailable = true;
+        DiscordAccount.Login(account);
     }
 
     void OnLogout()
     {
-        DiscordAccountManager.Logout();
-
-        DiscordAccount.Logout();
         HasBetaAccess = false;
+        _model.HomeViewModel.ShowPromotions = true;
+
+        DiscordAccountManager.Logout();
+        DiscordAccount.Logout();
 
         DiscordLoginAvailable = true;
         DiscordAccountAvailable = false;

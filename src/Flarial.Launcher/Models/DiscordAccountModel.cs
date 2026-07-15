@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Flarial.Launcher.ViewModels;
 using Flarial.Runtime.Discord;
 using ReactiveUI;
@@ -10,33 +12,35 @@ using ReactiveUI.SourceGenerators;
 
 namespace Flarial.Launcher.Models;
 
-public sealed partial class DiscordAccountModel(HomeViewModel model) : ReactiveObject
+public sealed partial class DiscordAccountModel : ReactiveObject
 {
-    const string ProfileImageUri = "avares://Flarial.Launcher/Assets/person_96dp_FF2438.png";
+    [Reactive] Bitmap _avatar;
+    [Reactive] string _username;
+    [Reactive] DiscordRoleModel _role;
 
-    static readonly byte[] s_avatar;
+    const string DefaultUserName = "Guest";
+    const string ProfileImageUri = "avares://Flarial.Launcher/Assets/avatar.webp";
 
-    static DiscordAccountModel()
+    readonly Bitmap _defaultAvatar;
+
+    internal DiscordAccountModel()
     {
-        using var source = AssetLoader.Open(new(ProfileImageUri));
+        Uri uri = new(ProfileImageUri);
 
-        using MemoryStream destination = new();
-        source.CopyTo(destination);
+        using var stream = AssetLoader.Open(uri);
+        _defaultAvatar = new(stream);
 
-        s_avatar = destination.ToArray();
+        Role = new();
+        Avatar = _defaultAvatar;
+        Username = DefaultUserName;
     }
 
-    [Reactive] string _username = "Guest";
-    [Reactive] DiscordRoleModel _role = new();
-    [Reactive] Bitmap _avatar = new(new MemoryStream(s_avatar, false));
-
-    public async Task LoginAsync(DiscordAccount account)
+    public void Login(DiscordAccount account) => Dispatcher.UIThread.Post(async () =>
     {
-        Username = account.Username;
-        model.ShowPromotions = !account.HasFlarialPlus;
-
         var hasBetaAccess = account.HasBetaAccess;
         var hasFlarialPlus = account.HasFlarialPlus;
+
+        Username = account.Username;
 
         if (hasBetaAccess && !hasFlarialPlus)
         {
@@ -46,20 +50,23 @@ public sealed partial class DiscordAccountModel(HomeViewModel model) : ReactiveO
         }
         else if (hasBetaAccess)
         {
-            Role.Name = "Flarial+";
+            Role.Name = "Flarial 🞤";
             Role.Border = Brushes.IndianRed;
             Role.Background = Brushes.DarkRed;
         }
 
         if (await account.GetAvatarAsync() is { } avatar)
-            Avatar = new(new MemoryStream(avatar, false));
-    }
+        {
+            using MemoryStream stream = new(avatar, false);
+            Avatar = new(stream);
+        }
+        else Avatar = _defaultAvatar;
+    }, DispatcherPriority.Background);
 
-    public void Logout()
+    public void Logout() => Dispatcher.UIThread.Post(() =>
     {
         Role.Logout();
-        Username = "Guest";
-        model.ShowPromotions = true;
-        Avatar = new(new MemoryStream(s_avatar, false));
-    }
+        Avatar = _defaultAvatar;
+        Username = DefaultUserName;
+    }, DispatcherPriority.Background);
 }

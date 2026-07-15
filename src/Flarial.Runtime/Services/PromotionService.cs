@@ -16,21 +16,24 @@ public static class PromotionService
 
 public sealed class Promotion
 {
-    public string Uri { get; }
+    readonly Task<byte[]?> _task;
 
-    [JsonInclude]
-    internal string Image { get; }
+    public string Uri { get; }
+    public string Image { get; }
 
     [JsonConstructor]
     internal Promotion(string uri, string image)
     {
-        Uri = uri;
-        Image = image;
+        Uri = uri; Image = image;
+        _task = GetBytesAsync(image);
     }
 
-    public async Task<byte[]?> GetImageAsync()
+    static async Task<byte[]?> GetBytesAsync(string uri)
     {
-        try { return await HttpService.GetBytesAsync(Image); }
+        try { return await HttpService.GetBytesAsync(uri); }
         catch { return null; }
     }
+
+    public Task<byte[]?> GetImageAsync() => _task;
+
 }
