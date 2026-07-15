@@ -50,7 +50,7 @@ public sealed partial class DiscordAccountModel : ReactiveObject
         }
         else if (hasBetaAccess)
         {
-            Role.Name = "Flarial 🞤";
+            Role.Name = "Flarial+";
             Role.Border = Brushes.IndianRed;
             Role.Background = Brushes.DarkRed;
         }
