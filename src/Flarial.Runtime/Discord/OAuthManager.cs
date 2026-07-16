@@ -30,12 +30,13 @@ public static class OAuthManager
         var state = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
         var uri = $"{AuthorizeUri}&code_challenge={challenge}&code_challenge_method=S256&state={state}";
 
-        NativeMethods.ShellExecute(uri);
-
         using HttpListener listener = new();
         listener.Prefixes.Add(RedirectUri);
 
-        listener.Start(); try
+        NativeMethods.ShellExecute(uri);
+        listener.Start(); 
+        
+        try
         {
             var context = await listener.GetContextAsync();
             using var stream = context.Response.OutputStream;
