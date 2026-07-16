@@ -13,7 +13,6 @@ using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
 using Flarial.Runtime.Discord;
-using Flarial.Runtime.Identity;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -146,7 +145,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         DiscordLoginAvailable = false;
 
-        if (!await Runtime.Identity.OAuthManager.AuthenticateAsync())
+        if (!await OAuthManager.AuthenticateAsync())
         {
             OnLogout();
             return;
@@ -158,8 +157,6 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     internal async Task LoginAsync()
     {
         DiscordLoginAvailable = false;
-
-        await AccountManager.LoginAsync();
 
         if (await DiscordAccountManager.LoginAsync() is not { } account)
         {
