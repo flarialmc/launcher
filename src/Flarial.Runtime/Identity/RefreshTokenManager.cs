@@ -9,21 +9,21 @@ static class RefreshTokenManager
 
     static readonly PasswordVault s_vault = new();
 
-    static PasswordCredential? Retrieve()
+    static PasswordCredential? RetrieveToken()
     {
         try { return s_vault.Retrieve(Resource, UserName); }
         catch { return null; }
     }
 
-    internal static void Delete()
+    internal static void RemoveToken()
     {
-        if (Retrieve() is { } credential)
+        if (RetrieveToken() is { } credential)
             s_vault.Remove(credential);
     }
 
-    internal static string? Get()
+    internal static string? GetToken()
     {
-        if (Retrieve() is { } credential)
+        if (RetrieveToken() is { } credential)
         {
             credential.RetrievePassword();
             return credential.Password;
@@ -31,7 +31,7 @@ static class RefreshTokenManager
         return null;
     }
 
-    internal static void Set(string refreshToken)
+    internal static void SetToken(string refreshToken)
     {
         s_vault.Add(new()
         {

@@ -14,4 +14,18 @@ static partial class HttpService
     {
         return s_client.GetByteArrayAsync(uri);
     }
+
+    internal static async Task<byte[]?> TryGetBytesAsync(string uri)
+    {
+        try
+        {
+            using var response = await GetAsync(uri, default);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadAsByteArrayAsync();
+        }
+        catch { return null; }
+    }
 }

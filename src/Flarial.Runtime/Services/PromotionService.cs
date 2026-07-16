@@ -24,14 +24,9 @@ public sealed class Promotion
     [JsonConstructor]
     internal Promotion(string uri, string image)
     {
-        Uri = uri; Image = image;
-        _task = GetBytesAsync(image);
-    }
-
-    static async Task<byte[]?> GetBytesAsync(string uri)
-    {
-        try { return await HttpService.GetBytesAsync(uri); }
-        catch { return null; }
+        Uri = uri; 
+        Image = image;
+        _task = HttpService.TryGetBytesAsync(image);
     }
 
     public Task<byte[]?> GetImageAsync() => _task;

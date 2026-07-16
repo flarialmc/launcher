@@ -96,7 +96,7 @@ public static class OAuthManager
     {
         if (await GetTokensAsync() is { } tuple)
         {
-            RefreshTokenManager.Set(tuple.RefreshToken);
+            RefreshTokenManager.SetToken(tuple.RefreshToken);
             return true;
         }
         return false;
@@ -104,7 +104,7 @@ public static class OAuthManager
 
     internal static async Task<string?> GetAccessTokenAsync()
     {
-        if (RefreshTokenManager.Get() is not { } refreshToken)
+        if (RefreshTokenManager.GetToken() is not { } refreshToken)
             return null;
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
@@ -118,30 +118,33 @@ public static class OAuthManager
 
         if (!response.IsSuccessStatusCode)
         {
-            RefreshTokenManager.Delete();
+            RefreshTokenManager.RemoveToken();
             return null;
         }
 
         if (await ParseTokensAsync(response) is not { } tuple)
             return null;
 
-        RefreshTokenManager.Set(tuple.RefreshToken);
+        RefreshTokenManager.SetToken(tuple.RefreshToken);
         return tuple.AccessToken;
     }
 
-    static async Task RevokeTokenAsync(string token, string tokenTypeHint)
+    internal static async Task RevokeRefreshTokenAsync()
     {
-        if (RefreshTokenManager.Get() is not { } refreshToken)
-            return;
-
-        using FormUrlEncodedContent content = new(new Dictionary<string, string>
+        if (RefreshTokenManager.GetToken() is { } refreshToken)
         {
-            ["token"] = refreshToken,
-            ["client_id"] = ClientId,
-            ["token_type_hint"] = RefreshToken
-        });
+            RefreshTokenManager.RemoveToken();
 
-        using var response = await HttpService.PostAsync(RevokeUri, content);
-        response.EnsureSuccessStatusCode();
+            using FormUrlEncodedContent content = new(new Dictionary<string, string>
+            {
+                ["token"] = refreshToken,
+                ["resource"] = Resource,
+                ["client_id"] = ClientId,
+                ["token_type_hint"] = RefreshToken
+            });
+
+            using var response = await HttpService.PostAsync(RevokeUri, content);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
