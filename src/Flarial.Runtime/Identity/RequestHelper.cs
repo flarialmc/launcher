@@ -1,31 +1,32 @@
 using System.Buffers.Text;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using static System.Net.IPAddress;
+using static System.Net.Sockets.AddressFamily;
+using static System.Net.Sockets.ProtocolType;
+using static System.Net.Sockets.SocketType;
 
 namespace Flarial.Runtime.Identity;
 
 static class RequestHelper
 {
+    static readonly IPEndPoint s_endpoint = new(Loopback, 0);
+
     internal static string CreateRedirectUri()
     {
-        using TcpListener listener = new(IPAddress.Loopback, 0);
+        using Socket socket = new(InterNetwork, Stream, Tcp);
+        socket.Bind(s_endpoint);
 
-        listener.Start();
-        try
-        {
-            var endpoint = (IPEndPoint)listener.LocalEndpoint;
+        if (socket.LocalEndPoint is not IPEndPoint endpoint)
+            throw new UnreachableException();
 
-            var port = endpoint.Port;
-            var address = endpoint.Address;
+        var port = endpoint.Port;
+        var address = endpoint.Address;
 
-            return $"http://{address}:{port}/oauth/callback";
-        }
-        finally
-        {
-            listener.Stop();
-        }
+        return $"http://{address}:{endpoint.Port}/oauth/callback/";
     }
 
     internal static (string CodeVerifier, string CodeChallenge) CreateCodeExchange()
