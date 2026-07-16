@@ -33,11 +33,10 @@ public static class OAuthManager
         using HttpListener listener = new();
         listener.Prefixes.Add(RedirectUri);
 
-        NativeMethods.ShellExecute(uri);
-        listener.Start(); 
-        
-        try
+        listener.Start(); try
         {
+            NativeMethods.ShellExecute(uri);
+
             var context = await listener.GetContextAsync();
             using var stream = context.Response.OutputStream;
 
@@ -52,7 +51,10 @@ public static class OAuthManager
 
             return (verifier, code);
         }
-        finally { listener.Stop(); }
+        finally
+        {
+            listener.Stop();
+        }
     }
 
     static async Task<(string AccessToken, string RefreshToken)?> ParseTokenAsync(HttpResponseMessage response)
