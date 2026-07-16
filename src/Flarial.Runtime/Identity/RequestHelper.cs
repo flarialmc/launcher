@@ -8,7 +8,7 @@ namespace Flarial.Runtime.Identity;
 
 static class RequestHelper
 {
-   internal static string GetRedirectUri()
+    internal static string CreateRedirectUri()
     {
         using TcpListener listener = new(IPAddress.Loopback, 0);
 
@@ -28,7 +28,7 @@ static class RequestHelper
         }
     }
 
-   internal static (string Verifier, string Challenge) CreateCodeExchange()
+    internal static (string CodeVerifier, string CodeChallenge) CreateCodeExchange()
     {
         var rng = RandomNumberGenerator.GetBytes(32);
 
@@ -39,5 +39,11 @@ static class RequestHelper
         var challenge = Base64Url.EncodeToString(data);
 
         return (verifier, challenge);
+    }
+
+    internal static string CreateApplicationState()
+    {
+        var rng = RandomNumberGenerator.GetBytes(32);
+        return Base64Url.EncodeToString(SHA256.HashData(rng));
     }
 }

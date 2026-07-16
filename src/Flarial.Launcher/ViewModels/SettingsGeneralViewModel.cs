@@ -13,6 +13,7 @@ using Flarial.Launcher.Controls.SegmentedBar;
 using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
 using Flarial.Runtime.Discord;
+using Flarial.Runtime.Identity;
 using Flarial.Runtime.Unmanaged;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
