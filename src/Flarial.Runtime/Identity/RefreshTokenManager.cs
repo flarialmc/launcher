@@ -2,14 +2,14 @@ using Windows.Security.Credentials;
 
 namespace Flarial.Runtime.Identity;
 
-static class RefreshTokenStore
+static class RefreshTokenManager
 {
     const string UserName = "Flarial";
     const string Resource = "Flarial Launcher";
 
     static readonly PasswordVault s_vault = new();
 
-    static PasswordCredential? Find()
+    static PasswordCredential? Retrieve()
     {
         try { return s_vault.Retrieve(Resource, UserName); }
         catch { return null; }
@@ -17,13 +17,13 @@ static class RefreshTokenStore
 
     internal static void Delete()
     {
-        if (Find() is { } credential)
+        if (Retrieve() is { } credential)
             s_vault.Remove(credential);
     }
 
-    internal static string? Load()
+    internal static string? Get()
     {
-        if (Find() is { } credential)
+        if (Retrieve() is { } credential)
         {
             credential.RetrievePassword();
             return credential.Password;
@@ -31,13 +31,13 @@ static class RefreshTokenStore
         return null;
     }
 
-    internal static void Save(string refreshToken)
+    internal static void Set(string refreshToken)
     {
         s_vault.Add(new()
         {
             Resource = Resource,
             UserName = UserName,
-            Password = refreshToken,
+            Password = refreshToken
         });
     }
 }

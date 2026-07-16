@@ -26,7 +26,7 @@ static class RequestHelper
         var port = endpoint.Port;
         var address = endpoint.Address;
 
-        return $"http://{address}:{endpoint.Port}/oauth/callback/";
+        return $"http://{address}:{endpoint.Port}/oauth/callback";
     }
 
     internal static (string CodeVerifier, string CodeChallenge) CreateCodeExchange()

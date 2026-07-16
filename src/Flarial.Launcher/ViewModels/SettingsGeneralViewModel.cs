@@ -146,7 +146,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         DiscordLoginAvailable = false;
 
-        if (!await OAuthManager.AuthenticateAsync())
+        if (!await Runtime.Identity.OAuthManager.AuthenticateAsync())
         {
             OnLogout();
             return;
@@ -158,6 +158,8 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     internal async Task LoginAsync()
     {
         DiscordLoginAvailable = false;
+
+        await AccountManager.LoginAsync();
 
         if (await DiscordAccountManager.LoginAsync() is not { } account)
         {
