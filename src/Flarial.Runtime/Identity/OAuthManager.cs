@@ -109,6 +109,7 @@ public static class OAuthManager
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
+            ["resource"] = Resource,
             ["client_id"] = ClientId,
             ["grant_type"] = RefreshToken,
             ["refresh_token"] = refreshToken
