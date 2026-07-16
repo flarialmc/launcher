@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
@@ -24,7 +25,7 @@ public static class AccountManager
 
         using var response = await HttpService.SendAsync(request);
         if (!response.IsSuccessStatusCode) return null;
-        
+
         return new();
     }
 }

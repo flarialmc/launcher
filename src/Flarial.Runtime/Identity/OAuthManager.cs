@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Unmanaged;
@@ -16,12 +17,16 @@ public static class OAuthManager
 {
     static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
 
+    const string AccessToken = "access_token";
+    const string RefreshToken = "refresh_token";
+
     const string ClientId = "flarial-desktop";
+    const string Resource = "https://flarial.xyz/api";
     const string Scope = "openid profile offline_access entitlements";
 
-    const string Resource = "https://flarial.xyz/api";
     const string TokenUri = $"{Resource}/auth/oauth2/token";
-    const string AuthorizationUri = $"{Resource}/auth/oauth2/authorize?response_type=code&code_challenge_method=S256&client_id={ClientId}&scope={Scope}&resource={Resource}&state={{0}}&code_challenge={{1}}&redirect_uri={{2}}";
+    const string RevokeUri = $"{Resource}/auth/oauth2/revoke";
+    const string AuthorizeUri = $"{Resource}/auth/oauth2/authorize?response_type=code&code_challenge_method=S256&client_id={ClientId}&scope={Scope}&resource={Resource}&state={{0}}&code_challenge={{1}}&redirect_uri={{2}}";
 
     static async Task<(string AuthorizationCode, string CodeVerifier, string RedirectUri)?> GetAuthorizationAsync()
     {
@@ -29,7 +34,7 @@ public static class OAuthManager
         var (verifier, challenge) = RequestHelper.CreateCodeExchange();
 
         var redirectUri = RequestHelper.CreateRedirectUri();
-        var requestUri = string.Format(AuthorizationUri, state, challenge, redirectUri);
+        var requestUri = string.Format(AuthorizeUri, state, challenge, redirectUri);
 
         using HttpListener listener = new();
         listener.Prefixes.Add($"{redirectUri}/");
@@ -60,8 +65,8 @@ public static class OAuthManager
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
 
-        var accessToken = document.RootElement.GetProperty("access_token");
-        var refreshToken = document.RootElement.GetProperty("refresh_token");
+        var accessToken = document.RootElement.GetProperty(AccessToken);
+        var refreshToken = document.RootElement.GetProperty(RefreshToken);
 
         return (accessToken.GetString()!, refreshToken.GetString()!);
     }
@@ -105,7 +110,7 @@ public static class OAuthManager
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
             ["client_id"] = ClientId,
-            ["grant_type"] = "refresh_token",
+            ["grant_type"] = RefreshToken,
             ["refresh_token"] = refreshToken
         });
 
@@ -122,5 +127,21 @@ public static class OAuthManager
 
         RefreshTokenManager.Set(tuple.RefreshToken);
         return tuple.AccessToken;
+    }
+
+    static async Task RevokeTokenAsync(string token, string tokenTypeHint)
+    {
+        if (RefreshTokenManager.Get() is not { } refreshToken)
+            return;
+
+        using FormUrlEncodedContent content = new(new Dictionary<string, string>
+        {
+            ["token"] = refreshToken,
+            ["client_id"] = ClientId,
+            ["token_type_hint"] = RefreshToken
+        });
+
+        using var response = await HttpService.PostAsync(RevokeUri, content);
+        response.EnsureSuccessStatusCode();
     }
 }
