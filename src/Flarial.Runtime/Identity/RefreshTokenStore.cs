@@ -9,16 +9,16 @@ static class RefreshTokenStore
 
     static readonly PasswordVault s_vault = new();
 
+    static PasswordCredential? Find()
+    {
+        try { return s_vault.Retrieve(Resource, UserName); }
+        catch { return null; }
+    }
+
     internal static void Delete()
     {
         if (Find() is { } credential)
             s_vault.Remove(credential);
-    }
-
-    internal static PasswordCredential? Find()
-    {
-        try { return s_vault.Retrieve(Resource, UserName); }
-        catch { return null; }
     }
 
     internal static string? Load()
