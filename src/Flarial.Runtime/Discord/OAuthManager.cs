@@ -19,7 +19,7 @@ public static class OAuthManager
     const string Scope = "identify guilds.members.read";
     const string RedirectUri = "http://localhost:65535/";
 
-    const string TokenUri = "https://discord.com/api/v10/oauth2/token";
+    const string TokenUri = "https://discord.com/api/oauth2/token";
     const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&scope={Scope}&client_id={ClientId}&redirect_uri={RedirectUri}";
 
     static async Task<(string Verifier, string Code)?> GetAuthorizationCodeAsync()
