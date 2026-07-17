@@ -8,7 +8,6 @@ using Flarial.Launcher.Management;
 using Flarial.Launcher.Models;
 using Flarial.Launcher.Types;
 using Flarial.Runtime.Core;
-using Flarial.Runtime.Core.Client;
 using Flarial.Runtime.Game;
 using Flarial.Runtime.Versions;
 using ReactiveUI;
@@ -19,7 +18,6 @@ namespace Flarial.Launcher.ViewModels;
 public partial class HomeViewModel : ViewModelBase
 {
     [Reactive] bool _showPromotions = true;
-
     [Reactive] bool _isLaunching = true;
 
     [Reactive] string _launcherVersion;

@@ -29,7 +29,7 @@ public static class DiscordAccountManager
 
     public static async Task<DiscordAccount?> LoginAsync()
     {
-        if (await OAuthManager.AuthenticateSilentlyAsync() is not { } token)
+        if (await DiscordAuthenticationManager.AuthenticateSilentlyAsync() is not { } token)
             return null;
 
         DiscordSession session = new(token);
@@ -54,5 +54,5 @@ public static class DiscordAccountManager
         return await response.Content.ReadAsByteArrayAsync();
     }
 
-    public static void Logout() => CredentialManager.Remove();
+    public static void Logout() => DiscordRefreshTokenManager._.Remove();
 }

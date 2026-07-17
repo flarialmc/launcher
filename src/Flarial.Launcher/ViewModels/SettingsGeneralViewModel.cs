@@ -145,7 +145,7 @@ public partial class SettingsGeneralViewModel : ViewModelBase
     {
         DiscordLoginAvailable = false;
 
-        if (!await OAuthManager.AuthenticateAsync())
+        if (!await DiscordAuthenticationManager.AuthenticateAsync())
         {
             OnLogout();
             return;

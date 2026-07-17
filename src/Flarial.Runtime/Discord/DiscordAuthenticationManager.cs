@@ -11,7 +11,7 @@ using Flarial.Runtime.Unmanaged;
 
 namespace Flarial.Runtime.Discord;
 
-public static class OAuthManager
+public static class DiscordAuthenticationManager
 {
     static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
 
@@ -92,7 +92,7 @@ public static class OAuthManager
     {
         if (await GetTokenAsync() is { } token)
         {
-            CredentialManager.Set(token.RefreshToken);
+            DiscordRefreshTokenManager._.Set(token.RefreshToken);
             return true;
         }
         return false;
@@ -100,28 +100,28 @@ public static class OAuthManager
 
     internal static async Task<string?> AuthenticateSilentlyAsync()
     {
-        if (CredentialManager.Get() is not { } credential)
+        if (DiscordRefreshTokenManager._.Get() is not { } refreshToken)
             return null;
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
             ["client_id"] = ClientId,
             ["grant_type"] = "refresh_token",
-            ["refresh_token"] = credential.Password
+            ["refresh_token"] = refreshToken
         });
 
         using var response = await HttpService.PostAsync(TokenUri, content);
 
         if (!response.IsSuccessStatusCode)
         {
-            CredentialManager.Remove();
+            DiscordRefreshTokenManager._.Remove();
             return null;
         }
 
         if (await ParseTokenAsync(response) is not { } token)
             return null;
 
-        CredentialManager.Set(token.RefreshToken);
+        DiscordRefreshTokenManager._.Set(token.RefreshToken);
         return token.AccessToken;
     }
 }

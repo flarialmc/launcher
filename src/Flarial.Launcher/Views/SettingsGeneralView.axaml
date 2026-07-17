@@ -26,7 +26,7 @@
     </UserControl.Clip>
     <StackPanel Margin="20" Spacing="5">
         <Grid HorizontalAlignment="Left">
-            <TextBlock Margin="0,0,0,5" Text="Discord" FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock Margin="0,0,0,5" Text="Account" FontSize="22" FontWeight="SemiBold"/>
             <Border Margin="0,0,0,5" VerticalAlignment="Bottom" Background="#FF2438" Height="3" />
         </Grid>
 

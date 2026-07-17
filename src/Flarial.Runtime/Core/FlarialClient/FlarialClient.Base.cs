@@ -9,6 +9,17 @@ using static System.StringComparison;
 
 namespace Flarial.Runtime.Core;
 
+public abstract class FlarialClient<T> : FlarialClient where T : FlarialClient<T>, new()
+{
+    private protected FlarialClient()
+    {
+        if (_ is null) return;
+        throw new InvalidOperationException();
+    }
+
+    public static readonly T _ = new();
+}
+
 public abstract partial class FlarialClient
 {
     private protected abstract string Build { get; }
