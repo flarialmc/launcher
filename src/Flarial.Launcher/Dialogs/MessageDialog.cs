@@ -16,7 +16,9 @@ abstract class MessageDialog<T> : MessageDialog where T : MessageDialog<T>, new(
         throw new InvalidOperationException();
     }
 
-    internal static readonly T _ = new();
+    internal static T _ { get; }
+
+    static MessageDialog() => _ = new();
 }
 
 abstract class MessageDialog
