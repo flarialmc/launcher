@@ -1,3 +1,4 @@
+using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Flarial.Runtime.Identity;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Unmanaged;
 
@@ -15,27 +17,33 @@ public static class DiscordAuthenticationManager
 {
     static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
 
+    const string AccessToken = "access_token";
+    const string RefreshToken = "refresh_token";
+    const string AuthorizationCode = "authorization_code";
+
     const string ClientId = "1058426966602174474";
     const string Scope = "identify guilds.members.read";
+
+    [Obsolete("", true)]
     const string RedirectUri = "http://localhost:65535/";
 
     const string TokenUri = "https://discord.com/api/oauth2/token";
-    const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&scope={Scope}&client_id={ClientId}&redirect_uri={RedirectUri}";
+    const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&code_challenge_method=S256&client_id={ClientId}&scope={Scope}&state={{0}}&code_challenge={{1}}&redirect_uri={{2}}";
 
-    static async Task<(string Verifier, string Code)?> GetAuthorizationCodeAsync()
+    static async Task<(string AuthorizationCode, string CodeVerifier, string RedirectUri)?> GetAuthorizationAsync()
     {
-        var verifier = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
-        var challenge = Base64Url.EncodeToString(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+        var state = RequestHelper.CreateApplicationState();
+        var (verifier, challenge) = RequestHelper.CreateCodeExchange();
 
-        var state = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
-        var uri = $"{AuthorizeUri}&code_challenge={challenge}&code_challenge_method=S256&state={state}";
+        var redirectUri = $"{RequestHelper.CreateRedirectUri()}/";
+        var requestUri = string.Format(AuthorizeUri, state, challenge, redirectUri);
 
         using HttpListener listener = new();
-        listener.Prefixes.Add(RedirectUri);
+        listener.Prefixes.Add(redirectUri);
 
         listener.Start(); try
         {
-            NativeMethods.ShellExecute(uri);
+            NativeMethods.ShellExecute(requestUri);
 
             var context = await listener.GetContextAsync();
             using var stream = context.Response.OutputStream;
@@ -49,48 +57,54 @@ public static class DiscordAuthenticationManager
             if (context.Request.QueryString["code"] is not { } code)
                 return null;
 
-            return (verifier, code);
+            return new()
+            {
+                CodeVerifier = verifier,
+                AuthorizationCode = code,
+                RedirectUri = redirectUri
+            };
         }
-        finally
-        {
-            listener.Stop();
-        }
+        finally { listener.Stop(); }
     }
 
-    static async Task<(string AccessToken, string RefreshToken)?> ParseTokenAsync(HttpResponseMessage response)
+    static async Task<(string AccessToken, string RefreshToken)?> ParseTokensAsync(HttpResponseMessage response)
     {
         using var stream = await response.Content.ReadAsStreamAsync();
         using var document = await JsonDocument.ParseAsync(stream);
 
-        var access = document.RootElement.GetProperty("access_token");
-        var refresh = document.RootElement.GetProperty("refresh_token");
+        var accessToken = document.RootElement.GetProperty(AccessToken);
+        var refreshToken = document.RootElement.GetProperty(RefreshToken);
 
-        return (access.GetString()!, refresh.GetString()!);
+        return new()
+        {
+            AccessToken = accessToken.GetString()!,
+            RefreshToken = refreshToken.GetString()!
+        };
     }
 
-    static async Task<(string AccessToken, string RefreshToken)?> GetTokenAsync()
+    static async Task<(string AccessToken, string RefreshToken)?> GetTokensAsync()
     {
-        if (await GetAuthorizationCodeAsync() is not { } tuple)
+        if (await GetAuthorizationAsync() is not { } tuple)
             return null;
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
-            ["code"] = tuple.Code,
             ["client_id"] = ClientId,
-            ["redirect_uri"] = RedirectUri,
-            ["code_verifier"] = tuple.Verifier,
-            ["grant_type"] = "authorization_code"
+            ["grant_type"] = AuthorizationCode,
+            ["code"] = tuple.AuthorizationCode,
+            ["redirect_uri"] = tuple.RedirectUri,
+            ["code_verifier"] = tuple.CodeVerifier
         });
 
         using var response = await HttpService.PostAsync(TokenUri, content);
         response.EnsureSuccessStatusCode();
 
-        return await ParseTokenAsync(response);
+        return await ParseTokensAsync(response);
     }
 
     public static async Task<bool> AuthenticateAsync()
     {
-        if (await GetTokenAsync() is { } token)
+        if (await GetTokensAsync() is { } token)
         {
             DiscordRefreshTokenManager._.Set(token.RefreshToken);
             return true;
@@ -106,7 +120,7 @@ public static class DiscordAuthenticationManager
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
             ["client_id"] = ClientId,
-            ["grant_type"] = "refresh_token",
+            ["grant_type"] = RefreshToken,
             ["refresh_token"] = refreshToken
         });
 
@@ -118,7 +132,7 @@ public static class DiscordAuthenticationManager
             return null;
         }
 
-        if (await ParseTokenAsync(response) is not { } token)
+        if (await ParseTokensAsync(response) is not { } token)
             return null;
 
         DiscordRefreshTokenManager._.Set(token.RefreshToken);

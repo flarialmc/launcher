@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Flarial.Runtime.Services;
 using Flarial.Runtime.Unmanaged;
@@ -19,6 +16,7 @@ public static class OAuthManager
 
     const string AccessToken = "access_token";
     const string RefreshToken = "refresh_token";
+    const string AuthorizationCode = "authorization_code";
 
     const string ClientId = "flarial-desktop";
     const string Resource = "https://flarial.xyz/api";
@@ -33,7 +31,7 @@ public static class OAuthManager
         var state = RequestHelper.CreateApplicationState();
         var (verifier, challenge) = RequestHelper.CreateCodeExchange();
 
-        var redirectUri = RequestHelper.CreateRedirectUri();
+        var redirectUri = $"{RequestHelper.CreateRedirectUri()}/oauth/callback";
         var requestUri = string.Format(AuthorizeUri, state, challenge, redirectUri);
 
         using HttpListener listener = new();
@@ -80,7 +78,7 @@ public static class OAuthManager
         {
             ["resource"] = Resource,
             ["client_id"] = ClientId,
-            ["grant_type"] = "authorization_code",
+            ["grant_type"] = AuthorizationCode,
             ["code"] = tuple.AuthorizationCode,
             ["redirect_uri"] = tuple.RedirectUri,
             ["code_verifier"] = tuple.CodeVerifier,
