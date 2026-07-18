@@ -22,9 +22,6 @@ public static class DiscordAuthenticationManager
     const string ClientId = "1058426966602174474";
     const string Scope = "identify guilds.members.read";
 
-    [Obsolete("", true)]
-    const string RedirectUri = "http://localhost:65535/";
-
     const string TokenUri = "https://discord.com/api/oauth2/token";
     const string AuthorizeUri = $"https://discord.com/oauth2/authorize?response_type=code&code_challenge_method=S256&client_id={ClientId}&scope={Scope}&state={{0}}&code_challenge={{1}}&redirect_uri={{2}}";
 
