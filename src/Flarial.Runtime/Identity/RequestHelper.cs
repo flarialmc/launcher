@@ -1,5 +1,5 @@
+using System;
 using System.Buffers.Text;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -21,12 +21,12 @@ static class RequestHelper
         socket.Bind(s_endpoint);
 
         if (socket.LocalEndPoint is not IPEndPoint endpoint)
-            throw new UnreachableException();
+            throw new InvalidOperationException();
 
         var port = endpoint.Port;
         var address = endpoint.Address;
 
-        return $"http://{address}:{endpoint.Port}/oauth/callback";
+        return $"http://{address}:{port}/oauth/callback";
     }
 
     internal static (string CodeVerifier, string CodeChallenge) CreateCodeExchange()
