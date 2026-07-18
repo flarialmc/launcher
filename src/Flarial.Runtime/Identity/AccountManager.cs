@@ -16,7 +16,7 @@ public sealed class AccountDetails
     public bool HasBetaAccess { get; }
     public bool HasFlarialPlus { get; }
 
-    internal AccountDetails(string displayName, string? avatarUrl, bool hasFlarialPlus)
+    internal AccountDetails(string displayName, bool hasFlarialPlus, string? avatarUrl)
     {
         DisplayName = displayName;
 
@@ -65,7 +65,7 @@ public static class AccountManager
         var flarialPlus = entitlements.GetProperty("flarial_plus");
         var hasFlarialPlus = flarialPlus.GetProperty("active").GetBoolean();
 
-        return new(displayName!, avatarUrl, hasFlarialPlus);
+        return new(displayName!, hasFlarialPlus, avatarUrl);
     }
 
 }
