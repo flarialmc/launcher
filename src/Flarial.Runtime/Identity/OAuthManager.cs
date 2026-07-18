@@ -53,7 +53,12 @@ public static class OAuthManager
             if (context.Request.QueryString["code"] is not { } code)
                 return null;
 
-            return (code, verifier, redirectUri);
+            return new()
+            {
+                CodeVerifier = verifier,
+                AuthorizationCode = code,
+                RedirectUri = redirectUri
+            };
         }
         finally { listener.Stop(); }
     }
@@ -66,7 +71,11 @@ public static class OAuthManager
         var accessToken = document.RootElement.GetProperty(AccessToken);
         var refreshToken = document.RootElement.GetProperty(RefreshToken);
 
-        return (accessToken.GetString()!, refreshToken.GetString()!);
+        return new()
+        {
+            AccessToken = accessToken.GetString()!,
+            RefreshToken = refreshToken.GetString()!
+        };
     }
 
     static async Task<(string AccessToken, string RefreshToken)?> GetTokensAsync()
@@ -142,8 +151,7 @@ public static class OAuthManager
                 ["token_type_hint"] = RefreshToken
             });
 
-            using var response = await HttpService.PostAsync(RevokeUri, content);
-            response.EnsureSuccessStatusCode();
+            using (await HttpService.PostAsync(RevokeUri, content)) { }
         }
     }
 }
