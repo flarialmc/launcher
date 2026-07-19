@@ -1,3 +1,4 @@
+using System;
 using Flarial.Runtime.Unmanaged;
 
 namespace Flarial.Launcher.Management;
@@ -14,6 +15,12 @@ sealed class GamingServicesPage : StorePage<GamingServicesPage>
 
 abstract class StorePage<T> : StorePage where T : StorePage<T>, new()
 {
+    protected StorePage()
+    {
+        if (_ is null) return;
+        throw new InvalidOperationException();
+    }
+
     internal static readonly T _ = new();
 }
 
