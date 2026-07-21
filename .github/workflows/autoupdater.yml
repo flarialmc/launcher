@@ -65,6 +65,7 @@ jobs:
             OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
 
       - name: Create GitHub App Token
+        uses: actions/create-github-app-token
         id: app-token
         with:
           client-id: ${{ secrets.APP_CLIENT_ID }}
@@ -77,7 +78,7 @@ jobs:
           ref: 'main'
           path: 'cdn'
           token: ${{ steps.app-token.outputs.token }}
-          
+
       - name: Setup dotnet
         uses: actions/setup-dotnet
 
