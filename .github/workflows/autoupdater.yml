@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout
       - name: check commit type
         shell: bash
         run: |
@@ -56,25 +56,33 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout
         with:
           ref: ${{ github.ref }}
       - name: Output commit type
         run: echo " ${{env.OUTPUT1}} $OUTPUT1"
         env:
             OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
+
+      - name: Create GitHub App Token
+        id: app-token
+        with:
+          client-id: ${{ secrets.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout cdn repository
-        uses: actions/checkout@v4
+        uses: actions/checkout
         with:
           repository: 'flarialmc/newcdn'
           ref: 'main'
           path: 'cdn'
-          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
+          token: ${{ steps.app-token.outputs.token }}
+          
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet
 
       - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild
 
       - name: Build
         run: |
