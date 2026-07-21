@@ -70,6 +70,8 @@ jobs:
         with:
           client-id: ${{ secrets.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: flarialmc
+          repositories: newcdn
 
       - name: Checkout cdn repository
         uses: actions/checkout@v7
