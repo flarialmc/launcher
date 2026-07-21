@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout
+        uses: actions/checkout@7
       - name: check commit type
         shell: bash
         run: |
@@ -56,7 +56,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref }}
       - name: Output commit type
@@ -65,14 +65,14 @@ jobs:
             OUTPUT1: ${{ needs.bump-version-number.outputs.version_number}}
 
       - name: Create GitHub App Token
-        uses: actions/create-github-app-token
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           client-id: ${{ secrets.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Checkout cdn repository
-        uses: actions/checkout
+        uses: actions/checkout@v7
         with:
           repository: 'flarialmc/newcdn'
           ref: 'main'
@@ -80,17 +80,11 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet
-
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild
+        uses: actions/setup-dotnet@v6
 
       - name: Build
         run: |
           dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj"
-          # dotnet publish "extras/Flarial.Version.Changer/src/Flarial.Version.Changer.csproj"
-          # msbuild -t:Restore Flarial.Launcher.csproj
-          # msbuild /p:Configuration=Release /m Flarial.Launcher.csproj
       
       - name: update new version
         if: success()
