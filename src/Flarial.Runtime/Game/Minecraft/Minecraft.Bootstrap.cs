@@ -84,7 +84,7 @@ unsafe partial class Minecraft
             var handle = CreateEvent(null, true, false, null);
             try
             {
-                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*resource_init_lock")
+                using FileSystemWatcher watcher = new(Directory.CreateDirectory(s_path).FullName, "*menu_load_lock")
                 {
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
