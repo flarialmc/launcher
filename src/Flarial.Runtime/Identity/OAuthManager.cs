@@ -103,7 +103,7 @@ public static class OAuthManager
     {
         if (await GetTokensAsync() is { } tuple)
         {
-            RefreshTokenService._.Set(tuple.RefreshToken);
+            RefreshTokenManager._.Set(tuple.RefreshToken);
             return true;
         }
         return false;
@@ -111,7 +111,7 @@ public static class OAuthManager
 
     internal static async Task<string?> GetAccessTokenAsync()
     {
-        if (RefreshTokenService._.Get() is not { } refreshToken)
+        if (RefreshTokenManager._.Get() is not { } refreshToken)
             return null;
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
@@ -126,22 +126,22 @@ public static class OAuthManager
 
         if (!response.IsSuccessStatusCode)
         {
-            RefreshTokenService._.Remove();
+            RefreshTokenManager._.Remove();
             return null;
         }
 
         if (await ParseTokensAsync(response) is not { } tuple)
             return null;
 
-        RefreshTokenService._.Set(tuple.RefreshToken);
+        RefreshTokenManager._.Set(tuple.RefreshToken);
         return tuple.AccessToken;
     }
 
     internal static async Task RevokeRefreshTokenAsync()
     {
-        if (RefreshTokenService._.Get() is { } refreshToken)
+        if (RefreshTokenManager._.Get() is { } refreshToken)
         {
-            RefreshTokenService._.Remove();
+            RefreshTokenManager._.Remove();
 
             using FormUrlEncodedContent content = new(new Dictionary<string, string>
             {
