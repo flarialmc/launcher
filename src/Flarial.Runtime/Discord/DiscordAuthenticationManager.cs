@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Flarial.Runtime.Identity;
@@ -13,7 +12,7 @@ namespace Flarial.Runtime.Discord;
 
 public static class DiscordAuthenticationManager
 {
-    static readonly byte[] s_response = Encoding.UTF8.GetBytes("You may close this window now.");
+    static readonly ReadOnlyMemory<byte> s_response = "You may close this window now."u8.ToArray();
 
     const string AccessToken = "access_token";
     const string RefreshToken = "refresh_token";
