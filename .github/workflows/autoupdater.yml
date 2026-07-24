@@ -49,10 +49,11 @@ jobs:
 
   deploy:
     needs: bump-version-number
-    runs-on: windows-latest
+    runs-on: windows-2022
     permissions:
       packages: write
       contents: read
+      id-token: write
 
     steps:
 
@@ -68,7 +69,7 @@ jobs:
         uses: actions/create-github-app-token@v3
         id: app-token
         with:
-          client-id: ${{ secrets.APP_CLIENT_ID }}
+          app-id: ${{ secrets.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           owner: flarialmc
           repositories: newcdn
@@ -87,6 +88,36 @@ jobs:
       - name: Build
         run: |
           dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj"
+
+      - name: Sign in to Azure with GitHub OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Flarial.Launcher.exe with Artifact Signing
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: flarial
+          certificate-profile-name: flarial-public-trust
+          files: ${{ github.workspace }}\src\Flarial.Launcher\bin\Release\win-x64\publish\Flarial.Launcher.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          description: Flarial Launcher
+          description-url: https://github.com/flarialmc/launcher
+
+      - name: Verify Authenticode signature
+        shell: pwsh
+        run: |
+          $launcher = "src/Flarial.Launcher/bin/Release/win-x64/publish/Flarial.Launcher.exe"
+          $signature = Get-AuthenticodeSignature $launcher
+          $signature | Format-List Status, StatusMessage, SignerCertificate, TimeStamperCertificate
+          if ($signature.Status -ne 'Valid') {
+            throw "Flarial.Launcher.exe signature is not valid: $($signature.Status)"
+          }
       
       - name: update new version
         if: success()
