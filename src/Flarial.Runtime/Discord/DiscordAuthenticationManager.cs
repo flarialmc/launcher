@@ -100,7 +100,7 @@ public static class DiscordAuthenticationManager
     {
         if (await GetTokensAsync() is { } token)
         {
-            DiscordRefreshTokenManager._.Set(token.RefreshToken);
+            RefreshTokenManager._.Set(token.RefreshToken);
             return true;
         }
         return false;
@@ -108,7 +108,7 @@ public static class DiscordAuthenticationManager
 
     internal static async Task<string?> AuthenticateSilentlyAsync()
     {
-        if (DiscordRefreshTokenManager._.Get() is not { } refreshToken)
+        if (RefreshTokenManager._.Get() is not { } refreshToken)
             return null;
 
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
@@ -122,14 +122,14 @@ public static class DiscordAuthenticationManager
 
         if (!response.IsSuccessStatusCode)
         {
-            DiscordRefreshTokenManager._.Remove();
+            RefreshTokenManager._.Remove();
             return null;
         }
 
         if (await ParseTokensAsync(response) is not { } token)
             return null;
 
-        DiscordRefreshTokenManager._.Set(token.RefreshToken);
+        RefreshTokenManager._.Set(token.RefreshToken);
         return token.AccessToken;
     }
 }

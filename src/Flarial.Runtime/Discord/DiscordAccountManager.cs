@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Flarial.Runtime.Identity;
 using Flarial.Runtime.Services;
 
 namespace Flarial.Runtime.Discord;
@@ -54,5 +55,5 @@ public static class DiscordAccountManager
         return await response.Content.ReadAsByteArrayAsync();
     }
 
-    public static void Logout() => DiscordRefreshTokenManager._.Remove();
+    public static void Logout() => RefreshTokenManager._.Remove();
 }
