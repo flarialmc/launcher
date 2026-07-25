@@ -24,7 +24,6 @@
 
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -60,6 +59,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="System.Reactive" Version="7.0.0" />
+
         <PackageReference Include="SkiaSharp" Version="4.150.1" />
         <PackageReference Include="Avalonia.Skia" Version="12.1.0" />
 
