@@ -25,6 +25,7 @@ abstract class CredentialService
 
     PasswordCredential? Retrieve()
     {
+
         try { return s_vault.Retrieve(Resource, Username); }
         catch { return null; }
     }

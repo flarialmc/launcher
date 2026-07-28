@@ -27,7 +27,7 @@ static partial class HttpService
         }
     }
 
-    static async Task<string?> ProbeAsync(string uri, CancellationToken token)
+    internal static async Task<string?> ProbeAsync(string uri, CancellationToken token)
     {
         try
         {
