@@ -29,7 +29,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
                 .WhereNotNull()
                 .SelectMany(vm => vm.CloseRequested.Select(_ => vm))
                 .Subscribe(PlayExitAnimation)
-                .DisposeWith(disposables);
+                .DisposeWith([.. disposables]);
         });
     }
 
@@ -38,17 +38,17 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
         var panel = this.FindControl<AcrylicBlur>("DialogPanel")!;
         var scrim = this.FindControl<Panel>("Scrim")!;
         var scale = (ScaleTransform)panel.RenderTransform!;
-        
+
         panel.Opacity = 0;
         scrim.Opacity = 0;
-        scale.ScaleX  = 0.95;
-        scale.ScaleY  = 0.95;
+        scale.ScaleX = 0.95;
+        scale.ScaleY = 0.95;
 
         var panelAnim = new Animation
         {
             Duration = TimeSpan.FromMilliseconds(200),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseOut(),
+            Easing = new CubicEaseOut(),
             Children =
             {
                 new KeyFrame
@@ -78,7 +78,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
         {
             Duration = TimeSpan.FromMilliseconds(150),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseOut(),
+            Easing = new CubicEaseOut(),
             Children =
             {
                 new KeyFrame { Cue = new Cue(0d), Setters = { new Setter(OpacityProperty, 0d) } },
@@ -100,7 +100,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
         {
             Duration = TimeSpan.FromMilliseconds(150),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseIn(),
+            Easing = new CubicEaseIn(),
             Children =
             {
                 new KeyFrame
@@ -130,7 +130,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
         {
             Duration = TimeSpan.FromMilliseconds(150),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseIn(),
+            Easing = new CubicEaseIn(),
             Children =
             {
                 new KeyFrame { Cue = new Cue(0d), Setters = { new Setter(OpacityProperty, 1d) } },

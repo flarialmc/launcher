@@ -81,11 +81,11 @@ public partial class SettingsGeneralViewModel : ViewModelBase
         FileTypeFilter = [new("Dynamic Link Libraries") { Patterns = ["*.dll"] }]
     };
 
-    public ReactiveCommand<Unit, Unit> Open { get; }
-    public ReactiveCommand<Unit, Unit> Login { get; }
-    public ReactiveCommand<Unit, Unit> Logout { get; }
-    public ReactiveCommand<Unit, Unit> OpenClientFolder { get; }
-    public ReactiveCommand<Unit, Unit> OpenLauncherFolder { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> Open { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> Login { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> Logout { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> OpenClientFolder { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> OpenLauncherFolder { get; }
 
     async Task OnOpenAsync()
     {

@@ -13,7 +13,7 @@ public abstract partial class ViewModelBase : ReactiveObject
     [Reactive] 
     private bool _isAnimating;
 
-    public ReactiveCommand<PageTransitions, Unit> NavigateCommand { get; }
+    public ReactiveCommand<PageTransitions, ReactiveUI.Primitives.RxVoid> NavigateCommand { get; }
 
     protected ViewModelBase()
     {

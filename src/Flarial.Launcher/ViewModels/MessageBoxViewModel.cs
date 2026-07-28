@@ -16,7 +16,7 @@ public class MessageBoxViewModel : ReactiveObject
     public IEnumerable<string> Buttons { get; }
     public Subject<Unit> CloseRequested { get; } = new();
 
-    public ReactiveCommand<string, Unit> SelectButtonCommand { get; }
+    public ReactiveCommand<string, ReactiveUI.Primitives.RxVoid> SelectButtonCommand { get; }
 
     public Task<string> Result => _tcs.Task;
 

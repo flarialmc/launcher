@@ -33,6 +33,10 @@ public partial class HomeViewModel : ViewModelBase
     readonly MainWindowViewModel _model;
     readonly AppSettings _settings = ((App)Application.Current!).Settings;
 
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> Launch { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CloseWindow { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> MinimizeWindow { get; }
+
     public HomeViewModel(MainWindowViewModel model)
     {
         _model = model;
@@ -151,8 +155,4 @@ public partial class HomeViewModel : ViewModelBase
         GameVersion = VersionRegistry.InstalledVersion;
         GameVersionColor = _model.VersionRegistry.IsSupported ? Brushes.DarkGreen : Brushes.DarkRed;
     }
-
-    public ReactiveCommand<Unit, Unit> Launch { get; }
-    public ReactiveCommand<Unit, Unit> CloseWindow { get; }
-    public ReactiveCommand<Unit, Unit> MinimizeWindow { get; }
 }

@@ -28,7 +28,7 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
                 .WhereNotNull()
                 .SelectMany(vm => vm.CloseRequested.Select(_ => vm))
                 .Subscribe(PlayExitAnimation)
-                .DisposeWith(disposables);
+                .DisposeWith([.. disposables]);
         });
     }
 
@@ -38,13 +38,13 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
         var translate = (TranslateTransform)card.RenderTransform!;
 
         card.Opacity = 0;
-        translate.X  = 1200;
+        translate.X = 1200;
 
         var anim = new Animation
         {
             Duration = TimeSpan.FromMilliseconds(300),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseOut(),
+            Easing = new CubicEaseOut(),
             Children =
             {
                 new KeyFrame
@@ -74,12 +74,12 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
     private async void PlayExitAnimation(NotificationViewModel vm)
     {
         var card = this.FindControl<AcrylicBlur>("Card")!;
-        
+
         var fadeAnim = new Animation
         {
             Duration = TimeSpan.FromMilliseconds(200),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseIn(),
+            Easing = new CubicEaseIn(),
             Children =
             {
                 new KeyFrame
@@ -104,13 +104,13 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
         };
 
         await fadeAnim.RunAsync(card);
-        
+
         var startHeight = card.Bounds.Height + card.Margin.Top + card.Margin.Bottom;
         var collapseAnim = new Animation
         {
             Duration = TimeSpan.FromMilliseconds(180),
             FillMode = FillMode.Forward,
-            Easing   = new CubicEaseInOut(),
+            Easing = new CubicEaseInOut(),
             Children =
             {
                 new KeyFrame
@@ -125,10 +125,10 @@ public partial class NotificationView : ReactiveUserControl<NotificationViewMode
                 },
             }
         };
-        
+
         card.Height = startHeight;
         await collapseAnim.RunAsync(card);
-        
+
         vm.CompleteDismiss();
     }
 }

@@ -29,8 +29,8 @@ public partial class VersionItemViewModel : ViewModelBase
     [Reactive]
     bool _isProgressing;
 
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-    public ReactiveCommand<Unit, Unit> InstallCommand { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> DeleteCommand { get; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> InstallCommand { get; }
 
     public bool IsInstalling => State is VersionItemState.Installing;
     public bool IsDownloading => State is VersionItemState.Downloading;
