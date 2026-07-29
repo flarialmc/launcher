@@ -1,10 +1,6 @@
 name: Build static native libraries
 
 on:
-  # Temporary branch trigger for exercising the workflow before merge.
-  push:
-    branches: [rajesh/build-static-native-libs]
-    paths: [.github/workflows/build-static-libs.yml]
   workflow_dispatch:
 
 permissions:
