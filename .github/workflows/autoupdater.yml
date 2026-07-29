@@ -111,12 +111,20 @@ jobs:
 
       - name: Verify Authenticode signature
         shell: pwsh
+        env:
+          REVOKED_SIGNER_THUMBPRINT: 828DC715D160F59887564233C9F53BB4D410D21D
         run: |
           $launcher = "src/Flarial.Launcher/bin/Release/win-x64/publish/Flarial.Launcher.exe"
           $signature = Get-AuthenticodeSignature $launcher
           $signature | Format-List Status, StatusMessage, SignerCertificate, TimeStamperCertificate
           if ($signature.Status -ne 'Valid') {
             throw "Flarial.Launcher.exe signature is not valid: $($signature.Status)"
+          }
+          if (-not $signature.SignerCertificate) {
+            throw "Flarial.Launcher.exe has no signer certificate"
+          }
+          if ($signature.SignerCertificate.Thumbprint -eq $env:REVOKED_SIGNER_THUMBPRINT) {
+            throw "Artifact Signing reused revoked certificate $env:REVOKED_SIGNER_THUMBPRINT"
           }
       
       - name: update new version
