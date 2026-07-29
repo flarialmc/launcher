@@ -50,6 +50,25 @@ jobs:
         shell: pwsh
         run: python tools/git-sync-deps
 
+      - name: Build libHarfBuzzSharp
+        shell: pwsh
+        run: |
+          $outDir = "${{ github.workspace }}\harfbuzz-out"
+          $sdkVersion = $env:WindowsSDKVersion.TrimEnd([char]'\')
+          New-Item -ItemType Directory -Force $outDir | Out-Null
+
+          & msbuild.exe "skiasharp\native\windows\libHarfBuzzSharp\libHarfBuzzSharp.vcxproj" `
+            /m /t:Rebuild `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:ConfigurationType=StaticLibrary `
+            /p:PlatformToolset=v143 `
+            "/p:WindowsTargetPlatformVersion=$sdkVersion" `
+            "/p:OutDir=$outDir\"
+          if ($LASTEXITCODE -ne 0) {
+            throw "libHarfBuzzSharp build failed with exit code $LASTEXITCODE"
+          }
+
       - name: Build libSkiaSharp
         working-directory: skiasharp/externals/skia
         shell: pwsh
@@ -87,23 +106,6 @@ jobs:
           gn gen out/static
           autoninja -C out/static SkiaSharp
 
-      - name: Build libHarfBuzzSharp
-        shell: pwsh
-        run: |
-          $outDir = "${{ github.workspace }}\harfbuzz-out"
-          New-Item -ItemType Directory -Force $outDir | Out-Null
-
-          & msbuild.exe "skiasharp\native\windows\libHarfBuzzSharp\libHarfBuzzSharp.vcxproj" `
-            /m /t:Rebuild `
-            /p:Configuration=Release `
-            /p:Platform=x64 `
-            /p:ConfigurationType=StaticLibrary `
-            /p:PlatformToolset=v143 `
-            "/p:OutDir=$outDir\"
-          if ($LASTEXITCODE -ne 0) {
-            throw "libHarfBuzzSharp build failed with exit code $LASTEXITCODE"
-          }
-
       - name: Verify static libraries
         shell: pwsh
         run: |
@@ -115,10 +117,11 @@ jobs:
             if ((Get-Item $library).Length -eq 0) {
               throw "$library is empty"
             }
-            & lib.exe /LIST $library | Select-Object -First 5
-            if ($LASTEXITCODE -ne 0) {
+            $members = & lib.exe /LIST $library
+            if ($LASTEXITCODE -ne 0 -or $members.Count -eq 0) {
               throw "$library is not a valid COFF library"
             }
+            $members | Select-Object -First 5
           }
 
       - name: Upload libSkiaSharp.lib
@@ -263,10 +266,11 @@ jobs:
           if ((Get-Item "av_libglesv2.lib").Length -eq 0) {
             throw "av_libglesv2.lib is empty"
           }
-          & lib.exe /LIST "av_libglesv2.lib" | Select-Object -First 5
-          if ($LASTEXITCODE -ne 0) {
+          $members = & lib.exe /LIST "av_libglesv2.lib"
+          if ($LASTEXITCODE -ne 0 -or $members.Count -eq 0) {
             throw "av_libglesv2.lib is not a valid COFF library"
           }
+          $members | Select-Object -First 5
 
       - name: Upload av_libglesv2.lib
         uses: actions/upload-artifact@v7
