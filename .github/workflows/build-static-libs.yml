@@ -42,6 +42,7 @@ jobs:
         run: |
           git -C skiasharp submodule update --init --depth 1 externals/skia
           git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git "$env:RUNNER_TEMP\depot_tools"
+          & "$env:RUNNER_TEMP\depot_tools\gclient.bat" --version
           "$env:RUNNER_TEMP\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Sync Skia dependencies
@@ -209,18 +210,18 @@ jobs:
           $path = "BUILD.gn"
           $lines = Get-Content $path
           $output = [System.Collections.Generic.List[string]]::new()
-          $matches = 0
+          $targetCount = 0
 
           foreach ($line in $lines) {
             $output.Add($line)
             if ($line -match '^angle_static_library\("libGLESv2_static"\) \{$') {
               $output.Add("  complete_static_lib = true")
-              $matches++
+              $targetCount++
             }
           }
 
-          if ($matches -ne 1) {
-            throw "Expected one libGLESv2_static target, found $matches"
+          if ($targetCount -ne 1) {
+            throw "Expected one libGLESv2_static target, found $targetCount"
           }
 
           $output | Set-Content $path -Encoding utf8
