@@ -1,0 +1,94 @@
+name: Artifact Signing recovery probe
+
+on:
+  push:
+    branches:
+      - rajesh/artifact-signing-recovery
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-sign-and-verify:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+
+      - name: Build isolated launcher replacement
+        shell: pwsh
+        run: |
+          dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj" --configuration Release
+          $source = "src/Flarial.Launcher/bin/Release/win-x64/publish/Flarial.Launcher.exe"
+          if (-not (Test-Path $source)) {
+            throw "Expected launcher output was not produced: $source"
+          }
+          New-Item -ItemType Directory -Force recovery | Out-Null
+          Copy-Item $source "recovery/Flarial.Launcher.exe"
+          Get-FileHash "recovery/Flarial.Launcher.exe" -Algorithm SHA256 | Format-List
+
+      - name: Inspect currently published launcher
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe" -OutFile "recovery/CurrentlyPublished.exe"
+          $published = Get-AuthenticodeSignature "recovery/CurrentlyPublished.exe"
+          $published | Format-List Status, StatusMessage, SignerCertificate, TimeStamperCertificate
+          Get-FileHash "recovery/CurrentlyPublished.exe" -Algorithm SHA256 | Format-List
+          "## Currently published launcher" | Add-Content $env:GITHUB_STEP_SUMMARY
+          "- Authenticode status: $($published.Status)" | Add-Content $env:GITHUB_STEP_SUMMARY
+          "- Signer thumbprint: $($published.SignerCertificate.Thumbprint)" | Add-Content $env:GITHUB_STEP_SUMMARY
+
+      - name: Sign in to Azure with GitHub OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign isolated launcher replacement
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: flarial
+          certificate-profile-name: flarial-public-trust
+          files: ${{ github.workspace }}\recovery\Flarial.Launcher.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          description: Flarial Launcher signing recovery probe
+          description-url: https://github.com/flarialmc/launcher
+
+      - name: Verify replacement signature and reject revoked certificate
+        shell: pwsh
+        env:
+          REVOKED_THUMBPRINT: 828DC715D160F59887564233C9F53BB4D410D21D
+        run: |
+          $replacement = Get-AuthenticodeSignature "recovery/Flarial.Launcher.exe"
+          $replacement | Format-List Status, StatusMessage, SignerCertificate, TimeStamperCertificate
+          $hash = Get-FileHash "recovery/Flarial.Launcher.exe" -Algorithm SHA256
+          $hash | Format-List
+
+          if ($replacement.Status -ne 'Valid') {
+            throw "Replacement Authenticode signature is not valid: $($replacement.Status) — $($replacement.StatusMessage)"
+          }
+          if ($replacement.SignerCertificate.Thumbprint -eq $env:REVOKED_THUMBPRINT) {
+            throw "Artifact Signing reused the revoked certificate $env:REVOKED_THUMBPRINT"
+          }
+
+          "## Isolated replacement" | Add-Content $env:GITHUB_STEP_SUMMARY
+          "- Authenticode status: $($replacement.Status)" | Add-Content $env:GITHUB_STEP_SUMMARY
+          "- Signer thumbprint: $($replacement.SignerCertificate.Thumbprint)" | Add-Content $env:GITHUB_STEP_SUMMARY
+          "- SHA-256: $($hash.Hash)" | Add-Content $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified replacement without publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-signing-recovery-${{ github.sha }}
+          path: recovery/Flarial.Launcher.exe
+          if-no-files-found: error
+          retention-days: 3
