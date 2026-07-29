@@ -34,7 +34,7 @@
             <Color x:Key="BackgroundColor">#201A1B</Color>
             <Color x:Key="BackgroundBorderColor">#32292b</Color>
 
-            <FontFamily x:Key="SpaceGrotesk">avares://Flarial.Launcher/Assets#Space Grotesk</FontFamily>
+            <FontFamily x:Key="SpaceGrotesk">avares://Flarial.Launcher/Resources#Space Grotesk</FontFamily>
 
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="/Animations/MainPageTransitionAnimation.axaml"/>

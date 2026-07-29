@@ -19,7 +19,7 @@ public sealed partial class DiscordAccountModel : ReactiveObject
     [Reactive] DiscordRoleModel _role;
 
     const string DefaultUserName = "Guest";
-    const string ProfileImageUri = "avares://Flarial.Launcher/Assets/avatar.webp";
+    const string ProfileImageUri = "avares://Flarial.Launcher/Resources/avatar.webp";
 
     readonly Bitmap _defaultAvatar;
 

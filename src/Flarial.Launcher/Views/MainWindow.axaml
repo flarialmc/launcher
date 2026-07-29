@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         x:Class="Flarial.Launcher.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/app.ico" 
+        Icon="/Resources/app.ico" 
         CanResize="False" CanMaximize="False"
         Title="Flarial Launcher"
         Width="800" Height="500"

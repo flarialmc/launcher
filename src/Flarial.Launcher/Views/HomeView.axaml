@@ -18,7 +18,7 @@
         <Border IsHitTestVisible="False" Name="MainBorder" Background="{StaticResource BackgroundColor}" CornerRadius="25">
             <Grid>
 
-                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Assets/background.webp"/>
+                <Image Margin="0,75,0,75" HorizontalAlignment="Center" Stretch="UniformToFill" Grid.Row="0" Source="/Resources/background.webp"/>
 
                 <Grid Margin="0,70,0,0" VerticalAlignment="Top" Height="150">
                     <Grid.Background>
@@ -40,7 +40,7 @@
 
                 <!--Flarial Logo-->
                 <Grid Margin="20" VerticalAlignment="Top" HorizontalAlignment="Stretch" ColumnDefinitions="Auto,Auto">
-                    <Image Source="/Assets/app.ico" Height="40" Width="40" Margin="0" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    <Image Source="/Resources/app.ico" Height="40" Width="40" Margin="0" RenderOptions.BitmapInterpolationMode="HighQuality"/>
                     <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Flarial Client" FontWeight="Medium" VerticalAlignment="Center" FontSize="22" Foreground="White"/>
                 </Grid>
             </Grid>

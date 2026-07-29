@@ -19,8 +19,8 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
-        <ApplicationIcon>Assets/app.ico</ApplicationIcon>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Resources/app.ico</ApplicationIcon>
+        <ApplicationManifest>Resources/app.manifest</ApplicationManifest>
 
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -50,8 +50,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
         <Compile Include="..\AssemblyVersion.cs" />
+        <AvaloniaResource Include="Resources\**" />
+        <AvaloniaResource Remove="Resources\app.manifest" />
     </ItemGroup>
 
     <ItemGroup>
