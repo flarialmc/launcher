@@ -1,0 +1,249 @@
+name: Build static native libraries
+
+on:
+  # Temporary branch trigger for exercising the workflow before merge.
+  push:
+    branches: [rajesh/build-static-native-libs]
+    paths: [.github/workflows/build-static-libs.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  skiasharp:
+    name: libSkiaSharp + libHarfBuzzSharp (Windows x64)
+    runs-on: windows-2025
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+
+    steps:
+      - name: Check out SkiaSharp 4.150.1
+        uses: actions/checkout@v7
+        with:
+          repository: mono/SkiaSharp
+          ref: c3e4f4c20e1f23ab74d31a8838a5bd6dc55365f2
+          path: skiasharp
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
+
+      - name: Fetch Skia and depot_tools
+        shell: pwsh
+        run: |
+          git -C skiasharp submodule update --init --depth 1 externals/skia externals/depot_tools
+          "${{ github.workspace }}\skiasharp\externals\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Sync Skia dependencies
+        working-directory: skiasharp/externals/skia
+        shell: pwsh
+        run: python tools/git-sync-deps
+
+      - name: Build libSkiaSharp
+        working-directory: skiasharp/externals/skia
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "C:\Program Files\LLVM\bin\clang-cl.exe")) {
+            throw "LLVM is not installed at C:\Program Files\LLVM"
+          }
+
+          New-Item -ItemType Directory -Force out/static | Out-Null
+          @'
+          target_os = "win"
+          target_cpu = "x64"
+          is_official_build = true
+          is_static_skiasharp = true
+          skia_enable_fontmgr_win_gdi = false
+          skia_enable_pdf = false
+          skia_enable_skottie = false
+          skia_use_angle = false
+          skia_use_dng_sdk = false
+          skia_use_harfbuzz = false
+          skia_use_icu = false
+          skia_use_piex = false
+          skia_use_sfntly = false
+          skia_use_system_expat = false
+          skia_use_system_libjpeg_turbo = false
+          skia_use_system_libpng = false
+          skia_use_system_libwebp = false
+          skia_use_system_zlib = false
+          skia_use_vma = false
+          skia_use_vulkan = false
+          skia_use_xps = false
+          clang_win = "C:/Program Files/LLVM"
+          extra_cflags = [ "/MT", "/EHsc", "-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS" ]
+          '@ | Set-Content out/static/args.gn -Encoding utf8
+
+          gn gen out/static
+          autoninja -C out/static SkiaSharp
+
+      - name: Build libHarfBuzzSharp
+        shell: pwsh
+        run: |
+          $outDir = "${{ github.workspace }}\harfbuzz-out"
+          New-Item -ItemType Directory -Force $outDir | Out-Null
+
+          & msbuild.exe "skiasharp\native\windows\libHarfBuzzSharp\libHarfBuzzSharp.vcxproj" `
+            /m /t:Rebuild `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:ConfigurationType=StaticLibrary `
+            /p:PlatformToolset=v143 `
+            "/p:OutDir=$outDir\"
+          if ($LASTEXITCODE -ne 0) {
+            throw "libHarfBuzzSharp build failed with exit code $LASTEXITCODE"
+          }
+
+      - name: Verify static libraries
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          Copy-Item "skiasharp\externals\skia\out\static\SkiaSharp.lib" "artifacts\libSkiaSharp.lib"
+          Copy-Item "harfbuzz-out\libHarfBuzzSharp.lib" "artifacts\libHarfBuzzSharp.lib"
+
+          foreach ($library in @("artifacts\libSkiaSharp.lib", "artifacts\libHarfBuzzSharp.lib")) {
+            if ((Get-Item $library).Length -eq 0) {
+              throw "$library is empty"
+            }
+            & lib.exe /LIST $library | Select-Object -First 5
+            if ($LASTEXITCODE -ne 0) {
+              throw "$library is not a valid COFF library"
+            }
+          }
+
+      - name: Upload libSkiaSharp.lib
+        uses: actions/upload-artifact@v7
+        with:
+          path: artifacts/libSkiaSharp.lib
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload libHarfBuzzSharp.lib
+        uses: actions/upload-artifact@v7
+        with:
+          path: artifacts/libHarfBuzzSharp.lib
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+
+  angle:
+    name: av_libglesv2 (Windows x64)
+    runs-on: windows-2025
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+
+    steps:
+      - name: Check out Avalonia ANGLE
+        uses: actions/checkout@v7
+        with:
+          repository: AvaloniaUI/angle
+          ref: 1c89805903c1482166356d3b950d474973180e61
+          path: angle
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
+
+      - name: Install depot_tools
+        shell: pwsh
+        run: |
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git "$env:RUNNER_TEMP\depot_tools"
+          "$env:RUNNER_TEMP\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Sync ANGLE dependencies
+        working-directory: angle
+        shell: pwsh
+        run: |
+          python scripts/bootstrap.py
+          gclient sync -f -D -R
+
+      - name: Make libGLESv2 a complete static library
+        working-directory: angle
+        shell: pwsh
+        run: |
+          $path = "BUILD.gn"
+          $lines = Get-Content $path
+          $output = [System.Collections.Generic.List[string]]::new()
+          $matches = 0
+
+          foreach ($line in $lines) {
+            $output.Add($line)
+            if ($line -match '^angle_static_library\("libGLESv2_static"\) \{$') {
+              $output.Add("  complete_static_lib = true")
+              $matches++
+            }
+          }
+
+          if ($matches -ne 1) {
+            throw "Expected one libGLESv2_static target, found $matches"
+          }
+
+          $output | Set-Content $path -Encoding utf8
+
+      - name: Build av_libglesv2
+        working-directory: angle
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force out/x64-static | Out-Null
+          @'
+          target_os = "win"
+          target_cpu = "x64"
+          is_debug = false
+          is_component_build = false
+          is_clang = false
+          angle_is_msvc = true
+          dcheck_always_on = false
+          angle_assert_always_on = false
+          angle_build_tests = false
+          angle_enable_d3d9 = false
+          angle_enable_gl = false
+          angle_enable_gl_desktop_backend = false
+          angle_enable_null = false
+          angle_enable_swiftshader = false
+          angle_enable_vulkan = false
+          angle_enable_wgpu = false
+          use_custom_libcxx = false
+          use_lld = false
+          '@ | Set-Content out/x64-static/args.gn -Encoding utf8
+
+          gn gen out/x64-static
+          autoninja -C out/x64-static libGLESv2_static
+
+      - name: Verify av_libglesv2.lib
+        working-directory: angle
+        shell: pwsh
+        run: |
+          Copy-Item "out\x64-static\obj\libGLESv2_static.lib" "av_libglesv2.lib"
+          if ((Get-Item "av_libglesv2.lib").Length -eq 0) {
+            throw "av_libglesv2.lib is empty"
+          }
+          & lib.exe /LIST "av_libglesv2.lib" | Select-Object -First 5
+          if ($LASTEXITCODE -ne 0) {
+            throw "av_libglesv2.lib is not a valid COFF library"
+          }
+
+      - name: Upload av_libglesv2.lib
+        uses: actions/upload-artifact@v7
+        with:
+          path: angle/av_libglesv2.lib
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
