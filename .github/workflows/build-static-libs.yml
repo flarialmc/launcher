@@ -40,8 +40,9 @@ jobs:
       - name: Fetch Skia and depot_tools
         shell: pwsh
         run: |
-          git -C skiasharp submodule update --init --depth 1 externals/skia externals/depot_tools
-          "${{ github.workspace }}\skiasharp\externals\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          git -C skiasharp submodule update --init --depth 1 externals/skia
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git "$env:RUNNER_TEMP\depot_tools"
+          "$env:RUNNER_TEMP\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Sync Skia dependencies
         working-directory: skiasharp/externals/skia
@@ -70,7 +71,6 @@ jobs:
           skia_use_harfbuzz = false
           skia_use_icu = false
           skia_use_piex = false
-
           skia_use_system_expat = false
           skia_use_system_libjpeg_turbo = false
           skia_use_system_libpng = false
@@ -84,7 +84,7 @@ jobs:
           '@ | Set-Content out/static/args.gn -Encoding utf8
 
           gn gen out/static
-          ninja -C out/static SkiaSharp
+          autoninja -C out/static SkiaSharp
 
       - name: Build libHarfBuzzSharp
         shell: pwsh
@@ -168,12 +168,39 @@ jobs:
           git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git "$env:RUNNER_TEMP\depot_tools"
           "$env:RUNNER_TEMP\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+      - name: Remove unused ANGLE dependencies
+        working-directory: angle
+        shell: pwsh
+        run: |
+          $path = "DEPS"
+          $content = Get-Content $path -Raw
+          $unused = @(
+            "third_party/catapult"
+            "third_party/dawn"
+            "third_party/llvm/src"
+            "third_party/SwiftShader"
+            "third_party/VK-GL-CTS/src"
+          )
+
+          foreach ($dependency in $unused) {
+            $escaped = [regex]::Escape($dependency)
+            $pattern = "(?ms)^  '$escaped': \{\r?\n.*?^  \},\r?\n"
+            $matches = [regex]::Matches($content, $pattern)
+            if ($matches.Count -ne 1) {
+              throw "Expected one DEPS entry for $dependency, found $($matches.Count)"
+            }
+            $content = [regex]::Replace($content, $pattern, "", 1)
+          }
+
+          $content = $content -replace "(?m)^  'third_party/dawn',\r?\n", ""
+          $content | Set-Content $path -Encoding utf8 -NoNewline
+
       - name: Sync ANGLE dependencies
         working-directory: angle
         shell: pwsh
         run: |
           python scripts/bootstrap.py
-          gclient sync -f -D -R
+          gclient sync --no-history -f -D -R
 
       - name: Make libGLESv2 a complete static library
         working-directory: angle
