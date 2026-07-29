@@ -70,7 +70,7 @@ jobs:
           skia_use_harfbuzz = false
           skia_use_icu = false
           skia_use_piex = false
-          skia_use_sfntly = false
+
           skia_use_system_expat = false
           skia_use_system_libjpeg_turbo = false
           skia_use_system_libpng = false
@@ -84,7 +84,7 @@ jobs:
           '@ | Set-Content out/static/args.gn -Encoding utf8
 
           gn gen out/static
-          autoninja -C out/static SkiaSharp
+          ninja -C out/static SkiaSharp
 
       - name: Build libHarfBuzzSharp
         shell: pwsh
@@ -225,7 +225,7 @@ jobs:
           '@ | Set-Content out/x64-static/args.gn -Encoding utf8
 
           gn gen out/x64-static
-          autoninja -C out/x64-static libGLESv2_static
+          ninja -C out/x64-static libGLESv2_static
 
       - name: Verify av_libglesv2.lib
         working-directory: angle
