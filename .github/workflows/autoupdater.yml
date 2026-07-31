@@ -49,11 +49,10 @@ jobs:
 
   deploy:
     needs: bump-version-number
-    runs-on: windows-2022
+    runs-on: windows-latest
     permissions:
       packages: write
       contents: read
-      id-token: write
 
     steps:
 
@@ -69,7 +68,7 @@ jobs:
         uses: actions/create-github-app-token@v3
         id: app-token
         with:
-          app-id: ${{ secrets.APP_CLIENT_ID }}
+          client-id: ${{ secrets.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           owner: flarialmc
           repositories: newcdn
@@ -88,44 +87,6 @@ jobs:
       - name: Build
         run: |
           dotnet publish "src/Flarial.Launcher/Flarial.Launcher.csproj"
-
-      - name: Sign in to Azure with GitHub OIDC
-        uses: azure/login@v3
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Sign Flarial.Launcher.exe with Artifact Signing
-        uses: azure/artifact-signing-action@v2
-        with:
-          endpoint: https://eus.codesigning.azure.net/
-          signing-account-name: flarial
-          certificate-profile-name: flarial-public-trust
-          files: ${{ github.workspace }}\src\Flarial.Launcher\bin\Release\win-x64\publish\Flarial.Launcher.exe
-          file-digest: SHA256
-          timestamp-rfc3161: http://timestamp.acs.microsoft.com
-          timestamp-digest: SHA256
-          description: Flarial Launcher
-          description-url: https://github.com/flarialmc/launcher
-
-      - name: Verify Authenticode signature
-        shell: pwsh
-        env:
-          REVOKED_SIGNER_THUMBPRINT: 828DC715D160F59887564233C9F53BB4D410D21D
-        run: |
-          $launcher = "src/Flarial.Launcher/bin/Release/win-x64/publish/Flarial.Launcher.exe"
-          $signature = Get-AuthenticodeSignature $launcher
-          $signature | Format-List Status, StatusMessage, SignerCertificate, TimeStamperCertificate
-          if ($signature.Status -ne 'Valid') {
-            throw "Flarial.Launcher.exe signature is not valid: $($signature.Status)"
-          }
-          if (-not $signature.SignerCertificate) {
-            throw "Flarial.Launcher.exe has no signer certificate"
-          }
-          if ($signature.SignerCertificate.Thumbprint -eq $env:REVOKED_SIGNER_THUMBPRINT) {
-            throw "Artifact Signing reused revoked certificate $env:REVOKED_SIGNER_THUMBPRINT"
-          }
       
       - name: update new version
         if: success()

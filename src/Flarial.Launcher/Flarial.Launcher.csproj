@@ -4,12 +4,6 @@
         <PlatformTarget>x64</PlatformTarget>
         <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
 
-        <Optimize>true</Optimize>
-        <PublishRelease>true</PublishRelease>
-
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
-
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
 
@@ -26,7 +20,14 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
+    <PropertyGroup Condition="$(Configuration) == 'Release'">
+        <Optimize>true</Optimize>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+    </PropertyGroup>
+
     <PropertyGroup>
+        <PublishRelease>true</PublishRelease>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
 
