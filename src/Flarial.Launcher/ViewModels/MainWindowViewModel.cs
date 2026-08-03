@@ -76,11 +76,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (await FlarialLauncher.CheckForUpdatesAsync() && (_settings.AutomaticUpdates || await LauncherUpdateAvailableDialog._.ShowAsync()))
+        if (!await LauncherMigrationDialog._.ShowAsync())
         {
-            await FlarialLauncher.DownloadAsync(OnDownload);
+            Environment.Exit(1);
             return;
         }
+
+        await FlarialLauncher.DownloadAsync(OnDownload);
 
         var loginWithDiscordTask = LoginWithDiscordAsync();
         VersionRegistry = await VersionRegistry.GetAsync();

@@ -2,7 +2,7 @@ namespace Flarial.Launcher.Dialogs.Metadata;
 
 sealed class LauncherMigrationDialog : MessageDialog<LauncherMigrationDialog>
 {
-    protected override string Title => "💡 Launcher Migration";
+    protected override string Title => "🚨 Launcher Migration";
 
     protected override string Message => @"To continue using the launcher, you must migrate to MSIX.
 

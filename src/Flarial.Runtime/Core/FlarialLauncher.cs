@@ -35,10 +35,15 @@ if not %errorlevel%==0 goto _
 del ""%~f0""";
 
     const string AcceptedUri = "https://cdn.flarial.xyz/202.txt";
- 
+
+    [Obsolete("The portable executable updater is deprecated.", true)]
     const string LauncherVersionUri = "https://cdn.flarial.xyz/launcher/launcherVersion.txt";
+
+    [Obsolete("The portable executable updater is deprecated.", true)]
     const string LauncherDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.exe";
- 
+
+    const string InstallerDownloadUri = "https://cdn.flarial.xyz/launcher/Flarial.Launcher.Installer.exe";
+
     const string Arguments = "/e:on /f:off /v:off /d /c call \"{0}\" & \"{1}\" /c start \"\" \"{2}\"";
 
     static readonly string s_source;
@@ -53,6 +58,7 @@ del ""%~f0""";
         return await HttpService.ProbeAsync(AcceptedUri, default) is { };
     }
 
+    [Obsolete("The portable executable updater is deprecated.", true)]
     public static async Task<bool> CheckForUpdatesAsync()
     {
         var json = await HttpService.GetJsonAsync<Dictionary<string, string>>(LauncherVersionUri);
@@ -61,7 +67,7 @@ del ""%~f0""";
 
     public static async Task DownloadAsync(Action<int> callback)
     {
-        await HttpService.DownloadAsync(LauncherDownloadUri, s_source, callback);
+        await HttpService.DownloadAsync(InstallerDownloadUri, s_source, callback);
         await File.WriteAllTextAsync(s_script, s_content);
 
         using (Process.Start(new ProcessStartInfo
