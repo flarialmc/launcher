@@ -1,3 +1,8 @@
+> [!CAUTION]
+> - This repository will no longer be updated!
+> - The launcher has migrated to MSIX starting 3rd August 2026.
+> Please check out: https://github.com/flarialmc/Flarial.Launcher
+
 # Flarial Launcher
 
 Source code for Flarial Client's launcher.
